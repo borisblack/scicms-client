@@ -1,13 +1,122 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+a.badge-label, a.badge-label:active, a.badge-label:hover {
+  color: rgba(0, 0, 0, 0.65);
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+.badge-label {
+  border-radius: 4px;
+  background: #eee;
+  display: inline-block;
+  padding: 4px 8px;
+}
+
+.logo {
+  height: 32px;
+  background: rgba(255,255,255,.2);
+  margin: 16px;
+  color: #fff;
+  padding: 4px 0;
+  text-align: center;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.logo > a, .logo > a:hover, .logo > a:focus {
+  color: #fff;
+  text-decoration: none;
+}
+
+.trigger {
+  font-size: 16px;
+  line-height: 64px;
+  padding: 0 24px;
+  cursor: pointer;
+  transition: color .3s;
+}
+
+.trigger:hover {
+  color: #1890ff;
+}
+
+.row-current {
+  background: #e6f7ff;
+}
+
+.row-disabled {
+  color: #999999;
+}
+
+.filter-dropdown {
+  padding: 8px;
+  border-radius: 4px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .15);
+}
+
+.filter-dropdown input {
+  width: 188px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.filter-dropdown button {
+  width: 90px;
+}
+
+.right {
+  text-align: right;
+}
+
+/* Colors */
+.black, a.black:hover {
+  color: #343a40;
+}
+
+.gray, a.gray:hover {
+  color: #6c757d;
+}
+
+.red, a.red:hover {
+  color: #dc3545;
+}
+
+.green, a.green:hover {
+  color: #28a745;
+}
+
+.blue, a.blue:hover {
+  color: #007bff;
+}
+
+/*Ant Design*/
+.ant-link:focus {
+  text-decoration: none;
+}
+
+form.ant-form-horizontal .ant-form-item-label {
+  text-align: left;
+}
+
+.ant-badge:not(.ant-badge-status) {
+  margin-right: 20px;
+}
+
+.ant-menu-submenu-title .ant-avatar > .anticon {
+  margin: 0;
+}
+
+.pages.ant-tabs-top > .ant-tabs-nav {
+  margin: 0;
+}
+
+/*.pages.ant-tabs-top > .ant-tabs-nav .ant-tabs-tab {*/
+/*  border-bottom-width: 0;*/
+/*}*/
+
+.page-content {
+  padding: 16px;
+  background: #fff;
+}
+
+.fullscreen-enabled {
+  background: #fff;
 }
