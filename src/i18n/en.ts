@@ -5,6 +5,7 @@ const en = {
         'Enter password': 'Enter password',
         'JSC Information Satellite Systems': 'JSC «Academician M.F. Reshetnev» Information Satellite Systems»',
         'Login': 'Login',
+        'Logout': 'Logout',
         'Password': 'Password',
         'Username': 'Username'
     }

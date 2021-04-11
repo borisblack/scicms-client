@@ -6,7 +6,7 @@ import {Avatar, ConfigProvider, Layout, Menu} from 'antd'
 import './App.css'
 import config from './config'
 import i18n from './i18n'
-import {AuthState, logOut} from './features/auth/authSlice'
+import {logout, selectUserInfo} from './features/auth/authSlice'
 import Login from './features/auth/Login'
 import {LogoutOutlined, UserOutlined} from '@ant-design/icons'
 
@@ -16,10 +16,10 @@ const SubMenu = Menu.SubMenu
 function App() {
     const {t} = useTranslation()
     const dispatch = useDispatch()
-    const isLoggedIn: boolean = useSelector((state: {auth: AuthState}) => state.auth.isLoggedIn)
+    const userInfo = useSelector(selectUserInfo)
 
-    async function logout() {
-        await dispatch(logOut())
+    async function handleLogout() {
+        await dispatch(logout())
         // await dispatch(resetPages())
         // await dispatch(resetNavigation())
         // Metadata.clear()
@@ -27,7 +27,7 @@ function App() {
 
     return (
         <I18nextProvider i18n={i18n}>
-            <ConfigProvider locale={config.locale}> {isLoggedIn ? (
+            <ConfigProvider locale={config.locale}> {userInfo ? (
                 <Layout className="App">
                     {/*<Navbar collapsed={collapsed}/>*/}
                     <Layout>
@@ -40,11 +40,13 @@ function App() {
                                     title={
                                         <span>
                                             <Avatar className="App-header-menu-avatar" icon={<UserOutlined/>} />
+                                            &nbsp;&nbsp;
+                                            {userInfo.user.keyedName}
                                         </span>
                                     }
                                 >
-                                    <Menu.Item key="logout">
-                                        <a onClick={logout}><LogoutOutlined/>{t('Logout')}</a>
+                                    <Menu.Item key="logout" onClick={handleLogout}>
+                                        <span><LogoutOutlined/>{t('Logout')}</span>
                                     </Menu.Item>
                                 </SubMenu>
                             </Menu>

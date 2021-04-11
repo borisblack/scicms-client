@@ -1,17 +1,21 @@
 import React, {useEffect, useRef, useState} from 'react'
-import {useDispatch} from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux'
 import {Col, message, Row, Spin} from 'antd'
 
 import './Login.css'
-import {logIn} from './authSlice'
+import {login, fetchUserInfoIfNeeded, selectApiKey, selectUserInfo, selectError} from './authSlice'
 import LoginForm from './LoginForm'
 import {useTranslation} from 'react-i18next'
 
 function Login() {
     const {t} = useTranslation()
     const dispatch = useDispatch()
+
     const [loading, setLoading] = useState(false)
     const _isMounted = useRef(false)
+    const apiKey = useSelector(selectApiKey)
+    const userInfo = useSelector(selectUserInfo)
+    const authError = useSelector(selectError)
 
     useEffect(() => {
         _isMounted.current = true
@@ -20,10 +24,20 @@ function Login() {
         }
     }, [])
 
+    useEffect(() => {
+        if (apiKey && !userInfo)
+            dispatch(fetchUserInfoIfNeeded())
+    }, [apiKey, userInfo, dispatch])
+
+    useEffect(() => {
+        if (authError)
+            message.error(authError.message)
+    }, [authError])
+
     const handleLogin = async (credentials: {username: string, password: string}) => {
         setLoading(true)
         try {
-            await dispatch(logIn(credentials))
+            await dispatch(login(credentials))
         } catch (e) {
             message.error(e.message)
         } finally {

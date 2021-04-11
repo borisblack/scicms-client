@@ -1,117 +1,103 @@
-import {createSlice, createAsyncThunk} from '@reduxjs/toolkit'
-import AuthService, {TokenResponse, UserInfo} from '../../services/auth'
+import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
+import {getApiKey, removeApiKey, storeApiKey} from '../../services'
+import * as AuthService from '../../services/auth'
+import {TokenResponse} from '../../services/auth'
 
 export interface AuthState {
-    didInvalidate: boolean,
-    isFetching: boolean,
-    isLoggedIn: boolean,
-    error?: Error,
-    tokenResponse?: TokenResponse,
-    userInfo?: UserInfo,
+    isFetching: boolean
+    apiKey: string | null
+    userInfo: AuthService.UserInfo | null
+    error: Error | null
 }
 
 const initialState: AuthState = {
-    didInvalidate: false,
     isFetching: false,
-    isLoggedIn: false
+    apiKey: getApiKey(),
+    userInfo: null,
+    error: null
 }
 
-const authService = new AuthService()
-
-const logIn = createAsyncThunk(
-    'auth/logIn',
-    (credentials: {username: string, password: string}) => authService.logIn(credentials).then(tokenResponse => tokenResponse)
-)
-
-const fetchUserInfo = createAsyncThunk(
-    'auth/fetchUserInfo',
-    () => authService.fetchUserInfo().then(userInfo => userInfo)
+const login = createAsyncThunk(
+    'auth/login',
+    (credentials: {username: string, password: string}) => {
+        removeApiKey()
+        return AuthService.login(credentials).then(tokenResponse => tokenResponse)
+    }
 )
 
 const fetchUserInfoIfNeeded = createAsyncThunk(
     'auth/fetchUserInfoIfNeeded',
-    () => authService.fetchUserInfo().then(userInfo => userInfo),
+    () => AuthService.fetchUserInfo().then(userInfo => userInfo),
     {
-        condition: (credentials, {getState, extra}) => shouldFetchUserInfo(getState() as {auth: AuthState})
+        condition: (credentials, {getState}) => shouldFetchUserInfo(getState() as {auth: AuthState})
     }
 )
 
 const shouldFetchUserInfo = (state: {auth: AuthState}) => {
-    const {didInvalidate, isFetching, userInfo} = state.auth
-    if (!userInfo)
-        return !isFetching
-    else if (isFetching)
-        return false
-    else
-        return didInvalidate
+    const {isFetching, userInfo} = state.auth
+    return !userInfo && !isFetching
 }
 
-const _requestUserInfo = (state: AuthState) => {
-    state.isFetching = true
-    state.error = undefined
-}
-
-const _receiveUserInfo = (state: AuthState, action: {payload: UserInfo}) => {
-    state.userInfo = action.payload
-    state.isFetching = false
-}
-
-const logOut = createAsyncThunk(
-    'auth/logOut',
-    () => authService.logOut()
+const logout = createAsyncThunk(
+    'auth/logout',
+    () => AuthService.logout()
 )
 
 const authSlice = createSlice({
     name: 'auth',
     initialState,
-    reducers: {
-        invalidate: state => {
-            state.didInvalidate = true
-        }
-    },
+    reducers: {},
     extraReducers: {
-        [logIn.pending as any]: (state: AuthState) => {
+        [login.pending as any]: (state: AuthState) => {
             state.isFetching = true
-            state.error = undefined
         },
-        [logIn.fulfilled as any]: (state: AuthState, action) => {
-            state.tokenResponse = action.payload
+        [login.fulfilled as any]: (state: AuthState, action: {payload: TokenResponse}) => {
+            const {token} = action.payload
+            storeApiKey(token)
+            state.apiKey = token
             state.isFetching = false
-            state.isLoggedIn = true
-            state.error = undefined
         },
-        [logIn.rejected as any]: (state: AuthState, action) => {
+        [login.rejected as any]: (state: AuthState, action: {error: Error}) => {
             state.error = action.error
-            throw new Error(action.error.message)
-        },
-        [fetchUserInfo.pending as any]: _requestUserInfo,
-        [fetchUserInfo.fulfilled as any]: _receiveUserInfo,
-        [fetchUserInfoIfNeeded.pending as any]: _requestUserInfo,
-        [fetchUserInfoIfNeeded.fulfilled as any]: _receiveUserInfo,
-        [logOut.pending as any]: (state: AuthState) => {
-            state.isFetching = true
-            state.error = undefined
-        },
-        [logOut.fulfilled as any]: (state: AuthState) => {
-            state.didInvalidate = false
             state.isFetching = false
-            state.isLoggedIn = false
-            state.error = undefined
-            state.tokenResponse = undefined
-            state.userInfo = undefined
         },
-        [logOut.rejected as any]: (state: AuthState, action: {payload: Error}) => {
-            state.error = action.payload
+        [fetchUserInfoIfNeeded.pending as any]: (state: AuthState) => {
+            state.isFetching = true
+        },
+        [fetchUserInfoIfNeeded.fulfilled as any]: (state: AuthState, action: {payload: AuthService.UserInfo}) => {
+            state.userInfo = action.payload
+            state.isFetching = false
+        },
+        [fetchUserInfoIfNeeded.rejected as any]: (state: AuthState, action: {error: Error}) => {
+            state.error = action.error
+            state.userInfo = null
+            state.isFetching = false
+        },
+        [logout.pending as any]: (state: AuthState) => {
+            state.isFetching = true
+        },
+        [logout.fulfilled as any]: (state: AuthState) => {
+            removeApiKey()
+            state.apiKey = null
+            state.userInfo = null
+            state.isFetching = false
+        },
+        [logout.rejected as any]: (state: AuthState, action: {error: Error}) => {
+            removeApiKey()
+            state.error = action.error
+            state.apiKey = null
+            state.userInfo = null
+            state.isFetching = false
         }
     }
 })
 
-export const {invalidate} = authSlice.actions
+export {login, fetchUserInfoIfNeeded, logout}
 
-export {logIn, fetchUserInfo, fetchUserInfoIfNeeded, logOut}
-
-export const selectTokenResponse = (state: {auth: AuthState}) => state.auth.tokenResponse
+export const selectApiKey = (state: {auth: AuthState}) => state.auth.apiKey
 
 export const selectUserInfo = (state: {auth: AuthState}) => state.auth.userInfo
+
+export const selectError = (state: {auth: AuthState}) => state.auth.error
 
 export default authSlice.reducer

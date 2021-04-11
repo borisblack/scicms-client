@@ -5,6 +5,7 @@ const ru = {
         'Enter password': 'Введите пароль',
         'JSC Information Satellite Systems': 'АО «Информационные спутниковые системы» имени академика М.Ф. Решетнёва»',
         'Login': 'Вход',
+        'Logout': 'Выход',
         'Password': 'Пароль',
         'Username': 'Имя пользователя'
     }
