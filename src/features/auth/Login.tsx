@@ -1,11 +1,14 @@
 import React, {useEffect, useRef, useState} from 'react'
 import {useDispatch, useSelector} from 'react-redux'
-import {Col, message, Row, Spin} from 'antd'
+import {Col, Layout, message, Row, Spin} from 'antd'
 
+import logo from '../../logo.svg'
 import './Login.css'
 import {login, fetchUserInfoIfNeeded, selectApiKey, selectUserInfo, selectError} from './authSlice'
 import LoginForm from './LoginForm'
 import {useTranslation} from 'react-i18next'
+
+const {Header, Content, Footer} = Layout
 
 function Login() {
     const {t} = useTranslation()
@@ -46,17 +49,25 @@ function Login() {
     }
 
     return (
-        <Spin spinning={loading}>
-            <Row className="Login" justify="center" align="middle">
-                <Col span={6}>
-                    <div className="Login-box">
-                        <h3>{t('Login')}</h3>
-                        <br/>
-                        <LoginForm onLogin={handleLogin} />
-                    </div>
-                </Col>
-            </Row>
-        </Spin>
+        <Layout className="Login">
+            <Header className="Login-header">
+                <img src={logo} className="Login-logo" alt="logo" />
+                <span className="Login-header-title">{t('Document Management System')}</span>
+                <div className="Login-header-desc">{t('Welcome')}</div>
+            </Header>
+            <Content>
+                <Spin spinning={loading}>
+                    <Row justify="center" align="middle">
+                        <Col span={6}>
+                            <LoginForm onLogin={handleLogin} />
+                        </Col>
+                    </Row>
+                </Spin>
+            </Content>
+            <Footer className="Login-footer">
+                {`${t('JSC Information Satellite Systems')} ©${new Date().getFullYear()}`}
+            </Footer>
+        </Layout>
     )
 }
 

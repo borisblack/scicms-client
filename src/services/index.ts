@@ -1,5 +1,7 @@
 import axios, {AxiosError, AxiosRequestConfig} from 'axios'
 import config from '../config'
+import {codeMessage} from '../i18n'
+import {ApolloClient, ApolloLink, InMemoryCache, from, HttpLink} from '@apollo/client'
 
 export const storeApiKey = (apiKey: string) => { localStorage.setItem('apiKey', apiKey) }
 
@@ -17,24 +19,6 @@ axios.interceptors.request.use((config: AxiosRequestConfig) => {
     return config
 })
 
-const codeMessage: any = {
-    200: 'Сервер успешно вернул запрошенные данные',
-    201: 'Данные успешно созданы или изменены сервером',
-    202: 'Запрос помещен в очередь в фоновом режиме',
-    204: 'Данные успешно удалены',
-    400: 'Ошибка запроса, данные не изменены сервером',
-    401: 'Неверно имя пользователя и/или пароль',
-    403: 'Доступ запрещен',
-    404: 'Сервер не может найти запрашиваемый ресурс',
-    406: 'Запрошенный формат недоступен',
-    410: 'Запрашиваемый ресурс удален и больше не доступен',
-    422: 'При создании объекта произошла ошибка валидации',
-    500: 'Внутренняя ошибка сервера',
-    502: 'Ошибка шлюза',
-    503: 'Сервис недоступен. Сервер не готов обрабатывать запрос',
-    504: 'Истекло время ожидания ответа сервера',
-}
-
 export const throwResponseError = (e: AxiosError) => {
     let msg: string
     const res = e.response
@@ -46,3 +30,23 @@ export const throwResponseError = (e: AxiosError) => {
 
     throw new Error(msg)
 }
+
+const httpLink = new HttpLink({ uri: `${config.backendUrl}/graphql` })
+
+const authMiddleware = new ApolloLink((operation, forward) => {
+    operation.setContext((context: Record<string, any>) => {
+        const headers = {...context.headers}
+        const token = getApiKey()
+        if (token)
+            headers['X-Auth-Token'] = token
+
+        return { headers }
+    })
+
+    return forward(operation)
+})
+
+export const apolloClient = new ApolloClient({
+    cache: new InMemoryCache(),
+    link: from([authMiddleware, httpLink]),
+})

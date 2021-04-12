@@ -33,16 +33,31 @@ function LoginForm({onLogin}: Props) {
                     name="username"
                     rules={[{required: true, message: t('Enter username')}]}
                 >
-                    <Input prefix={<UserOutlined className="LoginForm-input-icon"/>} placeholder={t('Username')} />
+                    <Input
+                        prefix={<UserOutlined className="LoginForm-input-icon"/>}
+                        placeholder={t('Username')}
+                        size="large"
+                    />
                 </FormItem>
                 <FormItem
                     name="password"
                     rules={[{required: true, message: t('Enter password')}]}
                 >
-                    <Input prefix={<LockOutlined className="LoginForm-input-icon"/>} type="password" placeholder={t('Password')} />
+                    <Input
+                        prefix={<LockOutlined className="LoginForm-input-icon"/>}
+                        placeholder={t('Password')}
+                        type="password"
+                        size="large"
+                    />
                 </FormItem>
                 <FormItem>
-                    <Button type="primary" htmlType="submit" className="LoginForm-button">{t('Login')}</Button>
+                    <Button
+                        block
+                        type="primary"
+                        htmlType="submit" size="large"
+                    >
+                        {t('Login')}
+                    </Button>
                 </FormItem>
             </Form>
         </div>

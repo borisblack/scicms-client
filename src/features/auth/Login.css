@@ -1,10 +1,39 @@
 .Login {
-    height: 80vh
+    min-height: 100vh;
+    background-image: url(login-bg.svg);
+    background-repeat: no-repeat;
+    background-position: center 110px;
+    background-size: 100%;
 }
 
-.Login-box {
-    border: 1px solid #e9e9e9;
-    border-radius: 4px;
-    margin: 0 0 16px;
-    padding: 16px;
+.Login-logo {
+    height: 44px;
+    pointer-events: none;
+    margin-right: 16px;
+}
+
+.Login-header {
+    background: transparent;
+    text-align: center;
+    height: 180px;
+    padding: 40px;
+}
+
+.Login-header-title {
+    position: relative;
+    top: 7px;
+    font-weight: 600;
+    font-size: 32px;
+}
+
+.Login-header-desc {
+    color: rgba(0, 0, 0, 0.45);
+    font-size: 14px;
+    line-height: 32px;
+}
+
+.Login-footer {
+    background: transparent;
+    color: rgba(0, 0, 0, 0.45);
+    text-align: center
 }

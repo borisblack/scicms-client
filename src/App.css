@@ -7,6 +7,18 @@
   padding: 0;
 }
 
+.App-header-trigger {
+  font-size: 16px;
+  line-height: 64px;
+  padding: 0 24px;
+  cursor: pointer;
+  transition: color .3s;
+}
+
+.trigger:hover {
+  color: #1890ff;
+}
+
 .App-header-title {
   font-size: 16px;
 }
@@ -26,10 +38,9 @@
 
 .App-content {
   min-height: 80vh;
-  /*padding: 24px;*/
-  /*background: #fff;*/
 }
 
 .App-footer {
+  color: rgba(0, 0, 0, 0.45);
   text-align: center
 }

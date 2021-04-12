@@ -50,12 +50,14 @@ const authSlice = createSlice({
     extraReducers: {
         [login.pending as any]: (state: AuthState) => {
             state.isFetching = true
+            state.error = null
         },
         [login.fulfilled as any]: (state: AuthState, action: {payload: TokenResponse}) => {
             const {token} = action.payload
             storeApiKey(token)
             state.apiKey = token
             state.isFetching = false
+            state.error = null
         },
         [login.rejected as any]: (state: AuthState, action: {error: Error}) => {
             state.error = action.error
@@ -63,10 +65,12 @@ const authSlice = createSlice({
         },
         [fetchUserInfoIfNeeded.pending as any]: (state: AuthState) => {
             state.isFetching = true
+            state.error = null
         },
         [fetchUserInfoIfNeeded.fulfilled as any]: (state: AuthState, action: {payload: AuthService.UserInfo}) => {
             state.userInfo = action.payload
             state.isFetching = false
+            state.error = null
         },
         [fetchUserInfoIfNeeded.rejected as any]: (state: AuthState, action: {error: Error}) => {
             state.error = action.error
@@ -75,12 +79,14 @@ const authSlice = createSlice({
         },
         [logout.pending as any]: (state: AuthState) => {
             state.isFetching = true
+            state.error = null
         },
         [logout.fulfilled as any]: (state: AuthState) => {
             removeApiKey()
             state.apiKey = null
             state.userInfo = null
             state.isFetching = false
+            state.error = null
         },
         [logout.rejected as any]: (state: AuthState, action: {error: Error}) => {
             removeApiKey()
@@ -93,6 +99,8 @@ const authSlice = createSlice({
 })
 
 export {login, fetchUserInfoIfNeeded, logout}
+
+export const selectIsFetching = (state: {auth: AuthState}) => state.auth.isFetching
 
 export const selectApiKey = (state: {auth: AuthState}) => state.auth.apiKey
 

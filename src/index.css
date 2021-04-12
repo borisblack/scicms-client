@@ -9,34 +9,6 @@ a.badge-label, a.badge-label:active, a.badge-label:hover {
   padding: 4px 8px;
 }
 
-.logo {
-  height: 32px;
-  background: rgba(255,255,255,.2);
-  margin: 16px;
-  color: #fff;
-  padding: 4px 0;
-  text-align: center;
-  font-weight: 600;
-  font-size: 16px;
-}
-
-.logo > a, .logo > a:hover, .logo > a:focus {
-  color: #fff;
-  text-decoration: none;
-}
-
-.trigger {
-  font-size: 16px;
-  line-height: 64px;
-  padding: 0 24px;
-  cursor: pointer;
-  transition: color .3s;
-}
-
-.trigger:hover {
-  color: #1890ff;
-}
-
 .row-current {
   background: #e6f7ff;
 }
