@@ -19,22 +19,11 @@ const isNavbarCollapsed = () => localStorage.getItem('navbarCollapsed') === '1'
 
 const setNavbarCollapsed = (collapsed: boolean) => localStorage.setItem('navbarCollapsed', collapsed ? '1' : '0')
 
-export const USER_QUERY = gql`
-    query queryUser {
-        queryUser(action: "get") {
-            username
-            listOfAuthority {
-                authority
-            }
-        }
-    }
-`
 function App() {
     const {t} = useTranslation()
     const dispatch = useDispatch()
     const userInfo = useSelector(selectUserInfo)
     const [collapsed, setCollapsed] = useState(isNavbarCollapsed())
-    const { loading, error, data } = useQuery(USER_QUERY, {errorPolicy: 'all'})
 
     function handleToggle() {
         setNavbarCollapsed(!collapsed)
@@ -85,15 +74,6 @@ function App() {
                         <Content className="App-content-wrapper">
                             <div className="App-content">
                                 {/*<Pages />*/}
-                                <div>
-                                    <p>Users are loading: {loading ? "yes" : "no"}</p>
-                                    {data && data.queryUser.map((user: any) => <div key={user.username}>{user.username}</div>)}
-                                    <pre>
-                                        Bad: {error?.graphQLErrors.map(({ message }, i) => (
-                                            <span key={i}>{message}</span>
-                                        ))}
-                                    </pre>
-                                </div>
                             </div>
                         </Content>
                         <Footer className="App-footer">
