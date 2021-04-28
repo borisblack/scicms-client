@@ -63,8 +63,8 @@ const getClassesQuery = (menuIds: string[]) => gql`
         queryClass_Menu(
             action: "get"
             matches: [{
-                name: "target_id" 
-                condition: IN 
+                name: "target_id"
+                condition: IN
                 value: [${menuIds.map(id => `"${id}"`).join(', ')}]
             }]
             sort: "source_id.label_plural"

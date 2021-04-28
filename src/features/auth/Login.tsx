@@ -4,7 +4,7 @@ import {Col, Layout, message, Row, Spin} from 'antd'
 
 import logo from '../../logo.svg'
 import './Login.css'
-import {fetchUserInfoIfNeeded, login, selectApiKey, selectError, selectIsFetching, selectUserInfo} from './authSlice'
+import {fetchUserInfoIfNeeded, login, selectApiKey, selectError, selectLoading, selectUserInfo} from './authSlice'
 import LoginForm from './LoginForm'
 import {useTranslation} from 'react-i18next'
 
@@ -16,7 +16,7 @@ function Login() {
     const apiKey = useSelector(selectApiKey)
     const userInfo = useSelector(selectUserInfo)
     const authError = useSelector(selectError)
-    const isFetching = useSelector(selectIsFetching)
+    const loading = useSelector(selectLoading)
 
     useEffect(() => {
         if (apiKey && !userInfo)
@@ -44,7 +44,7 @@ function Login() {
                 <div className="Login-header-desc">{t('Welcome')}</div>
             </Header>
             <Content>
-                <Spin spinning={isFetching}>
+                <Spin spinning={loading}>
                     <Row justify="center" align="middle">
                         <Col span={6}>
                             <LoginForm onLogin={handleLogin} />
