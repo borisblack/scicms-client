@@ -1,4 +1,4 @@
-import React, {Fragment, useEffect} from 'react'
+import React, {useEffect} from 'react'
 import {useDispatch, useSelector} from 'react-redux'
 import {useTranslation} from 'react-i18next'
 import {Layout, Menu, Spin} from 'antd'
@@ -7,7 +7,7 @@ import {QuestionCircleOutlined} from '@ant-design/icons'
 import config from '../../config'
 import './Navbar.css'
 import logo from '../../logo.svg'
-import {gql} from '@apollo/client'
+// import {gql} from '@apollo/client'
 import {ClassMenu, fetchListOfMenuRelationship, MenuRelationship, selectLoading, selectMenus} from './navigationSlice'
 // import {RELATIONSHIPS_KEY} from '../../item/item'
 // import {FlatItem} from '../../item/item-util'
@@ -30,7 +30,7 @@ const Navbar = ({collapsed}: Props) => {
 
     useEffect(() => {
         dispatch(fetchListOfMenuRelationship())
-    }, [])
+    }, [dispatch])
 
     const handleMenuItemClick = (type: string, label: string) => {
         // dispatch(openPage({type, viewType: 'default', label}))

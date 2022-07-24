@@ -1,38 +1,34 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
-import {apolloClient, getApiKey, removeApiKey, storeApiKey} from '../../services'
+import {apolloClient, getJwt, removeJwt, storeJwt} from '../../services'
 import * as AuthService from '../../services/auth'
 import {TokenResponse} from '../../services/auth'
 import {gql} from '@apollo/client'
 
-interface UserInfo {
-    user: {
-        keyedName: string
-        username: string
-    },
+interface MeInfo {
+    username: string,
     roles: Array<string>
 }
 
 export interface AuthState {
     loading: boolean
-    apiKey: string | null
-    userInfo: UserInfo | null
+    jwt: string | null
+    expirationIntervalMillis: number | null
+    me: MeInfo | null
     error: Error | null
 }
 
 const initialState: AuthState = {
     loading: false,
-    apiKey: getApiKey(),
-    userInfo: null,
+    jwt: getJwt(),
+    expirationIntervalMillis: null,
+    me: null,
     error: null
 }
 
-const USER_INFO_QUERY = gql`
+const ME_QUERY = gql`
     query {
-        userInfo {
-            user {
-                keyedName
-                username
-            }
+        me {
+            username
             roles
         }
     }
@@ -41,22 +37,22 @@ const USER_INFO_QUERY = gql`
 const login = createAsyncThunk(
     'auth/login',
     (credentials: {username: string, password: string}) => {
-        removeApiKey()
+        removeJwt()
         return AuthService.login(credentials).then(tokenResponse => tokenResponse)
     }
 )
 
-const fetchUserInfoIfNeeded = createAsyncThunk(
-    'auth/fetchUserInfoIfNeeded',
-    () => apolloClient.query({query: USER_INFO_QUERY}).then(result => result.data.userInfo),
+const fetchMeIfNeeded = createAsyncThunk(
+    'auth/fetchMeIfNeeded',
+    () => apolloClient.query({query: ME_QUERY}).then(result => result.data.me),
     {
-        condition: (credentials, {getState}) => shouldFetchUserInfo(getState() as {auth: AuthState})
+        condition: (credentials, {getState}) => shouldFetchMe(getState() as {auth: AuthState})
     }
 )
 
-const shouldFetchUserInfo = (state: {auth: AuthState}) => {
-    const {loading, userInfo} = state.auth
-    return !userInfo && !loading
+const shouldFetchMe = (state: {auth: AuthState}) => {
+    const {loading, me} = state.auth
+    return !me && !loading
 }
 
 const logout = createAsyncThunk(
@@ -74,9 +70,14 @@ const authSlice = createSlice({
             state.error = null
         },
         [login.fulfilled as any]: (state: AuthState, action: {payload: TokenResponse}) => {
-            const {token} = action.payload
-            storeApiKey(token)
-            state.apiKey = token
+            const {jwt, expirationIntervalMillis, user} = action.payload
+            storeJwt(jwt)
+            state.jwt = jwt
+            state.expirationIntervalMillis = expirationIntervalMillis
+            // state.me = {
+            //     username: user.username,
+            //     roles: user.roles
+            // }
             state.loading = false
             state.error = null
         },
@@ -84,18 +85,22 @@ const authSlice = createSlice({
             state.error = action.error
             state.loading = false
         },
-        [fetchUserInfoIfNeeded.pending as any]: (state: AuthState) => {
+        [fetchMeIfNeeded.pending as any]: (state: AuthState) => {
             state.loading = true
             state.error = null
         },
-        [fetchUserInfoIfNeeded.fulfilled as any]: (state: AuthState, action: {payload: UserInfo}) => {
-            state.userInfo = action.payload
+        [fetchMeIfNeeded.fulfilled as any]: (state: AuthState, action: {payload: MeInfo}) => {
+            const me = action.payload
+            state.me = {
+                username: me.username,
+                roles: me.roles
+            }
             state.loading = false
             state.error = null
         },
-        [fetchUserInfoIfNeeded.rejected as any]: (state: AuthState, action: {error: Error}) => {
+        [fetchMeIfNeeded.rejected as any]: (state: AuthState, action: {error: Error}) => {
             state.error = action.error
-            state.userInfo = null
+            state.me = null
             state.loading = false
         },
         [logout.pending as any]: (state: AuthState) => {
@@ -103,29 +108,31 @@ const authSlice = createSlice({
             state.error = null
         },
         [logout.fulfilled as any]: (state: AuthState) => {
-            removeApiKey()
-            state.apiKey = null
-            state.userInfo = null
+            removeJwt()
+            state.jwt = null
+            state.expirationIntervalMillis = null
+            state.me = null
             state.loading = false
             state.error = null
         },
         [logout.rejected as any]: (state: AuthState, action: {error: Error}) => {
-            removeApiKey()
+            removeJwt()
             state.error = action.error
-            state.apiKey = null
-            state.userInfo = null
+            state.jwt = null
+            state.expirationIntervalMillis = null
+            state.me = null
             state.loading = false
         }
     }
 })
 
-export {login, fetchUserInfoIfNeeded, logout}
+export {login, fetchMeIfNeeded, logout}
 
 export const selectLoading = (state: {auth: AuthState}) => state.auth.loading
 
-export const selectApiKey = (state: {auth: AuthState}) => state.auth.apiKey
+export const selectJwt = (state: {auth: AuthState}) => state.auth.jwt
 
-export const selectUserInfo = (state: {auth: AuthState}) => state.auth.userInfo
+export const selectMe = (state: {auth: AuthState}) => state.auth.me
 
 export const selectError = (state: {auth: AuthState}) => state.auth.error
 
