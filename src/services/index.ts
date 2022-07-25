@@ -6,9 +6,18 @@ import {createUploadLink} from 'apollo-upload-client'
 
 export const storeJwt = (jwt: string) => { localStorage.setItem('jwt', jwt) }
 
-export const getJwt = () => localStorage.getItem('jwt')
+export const storeExpireAt = (expiredAt: number) => { localStorage.setItem('expireAt', expiredAt.toString()) }
+
+export const getJwt = (): string | null => localStorage.getItem('jwt')
+
+export const getExpireAt = (): number | null => {
+    const iso = localStorage.getItem('expireAt')
+    return iso ? Number(iso) : null
+}
 
 export const removeJwt = () => { localStorage.removeItem('jwt') }
+
+export const removeExpireAt = () => { localStorage.removeItem('expireAt') }
 
 // Setup Axios
 axios.defaults.headers.common['X-Requested-Width'] = 'XMLHttpRequest'
@@ -32,6 +41,7 @@ export const throwResponseError = (e: AxiosError) => {
     throw new Error(msg)
 }
 
+// Setup ApolloClient
 // const httpLink = new HttpLink({ uri: `${config.backendUrl}/graphql` })
 const uploadLink = createUploadLink({ uri: `${config.backendUrl}/graphql` })
 
@@ -49,6 +59,8 @@ const authMiddleware = new ApolloLink((operation, forward) => {
 })
 
 export const apolloClient = new ApolloClient({
-    cache: new InMemoryCache(),
+    cache: new InMemoryCache({
+        addTypename: false
+    }),
     link: from([authMiddleware/*, httpLink*/, uploadLink]),
 })

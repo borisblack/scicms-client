@@ -1,18 +1,13 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
-import {apolloClient, getJwt, removeJwt, storeJwt} from '../../services'
+import {getExpireAt, getJwt, removeExpireAt, removeJwt, storeExpireAt, storeJwt} from '../../services'
+import {DateTime} from 'luxon'
 import * as AuthService from '../../services/auth'
-import {TokenResponse} from '../../services/auth'
-import {gql} from '@apollo/client'
-
-interface MeInfo {
-    username: string,
-    roles: Array<string>
-}
+import {MeInfo, TokenResponse} from '../../services/auth'
 
 export interface AuthState {
     loading: boolean
     jwt: string | null
-    expirationIntervalMillis: number | null
+    expireAt: number | null
     me: MeInfo | null
     error: Error | null
 }
@@ -20,19 +15,10 @@ export interface AuthState {
 const initialState: AuthState = {
     loading: false,
     jwt: getJwt(),
-    expirationIntervalMillis: null,
+    expireAt: getExpireAt(),
     me: null,
     error: null
 }
-
-const ME_QUERY = gql`
-    query {
-        me {
-            username
-            roles
-        }
-    }
-`
 
 const login = createAsyncThunk(
     'auth/login',
@@ -44,7 +30,7 @@ const login = createAsyncThunk(
 
 const fetchMeIfNeeded = createAsyncThunk(
     'auth/fetchMeIfNeeded',
-    () => apolloClient.query({query: ME_QUERY}).then(result => result.data.me),
+    () => AuthService.fetchMe().then(me => me),
     {
         condition: (credentials, {getState}) => shouldFetchMe(getState() as {auth: AuthState})
     }
@@ -71,13 +57,15 @@ const authSlice = createSlice({
         },
         [login.fulfilled as any]: (state: AuthState, action: {payload: TokenResponse}) => {
             const {jwt, expirationIntervalMillis, user} = action.payload
+            const expireAt = DateTime.now().plus({millisecond: expirationIntervalMillis}).toMillis()
             storeJwt(jwt)
+            storeExpireAt(expireAt)
             state.jwt = jwt
-            state.expirationIntervalMillis = expirationIntervalMillis
-            // state.me = {
-            //     username: user.username,
-            //     roles: user.roles
-            // }
+            state.expireAt = expireAt
+            state.me = {
+                username: user.username,
+                roles: user.roles
+            }
             state.loading = false
             state.error = null
         },
@@ -109,17 +97,19 @@ const authSlice = createSlice({
         },
         [logout.fulfilled as any]: (state: AuthState) => {
             removeJwt()
+            removeExpireAt()
             state.jwt = null
-            state.expirationIntervalMillis = null
+            state.expireAt = null
             state.me = null
             state.loading = false
             state.error = null
         },
         [logout.rejected as any]: (state: AuthState, action: {error: Error}) => {
             removeJwt()
+            removeExpireAt()
             state.error = action.error
             state.jwt = null
-            state.expirationIntervalMillis = null
+            state.expireAt = null
             state.me = null
             state.loading = false
         }
@@ -131,6 +121,8 @@ export {login, fetchMeIfNeeded, logout}
 export const selectLoading = (state: {auth: AuthState}) => state.auth.loading
 
 export const selectJwt = (state: {auth: AuthState}) => state.auth.jwt
+
+export const selectIsExpired = (state: {auth: AuthState}) => !!state.auth.expireAt && state.auth.expireAt < DateTime.now().toMillis()
 
 export const selectMe = (state: {auth: AuthState}) => state.auth.me
 

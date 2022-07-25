@@ -8,12 +8,12 @@ import {LogoutOutlined, MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined} from
 import './App.css'
 import config from './config'
 import i18n from './i18n'
-import {logout, selectMe} from './features/auth/authSlice'
+import {logout, selectIsExpired, selectMe} from './features/auth/authSlice'
+import {reset as resetNavigation} from './features/navigation/navigationSlice'
 import Login from './features/auth/Login'
 import Navbar from './features/navigation/Navbar'
 
 const {Header, Content, Footer} = Layout
-const SubMenu = Menu.SubMenu
 
 const isNavbarCollapsed = () => localStorage.getItem('navbarCollapsed') === '1'
 
@@ -23,6 +23,7 @@ function App() {
     const {t} = useTranslation()
     const dispatch = useDispatch()
     const me = useSelector(selectMe)
+    const isExpired = useSelector(selectIsExpired)
     const [collapsed, setCollapsed] = useState(isNavbarCollapsed())
 
     function handleToggle() {
@@ -41,35 +42,40 @@ function App() {
     async function handleLogout() {
         await dispatch(logout())
         // await dispatch(resetPages())
-        // await dispatch(resetNavigation())
+        await dispatch(resetNavigation())
         // Metadata.clear()
     }
 
     return (
         <I18nextProvider i18n={i18n}>
-            <ConfigProvider locale={config.antdLocale}> {me ? (
+            <ConfigProvider locale={config.antdLocale}> {(me && !isExpired) ? (
                 <Layout className="App">
                     <Navbar collapsed={collapsed}/>
                     <Layout>
                         <Header className="App-header">
                             {renderToggleIcon()}
                             <span className="App-header-title">{t('SciCMS')}</span>
-                            <Menu theme="light" mode="horizontal" defaultSelectedKeys={[]} className="App-header-menu">
-                                <SubMenu
-                                    key="user"
-                                    title={
+                            <Menu
+                                theme="light"
+                                mode="horizontal"
+                                defaultSelectedKeys={[]}
+                                className="App-header-menu"
+                                items={[{
+                                    key: 'user',
+                                    label: (
                                         <span>
-                                            <Avatar className="App-header-menu-avatar" icon={<UserOutlined/>} />
+                                            <Avatar className="App-header-menu-avatar" icon={<UserOutlined/>}/>
                                             &nbsp;&nbsp;
                                             {me.username}
                                         </span>
-                                    }
-                                >
-                                    <Menu.Item key="logout" onClick={handleLogout}>
-                                        <span><LogoutOutlined/>{t('Logout')}</span>
-                                    </Menu.Item>
-                                </SubMenu>
-                            </Menu>
+                                    ),
+                                    children: [{
+                                        key: 'logout',
+                                        label: <span><LogoutOutlined/> {t('Logout')}</span>,
+                                        onClick: handleLogout
+                                    }]
+                                }]}
+                            />
                         </Header>
                         <Content className="App-content-wrapper">
                             <div className="App-content">
@@ -77,7 +83,7 @@ function App() {
                             </div>
                         </Content>
                         <Footer className="App-footer">
-                            {`${t('JSC Information Satellite Systems')} ©${new Date().getFullYear()}`}
+                            {`${t('SciSolutions')} ©${new Date().getFullYear()}`}
                         </Footer>
                     </Layout>
                 </Layout>

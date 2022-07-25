@@ -1,5 +1,6 @@
 import axios from 'axios'
-import {throwResponseError} from './index'
+import {apolloClient, throwResponseError} from '.'
+import {gql} from '@apollo/client'
 
 interface UserInfo {
     id: string
@@ -12,6 +13,20 @@ export interface TokenResponse {
     user: UserInfo,
     expirationIntervalMillis: number
 }
+
+export interface MeInfo {
+    username: string,
+    roles: Array<string>
+}
+
+const ME_QUERY = gql`
+    query {
+        me {
+            username
+            roles
+        }
+    }
+`
 
 export const login = (credentials: { username: string, password: string }) => {
     const { username, password } = credentials
@@ -30,3 +45,4 @@ export const logout = () => (
         .catch(e => { throwResponseError(e) })
 )
 
+export const fetchMe = (): Promise<MeInfo> => apolloClient.query({query: ME_QUERY}).then(result => result.data.me)

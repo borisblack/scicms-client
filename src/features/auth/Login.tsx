@@ -4,7 +4,7 @@ import {Col, Layout, message, Row, Spin} from 'antd'
 
 import logo from '../../logo.svg'
 import './Login.css'
-import {fetchMeIfNeeded, login, selectJwt, selectError, selectLoading, selectMe} from './authSlice'
+import {fetchMeIfNeeded, login, selectJwt, selectError, selectLoading, selectMe, selectIsExpired} from './authSlice'
 import LoginForm from './LoginForm'
 import {useTranslation} from 'react-i18next'
 
@@ -13,15 +13,16 @@ const {Header, Content, Footer} = Layout
 function Login() {
     const {t} = useTranslation()
     const dispatch = useDispatch()
-    const apiKey = useSelector(selectJwt)
-    const userInfo = useSelector(selectMe)
+    const jwt = useSelector(selectJwt)
+    const isExpired = useSelector(selectIsExpired)
+    const me = useSelector(selectMe)
     const authError = useSelector(selectError)
     const loading = useSelector(selectLoading)
 
     useEffect(() => {
-        if (apiKey && !userInfo)
+        if (jwt && !isExpired && !me)
             dispatch(fetchMeIfNeeded())
-    }, [apiKey, userInfo, dispatch])
+    }, [jwt, isExpired, me, dispatch])
 
     useEffect(() => {
         if (authError)
