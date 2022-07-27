@@ -78,6 +78,7 @@ export interface Item extends DefaultItemTemplate {
     name: string
     tableName: string | null
     displayName: string | null
+    displayAttrName: string | null
     singularName: string | null
     pluralName: string,
     description: string | null
@@ -132,6 +133,7 @@ export interface Attribute {
     scale?: number
     minRange?: number
     maxRange?: number
+    width?:number
 }
 
 export enum AttrType {

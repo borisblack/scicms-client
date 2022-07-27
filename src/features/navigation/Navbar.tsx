@@ -2,11 +2,10 @@ import _ from 'lodash'
 import React, {useEffect} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Layout, Menu, Spin} from 'antd'
-
+// import {gql} from '@apollo/client'
 import {ItemType} from 'antd/lib/menu/hooks/useItems'
 import './Navbar.css'
 import logo from '../../logo.svg'
-// import {gql} from '@apollo/client'
 import {fetchItems, selectItems, selectLoading} from './navigationSlice'
 import menuConfig, {MenuItem, SubMenu} from '../../config/menu'
 import {MeInfo} from '../../services/auth'
@@ -27,7 +26,7 @@ const Navbar = ({collapsed, me}: Props) => {
     const dispatch = useAppDispatch()
     const loading = useAppSelector(selectLoading)
     const items = useAppSelector(selectItems)
-    // const { loading, error, data } = useQuery(USER_QUERY, {errorPolicy: 'all'})
+    // const { loading, error, data } = useQuery(ME_QUERY, {errorPolicy: 'all'})
 
     useEffect(() => {
         dispatch(fetchItems())

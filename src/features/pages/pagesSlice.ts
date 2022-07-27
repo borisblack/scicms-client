@@ -59,10 +59,10 @@ const slice = createSlice({
             else
                 state.activeKey = undefined
         },
-        updateLabel: (state, action) => {
-            const {type, viewType, id, label} = action.payload
+        updateLabel: (state, action: PayloadAction<{label: string, item: Item, viewType: ViewType, id?: string}>) => {
+            const {label, item, viewType, id} = action.payload
             const {pages} = state
-            const key = generateKey(type, viewType, id)
+            const key = generateKey(item.name, viewType, id)
             if (pages.hasOwnProperty(key))
                 pages[key].label = label
         },

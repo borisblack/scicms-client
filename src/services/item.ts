@@ -17,6 +17,7 @@ const FIND_ALL_BY_NAMES_QUERY = gql`
                 name
                 tableName
                 displayName
+                displayAttrName
                 singularName
                 pluralName
                 description
