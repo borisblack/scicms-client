@@ -1,47 +1,45 @@
 import i18n from '../i18n'
+import {ROLE_ADMIN, ROLE_DESIGNER} from './constants'
 
 interface MenuConfig {
-    categories: Category[]
-    items: Item[]
+    items: (SubMenu | MenuItem)[]
 }
 
-interface Category {
-    name: string
-    displayName: string
-    categories: Set<string | null>
+export interface SubMenu {
+    key: string
+    label: string
+    roles?: string[]
+    children: (SubMenu | MenuItem)[]
 }
 
-interface Item {
-    name: string
-    categories: Set<string | null>
+export interface MenuItem {
+    itemName: string // must much item name at scicms-core
 }
 
 const menuConfig: MenuConfig = {
-    categories: [{
-        name: 'administration',
-        displayName: i18n.t("Administration"),
-        categories: new Set([null])
-    }, {
-        name: 'security',
-        displayName: i18n.t("Security"),
-        categories: new Set(['administration'])
-    }, {
-        name: 'design',
-        displayName: i18n.t("Design"),
-        categories: new Set([null])
-    }],
     items: [{
-        name: 'item',
-        categories: new Set(['administration'])
+        key: 'administration',
+        label: i18n.t("Administration"),
+        roles: [ROLE_ADMIN],
+        children: [{
+            key: 'security',
+            label: i18n.t("Security"),
+            roles: [ROLE_ADMIN],
+            children: [{
+                itemName: 'group'
+            }, {
+                itemName: 'user'
+            }]
+        }, {
+            itemName: 'item'
+        }]
     }, {
-        name: 'group',
-        categories: new Set(['security'])
-    }, {
-        name: 'user',
-        categories: new Set(['security'])
-    }, {
-        name: 'part',
-        categories: new Set(['design'])
+        key: 'design',
+        label: i18n.t("Design"),
+        roles: [ROLE_ADMIN, ROLE_DESIGNER],
+        children: [{
+            itemName: 'part'
+        }]
     }]
 }
 

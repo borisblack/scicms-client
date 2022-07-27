@@ -1,17 +1,18 @@
 import React, {useState} from 'react'
-import {useDispatch, useSelector} from 'react-redux'
 import {I18nextProvider, useTranslation} from 'react-i18next'
 import {Avatar, ConfigProvider, Layout, Menu} from 'antd'
 import {LogoutOutlined, MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined} from '@ant-design/icons'
 // import { useQuery, gql } from '@apollo/client'
-
+import {useAppDispatch, useAppSelector} from './hooks'
 import './App.css'
 import config from './config'
 import i18n from './i18n'
 import {logout, selectIsExpired, selectMe} from './features/auth/authSlice'
 import {reset as resetNavigation} from './features/navigation/navigationSlice'
+import {reset as resetPages} from './features/pages/pagesSlice'
 import Login from './features/auth/Login'
 import Navbar from './features/navigation/Navbar'
+import Pages from './features/pages/Pages'
 
 const {Header, Content, Footer} = Layout
 
@@ -21,9 +22,9 @@ const setNavbarCollapsed = (collapsed: boolean) => localStorage.setItem('navbarC
 
 function App() {
     const {t} = useTranslation()
-    const dispatch = useDispatch()
-    const me = useSelector(selectMe)
-    const isExpired = useSelector(selectIsExpired)
+    const dispatch = useAppDispatch()
+    const me = useAppSelector(selectMe)
+    const isExpired = useAppSelector(selectIsExpired)
     const [collapsed, setCollapsed] = useState(isNavbarCollapsed())
 
     function handleToggle() {
@@ -41,7 +42,7 @@ function App() {
 
     async function handleLogout() {
         await dispatch(logout())
-        // await dispatch(resetPages())
+        await dispatch(resetPages())
         await dispatch(resetNavigation())
         // Metadata.clear()
     }
@@ -50,7 +51,7 @@ function App() {
         <I18nextProvider i18n={i18n}>
             <ConfigProvider locale={config.antdLocale}> {(me && !isExpired) ? (
                 <Layout className="App">
-                    <Navbar collapsed={collapsed}/>
+                    <Navbar collapsed={collapsed} me={me}/>
                     <Layout>
                         <Header className="App-header">
                             {renderToggleIcon()}
@@ -79,7 +80,7 @@ function App() {
                         </Header>
                         <Content className="App-content-wrapper">
                             <div className="App-content">
-                                {/*<Pages />*/}
+                                <Pages/>
                             </div>
                         </Content>
                         <Footer className="App-footer">

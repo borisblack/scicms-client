@@ -1,0 +1,20 @@
+.toolbar {
+    margin-bottom: 12px;
+}
+
+.pagination {
+    margin-top: 12px;
+    text-align: right;
+}
+
+.antTableContent {
+    /*border: 1px solid #cccccc;*/
+    border-radius: 0;
+    overflow: auto hidden;
+}
+
+.header {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

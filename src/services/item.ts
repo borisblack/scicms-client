@@ -1,35 +1,47 @@
 import {gql} from '@apollo/client'
 
 import {apolloClient} from '.'
+import {Item} from '../types'
 
-export interface Item {
-    id: string
-    name: string
-    displayName: string
-    pluralName: string,
-    description: string
-}
-
-export const findAllByNames = (names: string[]): Promise<Item[]> => {
-    const query = gql`
-        query {
-            items(
-                filters: {
-                    name: {
-                        in: [${names.map(name => `"${name}"`).join(', ')}]
-                    }
-                }
-            ) {
-                data {
-                    id
-                    name
-                    displayName
-                    pluralName
-                    description
+const FIND_ALL_BY_NAMES_QUERY = gql`
+    query findAllByNames($names: [String]) {
+        items(
+            filters: {
+                name: {
+                    in: $names
                 }
             }
+        ) {
+            data {
+                id
+                name
+                tableName
+                displayName
+                singularName
+                pluralName
+                description
+                dataSource
+                icon
+                core
+                performDdl
+                versioned
+                manualVersioning
+                notLockable
+                localized
+                implementation
+                spec
+                checksum
+                majorRev
+                minorRev
+                locale
+                state
+                createdAt
+                updatedAt
+            }
         }
-    `
+    }
+`
 
-    return apolloClient.query({query}).then(result => result.data.items.data)
-}
+export const findAllByNames = (names: string[]): Promise<Item[]> =>
+    apolloClient.query({query: FIND_ALL_BY_NAMES_QUERY, variables: {names}})
+        .then(result => result.data.items.data)

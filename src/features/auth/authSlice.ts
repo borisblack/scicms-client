@@ -3,6 +3,7 @@ import {getExpireAt, getJwt, removeExpireAt, removeJwt, storeExpireAt, storeJwt}
 import {DateTime} from 'luxon'
 import * as AuthService from '../../services/auth'
 import {MeInfo, TokenResponse} from '../../services/auth'
+import {RootState} from '../../store'
 
 export interface AuthState {
     loading: boolean
@@ -118,14 +119,14 @@ const authSlice = createSlice({
 
 export {login, fetchMeIfNeeded, logout}
 
-export const selectLoading = (state: {auth: AuthState}) => state.auth.loading
+export const selectLoading = (state: RootState) => state.auth.loading
 
-export const selectJwt = (state: {auth: AuthState}) => state.auth.jwt
+export const selectJwt = (state: RootState) => state.auth.jwt
 
-export const selectIsExpired = (state: {auth: AuthState}) => !!state.auth.expireAt && state.auth.expireAt < DateTime.now().toMillis()
+export const selectIsExpired = (state: RootState) => !!state.auth.expireAt && state.auth.expireAt < DateTime.now().toMillis()
 
-export const selectMe = (state: {auth: AuthState}) => state.auth.me
+export const selectMe = (state: RootState) => state.auth.me
 
-export const selectError = (state: {auth: AuthState}) => state.auth.error
+export const selectError = (state: RootState) => state.auth.error
 
 export default authSlice.reducer

@@ -1,62 +1,60 @@
+import _ from 'lodash'
 import React, {useEffect} from 'react'
-import {useDispatch, useSelector} from 'react-redux'
 import {useTranslation} from 'react-i18next'
 import {Layout, Menu, Spin} from 'antd'
+
 import {ItemType} from 'antd/lib/menu/hooks/useItems'
 import './Navbar.css'
 import logo from '../../logo.svg'
 // import {gql} from '@apollo/client'
 import {fetchItems, selectItems, selectLoading} from './navigationSlice'
-import menuConfig from '../../config/menu'
-// import {openPage} from '../pages/pagesSlice'
+import menuConfig, {MenuItem, SubMenu} from '../../config/menu'
+import {MeInfo} from '../../services/auth'
+import {useAppDispatch, useAppSelector} from '../../hooks'
+import {Item} from '../../types'
+import {openPage, ViewType} from '../pages/pagesSlice'
+import {capitalizeFirstLetter} from '../../util'
 
 type Props = {
     collapsed: boolean,
+    me: MeInfo
 }
 
 const {Sider} = Layout
 
-const Navbar = ({collapsed}: Props) => {
+const Navbar = ({collapsed, me}: Props) => {
     const {t} = useTranslation()
-    const dispatch = useDispatch()
-    const loading = useSelector(selectLoading)
-    const items = useSelector(selectItems)
+    const dispatch = useAppDispatch()
+    const loading = useAppSelector(selectLoading)
+    const items = useAppSelector(selectItems)
     // const { loading, error, data } = useQuery(USER_QUERY, {errorPolicy: 'all'})
 
     useEffect(() => {
         dispatch(fetchItems())
     }, [items, dispatch])
 
-    const handleItemClick = (id: string, name: string, pluralName: string) => {
-        console.log(`Item ${name} clicked`)
-        // dispatch(openPage({type, viewType: 'default', label}))
+    const handleItemClick = (item: Item) => {
+        // console.log(`Item [${item.name}] clicked`)
+        dispatch(openPage({label: capitalizeFirstLetter(item.pluralName), item, viewType: ViewType.default}))
     }
 
-    const getCategoriesAndItems = (parent: string | null): ItemType[] => {
-        const categoriesAndItems: ItemType[] = menuConfig.categories
-            .filter(cat => cat.categories.has(parent))
-            .map(cat => ({
-                key: cat.name,
-                label: cat.displayName,
-                children: getCategoriesAndItems(cat.name)
-            }))
-
-        categoriesAndItems.push(...getItemsOnly(parent))
-
-        return categoriesAndItems
-    }
-
-    const getItemsOnly = (parent: string | null): ItemType[] => menuConfig.items
-        .filter(it => it.categories.has(parent))
+    const toAntdMenuItems = (menuItems: (SubMenu | MenuItem)[]): ItemType[] => menuItems
+        .filter(it => !('roles' in it) || _.intersection(it.roles, me.roles).length > 0)
+        .filter(it => !('itemName' in it) || findItemByName(it.itemName))
         .map(it => {
-            const item = findItemByName(it.name)
-            if (!item)
-                throw new Error('Item not found')
-
-            return {
-                key: item.id,
-                label: item.description,
-                onClick: () => handleItemClick(item.id, item.name, item.description)
+            if ('children' in it) {
+                return {
+                    key: it.key,
+                    label: it.label,
+                    children: toAntdMenuItems(it.children)
+                }
+            } else {
+                const item = findItemByName(it.itemName) as Item
+                return {
+                    key: item.id,
+                    label: capitalizeFirstLetter(item.pluralName),
+                    onClick: () => handleItemClick(item)
+                }
             }
         })
 
@@ -72,7 +70,7 @@ const Navbar = ({collapsed}: Props) => {
                 <Menu
                     mode="inline"
                     theme="dark"
-                    items={items.length === 0 ? [] : getCategoriesAndItems(null)}
+                    items={toAntdMenuItems(menuConfig.items)}
                 />
             </Spin>
         </Sider>

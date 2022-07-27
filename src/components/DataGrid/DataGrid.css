@@ -1,0 +1,27 @@
+.ant-table-thead .ant-input,
+.ant-table-thead .ant-input:hover,
+.ant-table-thead .ant-input:focus {
+    border: 1px solid #cccccc;
+    border-right: 0 none;
+    border-radius: 0;
+}
+
+.ant-table-thead tr th:first-child .ant-input,
+.ant-table-thead tr th:first-child .ant-input:hover,
+.ant-table-thead tr th:first-child .ant-input:focus {
+    border-left: 0 none;
+}
+
+.ant-table-thead .ant-input,
+.ant-table-thead .ant-input:hover {
+    background: #dde7f5;
+}
+
+.ant-table-thead .ant-input:focus {
+    background: #ffffff;
+    box-shadow: none;
+}
+
+.data-grid tr:hover {
+    background: #fefbd7;
+}

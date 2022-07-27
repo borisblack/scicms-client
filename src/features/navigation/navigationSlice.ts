@@ -1,7 +1,9 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
 
-import {Item, findAllByNames as findItemsByNames} from '../../services/item'
-import menuConfig from '../../config/menu'
+import {findAllByNames as findItemsByNames} from '../../services/item'
+import menuConfig, {MenuItem, SubMenu} from '../../config/menu'
+import {RootState} from '../../store'
+import {Item} from '../../types'
 
 interface NavigationState {
     loading: boolean,
@@ -15,31 +17,44 @@ const initialState: NavigationState = {
 
 const fetchItems = createAsyncThunk(
     'navigation/fetchItems',
-    () => findItemsByNames(menuConfig.items.map(it => it.name))
+    () => findItemsByNames(extractItemNames(menuConfig.items))
 )
+
+const extractItemNames = (menuItems: (SubMenu | MenuItem)[]): string[] => {
+    const itemNames: string[] = []
+    menuItems.forEach(it => {
+        if ('children' in it)
+            itemNames.push(...extractItemNames(it.children))
+        else
+            itemNames.push(it.itemName)
+    })
+
+    return itemNames
+}
 
 const slice = createSlice({
     name: 'navigation',
     initialState,
     reducers: {
-        reset: state => {
+        reset(state) {
             const {loading, items} = initialState
             state.loading = loading
             state.items = items
         }
     },
-    extraReducers: {
-        [fetchItems.pending as any]: state => {
-            state.loading = true
-        },
-        [fetchItems.fulfilled as any]: (state, action) => {
-            state.items = action.payload
-            state.loading = false
-        },
-        [fetchItems.rejected as any]: (state, action) => {
-            state.loading = false
-            throw new Error(action.error.message)
-        }
+    extraReducers: builder => {
+        builder
+            .addCase(fetchItems.pending, state => {
+                state.loading = true
+            })
+            .addCase(fetchItems.fulfilled, (state, action) => {
+                state.items = action.payload
+                state.loading = false
+            })
+            .addCase(fetchItems.rejected, (state, action) => {
+                state.loading = false
+                throw new Error(action.error.message)
+            })
     }
 })
 
@@ -47,8 +62,8 @@ export {fetchItems}
 
 export const {reset} = slice.actions
 
-export const selectLoading = (state: {navigation: NavigationState}) => state.navigation.loading
+export const selectLoading = (state: RootState) => state.navigation.loading
 
-export const selectItems = (state: {navigation: NavigationState}) => state.navigation.items
+export const selectItems = (state: RootState) => state.navigation.items
 
 export default slice.reducer

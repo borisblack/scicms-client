@@ -1,23 +1,23 @@
 import React, {useEffect} from 'react'
-import {useDispatch, useSelector} from 'react-redux'
 import {Col, Layout, message, Row, Spin} from 'antd'
 
 import logo from '../../logo.svg'
 import './Login.css'
-import {fetchMeIfNeeded, login, selectJwt, selectError, selectLoading, selectMe, selectIsExpired} from './authSlice'
+import {fetchMeIfNeeded, login, selectError, selectIsExpired, selectJwt, selectLoading, selectMe} from './authSlice'
 import LoginForm from './LoginForm'
 import {useTranslation} from 'react-i18next'
+import {useAppDispatch, useAppSelector} from '../../hooks'
 
 const {Header, Content, Footer} = Layout
 
 function Login() {
     const {t} = useTranslation()
-    const dispatch = useDispatch()
-    const jwt = useSelector(selectJwt)
-    const isExpired = useSelector(selectIsExpired)
-    const me = useSelector(selectMe)
-    const authError = useSelector(selectError)
-    const loading = useSelector(selectLoading)
+    const dispatch = useAppDispatch()
+    const jwt = useAppSelector(selectJwt)
+    const isExpired = useAppSelector(selectIsExpired)
+    const me = useAppSelector(selectMe)
+    const authError = useAppSelector(selectError)
+    const loading = useAppSelector(selectLoading)
 
     useEffect(() => {
         if (jwt && !isExpired && !me)

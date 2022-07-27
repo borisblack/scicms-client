@@ -24,8 +24,12 @@ axios.defaults.headers.common['X-Requested-Width'] = 'XMLHttpRequest'
 axios.defaults.baseURL = config.backendUrl
 axios.interceptors.request.use((config: AxiosRequestConfig) => {
     const jwt = getJwt()
-    if (jwt)
+    if (jwt) {
+        if (!config.headers)
+            config.headers = {}
+
         config.headers['Authorization'] = `Bearer ${jwt}`
+    }
     return config
 })
 
