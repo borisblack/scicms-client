@@ -72,11 +72,7 @@ const slice = createSlice({
             if (pages.hasOwnProperty(key))
                 state.activeKey = action.payload
         },
-        reset: state => {
-            const {pages, activeKey} = initialState
-            state.pages = pages
-            state.activeKey = activeKey
-        }
+        reset: () => initialState
     },
     extraReducers: {}
 })

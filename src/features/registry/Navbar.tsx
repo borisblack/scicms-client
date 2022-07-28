@@ -2,21 +2,21 @@ import _ from 'lodash'
 import React, {useEffect} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Layout, Menu, Spin} from 'antd'
-// import {gql} from '@apollo/client'
+// import {gql, useQuery} from '@apollo/client'
 import {ItemType} from 'antd/lib/menu/hooks/useItems'
 import './Navbar.css'
 import logo from '../../logo.svg'
-import {fetchItems, selectItems, selectLoading} from './navigationSlice'
 import menuConfig, {MenuItem, SubMenu} from '../../config/menu'
-import {MeInfo} from '../../services/auth'
+import {UserInfo} from '../../services/auth'
 import {useAppDispatch, useAppSelector} from '../../hooks'
 import {Item} from '../../types'
+import {fetchItems, selectItems, selectLoading} from './registrySlice'
 import {openPage, ViewType} from '../pages/pagesSlice'
 import {capitalizeFirstLetter} from '../../util'
 
 type Props = {
     collapsed: boolean,
-    me: MeInfo
+    me: UserInfo
 }
 
 const {Sider} = Layout
@@ -39,7 +39,7 @@ const Navbar = ({collapsed, me}: Props) => {
 
     const toAntdMenuItems = (menuItems: (SubMenu | MenuItem)[]): ItemType[] => menuItems
         .filter(it => !('roles' in it) || _.intersection(it.roles, me.roles).length > 0)
-        .filter(it => !('itemName' in it) || findItemByName(it.itemName))
+        .filter(it => !('itemName' in it) || items[it.itemName])
         .map(it => {
             if ('children' in it) {
                 return {
@@ -48,7 +48,7 @@ const Navbar = ({collapsed, me}: Props) => {
                     children: toAntdMenuItems(it.children)
                 }
             } else {
-                const item = findItemByName(it.itemName) as Item
+                const item = items[it.itemName]
                 return {
                     key: item.id,
                     label: capitalizeFirstLetter(item.pluralName),
@@ -56,8 +56,6 @@ const Navbar = ({collapsed, me}: Props) => {
                 }
             }
         })
-
-    const findItemByName = (name: string) => items.find(it => it.name === name)
 
     return (
         <Sider className="Navbar" trigger={null} collapsible collapsed={collapsed} width={250}>

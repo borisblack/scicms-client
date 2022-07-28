@@ -11,8 +11,8 @@ export const storeExpireAt = (expiredAt: number) => { localStorage.setItem('expi
 export const getJwt = (): string | null => localStorage.getItem('jwt')
 
 export const getExpireAt = (): number | null => {
-    const iso = localStorage.getItem('expireAt')
-    return iso ? Number(iso) : null
+    const expireAt = localStorage.getItem('expireAt')
+    return expireAt ? Number(expireAt) : null
 }
 
 export const removeJwt = () => { localStorage.removeItem('jwt') }
@@ -33,7 +33,7 @@ axios.interceptors.request.use((config: AxiosRequestConfig) => {
     return config
 })
 
-export const throwResponseError = (e: AxiosError) => {
+export const throwAxiosResponseError = (e: AxiosError) => {
     let msg: string
     const res = e.response
     if (res) {

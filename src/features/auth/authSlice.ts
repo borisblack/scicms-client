@@ -1,17 +1,19 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
 import {getExpireAt, getJwt, removeExpireAt, removeJwt, storeExpireAt, storeJwt} from '../../services'
 import {DateTime} from 'luxon'
-import * as AuthService from '../../services/auth'
-import {MeInfo, TokenResponse} from '../../services/auth'
+import AuthService from '../../services/auth'
+import {UserInfo, JwtTokenResponse} from '../../services/auth'
 import {RootState} from '../../store'
 
 export interface AuthState {
     loading: boolean
     jwt: string | null
     expireAt: number | null
-    me: MeInfo | null
+    me: UserInfo | null
     error: Error | null
 }
+
+const authService = new AuthService()
 
 const initialState: AuthState = {
     loading: false,
@@ -25,13 +27,13 @@ const login = createAsyncThunk(
     'auth/login',
     (credentials: {username: string, password: string}) => {
         removeJwt()
-        return AuthService.login(credentials).then(tokenResponse => tokenResponse)
+        return authService.login(credentials).then(tokenResponse => tokenResponse)
     }
 )
 
 const fetchMeIfNeeded = createAsyncThunk(
     'auth/fetchMeIfNeeded',
-    () => AuthService.fetchMe().then(me => me),
+    () => authService.fetchMe().then(me => me),
     {
         condition: (credentials, {getState}) => shouldFetchMe(getState() as {auth: AuthState})
     }
@@ -44,7 +46,7 @@ const shouldFetchMe = (state: {auth: AuthState}) => {
 
 const logout = createAsyncThunk(
     'auth/logout',
-    () => AuthService.logout()
+    () => authService.logout()
 )
 
 const authSlice = createSlice({
@@ -56,7 +58,7 @@ const authSlice = createSlice({
             state.loading = true
             state.error = null
         },
-        [login.fulfilled as any]: (state: AuthState, action: {payload: TokenResponse}) => {
+        [login.fulfilled as any]: (state: AuthState, action: {payload: JwtTokenResponse}) => {
             const {jwt, expirationIntervalMillis, user} = action.payload
             const expireAt = DateTime.now().plus({millisecond: expirationIntervalMillis}).toMillis()
             storeJwt(jwt)
@@ -78,7 +80,7 @@ const authSlice = createSlice({
             state.loading = true
             state.error = null
         },
-        [fetchMeIfNeeded.fulfilled as any]: (state: AuthState, action: {payload: MeInfo}) => {
+        [fetchMeIfNeeded.fulfilled as any]: (state: AuthState, action: {payload: UserInfo}) => {
             const me = action.payload
             state.me = {
                 username: me.username,

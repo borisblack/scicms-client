@@ -49,7 +49,6 @@ function Login() {
                     <Row justify="center" align="middle">
                         <Col span={6}>
                             <LoginForm onLogin={handleLogin} />
-                            {/*<MultipartScriptUpload/>*/}
                             {/*<UploadFile/>*/}
                             {/*<UploadFiles/>*/}
                         </Col>

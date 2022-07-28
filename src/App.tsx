@@ -2,16 +2,16 @@ import React, {useState} from 'react'
 import {I18nextProvider, useTranslation} from 'react-i18next'
 import {Avatar, ConfigProvider, Layout, Menu} from 'antd'
 import {LogoutOutlined, MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined} from '@ant-design/icons'
-// import { useQuery, gql } from '@apollo/client'
+
 import {useAppDispatch, useAppSelector} from './hooks'
 import './App.css'
 import config from './config'
 import i18n from './i18n'
 import {logout, selectIsExpired, selectMe} from './features/auth/authSlice'
-import {reset as resetNavigation} from './features/navigation/navigationSlice'
+import {reset as resetRegistry} from './features/registry/registrySlice'
 import {reset as resetPages} from './features/pages/pagesSlice'
 import Login from './features/auth/Login'
-import Navbar from './features/navigation/Navbar'
+import Navbar from './features/registry/Navbar'
 import Pages from './features/pages/Pages'
 
 const {Header, Content, Footer} = Layout
@@ -43,8 +43,7 @@ function App() {
     async function handleLogout() {
         await dispatch(logout())
         await dispatch(resetPages())
-        await dispatch(resetNavigation())
-        // Metadata.clear()
+        await dispatch(resetRegistry())
     }
 
     return (
