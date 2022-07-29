@@ -10,7 +10,7 @@ import menuConfig, {MenuItem, SubMenu} from '../../config/menu'
 import {UserInfo} from '../../services/auth'
 import {useAppDispatch, useAppSelector} from '../../hooks'
 import {Item} from '../../types'
-import {fetchItems, selectItems, selectLoading} from './registrySlice'
+import {fetchItemsIfNeeded, ItemCache, selectItems, selectLoading} from './registrySlice'
 import {openPage, ViewType} from '../pages/pagesSlice'
 import {capitalizeFirstLetter} from '../../util'
 
@@ -29,7 +29,7 @@ const Navbar = ({collapsed, me}: Props) => {
     // const { loading, error, data } = useQuery(ME_QUERY, {errorPolicy: 'all'})
 
     useEffect(() => {
-        dispatch(fetchItems())
+        dispatch(fetchItemsIfNeeded())
     }, [items, dispatch])
 
     const handleItemClick = (item: Item) => {
@@ -39,7 +39,7 @@ const Navbar = ({collapsed, me}: Props) => {
 
     const toAntdMenuItems = (menuItems: (SubMenu | MenuItem)[]): ItemType[] => menuItems
         .filter(it => !('roles' in it) || _.intersection(it.roles, me.roles).length > 0)
-        .filter(it => !('itemName' in it) || items[it.itemName])
+        .filter(it => !('itemName' in it) || (items !== null && items[it.itemName]))
         .map(it => {
             if ('children' in it) {
                 return {
@@ -48,7 +48,7 @@ const Navbar = ({collapsed, me}: Props) => {
                     children: toAntdMenuItems(it.children)
                 }
             } else {
-                const item = items[it.itemName]
+                const item = (items as ItemCache)[it.itemName]
                 return {
                     key: item.id,
                     label: capitalizeFirstLetter(item.pluralName),

@@ -63,8 +63,18 @@ const authMiddleware = new ApolloLink((operation, forward) => {
 })
 
 export const apolloClient = new ApolloClient({
+    link: from([authMiddleware/*, httpLink*/, uploadLink]),
     cache: new InMemoryCache({
         addTypename: false
     }),
-    link: from([authMiddleware/*, httpLink*/, uploadLink]),
+    defaultOptions: {
+        query: {
+            fetchPolicy: 'no-cache',
+            errorPolicy: 'all'
+        },
+        watchQuery: {
+            fetchPolicy: 'no-cache',
+            errorPolicy: 'all'
+        }
+    }
 })

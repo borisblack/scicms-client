@@ -3,22 +3,34 @@ import ItemService from '../../services/item'
 import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit'
 import {RootState} from '../../store'
 
+export interface ItemCache {
+    [name: string]: Item
+}
+
 interface RegistryState {
     loading: boolean
-    items: {[name: string]: Item}
+    items: ItemCache | null
 }
 
 const itemService = new ItemService()
 
 const initialState: RegistryState = {
     loading: false,
-    items: {}
+    items: null
 }
 
-const fetchItems = createAsyncThunk(
-    'registry/fetchItems',
-    () => itemService.findAll()
+const fetchItemsIfNeeded = createAsyncThunk(
+    'auth/fetchItemsIfNeeded',
+    () => itemService.findAll(),
+    {
+        condition: (credentials, {getState}) => shouldFetchItems(getState() as {registry: RegistryState})
+    }
 )
+
+const shouldFetchItems = (state: {registry: RegistryState}) => {
+    const {loading, items} = state.registry
+    return items === null && !loading
+}
 
 const registrySlice = createSlice({
     name: 'registry',
@@ -28,23 +40,25 @@ const registrySlice = createSlice({
     },
     extraReducers: builder => {
         builder
-            .addCase(fetchItems.pending, state => {
+            .addCase(fetchItemsIfNeeded.pending, state => {
                 state.loading = true
             })
-            .addCase(fetchItems.fulfilled, (state: RegistryState, action: PayloadAction<Item[]>) => {
+            .addCase(fetchItemsIfNeeded.fulfilled, (state: RegistryState, action: PayloadAction<Item[]>) => {
+                const items: ItemCache = {}
                 action.payload.forEach(it => {
-                    state.items[it.name] = it
+                    items[it.name] = it
                 })
+                state.items = items
                 state.loading = false
             })
-            .addCase(fetchItems.rejected, (state, action) => {
+            .addCase(fetchItemsIfNeeded.rejected, (state, action) => {
                 state.loading = false
                 throw new Error(action.error.message)
             })
     }
 })
 
-export {fetchItems}
+export {fetchItemsIfNeeded}
 
 export const {reset} = registrySlice.actions
 

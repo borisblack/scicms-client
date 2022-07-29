@@ -1,8 +1,11 @@
 import React, {ReactElement} from 'react'
 import {flexRender, getCoreRowModel, useReactTable} from '@tanstack/react-table'
 import {Dropdown, Spin} from 'antd'
+import {CaretDownFilled, CaretUpFilled} from '@ant-design/icons'
+
 import styles from './DataGrid.module.css'
 import './DataGrid.css'
+import ColumnFilter from './filters/ColumnFilter'
 
 interface Props {
     loading: boolean
@@ -49,38 +52,32 @@ function DataGrid({loading, columns, data, pageSize: controlledPageSize, total, 
                 <div className="ant-table ant-table-small">
                     <div className="ant-table-container">
                         <div className={`ant-table-content ${styles.antTableContent}`}>
-                            <table>
+                            <table style={{tableLayout: 'auto'}}>
                                 <thead className="ant-table-thead">
                                 {table.getHeaderGroups().map(headerGroup => (
                                     <tr key={headerGroup.id}>
                                         {headerGroup.headers.map(header => (
                                             <th
                                                 key={header.id}
-                                                className="ant-table-cell ant-table-column-sort ant-table-column-has-sorters"
+                                                className="ant-table-cell ant-table-column-has-sorters"
                                             >
-                                                <div className="ant-table-filter-column">
-                                                    <span className="ant-table-filter-column-title">
-                                                        <div className="ant-table-column-sorters-with-tooltip">
-                                                            <div className="ant-table-column-sorters">
-                                                                <span className={styles.header}>
-                                                                    {header.isPlaceholder ? null : flexRender(
-                                                                        header.column.columnDef.header,
-                                                                        header.getContext()
-                                                                    )}
-                                                                </span>
-                                                                {/*<span className="ant-table-column-sorter ant-table-column-sorter-full">*/}
-                                                                {/*    <span className="ant-table-column-sorter-inner">*/}
-                                                                {/*        <CaretUpFilled className={`ant-table-column-sorter-up ${header.isSortedDesc === false ? 'active' : ''}`}/>*/}
-                                                                {/*        <CaretDownFilled className={`ant-table-column-sorter-down ${header.isSortedDesc === true ? 'active' : ''}`}/>*/}
-                                                                {/*    </span>*/}
-                                                                {/*</span>*/}
-                                                            </div>
-                                                        </div>
+                                                <div className="ant-table-column-sorters">
+                                                    <span
+                                                        className={`ant-table-column-title ${styles.antTableColumnTitle}`}
+                                                        style={{maxWidth: header.getSize()}}
+                                                    >
+                                                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                                                    </span>
+                                                    <span className="ant-table-column-sorter ant-table-column-sorter-full">
+                                                        <span className="ant-table-column-sorter-inner">
+                                                            <CaretUpFilled className={`ant-table-column-sorter-up ${header.column.getIsSorted() === 'asc' ? 'active' : ''}`}/>
+                                                            <CaretDownFilled className={`ant-table-column-sorter-down ${header.column.getIsSorted() === 'desc' ? 'active' : ''}`}/>
+                                                        </span>
                                                     </span>
                                                 </div>
-                                                {/*<div>*/}
-                                                {/*    {header.canFilter ? header.render('Filter') : null}*/}
-                                                {/*</div>*/}
+                                                <div style={{marginLeft: -8, marginRight: -8}}>
+                                                    {header.column.getCanFilter() ? <ColumnFilter column={header.column}/> : null}
+                                                </div>
                                             </th>
                                         ))}
                                     </tr>
@@ -88,9 +85,7 @@ function DataGrid({loading, columns, data, pageSize: controlledPageSize, total, 
                                 </thead>
 
                                 <tbody className="ant-table-tbody data-grid">
-                                {table.getRowModel().rows.map(row => {
-                                    // prepareRow(row)
-                                    return (
+                                {table.getRowModel().rows.map(row => (
                                         <Dropdown overlay={getRowContextMenu(row)} trigger={['contextMenu']}>
                                             <tr
                                                 // className="ant-table-row ant-table-row-level-0"
@@ -104,7 +99,7 @@ function DataGrid({loading, columns, data, pageSize: controlledPageSize, total, 
                                             </tr>
                                         </Dropdown>
                                     )
-                                })}
+                                )}
                                 </tbody>
                             </table>
                         </div>

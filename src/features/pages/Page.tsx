@@ -4,9 +4,10 @@ import {useTranslation} from 'react-i18next'
 import {useAppDispatch} from '../../hooks'
 import {IPage, updateLabel, ViewType} from './pagesSlice'
 import {PageHeader} from 'antd'
-import DataGrid from '../../components/DataGrid'
+// import DataGrid from '../../components/DataGrid'
 import {capitalizeFirstLetter} from '../../util'
 import ItemContent from './ItemContent'
+import DataTable from './table/DataTable'
 
 interface Props {
     page: IPage
@@ -26,7 +27,7 @@ function Page({page}: Props) {
     return (
         <div className="page-content">
                 <PageHeader title={page.label} subTitle={''}/>
-                {viewType === ViewType.default ? <DataGrid item={item}/> : <ItemContent item={item} viewType={viewType} id={id}/>}
+                {viewType === ViewType.default ? <DataTable item={item}/> : <ItemContent item={item} viewType={viewType} id={id}/>}
         </div>
     )
 }

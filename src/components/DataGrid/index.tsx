@@ -1,11 +1,16 @@
 import React, {useMemo, useState} from 'react'
-import {createColumnHelper} from '@tanstack/react-table'
+import {ColumnMeta, createColumnHelper, RowData} from '@tanstack/react-table'
 import {Checkbox, Menu} from 'antd'
 
 import {useAppDispatch} from '../../hooks'
 import DataGrid, {FetchParams} from './DataGrid'
 import {DateTime} from 'luxon'
-import {DATE_FORMAT_STRING, DATETIME_FORMAT_STRING, TIME_FORMAT_STRING} from '../../config/constants'
+import {
+    DATE_FORMAT_STRING,
+    DATETIME_FORMAT_STRING,
+    DEFAULT_COLUMN_WIDTH,
+    TIME_FORMAT_STRING
+} from '../../config/constants'
 import {Attribute, AttrType, Item} from '../../types'
 
 interface Props {
@@ -17,6 +22,12 @@ interface FetchResult {
     page: number
     pageSize: number
     total: number
+}
+
+declare module '@tanstack/table-core' {
+    interface ColumnMeta<TData extends RowData, TValue> {
+        type: AttrType
+    }
 }
 
 const columnHelper = createColumnHelper<any>()
@@ -37,7 +48,11 @@ function DataGridWrapper({item}: Props) {
             const attribute = item.spec.attributes[attrName]
             const column = columnHelper.accessor(attrName, {
                 header: attribute.displayName,
-                cell: info => renderCell(attribute, info.getValue())
+                cell: info => renderCell(attribute, info.getValue()),
+                size: attribute.width ?? DEFAULT_COLUMN_WIDTH,
+                meta: {
+                    type: attribute.type
+                }
             })
 
             columns.push(column)

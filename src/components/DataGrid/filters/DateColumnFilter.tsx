@@ -1,14 +1,15 @@
 import React from 'react'
 import {Input, message} from 'antd'
 import {DateTime} from 'luxon'
-import {DATE_FORMAT_STRING, DATETIME_FORMAT_STRING} from '../../config/constants'
+import {DATE_FORMAT_STRING, DATETIME_FORMAT_STRING} from '../../../config/constants'
+import {Column} from '@tanstack/react-table'
 
 interface Props {
-    column: any
+    column: Column<any, unknown>
 }
 
-function DateColumnFilter({column}: Props) {
-    const {Header, filterValue, setFilter} = column
+export default function DateColumnFilter({column}: Props) {
+    const columnFilterValue = column.getFilterValue() as any
 
     function handleClick(evt: any) {
         evt.stopPropagation()
@@ -18,7 +19,7 @@ function DateColumnFilter({column}: Props) {
         if (evt.keyCode === 13) {
             const {value} = evt.currentTarget
             if (!value) {
-                setFilter(undefined)
+                column.setFilterValue(undefined)
             } else {
                 let dt = DateTime.fromFormat(value, DATETIME_FORMAT_STRING) as any
 
@@ -26,27 +27,25 @@ function DateColumnFilter({column}: Props) {
                     dt = DateTime.fromFormat(value, DATE_FORMAT_STRING) as any
 
                 if (dt.invalid === null)
-                    setFilter(dt.toSQL({includeOffset: false}))
+                    column.setFilterValue(dt.toSQL({includeOffset: false}))
                 else
-                    message.warn('Необходимо ввести дату в формате DD.MM.YYYY HH:MM')
+                    message.warn('Date must be in format DD.MM.YYYY HH:MM')
             }
         }
     }
 
     function handleChange(evt: any) {
-        setFilter(evt.target.value || undefined) // set undefined to remove the filter entirely
+        column.setFilterValue(evt.target.value || undefined) // set undefined to remove the filter entirely
     }
 
     return (
         <Input
             disabled
-            // value={filterValue || ''}
-            // placeholder={Header}
+            size="small"
+            value={columnFilterValue || ''}
             onClick={handleClick}
             onKeyUp={handleKeyUp}
-            // onChange={handleChange}
+            onChange={handleChange}
         />
     )
 }
-
-export default DateColumnFilter
