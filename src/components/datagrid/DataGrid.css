@@ -1,3 +1,11 @@
+.ant-table-thead>tr>th:not(:last-child):not(.ant-table-selection-column):not(.ant-table-row-expand-icon-cell):not([colspan]):before {
+    height: 0;
+}
+
+.ant-table.ant-table-small .ant-table-thead > tr > th {
+    padding-bottom: 0;
+}
+
 .ant-table-thead .ant-input,
 .ant-table-thead .ant-input:hover,
 .ant-table-thead .ant-input:focus {

@@ -6,7 +6,7 @@ import './Login.css'
 import {fetchMeIfNeeded, login, selectError, selectIsExpired, selectJwt, selectLoading, selectMe} from './authSlice'
 import LoginForm from './LoginForm'
 import {useTranslation} from 'react-i18next'
-import {useAppDispatch, useAppSelector} from '../../hooks'
+import {useAppDispatch, useAppSelector} from '../../util/hooks'
 
 const {Header, Content, Footer} = Layout
 

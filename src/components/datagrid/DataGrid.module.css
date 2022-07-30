@@ -18,3 +18,9 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+.columnFilter {
+    margin-top: 2px;
+    margin-left: -8px;
+    margin-right: -8px;
+}

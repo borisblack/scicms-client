@@ -1,52 +1,78 @@
 import React, {ReactElement} from 'react'
-import {flexRender, getCoreRowModel, useReactTable} from '@tanstack/react-table'
+import {
+    ColumnFiltersState,
+    flexRender,
+    getCoreRowModel,
+    getSortedRowModel,
+    SortingState,
+    useReactTable
+} from '@tanstack/react-table'
 import {Dropdown, Spin} from 'antd'
 import {CaretDownFilled, CaretUpFilled} from '@ant-design/icons'
 
 import styles from './DataGrid.module.css'
 import './DataGrid.css'
-import ColumnFilter from './filters/ColumnFilter'
+import ColumnFilter from './ColumnFilter'
+import Toolbar from './Toolbar'
 
 interface Props {
     loading: boolean
     columns: any[]
     data: any[]
-    pageSize: number
-    total: number
-    initialState: any
+    initialState: {
+        hiddenColumns: string[]
+    }
     getRowContextMenu: (row: any) => ReactElement
-    onFetchData: (params: FetchParams) => void
+    onRequest: (params: RequestParams) => void
     onRowDoubleClick: (row: any) => void
 }
 
-export interface FetchParams {
-    page: number
-    pageSize: number
-    sortBy: {id: string, desc: boolean}[]
-    filters: {id: string, value: string}[]
+interface ColumnVisibility {
+    [name: string]: boolean
 }
 
-function DataGrid({loading, columns, data, pageSize: controlledPageSize, total, initialState, onFetchData, getRowContextMenu, onRowDoubleClick}: Props) {
-    // const defaultColumn = React.useMemo(() => ({
-    //     width: 120
-    // }), [])
+export interface RequestParams {
+    sorting: SortingState
+    filters: ColumnFiltersState
+}
+
+function DataGrid({loading, columns, data, initialState, getRowContextMenu, onRequest, onRowDoubleClick}: Props) {
+    const [columnVisibility, setColumnVisibility] = React.useState<ColumnVisibility>(getInitialColumnVisibility())
+    const [sorting, setSorting] = React.useState<SortingState>([])
+    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
+
+    function getInitialColumnVisibility(): ColumnVisibility {
+        const initialColumnVisibility: ColumnVisibility = {}
+        initialState.hiddenColumns.forEach(it => {
+            initialColumnVisibility[it] = false
+        })
+
+        return initialColumnVisibility
+    }
 
     const table = useReactTable({
-            columns,
-            data,
-            getCoreRowModel: getCoreRowModel()
-        }
-    )
+        columns,
+        data,
+        state: {
+            columnVisibility,
+            sorting,
+            columnFilters
+        },
+        getCoreRowModel: getCoreRowModel(),
+        getSortedRowModel: getSortedRowModel(),
+        sortDescFirst: false,
+        onColumnVisibilityChange: setColumnVisibility,
+        onSortingChange: setSorting,
+        onColumnFiltersChange: setColumnFilters
+    })
 
-    // useEffect(() => {
-    //     onFetchData({pageIndex, pageSize, sortBy, filters})
-    // }, [])
+    const handleFilterSubmit = (columnId: string) => onRequest({sorting, filters: columnFilters})
 
     return (
         <Spin spinning={loading}>
-            {/*<div className={styles.toolbar}>*/}
-            {/*    <Toolbar allColumns={allColumns}/>*/}
-            {/*</div>*/}
+            <div className={styles.toolbar}>
+                <Toolbar table={table}/>
+            </div>
 
             <div className="ant-table-wrapper">
                 <div className="ant-table ant-table-small">
@@ -59,13 +85,12 @@ function DataGrid({loading, columns, data, pageSize: controlledPageSize, total, 
                                         {headerGroup.headers.map(header => (
                                             <th
                                                 key={header.id}
-                                                className="ant-table-cell ant-table-column-has-sorters"
+                                                className={`ant-table-cell ${header.column.getCanSort() ? 'ant-table-column-has-sorters' : ''}`}
+                                                style={{maxWidth: header.getSize()}}
+                                                onClick={header.column.getToggleSortingHandler()}
                                             >
                                                 <div className="ant-table-column-sorters">
-                                                    <span
-                                                        className={`ant-table-column-title ${styles.antTableColumnTitle}`}
-                                                        style={{maxWidth: header.getSize()}}
-                                                    >
+                                                    <span className={`ant-table-column-title ${styles.antTableColumnTitle}`}>
                                                         {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                                                     </span>
                                                     <span className="ant-table-column-sorter ant-table-column-sorter-full">
@@ -75,9 +100,7 @@ function DataGrid({loading, columns, data, pageSize: controlledPageSize, total, 
                                                         </span>
                                                     </span>
                                                 </div>
-                                                <div style={{marginLeft: -8, marginRight: -8}}>
-                                                    {header.column.getCanFilter() ? <ColumnFilter column={header.column}/> : null}
-                                                </div>
+                                                {header.column.getCanFilter() ? <ColumnFilter column={header.column} onSubmit={() => handleFilterSubmit(header.id)}/> : null}
                                             </th>
                                         ))}
                                     </tr>
@@ -86,13 +109,10 @@ function DataGrid({loading, columns, data, pageSize: controlledPageSize, total, 
 
                                 <tbody className="ant-table-tbody data-grid">
                                 {table.getRowModel().rows.map(row => (
-                                        <Dropdown overlay={getRowContextMenu(row)} trigger={['contextMenu']}>
-                                            <tr
-                                                // className="ant-table-row ant-table-row-level-0"
-                                                onDoubleClick={() => onRowDoubleClick(row)}
-                                            >
+                                        <Dropdown key={row.id} overlay={getRowContextMenu(row)} trigger={['contextMenu']}>
+                                            <tr onDoubleClick={() => onRowDoubleClick(row)}>
                                                 {row.getVisibleCells().map(cell => (
-                                                    <td key={cell.id} className="ant-table-cell">
+                                                    <td key={cell.id} className="ant-table-cell" style={{maxWidth: cell.column.getSize()}}>
                                                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                                     </td>
                                                 ))}

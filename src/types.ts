@@ -133,6 +133,7 @@ export interface Attribute {
     scale?: number
     minRange?: number
     maxRange?: number
+    hidden?: boolean
     width?:number
 }
 

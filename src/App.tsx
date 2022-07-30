@@ -3,7 +3,7 @@ import {I18nextProvider, useTranslation} from 'react-i18next'
 import {Avatar, ConfigProvider, Layout, Menu} from 'antd'
 import {LogoutOutlined, MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined} from '@ant-design/icons'
 
-import {useAppDispatch, useAppSelector} from './hooks'
+import {useAppDispatch, useAppSelector} from './util/hooks'
 import './App.css'
 import config from './config'
 import i18n from './i18n'

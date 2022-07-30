@@ -29,6 +29,7 @@ const ru = {
         'Server cannot find the requested resource': 'Сервер не может найти запрашиваемый ресурс',
         'Server successfully returned the requested data': 'Сервер успешно вернул запрошенные данные',
         'Service is unavailable. Server is not ready to process the request': 'Сервис недоступен. Сервер не готов обрабатывать запрос',
+        'Settings': 'Настройки',
         'Timed out waiting for server response': 'Истекло время ожидания ответа сервера',
         'Username': 'Имя пользователя',
         'Users': 'Пользователи',

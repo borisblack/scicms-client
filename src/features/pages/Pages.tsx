@@ -3,7 +3,7 @@ import {Tabs} from 'antd'
 
 import {closePage, selectActiveKey, selectPages, setActiveKey} from './pagesSlice'
 import Page from './Page'
-import {useAppDispatch, useAppSelector} from '../../hooks'
+import {useAppDispatch, useAppSelector} from '../../util/hooks'
 
 const TabPane = Tabs.TabPane
 

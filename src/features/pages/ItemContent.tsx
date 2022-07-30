@@ -27,7 +27,6 @@ function ItemContent({item, id}: Props) {
                         // TODO: Get item and build query
                         return (
                             <TabPane key={key} tab={attr.displayName}>
-                                {/*<Table initialQueryItem={initialQueryItem} isRelationship />*/}
                                 {/*<DataGrid initialQueryItem={initialQueryItem} isRelationship />*/}
                             </TabPane>
                         )
