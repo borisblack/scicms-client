@@ -1,6 +1,7 @@
 const en = {
     translation: {
         'Access is denied': 'Access is denied',
+        'An error occurred while executing the request': 'An error occurred while executing the request',
         'Administration': 'Administration',
         'Data deleted successfully': 'Data deleted successfully',
         'Data was successfully created or modified by server': 'Data was successfully created or modified by server',

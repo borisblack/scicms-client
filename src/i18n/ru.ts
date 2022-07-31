@@ -2,6 +2,7 @@ const ru = {
     translation: {
         'Access is denied': 'Доступ запрещен',
         'Administration': 'Администрирование',
+        'An error occurred while executing the request': 'При выполнении запроса произошла ошибка',
         'Data deleted successfully': 'Данные успешно удалены',
         'Data was successfully created or modified by server': 'Данные успешно созданы или изменены сервером',
         'Design': 'Проектирование',

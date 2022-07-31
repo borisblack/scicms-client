@@ -12,7 +12,6 @@ import {useAppDispatch, useAppSelector} from '../../util/hooks'
 import {Item} from '../../types'
 import {fetchItemsIfNeeded, ItemCache, selectItems, selectLoading} from './registrySlice'
 import {openPage, ViewType} from '../pages/pagesSlice'
-import {capitalizeFirstLetter} from '../../util'
 
 type Props = {
     collapsed: boolean,
@@ -34,7 +33,7 @@ const Navbar = ({collapsed, me}: Props) => {
 
     const handleItemClick = (item: Item) => {
         // console.log(`Item [${item.name}] clicked`)
-        dispatch(openPage({label: capitalizeFirstLetter(item.pluralName), item, viewType: ViewType.default}))
+        dispatch(openPage({label: _.upperFirst(item.pluralName), item, viewType: ViewType.default}))
     }
 
     const toAntdMenuItems = (menuItems: (SubMenu | MenuItem)[]): ItemType[] => menuItems
@@ -51,7 +50,7 @@ const Navbar = ({collapsed, me}: Props) => {
                 const item = (items as ItemCache)[it.itemName]
                 return {
                     key: item.id,
-                    label: capitalizeFirstLetter(item.pluralName),
+                    label: _.upperFirst(item.pluralName),
                     onClick: () => handleItemClick(item)
                 }
             }

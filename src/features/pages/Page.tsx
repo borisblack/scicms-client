@@ -1,10 +1,10 @@
+import _ from 'lodash'
 import React, {useEffect} from 'react'
 import {useTranslation} from 'react-i18next'
 
 import {useAppDispatch} from '../../util/hooks'
 import {IPage, updateLabel, ViewType} from './pagesSlice'
 import {PageHeader} from 'antd'
-import {capitalizeFirstLetter} from '../../util'
 import ItemContent from './ItemContent'
 import DataGridWrapper from './DataGridWrapper'
 
@@ -19,7 +19,7 @@ function Page({page}: Props) {
 
     useEffect(() => {
         // TODO: Pass callback for updating single item label
-        const pageLabel = viewType === ViewType.default ? capitalizeFirstLetter(item.pluralName) : `${item.displayName} ${id ? id.substring(0, 9) : '*'}`
+        const pageLabel = viewType === ViewType.default ? _.upperFirst(item.pluralName) : `${item.displayName} ${id ? id.substring(0, 9) : '*'}`
         dispatch(updateLabel({label: pageLabel, item, viewType, id}))
     }, [item, viewType, id, dispatch, t])
 

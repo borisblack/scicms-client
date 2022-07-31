@@ -21,7 +21,7 @@ export default function ColumnFilter({column, onSubmit}: Props) {
 
     function handleKeyUp(evt: React.KeyboardEvent<any>) {
         evt.stopPropagation()
-        if (evt.key === 'Enter' && evt.target.value)
+        if (evt.key === 'Enter')
             onSubmit()
     }
 

@@ -1,12 +1,5 @@
-import React, {ReactElement} from 'react'
-import {
-    ColumnFiltersState,
-    flexRender,
-    getCoreRowModel,
-    getSortedRowModel,
-    SortingState,
-    useReactTable
-} from '@tanstack/react-table'
+import {ReactElement, useCallback, useEffect, useMemo, useState} from 'react'
+import {ColumnFiltersState, flexRender, getCoreRowModel, SortingState, useReactTable} from '@tanstack/react-table'
 import {Dropdown, Spin} from 'antd'
 import {CaretDownFilled, CaretUpFilled} from '@ant-design/icons'
 
@@ -32,41 +25,62 @@ interface ColumnVisibility {
 }
 
 export interface RequestParams {
-    sorting: SortingState
+    sorting: SortingState,
     filters: ColumnFiltersState
 }
 
 function DataGrid({loading, columns, data, initialState, getRowContextMenu, onRequest, onRowDoubleClick}: Props) {
-    const [columnVisibility, setColumnVisibility] = React.useState<ColumnVisibility>(getInitialColumnVisibility())
-    const [sorting, setSorting] = React.useState<SortingState>([])
-    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
+    // const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>(getInitialColumnVisibility())
+    // const [sorting, setSorting] = useState<SortingState>([])
+    // const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 
-    function getInitialColumnVisibility(): ColumnVisibility {
+    const initialColumnVisibilityMemoized = useMemo((): ColumnVisibility => {
         const initialColumnVisibility: ColumnVisibility = {}
         initialState.hiddenColumns.forEach(it => {
             initialColumnVisibility[it] = false
         })
 
         return initialColumnVisibility
-    }
+    }, [initialState.hiddenColumns])
 
     const table = useReactTable({
         columns,
         data,
-        state: {
-            columnVisibility,
-            sorting,
-            columnFilters
+        initialState: {
+            columnVisibility: initialColumnVisibilityMemoized
         },
+        // state: {
+        //     columnVisibility,
+        //     sorting,
+        //     columnFilters
+        // },
         getCoreRowModel: getCoreRowModel(),
-        getSortedRowModel: getSortedRowModel(),
+        // getSortedRowModel: getSortedRowModel(),
         sortDescFirst: false,
-        onColumnVisibilityChange: setColumnVisibility,
-        onSortingChange: setSorting,
-        onColumnFiltersChange: setColumnFilters
+        // onColumnVisibilityChange: setColumnVisibility,
+        // onSortingChange: setSorting,
+        // onColumnFiltersChange: setColumnFilters
     })
 
-    const handleFilterSubmit = (columnId: string) => onRequest({sorting, filters: columnFilters})
+    const [tableState, setTableState] = useState(table.initialState)
+
+    table.setOptions(prev => ({
+        ...prev,
+        state: tableState,
+        onStateChange: setTableState
+    }))
+
+    useEffect(() => {
+        onRequest({
+            sorting: tableState.sorting,
+            filters: tableState.columnFilters
+        })
+    }, [tableState.sorting, onRequest])
+
+    const handleFilterSubmit = useCallback((columnId: string) => onRequest({
+        sorting: tableState.sorting,
+        filters: tableState.columnFilters
+    }), [tableState.sorting, tableState.columnFilters])
 
     return (
         <Spin spinning={loading}>
@@ -86,19 +100,21 @@ function DataGrid({loading, columns, data, initialState, getRowContextMenu, onRe
                                             <th
                                                 key={header.id}
                                                 className={`ant-table-cell ${header.column.getCanSort() ? 'ant-table-column-has-sorters' : ''}`}
-                                                style={{maxWidth: header.getSize()}}
+                                                style={{width: header.getSize()}}
                                                 onClick={header.column.getToggleSortingHandler()}
                                             >
                                                 <div className="ant-table-column-sorters">
                                                     <span className={`ant-table-column-title ${styles.antTableColumnTitle}`}>
                                                         {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                                                     </span>
-                                                    <span className="ant-table-column-sorter ant-table-column-sorter-full">
-                                                        <span className="ant-table-column-sorter-inner">
-                                                            <CaretUpFilled className={`ant-table-column-sorter-up ${header.column.getIsSorted() === 'asc' ? 'active' : ''}`}/>
-                                                            <CaretDownFilled className={`ant-table-column-sorter-down ${header.column.getIsSorted() === 'desc' ? 'active' : ''}`}/>
+                                                    {header.column.getCanSort() && (
+                                                        <span className="ant-table-column-sorter ant-table-column-sorter-full">
+                                                            <span className="ant-table-column-sorter-inner">
+                                                                <CaretUpFilled className={`ant-table-column-sorter-up ${header.column.getIsSorted() === 'asc' ? 'active' : ''}`}/>
+                                                                <CaretDownFilled className={`ant-table-column-sorter-down ${header.column.getIsSorted() === 'desc' ? 'active' : ''}`}/>
+                                                            </span>
                                                         </span>
-                                                    </span>
+                                                    )}
                                                 </div>
                                                 {header.column.getCanFilter() ? <ColumnFilter column={header.column} onSubmit={() => handleFilterSubmit(header.id)}/> : null}
                                             </th>
@@ -109,17 +125,16 @@ function DataGrid({loading, columns, data, initialState, getRowContextMenu, onRe
 
                                 <tbody className="ant-table-tbody data-grid">
                                 {table.getRowModel().rows.map(row => (
-                                        <Dropdown key={row.id} overlay={getRowContextMenu(row)} trigger={['contextMenu']}>
-                                            <tr onDoubleClick={() => onRowDoubleClick(row)}>
-                                                {row.getVisibleCells().map(cell => (
-                                                    <td key={cell.id} className="ant-table-cell" style={{maxWidth: cell.column.getSize()}}>
-                                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                                    </td>
-                                                ))}
-                                            </tr>
-                                        </Dropdown>
-                                    )
-                                )}
+                                    <Dropdown key={row.id} overlay={getRowContextMenu(row)} trigger={['contextMenu']}>
+                                        <tr onDoubleClick={() => onRowDoubleClick(row)}>
+                                            {row.getVisibleCells().map(cell => (
+                                                <td key={cell.id} className="ant-table-cell" style={{width: cell.column.getSize()}}>
+                                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                                </td>
+                                            ))}
+                                        </tr>
+                                    </Dropdown>
+                                ))}
                                 </tbody>
                             </table>
                         </div>
