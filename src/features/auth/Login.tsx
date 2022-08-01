@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React, {useCallback, useEffect} from 'react'
 import {Col, Layout, message, Row, Spin} from 'antd'
 
 import logo from '../../logo.svg'
@@ -29,13 +29,13 @@ function Login() {
             message.error(authError.message)
     }, [authError])
 
-    const handleLogin = async (credentials: {username: string, password: string}) => {
+    const handleLogin = useCallback(async (credentials: {username: string, password: string}) => {
         try {
             await dispatch(login(credentials))
         } catch (e: any) {
             message.error(e.message)
         }
-    }
+    }, [dispatch])
 
     return (
         <Layout className="Login">

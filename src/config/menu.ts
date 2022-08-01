@@ -1,5 +1,5 @@
 import i18n from '../i18n'
-import {ROLE_ADMIN, ROLE_DESIGNER} from './constants'
+import {ROLE_ADMIN, ROLE_DESIGNER, ROLE_USER} from './constants'
 
 interface MenuConfig {
     items: (SubMenu | MenuItem)[]

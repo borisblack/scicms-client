@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useCallback, useState} from 'react'
 import {I18nextProvider, useTranslation} from 'react-i18next'
 import {Avatar, ConfigProvider, Layout, Menu} from 'antd'
 import {LogoutOutlined, MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined} from '@ant-design/icons'
@@ -27,24 +27,24 @@ function App() {
     const isExpired = useAppSelector(selectIsExpired)
     const [collapsed, setCollapsed] = useState(isNavbarCollapsed())
 
-    function handleToggle() {
+    const handleToggle = useCallback(() => {
         setNavbarCollapsed(!collapsed)
         setCollapsed(!collapsed)
-    }
+    }, [collapsed])
 
-    function renderToggleIcon() {
+    const renderToggleIcon = useCallback(() => {
         const props = {
             className: 'App-header-trigger',
             onClick: handleToggle
         }
         return collapsed ? <MenuUnfoldOutlined {...props}/> : <MenuFoldOutlined {...props}/>
-    }
+    }, [collapsed, handleToggle])
 
-    async function handleLogout() {
+    const handleLogout = useCallback(async () => {
         await dispatch(logout())
         await dispatch(resetPages())
         await dispatch(resetRegistry())
-    }
+    }, [dispatch])
 
     return (
         <I18nextProvider i18n={i18n}>

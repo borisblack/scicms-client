@@ -7,6 +7,16 @@ import appConfig from '../config'
 import {RequestParams} from '../components/datagrid/DataGrid'
 import {ColumnFiltersState} from '@tanstack/react-table'
 import {ItemCache} from '../features/registry/registrySlice'
+import {DateTime} from 'luxon'
+import {
+    DATE_FORMAT_STRING,
+    DATETIME_FORMAT_STRING,
+    HOUR_FORMAT_STRING,
+    STD_DATE_FORMAT_STRING,
+    STD_DATETIME_FORMAT_STRING,
+    TIME_FORMAT_STRING,
+    YEAR_FORMAT_STRING
+} from '../config/constants'
 
 type FiltersInput<FiltersType> = {
     and?: [FiltersType]
@@ -53,6 +63,75 @@ export interface ResponseCollection {
 
 interface ResponseCollectionMeta {
     pagination?: Pagination
+}
+
+function buildDateFilter(filterValue: string): FilterInput<unknown, string> {
+    let dt = DateTime.fromFormat(filterValue, DATE_FORMAT_STRING)
+    if (dt.isValid) {
+        const endDt = dt.endOf('day')
+        return {gte: dt.toISODate(), lte: endDt.toISODate()}
+    } else {
+        dt = DateTime.fromFormat(filterValue, STD_DATE_FORMAT_STRING)
+    }
+    if (dt.isValid) {
+        const endDt = dt.endOf('day')
+        return {gte: dt.toISODate(), lte: endDt.toISODate()}
+    } else {
+        dt = DateTime.fromFormat(filterValue, YEAR_FORMAT_STRING)
+    }
+    if (dt.isValid) {
+        const endDt = dt.endOf('year')
+        return {gte: dt.toISODate(), lte: endDt.toISODate()}
+    } else
+        return {}
+}
+
+function buildTimeFilter(filterValue: string): FilterInput<unknown, string> {
+    let dt = DateTime.fromFormat(filterValue, TIME_FORMAT_STRING)
+    if (dt.isValid) {
+        const endDt = dt.endOf('minute')
+        return {gte: dt.toISOTime(), lte: endDt.toISOTime()}
+    } else {
+        dt = DateTime.fromFormat(filterValue, HOUR_FORMAT_STRING)
+    }
+    if (dt.isValid) {
+        const endDt = dt.endOf('hour')
+        return {gte: dt.toISOTime(), lte: endDt.toISOTime()}
+    } else
+        return {}
+}
+
+function buildDateTimeFilter(filterValue: string): FilterInput<unknown, string> {
+    let dt = DateTime.fromFormat(filterValue, DATETIME_FORMAT_STRING)
+    if (dt.isValid) {
+        const endDt = dt.endOf('minute')
+        return {gte: dt.toISO(), lte: endDt.toISO()}
+    } else {
+        dt = DateTime.fromFormat(filterValue, STD_DATETIME_FORMAT_STRING)
+    }
+    if (dt.isValid) {
+        const endDt = dt.endOf('minute')
+        return {gte: dt.toISO(), lte: endDt.toISO()}
+    } else {
+        dt = DateTime.fromFormat(filterValue, DATE_FORMAT_STRING)
+    }
+    if (dt.isValid) {
+        const endDt = dt.endOf('day')
+        return {gte: dt.toISO(), lte: endDt.toISO()}
+    } else {
+        dt = DateTime.fromFormat(filterValue, STD_DATE_FORMAT_STRING)
+    }
+    if (dt.isValid) {
+        const endDt = dt.endOf('day')
+        return {gte: dt.toISO(), lte: endDt.toISO()}
+    } else {
+        dt = DateTime.fromFormat(filterValue, YEAR_FORMAT_STRING)
+    }
+    if (dt.isValid) {
+        const endDt = dt.endOf('year')
+        return {gte: dt.toISO(), lte: endDt.toISO()}
+    } else
+        return {}
 }
 
 export default class QueryService {
@@ -174,12 +253,12 @@ export default class QueryService {
                 else
                     break
             case AttrType.date:
-                break
+                return buildDateFilter(filterValue)
+            case AttrType.time:
+                return buildTimeFilter(filterValue)
             case AttrType.datetime:
             case AttrType.timestamp:
-                break
-            case AttrType.time:
-                break
+                return buildDateTimeFilter(filterValue)
             case AttrType.relation:
                 if (!attribute.target)
                     throw new Error('Illegal attribute')

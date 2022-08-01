@@ -13,6 +13,7 @@
   padding: 0 24px;
   cursor: pointer;
   transition: color .3s;
+  float: left;
 }
 
 .trigger:hover {
@@ -21,11 +22,14 @@
 
 .App-header-title {
   font-size: 16px;
+  float: left;
 }
 
 .App-header-menu {
   line-height: 64px;
   float: right;
+  width: 200px;
+  justify-content: flex-end;
 }
 
 .App-header-menu-avatar {

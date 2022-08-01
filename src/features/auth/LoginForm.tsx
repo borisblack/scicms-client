@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useCallback} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Button, Form, Input} from 'antd'
 import {LockOutlined, UserOutlined} from '@ant-design/icons'
@@ -19,12 +19,12 @@ function LoginForm({onLogin}: Props) {
     /**
      * Form submit handler
      */
-    const handleFinish = (values: any) => {
+    const handleFinish = useCallback((values: any) => {
         validateFields().then(validValues => {
             const {username, password} = validValues
             onLogin({username, password})
         })
-    }
+    },[validateFields, onLogin])
 
     return (
         <div>

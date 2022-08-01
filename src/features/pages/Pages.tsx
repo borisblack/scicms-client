@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useCallback} from 'react'
 import {Tabs} from 'antd'
 
 import {closePage, selectActiveKey, selectPages, setActiveKey} from './pagesSlice'
@@ -12,14 +12,14 @@ function Pages() {
     const pages = useAppSelector(selectPages)
     const activeKey = useAppSelector(selectActiveKey)
 
-    function handleTabsChange(activeKey: string) {
+    const handleTabsChange = useCallback((activeKey: string) => {
         dispatch(setActiveKey(activeKey))
-    }
+    }, [dispatch])
 
-    const handleTabsEdit = (e: React.MouseEvent | React.KeyboardEvent | string, action: 'add' | 'remove') => {
+    const handleTabsEdit = useCallback((e: React.MouseEvent | React.KeyboardEvent | string, action: 'add' | 'remove') => {
         if (action === 'remove')
             dispatch(closePage(e as string))
-    }
+    }, [dispatch])
 
     if (pages.length === 0)
         return null

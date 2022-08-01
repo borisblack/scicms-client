@@ -1,9 +1,10 @@
 import _ from 'lodash'
-import React, {useEffect} from 'react'
+import React, {useCallback, useEffect} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Layout, Menu, Spin} from 'antd'
 // import {gql, useQuery} from '@apollo/client'
 import {ItemType} from 'antd/lib/menu/hooks/useItems'
+
 import './Navbar.css'
 import logo from '../../logo.svg'
 import menuConfig, {MenuItem, SubMenu} from '../../config/menu'
@@ -31,12 +32,12 @@ const Navbar = ({collapsed, me}: Props) => {
         dispatch(fetchItemsIfNeeded())
     }, [items, dispatch])
 
-    const handleItemClick = (item: Item) => {
+    const handleItemClick = useCallback((item: Item) => {
         // console.log(`Item [${item.name}] clicked`)
         dispatch(openPage({label: _.upperFirst(item.pluralName), item, viewType: ViewType.default}))
-    }
+    }, [dispatch])
 
-    const toAntdMenuItems = (menuItems: (SubMenu | MenuItem)[]): ItemType[] => menuItems
+    const toAntdMenuItems = useCallback((menuItems: (SubMenu | MenuItem)[]): ItemType[] => menuItems
         .filter(it => !('roles' in it) || _.intersection(it.roles, me.roles).length > 0)
         .filter(it => !('itemName' in it) || (items !== null && items[it.itemName]))
         .map(it => {
@@ -54,7 +55,7 @@ const Navbar = ({collapsed, me}: Props) => {
                     onClick: () => handleItemClick(item)
                 }
             }
-        })
+        }), [me.roles, items, handleItemClick])
 
     return (
         <Sider className="Navbar" trigger={null} collapsible collapsed={collapsed} width={250}>

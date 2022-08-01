@@ -4,12 +4,8 @@ import {useTranslation} from 'react-i18next'
 import {createColumnHelper} from '@tanstack/react-table'
 import {Checkbox, Menu, message} from 'antd'
 
-import {
-    DATE_FORMAT_STRING,
-    DATETIME_FORMAT_STRING,
-    DEFAULT_COLUMN_WIDTH,
-    TIME_FORMAT_STRING
-} from '../../config/constants'
+import appConfig from '../../config'
+import {DEFAULT_COLUMN_WIDTH} from '../../config/constants'
 import {Attribute, AttrType, Item, RelType} from '../../types'
 import QueryService from '../../services/query'
 import {useAppSelector} from '../../util/hooks'
@@ -27,38 +23,48 @@ function DataGridWrapper({item}: Props) {
     const [loading, setLoading] = useState(false)
     const [data, setData] = useState([] as any[])
     const items = useAppSelector(selectItems)
+    if (!items)
+        throw new Error('Illegal state')
 
-    const queryService = useMemo(() => {
-        if (!items)
-            throw new Error('Illegal state')
-
-        return new QueryService(items)
-    }, [items])
+    const queryService = useMemo(() => new QueryService(items), [items])
 
     const renderCell = useCallback((attribute: Attribute, value: any): ReactElement | string | null => {
         switch (attribute.type) {
-            case AttrType.bool:
-                return <Checkbox checked={value}/>
-            case AttrType.date:
-                return value ? DateTime.fromISO(value).toFormat(DATE_FORMAT_STRING) : null
-            case AttrType.time:
-                return value ? DateTime.fromISO(value).toFormat(TIME_FORMAT_STRING) : null
-            case AttrType.datetime:
-                return value ? DateTime.fromISO(value).toFormat(DATETIME_FORMAT_STRING) : null
+            case AttrType.string:
+            case AttrType.text:
+            case AttrType.uuid:
+            case AttrType.email:
+            case AttrType.password:
+            case AttrType.sequence:
+            case AttrType.enum:
+            case AttrType.int:
+            case AttrType.long:
+            case AttrType.float:
+            case AttrType.double:
+            case AttrType.decimal:
+                return value
             case AttrType.json:
             case AttrType.array:
                 return value ? JSON.stringify(value) : null
+            case AttrType.bool:
+                return <Checkbox checked={value}/>
+            case AttrType.date:
+                return value ? DateTime.fromISO(value).toFormat(appConfig.dateTime.dateFormatString) : null
+            case AttrType.time:
+                return value ? DateTime.fromISO(value).toFormat(appConfig.dateTime.timeFormatString) : null
+            case AttrType.datetime:
+                return value ? DateTime.fromISO(value,).toFormat(appConfig.dateTime.dateTimeFormatString) : null
             case AttrType.relation:
                 if (attribute.relType === RelType.oneToMany || attribute.relType === RelType.manyToMany)
                     throw new Error('Cannot render oneToMany or manyToMany relation')
 
-                if (items === null || !attribute.target)
+                if (!attribute.target)
                     throw new Error('Illegal state')
 
                 const subItem = items[attribute.target]
                 return (value && value.data) ? value.data[subItem.displayAttrName ?? 'id'] : null
             default:
-                return value
+                throw new Error('Illegal attribute')
         }
     }, [items])
 
@@ -119,7 +125,7 @@ function DataGridWrapper({item}: Props) {
         } finally {
             setLoading(false)
         }
-    }, [item, t])
+    }, [item, queryService, t])
 
     function openRow(row: any) {
         console.log(row)
