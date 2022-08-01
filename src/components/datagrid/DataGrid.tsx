@@ -1,23 +1,34 @@
 import {ReactElement, useCallback, useEffect, useMemo, useState} from 'react'
 import {ColumnFiltersState, flexRender, getCoreRowModel, SortingState, useReactTable} from '@tanstack/react-table'
-import {Dropdown, Spin} from 'antd'
+import {Dropdown, Pagination, Spin} from 'antd'
 import {CaretDownFilled, CaretUpFilled} from '@ant-design/icons'
 
 import styles from './DataGrid.module.css'
 import './DataGrid.css'
 import ColumnFilter from './ColumnFilter'
 import Toolbar from './Toolbar'
+import {useTranslation} from 'react-i18next'
 
 interface Props {
     loading: boolean
     columns: any[]
-    data: any[]
+    data: DataWithPagination<any>
     initialState: {
         hiddenColumns: string[]
+        pageSize: number
     }
     getRowContextMenu: (row: any) => ReactElement
     onRequest: (params: RequestParams) => void
     onRowDoubleClick: (row: any) => void
+}
+
+export interface DataWithPagination<T> {
+    data: T[],
+    pagination: {
+        page: number,
+        pageSize: number
+        total: number
+    }
 }
 
 interface ColumnVisibility {
@@ -27,13 +38,13 @@ interface ColumnVisibility {
 export interface RequestParams {
     sorting: SortingState,
     filters: ColumnFiltersState
+    pagination: {
+        page: number,
+        pageSize: number
+    }
 }
 
 function DataGrid({loading, columns, data, initialState, getRowContextMenu, onRequest, onRowDoubleClick}: Props) {
-    // const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>(getInitialColumnVisibility())
-    // const [sorting, setSorting] = useState<SortingState>([])
-    // const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-
     const initialColumnVisibilityMemoized = useMemo((): ColumnVisibility => {
         const initialColumnVisibility: ColumnVisibility = {}
         initialState.hiddenColumns.forEach(it => {
@@ -43,44 +54,61 @@ function DataGrid({loading, columns, data, initialState, getRowContextMenu, onRe
         return initialColumnVisibility
     }, [initialState.hiddenColumns])
 
+    const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>(initialColumnVisibilityMemoized)
+    const [sorting, setSorting] = useState<SortingState>([])
+    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+    const {t} = useTranslation()
+
     const table = useReactTable({
         columns,
-        data,
-        initialState: {
-            columnVisibility: initialColumnVisibilityMemoized
+        data: data.data,
+        state: {
+            columnVisibility,
+            sorting,
+            columnFilters
         },
-        // state: {
-        //     columnVisibility,
-        //     sorting,
-        //     columnFilters
-        // },
+        sortDescFirst: false,
         getCoreRowModel: getCoreRowModel(),
         // getSortedRowModel: getSortedRowModel(),
-        sortDescFirst: false,
-        // onColumnVisibilityChange: setColumnVisibility,
-        // onSortingChange: setSorting,
-        // onColumnFiltersChange: setColumnFilters
+        onColumnVisibilityChange: setColumnVisibility,
+        onSortingChange: setSorting,
+        onColumnFiltersChange: setColumnFilters,
     })
 
-    const [tableState, setTableState] = useState(table.initialState)
-
-    table.setOptions(prev => ({
-        ...prev,
-        state: tableState,
-        onStateChange: setTableState
-    }))
-
     useEffect(() => {
+        const {page, pageSize} = data.pagination
         onRequest({
-            sorting: tableState.sorting,
-            filters: tableState.columnFilters
+            sorting,
+            filters: columnFilters,
+            pagination: {page, pageSize}
         })
-    }, [tableState.sorting, onRequest])
+    }, [sorting, onRequest])
 
-    const handleFilterSubmit = useCallback((columnId: string) => onRequest({
-        sorting: tableState.sorting,
-        filters: tableState.columnFilters
-    }), [tableState.sorting, tableState.columnFilters])
+    const handleFilterSubmit = useCallback((columnId: string) => {
+        const {page, pageSize} = data.pagination
+        onRequest({
+            sorting,
+            filters: columnFilters,
+            pagination: {page, pageSize}
+        })
+    }, [data.pagination, sorting, columnFilters, onRequest])
+
+    const handlePageChange = useCallback((page: number, pageSize: number) => {
+        onRequest({
+            sorting,
+            filters: columnFilters,
+            pagination: {page, pageSize}
+        })
+    }, [sorting, columnFilters, onRequest])
+
+    const handleShowSizeChange = useCallback((current: number, size: number) => onRequest({
+        sorting,
+        filters: columnFilters,
+        pagination: {
+            page: current,
+            pageSize: size
+        }
+        }), [sorting, columnFilters, onRequest])
 
     return (
         <Spin spinning={loading}>
@@ -142,25 +170,21 @@ function DataGrid({loading, columns, data, initialState, getRowContextMenu, onRe
                 </div>
             </div>
 
-            {/*<div className={styles.pagination}>*/}
-            {/*    <Pagination*/}
-            {/*        current={pageIndex + 1}*/}
-            {/*        defaultPageSize={initialState.pageSize}*/}
-            {/*        pageSize={controlledPageSize}*/}
-            {/*        pageSizeOptions={['10', '20', '50', '100']}*/}
-            {/*        showSizeChanger*/}
-            {/*        showQuickJumper*/}
-            {/*        showTotal={total => `Всего записей: ${total}`}*/}
-            {/*        size="small"*/}
-            {/*        total={total}*/}
-            {/*        onChange={(page, pageSize) => {*/}
-            {/*            gotoPage(page - 1)*/}
-            {/*        }}*/}
-            {/*        onShowSizeChange={(current, size) => {*/}
-            {/*            setPageSize(size)*/}
-            {/*        }}*/}
-            {/*    />*/}
-            {/*</div>*/}
+            <div className={styles.pagination}>
+                <Pagination
+                    current={data.pagination.page}
+                    defaultPageSize={initialState.pageSize}
+                    pageSize={data.pagination.pageSize}
+                    pageSizeOptions={['10', '20', '50', '100']}
+                    showSizeChanger
+                    showQuickJumper
+                    showTotal={total => `${t('Total records')}: ${total}`}
+                    size="small"
+                    total={data.pagination.total}
+                    onChange={handlePageChange}
+                    onShowSizeChange={handleShowSizeChange}
+                />
+            </div>
         </Spin>
     )
 }

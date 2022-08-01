@@ -32,6 +32,7 @@ const en = {
         'Service is unavailable. Server is not ready to process the request': 'Service is unavailable. Server is not ready to process the request',
         'Settings': 'Settings',
         'Timed out waiting for server response': 'Timed out waiting for server response',
+        'Total records': 'Total records',
         'Username': 'Username',
         'Users': 'Users',
         'Validation error occurred while creating an object': 'Validation error occurred while creating an object',

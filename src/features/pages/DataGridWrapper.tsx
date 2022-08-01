@@ -5,12 +5,11 @@ import {createColumnHelper} from '@tanstack/react-table'
 import {Checkbox, Menu, message} from 'antd'
 
 import appConfig from '../../config'
-import {DEFAULT_COLUMN_WIDTH} from '../../config/constants'
 import {Attribute, AttrType, Item, RelType} from '../../types'
 import QueryService from '../../services/query'
 import {useAppSelector} from '../../util/hooks'
 import {selectItems} from '../registry/registrySlice'
-import DataGrid, {RequestParams} from '../../components/datagrid/DataGrid'
+import DataGrid, {DataWithPagination, RequestParams} from '../../components/datagrid/DataGrid'
 
 interface Props {
     item: Item
@@ -18,10 +17,19 @@ interface Props {
 
 const columnHelper = createColumnHelper<any>()
 
+const initialData: DataWithPagination<any> = {
+    data: [],
+    pagination: {
+        page: 1,
+        pageSize: appConfig.query.findAll.defaultPageSize,
+        total: 0
+    }
+}
+
 function DataGridWrapper({item}: Props) {
     const {t} = useTranslation()
     const [loading, setLoading] = useState(false)
-    const [data, setData] = useState([] as any[])
+    const [data, setData] = useState(initialData)
     const items = useAppSelector(selectItems)
     if (!items)
         throw new Error('Illegal state')
@@ -82,7 +90,7 @@ function DataGridWrapper({item}: Props) {
             const column = columnHelper.accessor(attrName, {
                 header: attr.displayName,
                 cell: info => renderCell(attr, info.getValue()),
-                size: attr.width ?? DEFAULT_COLUMN_WIDTH,
+                size: attr.width ?? appConfig.ui.dataGrid.defaultColumnWidth,
                 enableSorting: attr.type !== AttrType.relation
             })
 
@@ -91,6 +99,47 @@ function DataGridWrapper({item}: Props) {
 
         return columns
     }, [item, renderCell])
+
+    const handleRequest = useCallback(async (params: RequestParams) => {
+        try {
+            setLoading(true)
+            const responseCollection = await queryService.findAll(item, params)
+            const {page, pageSize, total} = responseCollection.meta.pagination
+            setData({
+                data: responseCollection.data,
+                pagination: {page, pageSize, total}
+            })
+        } catch (e: any) {
+            console.error(e.message)
+            message.error(t('An error occurred while executing the request'))
+        } finally {
+            setLoading(false)
+        }
+    }, [item, queryService, t])
+
+    const openRow = useCallback((row: any) => {
+        console.log(row)
+        // const {values} = row
+        // const {classItem} = metadata
+        // dispatch(openPage({
+        //     type: isRelationship ? (_.property(initialQueryItem, 'target_id') as FlatItem)[META_KEY].type : initialQueryItem[META_KEY].type,
+        //     viewType: 'edit',
+        //     id: values.id,
+        //     label: _.property(classItem, 'label')
+        // }))
+    }, [])
+
+    const handleRowDoubleClick = useCallback((row: any) => {
+        openRow(row)
+    }, [openRow])
+
+    const getRowContextMenu = useCallback((row: any) => (
+        <Menu items={[{
+            key: 'open',
+            label: 'Открыть',
+            onClick: () => openRow(row)
+        }]}/>
+    ), [openRow])
 
     const hiddenColumnsMemoized = useMemo((): string[] => {
         const {attributes} = item.spec
@@ -109,54 +158,14 @@ function DataGridWrapper({item}: Props) {
 
     const dataMemoized = useMemo(() => data, [data])
 
-    const handleRequest = useCallback(async (params: RequestParams) => {
-        if (params.filters.length === 0) {
-            setData([])
-            return
-        }
-
-        try {
-            setLoading(true)
-            const data = await queryService.findAll(item, params)
-            setData(data.data)
-        } catch (e: any) {
-            console.error(e.message)
-            message.error(t('An error occurred while executing the request'))
-        } finally {
-            setLoading(false)
-        }
-    }, [item, queryService, t])
-
-    function openRow(row: any) {
-        console.log(row)
-        // const {values} = row
-        // const {classItem} = metadata
-        // dispatch(openPage({
-        //     type: isRelationship ? (_.property(initialQueryItem, 'target_id') as FlatItem)[META_KEY].type : initialQueryItem[META_KEY].type,
-        //     viewType: 'edit',
-        //     id: values.id,
-        //     label: _.property(classItem, 'label')
-        // }))
-    }
-
-    const handleRowDoubleClick = (row: any) => {
-        openRow(row)
-    }
-
-    const getRowContextMenu = (row: any) =>
-        <Menu items={[{
-            key: 'open',
-            label: 'Открыть',
-            onClick: () => openRow(row)
-        }]}/>
-
     return (
         <DataGrid
             loading={loading}
             columns={columnsMemoized}
             data={dataMemoized}
             initialState={{
-                hiddenColumns: hiddenColumnsMemoized
+                hiddenColumns: hiddenColumnsMemoized,
+                pageSize: appConfig.query.findAll.defaultPageSize
             }}
             getRowContextMenu={getRowContextMenu}
             onRequest={handleRequest}

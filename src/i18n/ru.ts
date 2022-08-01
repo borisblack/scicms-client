@@ -32,6 +32,7 @@ const ru = {
         'Service is unavailable. Server is not ready to process the request': 'Сервис недоступен. Сервер не готов обрабатывать запрос',
         'Settings': 'Настройки',
         'Timed out waiting for server response': 'Истекло время ожидания ответа сервера',
+        'Total records': 'Всего записей',
         'Username': 'Имя пользователя',
         'Users': 'Пользователи',
         'Validation error occurred while creating an object': 'При создании объекта произошла ошибка валидации',

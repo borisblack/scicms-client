@@ -12,6 +12,7 @@ export const YEAR_FORMAT_STRING: string = 'yyyy'
 export const HOUR_FORMAT_STRING: string = 'HH'
 
 export const DEFAULT_COLUMN_WIDTH = 120
+export const DEFAULT_PAGE_SIZE = 20
 
 export const ROLE_ADMIN: string = 'ROLE_ADMIN'
 export const ROLE_DESIGNER: string = 'ROLE_DESIGNER'

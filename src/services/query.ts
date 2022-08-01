@@ -47,22 +47,22 @@ type FilterInput<FilterType, ElementType> = {
     notNull?: boolean
 }
 
-interface Pagination {
-    limit?: number
-    page?: number
-    pageCount?: number
-    pageSize?: number
-    start?: number
-    total: number
-}
-
-export interface ResponseCollection {
-    data: any[]
+interface ResponseCollection<T> {
+    data: T[]
     meta: ResponseCollectionMeta
 }
 
 interface ResponseCollectionMeta {
-    pagination?: Pagination
+    pagination: Pagination
+}
+
+interface Pagination {
+    limit?: number
+    page: number
+    pageCount?: number
+    pageSize: number
+    start?: number
+    total: number
 }
 
 function buildDateFilter(filterValue: string): FilterInput<unknown, string> {
@@ -137,14 +137,16 @@ function buildDateTimeFilter(filterValue: string): FilterInput<unknown, string> 
 export default class QueryService {
     constructor(private items: ItemCache) {}
 
-    findAll = (item: Item, params: RequestParams): Promise<ResponseCollection> => {
+    findAll = (item: Item, {sorting, filters, pagination}: RequestParams): Promise<ResponseCollection<any>> => {
         const query = gql(this.buildFindAllQuery(item))
+        const {page, pageSize} = pagination
 
         return apolloClient.query({
             query,
             variables: {
-                sort: params.sorting.map(it => `${it.id}:${it.desc ? 'desc' : 'asc'}`),
-                filters: this.buildItemFiltersInput(item, params.filters)
+                sort: sorting.map(it => `${it.id}:${it.desc ? 'desc' : 'asc'}`),
+                filters: this.buildItemFiltersInput(item, filters),
+                pagination: {page, pageSize}
             }
         })
             .then(result => {
@@ -156,13 +158,22 @@ export default class QueryService {
     }
 
     private buildFindAllQuery = (item: Item) => `
-        query findAll${_.upperFirst(item.pluralName)}($sort: [String], $filters: ${_.upperFirst(item.name)}FiltersInput) {
+        query findAll${_.upperFirst(item.pluralName)}($sort: [String], $filters: ${_.upperFirst(item.name)}FiltersInput, $pagination: PaginationInput) {
             ${item.pluralName} (
                 sort: $sort
                 filters: $filters
+                pagination: $pagination
             ) {
                 data {
                     ${this.listNonCollectionAttributes(item).join('\n')}
+                }
+                meta {
+                    pagination {
+                        page
+                        pageCount
+                        pageSize
+                        total
+                    }
                 }
             }
         }
