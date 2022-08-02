@@ -1,3 +1,5 @@
+import customRu from './custom/ru'
+
 const ru = {
     translation: {
         'Access is denied': 'Доступ запрещен',
@@ -36,7 +38,8 @@ const ru = {
         'Username': 'Имя пользователя',
         'Users': 'Пользователи',
         'Validation error occurred while creating an object': 'При создании объекта произошла ошибка валидации',
-        'Welcome': 'Добро пожаловать'
+        'Welcome': 'Добро пожаловать',
+        ...customRu
     }
 }
 

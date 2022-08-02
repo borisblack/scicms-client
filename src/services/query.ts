@@ -10,12 +10,16 @@ import {ItemCache} from '../features/registry/registrySlice'
 import {DateTime} from 'luxon'
 import {
     DATE_FORMAT_STRING,
+    DATE_HOURS_FORMAT_STRING,
     DATETIME_FORMAT_STRING,
-    HOUR_FORMAT_STRING,
+    HOURS_FORMAT_STRING,
     STD_DATE_FORMAT_STRING,
+    STD_DATE_HOURS_FORMAT_STRING,
     STD_DATETIME_FORMAT_STRING,
+    STD_YEAR_MONTH_FORMAT_STRING,
     TIME_FORMAT_STRING,
-    YEAR_FORMAT_STRING
+    YEAR_FORMAT_STRING,
+    YEAR_MONTH_FORMAT_STRING
 } from '../config/constants'
 
 type FiltersInput<FiltersType> = {
@@ -70,20 +74,33 @@ function buildDateFilter(filterValue: string): FilterInput<unknown, string> {
     if (dt.isValid) {
         const endDt = dt.endOf('day')
         return {gte: dt.toISODate(), lte: endDt.toISODate()}
-    } else {
-        dt = DateTime.fromFormat(filterValue, STD_DATE_FORMAT_STRING)
     }
+
+    dt = DateTime.fromFormat(filterValue, STD_DATE_FORMAT_STRING)
     if (dt.isValid) {
         const endDt = dt.endOf('day')
         return {gte: dt.toISODate(), lte: endDt.toISODate()}
-    } else {
-        dt = DateTime.fromFormat(filterValue, YEAR_FORMAT_STRING)
     }
+
+    dt = DateTime.fromFormat(filterValue, YEAR_MONTH_FORMAT_STRING)
+    if (dt.isValid) {
+        const endDt = dt.endOf('month')
+        return {gte: dt.toISODate(), lte: endDt.toISODate()}
+    }
+
+    dt = DateTime.fromFormat(filterValue, STD_YEAR_MONTH_FORMAT_STRING)
+    if (dt.isValid) {
+        const endDt = dt.endOf('month')
+        return {gte: dt.toISODate(), lte: endDt.toISODate()}
+    }
+
+    dt = DateTime.fromFormat(filterValue, YEAR_FORMAT_STRING)
     if (dt.isValid) {
         const endDt = dt.endOf('year')
         return {gte: dt.toISODate(), lte: endDt.toISODate()}
-    } else
-        return {}
+    }
+
+    return {}
 }
 
 function buildTimeFilter(filterValue: string): FilterInput<unknown, string> {
@@ -91,14 +108,15 @@ function buildTimeFilter(filterValue: string): FilterInput<unknown, string> {
     if (dt.isValid) {
         const endDt = dt.endOf('minute')
         return {gte: dt.toISOTime(), lte: endDt.toISOTime()}
-    } else {
-        dt = DateTime.fromFormat(filterValue, HOUR_FORMAT_STRING)
     }
+
+    dt = DateTime.fromFormat(filterValue, HOURS_FORMAT_STRING)
     if (dt.isValid) {
         const endDt = dt.endOf('hour')
         return {gte: dt.toISOTime(), lte: endDt.toISOTime()}
-    } else
-        return {}
+    }
+
+    return {}
 }
 
 function buildDateTimeFilter(filterValue: string): FilterInput<unknown, string> {
@@ -106,32 +124,57 @@ function buildDateTimeFilter(filterValue: string): FilterInput<unknown, string> 
     if (dt.isValid) {
         const endDt = dt.endOf('minute')
         return {gte: dt.toISO(), lte: endDt.toISO()}
-    } else {
-        dt = DateTime.fromFormat(filterValue, STD_DATETIME_FORMAT_STRING)
     }
+
+    dt = DateTime.fromFormat(filterValue, STD_DATETIME_FORMAT_STRING)
     if (dt.isValid) {
         const endDt = dt.endOf('minute')
         return {gte: dt.toISO(), lte: endDt.toISO()}
-    } else {
-        dt = DateTime.fromFormat(filterValue, DATE_FORMAT_STRING)
     }
+
+    dt = DateTime.fromFormat(filterValue, DATE_HOURS_FORMAT_STRING)
+    if (dt.isValid) {
+        const endDt = dt.endOf('hour')
+        return {gte: dt.toISO(), lte: endDt.toISO()}
+    }
+
+    dt = DateTime.fromFormat(filterValue, STD_DATE_HOURS_FORMAT_STRING)
+    if (dt.isValid) {
+        const endDt = dt.endOf('hour')
+        return {gte: dt.toISO(), lte: endDt.toISO()}
+    }
+
+    dt = DateTime.fromFormat(filterValue, DATE_FORMAT_STRING)
     if (dt.isValid) {
         const endDt = dt.endOf('day')
         return {gte: dt.toISO(), lte: endDt.toISO()}
-    } else {
-        dt = DateTime.fromFormat(filterValue, STD_DATE_FORMAT_STRING)
     }
+
+    dt = DateTime.fromFormat(filterValue, STD_DATE_FORMAT_STRING)
     if (dt.isValid) {
         const endDt = dt.endOf('day')
         return {gte: dt.toISO(), lte: endDt.toISO()}
-    } else {
-        dt = DateTime.fromFormat(filterValue, YEAR_FORMAT_STRING)
     }
+
+    dt = DateTime.fromFormat(filterValue, YEAR_MONTH_FORMAT_STRING)
+    if (dt.isValid) {
+        const endDt = dt.endOf('month')
+        return {gte: dt.toISO(), lte: endDt.toISO()}
+    }
+
+    dt = DateTime.fromFormat(filterValue, STD_YEAR_MONTH_FORMAT_STRING)
+    if (dt.isValid) {
+        const endDt = dt.endOf('month')
+        return {gte: dt.toISO(), lte: endDt.toISO()}
+    }
+
+    dt = DateTime.fromFormat(filterValue, YEAR_FORMAT_STRING)
     if (dt.isValid) {
         const endDt = dt.endOf('year')
         return {gte: dt.toISO(), lte: endDt.toISO()}
-    } else
-        return {}
+    }
+
+    return {}
 }
 
 export default class QueryService {

@@ -1,3 +1,5 @@
+import customEn from './custom/en'
+
 const en = {
     translation: {
         'Access is denied': 'Access is denied',
@@ -36,7 +38,8 @@ const en = {
         'Username': 'Username',
         'Users': 'Users',
         'Validation error occurred while creating an object': 'Validation error occurred while creating an object',
-        'Welcome': 'Welcome'
+        'Welcome': 'Welcome',
+        ...customEn
     }
 }
 

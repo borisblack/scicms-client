@@ -156,7 +156,10 @@ function DataGrid({loading, columns, data, initialState, getRowContextMenu, onRe
                                     <Dropdown key={row.id} overlay={getRowContextMenu(row)} trigger={['contextMenu']}>
                                         <tr onDoubleClick={() => onRowDoubleClick(row)}>
                                             {row.getVisibleCells().map(cell => (
-                                                <td key={cell.id} className="ant-table-cell" style={{width: cell.column.getSize()}}>
+                                                <td
+                                                    key={cell.id} className="ant-table-cell"
+                                                    style={{width: cell.column.getSize()}}
+                                                >
                                                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                                 </td>
                                             ))}
