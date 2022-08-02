@@ -24,7 +24,7 @@ function Page({page}: Props) {
         // TODO: Pass callback for updating single item label
         const pageLabel = viewType === ViewType.default ? _.upperFirst(item.pluralName) : `${item.displayName} ${subTitle}`
         dispatch(updateLabel({label: pageLabel, item, viewType, id}))
-    }, [item, viewType, id, dispatch, t])
+    }, [item, viewType, id, subTitle, dispatch, t])
 
     return (
         <div className="page-content">

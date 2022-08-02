@@ -15,7 +15,7 @@ export const STD_DATETIME_FORMAT_STRING: string = 'yyyy-LL-dd HH:mm'
 export const DATE_HOURS_FORMAT_STRING: string = 'dd.LL.yyyy HH'
 export const STD_DATE_HOURS_FORMAT_STRING: string = 'yyyy-LL-dd HH'
 
-export const DEFAULT_COLUMN_WIDTH = 120
+export const DEFAULT_COLUMN_WIDTH = 130
 export const DEFAULT_PAGE_SIZE = 20
 
 export const ROLE_ADMIN: string = 'ROLE_ADMIN'

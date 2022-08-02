@@ -24,3 +24,43 @@
     margin-left: -8px;
     margin-right: -8px;
 }
+
+.tr {
+    display: flex;
+    width: fit-content;
+}
+
+.tbody .tr:hover {
+    background: #fefbd7;
+}
+
+.tbody .tr.selected {
+    background: #fef7af;
+}
+
+.tbody .tr.selected:hover {
+    background: #fef386;
+}
+
+.resizer {
+    position: absolute;
+    right: -4px;
+    top: 0;
+    height: 100%;
+    width: 8px;
+    background: rgba(0, 0, 0, 0.5);
+    cursor: col-resize;
+    user-select: none;
+    touch-action: none;
+    opacity: 0;
+    z-index: 1;
+}
+
+.resizer:hover {
+    opacity: 1;
+}
+
+.resizer.isResizing {
+    background: blue;
+    opacity: 1;
+}

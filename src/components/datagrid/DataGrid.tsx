@@ -57,6 +57,7 @@ function DataGrid({loading, columns, data, initialState, getRowContextMenu, onRe
     const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>(initialColumnVisibilityMemoized)
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+    const [selectedRowId, setSelectedRowId] = useState<string | null>(null)
     const {t} = useTranslation()
 
     const table = useReactTable({
@@ -67,6 +68,7 @@ function DataGrid({loading, columns, data, initialState, getRowContextMenu, onRe
             sorting,
             columnFilters
         },
+        columnResizeMode: 'onEnd',
         sortDescFirst: false,
         getCoreRowModel: getCoreRowModel(),
         // getSortedRowModel: getSortedRowModel(),
@@ -120,44 +122,56 @@ function DataGrid({loading, columns, data, initialState, getRowContextMenu, onRe
                 <div className="ant-table ant-table-small">
                     <div className="ant-table-container">
                         <div className={`ant-table-content ${styles.antTableContent}`}>
-                            <table style={{tableLayout: 'auto'}}>
+                            <table style={{/*tableLayout: 'auto',*/ width: table.getCenterTotalSize()}}>
                                 <thead className="ant-table-thead">
                                 {table.getHeaderGroups().map(headerGroup => (
-                                    <tr key={headerGroup.id}>
+                                    <tr key={headerGroup.id} className={styles.tr}>
                                         {headerGroup.headers.map(header => (
                                             <th
                                                 key={header.id}
                                                 className={`ant-table-cell ${header.column.getCanSort() ? 'ant-table-column-has-sorters' : ''}`}
                                                 style={{width: header.getSize()}}
-                                                onClick={header.column.getToggleSortingHandler()}
                                             >
-                                                <div className="ant-table-column-sorters">
-                                                    <span className={`ant-table-column-title ${styles.antTableColumnTitle}`}>
-                                                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                                                    </span>
-                                                    {header.column.getCanSort() && (
-                                                        <span className="ant-table-column-sorter ant-table-column-sorter-full">
-                                                            <span className="ant-table-column-sorter-inner">
-                                                                <CaretUpFilled className={`ant-table-column-sorter-up ${header.column.getIsSorted() === 'asc' ? 'active' : ''}`}/>
-                                                                <CaretDownFilled className={`ant-table-column-sorter-down ${header.column.getIsSorted() === 'desc' ? 'active' : ''}`}/>
-                                                            </span>
+                                                <div>
+                                                    <div className="ant-table-column-sorters" onClick={header.column.getToggleSortingHandler()}>
+                                                        <span className={`ant-table-column-title ${styles.antTableColumnTitle}`}>
+                                                            {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                                                         </span>
-                                                    )}
+                                                        {header.column.getCanSort() && (
+                                                            <span className="ant-table-column-sorter ant-table-column-sorter-full">
+                                                                <span className="ant-table-column-sorter-inner">
+                                                                    <CaretUpFilled className={`ant-table-column-sorter-up ${header.column.getIsSorted() === 'asc' ? 'active' : ''}`}/>
+                                                                    <CaretDownFilled className={`ant-table-column-sorter-down ${header.column.getIsSorted() === 'desc' ? 'active' : ''}`}/>
+                                                                </span>
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    {header.column.getCanFilter() ? <ColumnFilter column={header.column} onSubmit={() => handleFilterSubmit(header.id)}/> : null}
                                                 </div>
-                                                {header.column.getCanFilter() ? <ColumnFilter column={header.column} onSubmit={() => handleFilterSubmit(header.id)}/> : null}
+                                                <div
+                                                    className={`${styles.resizer} ${header.column.getIsResizing() ? styles.isResizing : ''}`}
+                                                    style={{transform: header.column.getIsResizing() ? `translateX(${table.getState().columnSizingInfo.deltaOffset}px)` : '',}}
+                                                    onMouseDown={header.getResizeHandler()}
+                                                    onTouchStart={header.getResizeHandler()}
+                                                />
                                             </th>
                                         ))}
                                     </tr>
                                 ))}
                                 </thead>
 
-                                <tbody className="ant-table-tbody data-grid">
+                                <tbody className={`ant-table-tbody data-grid ${styles.tbody}`}>
                                 {table.getRowModel().rows.map(row => (
                                     <Dropdown key={row.id} overlay={getRowContextMenu(row)} trigger={['contextMenu']}>
-                                        <tr onDoubleClick={() => onRowDoubleClick(row)}>
+                                        <tr
+                                            className={`${styles.tr} ${row.getValue('id') === selectedRowId ? styles.selected : ''}`}
+                                            onClick={() => setSelectedRowId(row.getValue('id'))}
+                                            onDoubleClick={() => onRowDoubleClick(row)}
+                                        >
                                             {row.getVisibleCells().map(cell => (
                                                 <td
-                                                    key={cell.id} className="ant-table-cell"
+                                                    key={cell.id}
+                                                    className="ant-table-cell"
                                                     style={{width: cell.column.getSize()}}
                                                 >
                                                     {flexRender(cell.column.columnDef.cell, cell.getContext())}

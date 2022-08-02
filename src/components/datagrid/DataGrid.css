@@ -29,13 +29,3 @@
     background: #ffffff;
     box-shadow: none;
 }
-
-.ant-table-column-title {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.data-grid tr:hover {
-    background: #fefbd7;
-}
