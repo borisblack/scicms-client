@@ -4,6 +4,7 @@ import {useTranslation} from 'react-i18next'
 import {Layout, Menu, Spin} from 'antd'
 // import {gql, useQuery} from '@apollo/client'
 import {ItemType} from 'antd/lib/menu/hooks/useItems'
+import * as icons from '@ant-design/icons'
 
 import './Navbar.css'
 import logo from '../../logo.svg'
@@ -42,16 +43,20 @@ const Navbar = ({collapsed, me}: Props) => {
         .filter(it => !('itemName' in it) || (items !== null && items[it.itemName]))
         .map(it => {
             if ('children' in it) {
+                const Icon = it.icon ? (icons as any)[it.icon] : null
                 return {
                     key: it.key,
                     label: it.label,
+                    icon: Icon ? <Icon/> : null,
                     children: toAntdMenuItems(it.children)
                 }
             } else {
                 const item = (items as ItemCache)[it.itemName]
+                const Icon = item.icon ? (icons as any)[item.icon] : null
                 return {
                     key: item.id,
                     label: _.upperFirst(item.pluralName),
+                    icon: Icon ? <Icon/> : null,
                     onClick: () => handleItemClick(item)
                 }
             }

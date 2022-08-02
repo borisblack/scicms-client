@@ -4,6 +4,7 @@ import {Tabs} from 'antd'
 import {closePage, selectActiveKey, selectPages, setActiveKey} from './pagesSlice'
 import Page from './Page'
 import {useAppDispatch, useAppSelector} from '../../util/hooks'
+import * as icons from '@ant-design/icons'
 
 const TabPane = Tabs.TabPane
 
@@ -33,11 +34,18 @@ function Pages() {
             onChange={handleTabsChange}
             onEdit={handleTabsEdit}
         >
-            {pages.map(page => (
-                <TabPane key={page.key} tab={page.label} style={{background: '#fff'}}>
-                    <Page page={page}/>
-                </TabPane>
-            ))}
+            {pages.map(page => {
+                const Icon = page.item.icon ? (icons as any)[page.item.icon] : null
+                return (
+                    <TabPane
+                        key={page.key}
+                        tab={<span>{Icon ? <Icon/> : null}{page.label}</span>}
+                        style={{background: '#fff'}}
+                    >
+                        <Page page={page}/>
+                    </TabPane>
+                )
+            })}
         </Tabs>
     )
 }

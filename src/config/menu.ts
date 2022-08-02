@@ -8,6 +8,7 @@ interface MenuConfig {
 export interface SubMenu {
     key: string
     label: string
+    icon?: string
     roles?: string[]
     children: (SubMenu | MenuItem)[]
 }
@@ -20,10 +21,12 @@ const menuConfig: MenuConfig = {
     items: [{
         key: 'administration',
         label: i18n.t("Administration"),
+        icon: 'CrownOutlined',
         roles: [ROLE_ADMIN],
         children: [{
             key: 'security',
             label: i18n.t("Security"),
+            icon: 'LockOutlined',
             roles: [ROLE_ADMIN],
             children: [{
                 itemName: 'group'
@@ -36,6 +39,7 @@ const menuConfig: MenuConfig = {
     }, {
         key: 'design',
         label: i18n.t("Design"),
+        icon: 'RocketOutlined',
         roles: [ROLE_ADMIN, ROLE_DESIGNER],
         children: [{
             itemName: 'part'
