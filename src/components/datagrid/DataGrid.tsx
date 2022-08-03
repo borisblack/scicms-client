@@ -1,5 +1,6 @@
-import {ReactElement, useCallback, useEffect, useMemo, useState} from 'react'
-import {ColumnFiltersState, flexRender, getCoreRowModel, SortingState, useReactTable} from '@tanstack/react-table'
+import _ from 'lodash'
+import {MouseEvent, ReactElement, useCallback, useEffect, useMemo, useState} from 'react'
+import {ColumnFiltersState, flexRender, getCoreRowModel, Row, SortingState, useReactTable} from '@tanstack/react-table'
 import {Dropdown, Pagination, Spin} from 'antd'
 import {CaretDownFilled, CaretUpFilled} from '@ant-design/icons'
 
@@ -38,10 +39,12 @@ interface ColumnVisibility {
 export interface RequestParams {
     sorting: SortingState,
     filters: ColumnFiltersState
-    pagination: {
-        page: number,
-        pageSize: number
-    }
+    pagination: RequestPagination
+}
+
+interface RequestPagination {
+    page: number,
+    pageSize: number
 }
 
 function DataGrid({loading, columns, data, initialState, getRowContextMenu, onRequest, onRowDoubleClick}: Props) {
@@ -57,7 +60,7 @@ function DataGrid({loading, columns, data, initialState, getRowContextMenu, onRe
     const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>(initialColumnVisibilityMemoized)
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-    const [selectedRowId, setSelectedRowId] = useState<string | null>(null)
+    const [rowSelection, setRowSelection] = useState({})
     const {t} = useTranslation()
 
     const table = useReactTable({
@@ -66,7 +69,8 @@ function DataGrid({loading, columns, data, initialState, getRowContextMenu, onRe
         state: {
             columnVisibility,
             sorting,
-            columnFilters
+            columnFilters,
+            rowSelection
         },
         columnResizeMode: 'onEnd',
         sortDescFirst: false,
@@ -75,42 +79,97 @@ function DataGrid({loading, columns, data, initialState, getRowContextMenu, onRe
         onColumnVisibilityChange: setColumnVisibility,
         onSortingChange: setSorting,
         onColumnFiltersChange: setColumnFilters,
+        onRowSelectionChange: setRowSelection
     })
 
-    useEffect(() => {
-        const {page, pageSize} = data.pagination
+    const refresh = useCallback((pagination: RequestPagination) => {
         onRequest({
             sorting,
             filters: columnFilters,
-            pagination: {page, pageSize}
-        })
-    }, [sorting, onRequest])
-
-    const handleFilterSubmit = useCallback((columnId: string) => {
-        const {page, pageSize} = data.pagination
-        onRequest({
-            sorting,
-            filters: columnFilters,
-            pagination: {page, pageSize}
-        })
-    }, [data.pagination, sorting, columnFilters, onRequest])
-
-    const handlePageChange = useCallback((page: number, pageSize: number) => {
-        onRequest({
-            sorting,
-            filters: columnFilters,
-            pagination: {page, pageSize}
+            pagination
         })
     }, [sorting, columnFilters, onRequest])
 
-    const handleShowSizeChange = useCallback((current: number, size: number) => onRequest({
-        sorting,
-        filters: columnFilters,
-        pagination: {
-            page: current,
-            pageSize: size
+    useEffect(() => {
+        const {page, pageSize} = data.pagination
+        refresh({page, pageSize})
+    }, [sorting])
+
+    useEffect(() => setRowSelection({}), [data])
+
+    // function handleSortingChange(header: Header<any, unknown>, evt: MouseEvent) {
+    //     const toggleSortingHandler = header.column.getToggleSortingHandler()
+    //     if (toggleSortingHandler)
+    //         toggleSortingHandler(evt)
+    //     else
+    //         return
+    //
+    //     let desc: boolean | null = null
+    //     switch (header.column.getIsSorted()) {
+    //         case 'asc':
+    //             desc = true
+    //             break
+    //         case 'desc':
+    //             desc = null
+    //             break
+    //         case false:
+    //             desc = false
+    //             break
+    //         default:
+    //             break
+    //     }
+    //
+    //     const newSorting = sorting.filter(it => it.id !== header.id)
+    //     if (desc !== null)
+    //         newSorting.push({id: header.id, desc})
+    //
+    //     const {page, pageSize} = data.pagination
+    //     refresh({page, pageSize})
+    // }
+
+    const handleFilterSubmit = useCallback((columnId: string) => {
+        const {page, pageSize} = data.pagination
+        refresh({page, pageSize})
+    }, [data.pagination, refresh])
+
+    const handlePageChange = useCallback(
+        (page: number, pageSize: number) => refresh({page, pageSize}),
+        [refresh]
+    )
+
+    const handleShowSizeChange = useCallback(
+        (current: number, size: number) => refresh({page: current, pageSize: size}),
+        [refresh]
+    )
+
+    const handleRowSelection = useCallback((row: Row<any>, evt: MouseEvent<any>) => {
+        const selectedIds = Object.keys(rowSelection)
+        if (selectedIds.length === 0) {
+            row.getToggleSelectedHandler()(evt)
+        } else {
+            if (evt.ctrlKey) {
+                row.getToggleSelectedHandler()(evt)
+            } else if (evt.shiftKey) {
+                const curId = parseInt(row.id)
+                const ids = selectedIds.map(it => parseInt(it))
+                const minId = _.min(ids) ?? 0
+                const newRowSelection: {[id: string]: boolean} = {}
+                if (curId > minId) {
+                    for (let i = minId; i <= curId; i++) {
+                        newRowSelection[i] = true
+                    }
+                    table.setRowSelection(newRowSelection)
+                } else if (curId < minId) {
+                    for (let i = curId; i <= minId; i++) {
+                        newRowSelection[i] = true
+                    }
+                    table.setRowSelection(newRowSelection)
+                }
+            } else {
+                table.setRowSelection({[row.id]: true})
+            }
         }
-        }), [sorting, columnFilters, onRequest])
+    }, [table, rowSelection])
 
     return (
         <Spin spinning={loading}>
@@ -121,9 +180,9 @@ function DataGrid({loading, columns, data, initialState, getRowContextMenu, onRe
             <div className="ant-table-wrapper">
                 <div className="ant-table ant-table-small">
                     <div className="ant-table-container">
-                        <div className={`ant-table-content ${styles.antTableContent}`}>
-                            <table style={{/*tableLayout: 'auto',*/ width: table.getCenterTotalSize()}}>
-                                <thead className="ant-table-thead">
+                        <div className={`ant-table-content ${styles.tableContent}`}>
+                            <table style={{width: table.getCenterTotalSize()}}>
+                                <thead className={`ant-table-thead ${styles.thead}`}>
                                 {table.getHeaderGroups().map(headerGroup => (
                                     <tr key={headerGroup.id} className={styles.tr}>
                                         {headerGroup.headers.map(header => (
@@ -134,7 +193,7 @@ function DataGrid({loading, columns, data, initialState, getRowContextMenu, onRe
                                             >
                                                 <div>
                                                     <div className="ant-table-column-sorters" onClick={header.column.getToggleSortingHandler()}>
-                                                        <span className={`ant-table-column-title ${styles.antTableColumnTitle}`}>
+                                                        <span className={`ant-table-column-title ${styles.tableColumnTitle}`}>
                                                             {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                                                         </span>
                                                         {header.column.getCanSort() && (
@@ -164,8 +223,8 @@ function DataGrid({loading, columns, data, initialState, getRowContextMenu, onRe
                                 {table.getRowModel().rows.map(row => (
                                     <Dropdown key={row.id} overlay={getRowContextMenu(row)} trigger={['contextMenu']}>
                                         <tr
-                                            className={`${styles.tr} ${row.getValue('id') === selectedRowId ? styles.selected : ''}`}
-                                            onClick={() => setSelectedRowId(row.getValue('id'))}
+                                            className={`${styles.tr} ${row.getIsSelected() ? styles.selected : ''}`}
+                                            onClick={evt => handleRowSelection(row, evt)}
                                             onDoubleClick={() => onRowDoubleClick(row)}
                                         >
                                             {row.getVisibleCells().map(cell => (
