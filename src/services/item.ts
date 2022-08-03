@@ -32,6 +32,21 @@ const FIND_ALL_QUERY = gql`
                 state
                 createdAt
                 updatedAt
+                permission {
+                    data {
+                        access {
+                            data {
+                                mask
+                                target {
+                                    data {
+                                        name
+                                        principal
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -64,7 +79,6 @@ const FIND_ALL_BY_NAMES_QUERY = gql`
                 notLockable
                 localized
                 implementation
-                spec
                 checksum
                 majorRev
                 minorRev

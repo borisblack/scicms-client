@@ -1,4 +1,4 @@
-import React from 'react'
+import {ChangeEvent, KeyboardEvent, MouseEvent} from 'react'
 import {Column} from '@tanstack/react-table'
 import {Input} from 'antd'
 import styles from './DataGrid.module.css'
@@ -11,21 +11,21 @@ interface Props {
 export default function ColumnFilter({column, onSubmit}: Props) {
     const columnFilterValue = column.getFilterValue() as any
 
-    function handleClick(evt: React.MouseEvent) {
+    function handleClick(evt: MouseEvent) {
         evt.stopPropagation()
     }
 
-    function handleKeyDown(evt: React.KeyboardEvent<any>) {
+    function handleKeyDown(evt: KeyboardEvent<any>) {
         evt.stopPropagation()
     }
 
-    function handleKeyUp(evt: React.KeyboardEvent<any>) {
+    function handleKeyUp(evt: KeyboardEvent<any>) {
         evt.stopPropagation()
         if (evt.key === 'Enter')
             onSubmit()
     }
 
-    function handleChange(evt: React.ChangeEvent<any>) {
+    function handleChange(evt: ChangeEvent<any>) {
         column.setFilterValue(evt.target.value ?? undefined) // set undefined to remove the filter entirely
     }
 

@@ -173,9 +173,13 @@ function DataGrid({loading, columns, data, initialState, getRowContextMenu, onRe
 
     return (
         <Spin spinning={loading}>
-            <div className={styles.toolbar}>
-                <Toolbar table={table}/>
-            </div>
+            <Toolbar
+                table={table}
+                onRefresh={() => {
+                    const {page, pageSize} = data.pagination
+                    refresh({page, pageSize})
+                }}
+            />
 
             <div className="ant-table-wrapper">
                 <div className="ant-table ant-table-small">

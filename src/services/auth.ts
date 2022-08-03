@@ -1,17 +1,12 @@
 import axios from 'axios'
 import {apolloClient, throwAxiosResponseError} from '.'
 import {gql} from '@apollo/client'
+import {UserInfo} from '../types'
 
 export interface JwtTokenResponse {
     jwt: string,
     user: UserInfo,
     expirationIntervalMillis: number
-}
-
-export interface UserInfo {
-    id?: string
-    username: string,
-    roles: Array<string>
 }
 
 const ME_QUERY = gql`

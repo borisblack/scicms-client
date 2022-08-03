@@ -2,9 +2,15 @@
     margin-bottom: 12px;
 }
 
+.toolbarBtn {
+    font-size: 18px;
+    cursor: pointer;
+    margin: 4px;
+}
+
 .pagination {
-    margin-top: 12px;
-    text-align: right;
+    margin: 12px 4px;
+    /*text-align: right;*/
 }
 
 .tableContent {

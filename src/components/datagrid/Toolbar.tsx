@@ -1,35 +1,42 @@
 import React from 'react'
 import {Checkbox, Popover} from 'antd'
-import {SettingOutlined} from '@ant-design/icons'
+import {ReloadOutlined, SettingOutlined} from '@ant-design/icons'
 import {Table} from '@tanstack/react-table'
 import {useTranslation} from 'react-i18next'
 
+import styles from './DataGrid.module.css'
+
 interface Props {
     table: Table<any>
+    onRefresh: () => void
 }
 
-function Toolbar({table}: Props) {
+function Toolbar({table, onRefresh}: Props) {
     const {t} = useTranslation()
 
     return (
-        <Popover
-            content={
-                table.getAllLeafColumns().map(column => (
-                    <div key={column.id}>
-                        <Checkbox
-                            checked={column.getIsVisible()}
-                            onChange={column.getToggleVisibilityHandler()}
-                        >
-                            {column.columnDef.header as string}
-                        </Checkbox>
-                    </div>
-                ))
-            }
-            placement='rightTop'
-            trigger='click'
-        >
-            <SettingOutlined title={t('Settings')}/>
-        </Popover>
+        <div className={styles.toolbar}>
+            <ReloadOutlined className={styles.toolbarBtn} title={t('Refresh')} onClick={onRefresh}/>
+
+            <Popover
+                content={
+                    table.getAllLeafColumns().map(column => (
+                        <div key={column.id}>
+                            <Checkbox
+                                checked={column.getIsVisible()}
+                                onChange={column.getToggleVisibilityHandler()}
+                            >
+                                {column.columnDef.header as string}
+                            </Checkbox>
+                        </div>
+                    ))
+                }
+                placement='rightTop'
+                trigger='click'
+            >
+                <SettingOutlined className={styles.toolbarBtn} title={t('Settings')}/>
+            </Popover>
+        </div>
     )
 }
 

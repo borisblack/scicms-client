@@ -5,10 +5,15 @@ import {closePage, selectActiveKey, selectPages, setActiveKey} from './pagesSlic
 import Page from './Page'
 import {useAppDispatch, useAppSelector} from '../../util/hooks'
 import * as icons from '@ant-design/icons'
+import {UserInfo} from '../../types'
+
+interface Props {
+    me: UserInfo
+}
 
 const TabPane = Tabs.TabPane
 
-function Pages() {
+function Pages({me}: Props) {
     const dispatch = useAppDispatch()
     const pages = useAppSelector(selectPages)
     const activeKey = useAppSelector(selectActiveKey)
@@ -42,7 +47,7 @@ function Pages() {
                         tab={<span>{Icon ? <Icon/> : null}{page.label}</span>}
                         style={{background: '#fff'}}
                     >
-                        <Page page={page}/>
+                        <Page me={me} page={page}/>
                     </TabPane>
                 )
             })}

@@ -1,11 +1,17 @@
+export interface UserInfo {
+    id?: string
+    username: string,
+    roles: string[]
+}
+
 interface DefaultItemTemplate {
     id: string
     majorRev: string
     minorRev: string | null
     locale: string | null
-    lifecycle: Lifecycle | null
+    lifecycle: {data: Lifecycle | null}
     state: string | null
-    permission: Permission | null
+    permission: {data: Permission | null}
     createdAt: string
     createdBy: User
     updatedAt: string | null
@@ -48,15 +54,15 @@ interface Point {
     y: number
 }
 
-interface Permission extends DefaultItemTemplate {
+export interface Permission extends DefaultItemTemplate {
     name: string
-    access: Access[]
+    access: {data: Access[]}
 }
 
-interface Access extends DefaultItemTemplate, IntermediateItemTemplate {
+export interface Access extends DefaultItemTemplate, IntermediateItemTemplate {
     displayName: string | null
-    source: Permission
-    target: Identity
+    source: {data: Permission}
+    target: {data: Identity}
     mask: number
     beginDate: string
     endDate: string | null
@@ -65,7 +71,7 @@ interface Access extends DefaultItemTemplate, IntermediateItemTemplate {
 interface Identity extends DefaultItemTemplate {
     name: string
     principal: boolean
-    access: Access[]
+    access: {data: Access[]}
 }
 
 interface User extends DefaultItemTemplate {
@@ -88,14 +94,14 @@ export interface Item extends DefaultItemTemplate {
     performDdl: boolean | null
     versioned: boolean | null
     manualVersioning: boolean | null
-    revisionPolicy: RevisionPolicy | null
+    revisionPolicy: {data: RevisionPolicy | null}
     notLockable: boolean | null
     localized: boolean | null
     implementation: string | null
     spec: ItemSpec
     checksum: string | null
-    allowedLifecycles: AllowedLifecycle[]
-    allowedPermissions: AllowedPermission[]
+    allowedLifecycles: {data: AllowedLifecycle[]}
+    allowedPermissions: {data: AllowedPermission[]}
 }
 
 interface RevisionPolicy extends DefaultItemTemplate {
@@ -174,12 +180,12 @@ interface Index {
 }
 
 interface AllowedLifecycle extends DefaultItemTemplate, IntermediateItemTemplate {
-    source: Item
-    target: Lifecycle
+    source: {data: Item}
+    target: {data: Lifecycle}
     default: boolean | null
 }
 
 interface AllowedPermission extends DefaultItemTemplate, IntermediateItemTemplate {
-    source: Item
-    target: Permission
+    source: {data: Item}
+    target: {data: Permission}
 }
