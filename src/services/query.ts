@@ -6,7 +6,7 @@ import {apolloClient} from './index'
 import appConfig from '../config'
 import {RequestParams} from '../components/datagrid/DataGrid'
 import {ColumnFiltersState} from '@tanstack/react-table'
-import {ItemCache} from '../features/registry/registrySlice'
+
 import {DateTime} from 'luxon'
 import {
     DATE_FORMAT_STRING,
@@ -21,6 +21,7 @@ import {
     YEAR_FORMAT_STRING,
     YEAR_MONTH_FORMAT_STRING
 } from '../config/constants'
+import ItemService from './item'
 
 type FiltersInput<FiltersType> = {
     and?: [FiltersType]
@@ -178,7 +179,16 @@ function buildDateTimeFilter(filterValue: string): FilterInput<unknown, string> 
 }
 
 export default class QueryService {
-    constructor(private items: ItemCache) {}
+    private static instance: QueryService | null = null
+
+    static getInstance() {
+        if (!QueryService.instance)
+            QueryService.instance = new QueryService()
+
+        return QueryService.instance
+    }
+
+    private itemService = ItemService.getInstance()
 
     findAll = (item: Item, {sorting, filters, pagination}: RequestParams): Promise<ResponseCollection<any>> => {
         const query = gql(this.buildFindAllQuery(item))
@@ -242,8 +252,9 @@ export default class QueryService {
                     if (!attr.target)
                         throw new Error('Illegal attribute')
 
-                    const subItem = this.items[attr.target]
-                    result.push(`${attrName} { data { ${subItem.displayAttrName ?? 'id'} } }`)
+                    const subItem = this.itemService.findByName(attr.target)
+                    result.push(`
+                        ${attrName} { data { id ${subItem?.displayAttrName ?? ''} } }`)
                 } else {
                     result.push(`${attrName} { data { id } }`)
                 }
@@ -317,7 +328,7 @@ export default class QueryService {
                 if (!attribute.target)
                     throw new Error('Illegal attribute')
 
-                const subItem = this.items[attribute.target]
+                const subItem = this.itemService.findByName(attribute.target) as Item
                 const displayAttrName = subItem.displayAttrName ?? 'id'
                 return {
                     [displayAttrName]: this.buildAttributeFiltersInput(subItem.spec.attributes[displayAttrName], filterValue)

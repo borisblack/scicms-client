@@ -1,17 +1,17 @@
 import {AttrType, Item, RelType} from '../../types'
 import {Spin, Tabs} from 'antd'
 import React, {useState} from 'react'
-import {ViewType} from './pagesSlice'
+import {IPageData, ViewType} from './pagesSlice'
 
 interface Props {
     item: Item
     viewType: ViewType
-    id?: string
+    data?: IPageData
 }
 
 const TabPane = Tabs.TabPane
 
-function ItemContent({item, id}: Props) {
+function ItemContent({item, data}: Props) {
     const [loading, setLoading] = useState(false)
 
     function renderRelationships() {

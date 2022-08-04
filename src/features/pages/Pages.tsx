@@ -1,14 +1,15 @@
 import React, {useCallback} from 'react'
 import {Tabs} from 'antd'
 
-import {closePage, selectActiveKey, selectPages, setActiveKey} from './pagesSlice'
+import {closePage, getLabel, selectActiveKey, selectPages, setActiveKey, ViewType} from './pagesSlice'
 import Page from './Page'
 import {useAppDispatch, useAppSelector} from '../../util/hooks'
 import * as icons from '@ant-design/icons'
+import {SearchOutlined} from '@ant-design/icons'
 import {UserInfo} from '../../types'
 
 interface Props {
-    me: UserInfo
+    me: UserInfo,
 }
 
 const TabPane = Tabs.TabPane
@@ -40,11 +41,12 @@ function Pages({me}: Props) {
             onEdit={handleTabsEdit}
         >
             {pages.map(page => {
-                const Icon = page.item.icon ? (icons as any)[page.item.icon] : null
+                const {item, viewType} = page
+                const Icon = (viewType === ViewType.default) ? SearchOutlined : (item.icon ? (icons as any)[item.icon] : null)
                 return (
                     <TabPane
                         key={page.key}
-                        tab={<span>{Icon ? <Icon/> : null}{page.label}</span>}
+                        tab={<span>{Icon ? <Icon/> : null}{getLabel(page)}</span>}
                         style={{background: '#fff'}}
                     >
                         <Page me={me} page={page}/>

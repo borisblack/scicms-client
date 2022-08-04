@@ -1,69 +1,67 @@
-import {Item} from '../../types'
+import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
 import ItemService from '../../services/item'
-import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit'
+import PermissionService from '../../services/permission'
 import {RootState} from '../../store'
 
-export interface ItemCache {
-    [name: string]: Item
-}
-
 interface RegistryState {
+    isInitialized: boolean
     loading: boolean
-    items: ItemCache | null
 }
-
-const itemService = new ItemService()
 
 const initialState: RegistryState = {
-    loading: false,
-    items: null
+    isInitialized: false,
+    loading: false
 }
 
-const fetchItemsIfNeeded = createAsyncThunk(
-    'auth/fetchItemsIfNeeded',
-    () => itemService.findAll(),
-    {
-        condition: (credentials, {getState}) => shouldFetchItems(getState() as {registry: RegistryState})
+const initializeIfNeeded = createAsyncThunk(
+    'auth/initialize',
+    async () => {
+        await ItemService.getInstance().initialize()
+        await PermissionService.getInstance().initialize()
+    }, {
+        condition: (credentials, {getState}) => shouldInitialize(getState() as {registry: RegistryState})
     }
 )
 
-const shouldFetchItems = (state: {registry: RegistryState}) => {
-    const {loading, items} = state.registry
-    return items === null && !loading
+const shouldInitialize = (state: {registry: RegistryState}) => {
+    const {isInitialized, loading} = state.registry
+    return !isInitialized && !loading
 }
 
 const registrySlice = createSlice({
     name: 'registry',
     initialState,
     reducers: {
-        reset: () => initialState
+        reset: () => {
+            ItemService.getInstance().reset()
+            PermissionService.getInstance().reset()
+
+            return initialState
+        }
     },
     extraReducers: builder => {
         builder
-            .addCase(fetchItemsIfNeeded.pending, state => {
+            .addCase(initializeIfNeeded.pending, state => {
                 state.loading = true
             })
-            .addCase(fetchItemsIfNeeded.fulfilled, (state: RegistryState, action: PayloadAction<Item[]>) => {
-                const items: ItemCache = {}
-                action.payload.forEach(it => {
-                    items[it.name] = it
-                })
-                state.items = items
+            .addCase(initializeIfNeeded.fulfilled, (state: RegistryState, action) => {
+                state.isInitialized = true
                 state.loading = false
             })
-            .addCase(fetchItemsIfNeeded.rejected, (state, action) => {
+            .addCase(initializeIfNeeded.rejected, (state, action) => {
+                state.isInitialized = false
                 state.loading = false
                 throw new Error(action.error.message)
             })
     }
 })
 
-export {fetchItemsIfNeeded}
-
-export const {reset} = registrySlice.actions
+export {initializeIfNeeded}
 
 export const selectLoading = (state: RootState) => state.registry.loading
 
-export const selectItems = (state: RootState) => state.registry.items
+export const selectIsInitialized = (state: RootState) => state.registry.isInitialized
+
+export const {reset} = registrySlice.actions
 
 export default registrySlice.reducer

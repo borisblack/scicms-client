@@ -1,19 +1,24 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit'
 import {RootState} from '../../store'
 import {Item} from '../../types'
+import _ from 'lodash'
 
 export interface IPage {
     key: string
-    label: string
     item: Item
     viewType: ViewType
-    id?: string
+    data?: IPageData
+}
+
+export interface IPageData {
+    id: string
+    [name: string]: any
 }
 
 export enum ViewType {
     default = 'default',
-    view = 'view',
     add = 'add',
+    view = 'view',
     edit = 'edit'
 }
 
@@ -34,16 +39,34 @@ function generateKey(type: string, viewType: string, id?: string) {
     return key
 }
 
+export function getLabel(page: IPage) {
+    const {item, viewType, data} = page
+    switch (viewType) {
+        case ViewType.add:
+            return `${item.displayName} *`
+        case ViewType.view:
+        case ViewType.edit:
+            let displayAttrValue: string = (data as IPageData)[item.displayAttrName || 'id']
+            if (displayAttrValue === 'id')
+                displayAttrValue = displayAttrValue.substring(0, 8)
+
+            return displayAttrValue
+        case ViewType.default:
+        default:
+            return _.upperFirst(item.pluralName)
+    }
+}
+
 const slice = createSlice({
     name: 'pages',
     initialState,
     reducers: {
-        openPage: (state, action: PayloadAction<{label: string, item: Item, viewType: ViewType, id?: string}>) => {
+        openPage: (state, action: PayloadAction<{item: Item, viewType: ViewType, data?: IPageData}>) => {
             const {pages} = state
-            const {label, item, viewType, id} = action.payload
-            const key = generateKey(item.name, viewType, id)
+            const {item, viewType, data} = action.payload
+            const key = generateKey(item.name, viewType, data?.id)
             if (!pages.hasOwnProperty(key))
-                pages[key] = {key, label, item, viewType, id}
+                pages[key] = {key, item, viewType, data}
 
             state.activeKey = key
         },
@@ -59,13 +82,6 @@ const slice = createSlice({
             else
                 state.activeKey = undefined
         },
-        updateLabel: (state, action: PayloadAction<{label: string, item: Item, viewType: ViewType, id?: string}>) => {
-            const {label, item, viewType, id} = action.payload
-            const {pages} = state
-            const key = generateKey(item.name, viewType, id)
-            if (pages.hasOwnProperty(key))
-                pages[key].label = label
-        },
         setActiveKey: (state, action) => {
             const {pages} = state
             const key = action.payload
@@ -80,6 +96,6 @@ const slice = createSlice({
 export const selectPages = (state: RootState) => Object.values(state.pages.pages) as IPage[]
 export const selectActiveKey = (state: RootState) => state.pages.activeKey
 
-export const {openPage, closePage, updateLabel, setActiveKey, reset} = slice.actions
+export const {openPage, closePage, setActiveKey, reset} = slice.actions
 
 export default slice.reducer

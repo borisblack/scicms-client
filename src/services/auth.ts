@@ -19,6 +19,15 @@ const ME_QUERY = gql`
 `
 
 export default class AuthService {
+    private static instance: AuthService | null = null
+
+    static getInstance() {
+        if (!AuthService.instance)
+            AuthService.instance = new AuthService()
+
+        return AuthService.instance
+    }
+
     async login(credentials: { username: string, password: string }) {
         const { username, password } = credentials
 

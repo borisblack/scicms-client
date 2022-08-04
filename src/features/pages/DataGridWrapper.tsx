@@ -1,17 +1,21 @@
 import {DateTime} from 'luxon'
 import {ReactElement, useCallback, useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
-import {createColumnHelper} from '@tanstack/react-table'
+import {createColumnHelper, Row} from '@tanstack/react-table'
 import {Checkbox, Menu, message} from 'antd'
 
 import appConfig from '../../config'
-import {Attribute, AttrType, Item, RelType} from '../../types'
+import {Attribute, AttrType, Item, Permission, RelType, UserInfo} from '../../types'
 import QueryService from '../../services/query'
-import {useAppSelector} from '../../util/hooks'
-import {selectItems} from '../registry/registrySlice'
 import DataGrid, {DataWithPagination, RequestParams} from '../../components/datagrid/DataGrid'
+import ItemService from '../../services/item'
+import {useAppDispatch} from '../../util/hooks'
+import {openPage, ViewType} from './pagesSlice'
+import PermissionService from '../../services/permission'
+import * as ACL from '../../util/acl'
 
 interface Props {
+    me: UserInfo
     item: Item
 }
 
@@ -26,15 +30,15 @@ const initialData: DataWithPagination<any> = {
     }
 }
 
-function DataGridWrapper({item}: Props) {
+function DataGridWrapper({me, item}: Props) {
     const {t} = useTranslation()
+    const dispatch = useAppDispatch()
     const [loading, setLoading] = useState(false)
     const [data, setData] = useState(initialData)
-    const items = useAppSelector(selectItems)
-    if (!items)
-        throw new Error('Illegal state')
 
-    const queryService = useMemo(() => new QueryService(items), [items])
+    const itemService = useMemo(() => ItemService.getInstance(), [])
+    const permissionService = useMemo(() => PermissionService.getInstance(), [])
+    const queryService = useMemo(() => QueryService.getInstance(), [])
 
     const renderCell = useCallback((attribute: Attribute, value: any): ReactElement | string | null => {
         switch (attribute.type) {
@@ -69,12 +73,12 @@ function DataGridWrapper({item}: Props) {
                 if (!attribute.target)
                     throw new Error('Illegal state')
 
-                const subItem = items[attribute.target]
-                return (value && value.data) ? value.data[subItem.displayAttrName ?? 'id'] : null
+                const subItem = itemService.findByName(attribute.target)
+                return (value && value.data) ? value.data[subItem?.displayAttrName ?? 'id'] : null
             default:
                 throw new Error('Illegal attribute')
         }
-    }, [items])
+    }, [itemService])
 
     const columnsMemoized = useMemo(() => {
         const columns = []
@@ -117,17 +121,17 @@ function DataGridWrapper({item}: Props) {
         }
     }, [item, queryService, t])
 
-    const openRow = useCallback((row: any) => {
-        console.log(row)
-        // const {values} = row
-        // const {classItem} = metadata
-        // dispatch(openPage({
-        //     type: isRelationship ? (_.property(initialQueryItem, 'target_id') as FlatItem)[META_KEY].type : initialQueryItem[META_KEY].type,
-        //     viewType: 'edit',
-        //     id: values.id,
-        //     label: _.property(classItem, 'label')
-        // }))
-    }, [])
+    const openRow = useCallback((row: Row<any>) => {
+        const itemData = row.original
+        const permission = permissionService.findById(itemData.permission.data.id as string) as Permission
+        const canEdit = ACL.canWrite(me, permission)
+
+        dispatch(openPage({
+            item,
+            viewType: canEdit ? ViewType.edit : ViewType.view,
+            data: row.original,
+        }))
+    }, [me, item, permissionService, dispatch])
 
     const handleRowDoubleClick = useCallback((row: any) => {
         openRow(row)

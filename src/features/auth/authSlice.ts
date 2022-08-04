@@ -1,8 +1,7 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
 import {getExpireAt, getJwt, removeExpireAt, removeJwt, storeExpireAt, storeJwt} from '../../services'
 import {DateTime} from 'luxon'
-import AuthService from '../../services/auth'
-import {JwtTokenResponse} from '../../services/auth'
+import AuthService, {JwtTokenResponse} from '../../services/auth'
 import {RootState} from '../../store'
 import {UserInfo} from '../../types'
 
@@ -14,7 +13,7 @@ export interface AuthState {
     error: Error | null
 }
 
-const authService = new AuthService()
+const authService = AuthService.getInstance()
 
 const initialState: AuthState = {
     loading: false,
