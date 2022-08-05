@@ -1,17 +1,16 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit'
 import {RootState} from '../../store'
-import {Item} from '../../types'
+import {DefaultItemTemplate, Item} from '../../types'
 import _ from 'lodash'
 
 export interface IPage {
     key: string
     item: Item
     viewType: ViewType
-    data?: IPageData
+    data?: ItemData
 }
 
-export interface IPageData {
-    id: string
+export interface ItemData extends DefaultItemTemplate {
     [name: string]: any
 }
 
@@ -46,7 +45,7 @@ export function getLabel(page: IPage) {
             return `${item.displayName} *`
         case ViewType.view:
         case ViewType.edit:
-            let displayAttrValue: string = (data as IPageData)[item.displayAttrName || 'id']
+            let displayAttrValue: string = (data as ItemData)[item.displayAttrName || 'id']
             if (displayAttrValue === 'id')
                 displayAttrValue = displayAttrValue.substring(0, 8)
 
@@ -61,7 +60,7 @@ const slice = createSlice({
     name: 'pages',
     initialState,
     reducers: {
-        openPage: (state, action: PayloadAction<{item: Item, viewType: ViewType, data?: IPageData}>) => {
+        openPage: (state, action: PayloadAction<{item: Item, viewType: ViewType, data?: ItemData}>) => {
             const {pages} = state
             const {item, viewType, data} = action.payload
             const key = generateKey(item.name, viewType, data?.id)

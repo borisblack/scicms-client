@@ -20,6 +20,7 @@ const ru = {
         'Login': 'Вход',
         'Logout': 'Выход',
         'Navigational panel': 'Панель навигации',
+        'Open': 'Открыть',
         'Parts': 'Составные части',
         'Password': 'Пароль',
         'Refresh': 'Обновить',

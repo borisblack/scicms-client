@@ -27,7 +27,7 @@ interface AppConfig {
     },
     ui: {
         dataGrid: {
-            defaultColumnWidth: number
+            defaultColWidth: number
         }
     }
 }
@@ -50,7 +50,7 @@ const appConfig: AppConfig = {
     },
     ui: {
         dataGrid: {
-            defaultColumnWidth: DEFAULT_COLUMN_WIDTH
+            defaultColWidth: DEFAULT_COLUMN_WIDTH
         }
     }
 }

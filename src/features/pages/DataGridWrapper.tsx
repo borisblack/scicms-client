@@ -94,7 +94,7 @@ function DataGridWrapper({me, item}: Props) {
             const column = columnHelper.accessor(attrName, {
                 header: attr.displayName,
                 cell: info => renderCell(attr, info.getValue()),
-                size: attr.width ?? appConfig.ui.dataGrid.defaultColumnWidth,
+                size: attr.colWidth ?? appConfig.ui.dataGrid.defaultColWidth,
                 enableSorting: attr.type !== AttrType.relation
             })
 
@@ -140,7 +140,7 @@ function DataGridWrapper({me, item}: Props) {
     const getRowContextMenu = useCallback((row: any) => (
         <Menu items={[{
             key: 'open',
-            label: 'Открыть',
+            label: t('Open'),
             onClick: () => openRow(row)
         }]}/>
     ), [openRow])
@@ -153,7 +153,7 @@ function DataGridWrapper({me, item}: Props) {
                 continue
 
             const attribute = attributes[attrName]
-            if (attribute.hidden)
+            if (attribute.colHidden)
                 hiddenColumns.push(attrName)
         }
 

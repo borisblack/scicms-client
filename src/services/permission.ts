@@ -88,11 +88,9 @@ export default class PermissionService {
 
     permissions: PermissionCache = {}
 
-    constructor(private me?: UserInfo) {}
-
-    async initialize() {
-        if (this.me) {
-            const data = await this.findAllByIdentityNames([...this.me.roles, this.me.username])
+    async initialize(me?: UserInfo) {
+        if (me) {
+            const data = await this.findAllByIdentityNames([...me.roles, me.username])
             this.permissions = arrayToCache(data)
         } else {
             const data = await this.findAll()

@@ -20,6 +20,7 @@ const en = {
         'Login': 'Login',
         'Logout': 'Logout',
         'Navigational panel': 'Navigational panel',
+        'Open': 'Open',
         'Parts': 'Parts',
         'Password': 'Password',
         'Refresh': 'Refresh',

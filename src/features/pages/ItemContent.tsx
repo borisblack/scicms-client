@@ -1,12 +1,12 @@
 import {AttrType, Item, RelType} from '../../types'
 import {Spin, Tabs} from 'antd'
 import React, {useState} from 'react'
-import {IPageData, ViewType} from './pagesSlice'
+import {ItemData, ViewType} from './pagesSlice'
 
 interface Props {
     item: Item
     viewType: ViewType
-    data?: IPageData
+    data?: ItemData
 }
 
 const TabPane = Tabs.TabPane

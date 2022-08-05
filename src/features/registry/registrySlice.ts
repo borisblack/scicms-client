@@ -2,6 +2,7 @@ import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
 import ItemService from '../../services/item'
 import PermissionService from '../../services/permission'
 import {RootState} from '../../store'
+import {UserInfo} from '../../types'
 
 interface RegistryState {
     isInitialized: boolean
@@ -15,9 +16,9 @@ const initialState: RegistryState = {
 
 const initializeIfNeeded = createAsyncThunk(
     'auth/initialize',
-    async () => {
+    async (me?: UserInfo) => {
         await ItemService.getInstance().initialize()
-        await PermissionService.getInstance().initialize()
+        await PermissionService.getInstance().initialize(me)
     }, {
         condition: (credentials, {getState}) => shouldInitialize(getState() as {registry: RegistryState})
     }

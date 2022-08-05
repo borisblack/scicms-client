@@ -31,8 +31,8 @@ const Navbar = ({collapsed, me}: Props) => {
     // const { loading, error, data } = useQuery(ME_QUERY, {errorPolicy: 'all'})
 
     useEffect(() => {
-        dispatch(initializeIfNeeded())
-    }, [isInitialized, dispatch])
+        dispatch(initializeIfNeeded(me))
+    }, [isInitialized, me, dispatch])
 
     const handleItemClick = useCallback((item: Item) => {
         dispatch(openPage({item, viewType: ViewType.default}))

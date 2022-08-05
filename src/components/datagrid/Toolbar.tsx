@@ -31,7 +31,7 @@ function Toolbar({table, onRefresh}: Props) {
                         </div>
                     ))
                 }
-                placement='rightTop'
+                placement='leftTop'
                 trigger='click'
             >
                 <SettingOutlined className={styles.toolbarBtn} title={t('Settings')}/>

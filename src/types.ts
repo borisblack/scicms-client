@@ -4,7 +4,7 @@ export interface UserInfo {
     roles: string[]
 }
 
-interface DefaultItemTemplate {
+export interface DefaultItemTemplate {
     id: string
     majorRev: string
     minorRev: string | null
@@ -139,8 +139,8 @@ export interface Attribute {
     scale?: number
     minRange?: number
     maxRange?: number
-    hidden?: boolean
-    width?:number
+    colHidden?: boolean
+    colWidth?:number
 }
 
 export enum AttrType {
