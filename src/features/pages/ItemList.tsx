@@ -1,18 +1,19 @@
 import {DateTime} from 'luxon'
-import {ReactElement, useCallback, useMemo, useState} from 'react'
+import {ReactElement, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {createColumnHelper, Row} from '@tanstack/react-table'
 import {Checkbox, Menu, message} from 'antd'
 
 import appConfig from '../../config'
-import {Attribute, AttrType, Item, Permission, RelType, UserInfo} from '../../types'
+import {Attribute, AttrType, Item, RelType, UserInfo} from '../../types'
 import QueryService from '../../services/query'
 import DataGrid, {DataWithPagination, RequestParams} from '../../components/datagrid/DataGrid'
 import ItemService from '../../services/item'
 import {useAppDispatch} from '../../util/hooks'
 import {openPage, ViewType} from './pagesSlice'
 import PermissionService from '../../services/permission'
-import * as ACL from '../../util/acl'
+import {hasPlugins, renderPlugins} from '../../config/plugin'
+import {hasComponents, renderComponents} from '../../config/custom-component'
 
 interface Props {
     me: UserInfo
@@ -30,11 +31,14 @@ const initialData: DataWithPagination<any> = {
     }
 }
 
-function DataGridWrapper({me, item}: Props) {
+function ItemList({me, item}: Props) {
     const {t} = useTranslation()
     const dispatch = useAppDispatch()
     const [loading, setLoading] = useState(false)
     const [data, setData] = useState(initialData)
+    const headerRef = useRef<HTMLDivElement>(null)
+    const contentRef = useRef<HTMLDivElement>(null)
+    const footerRef = useRef<HTMLDivElement>(null)
 
     const itemService = useMemo(() => ItemService.getInstance(), [])
     const permissionService = useMemo(() => PermissionService.getInstance(), [])
@@ -104,6 +108,26 @@ function DataGridWrapper({me, item}: Props) {
         return columns
     }, [item, renderCell])
 
+    useEffect(() => {
+        const headerNode = headerRef.current
+        if (headerNode) {
+            renderPlugins('default.header', headerNode, {item})
+            renderPlugins(`${item.name}.default.header`, headerNode, {item})
+        }
+
+        const contentNode = contentRef.current
+        if (contentNode) {
+            renderPlugins('default.content', contentNode, {item})
+            renderPlugins(`${item.name}.default.content`, contentNode, {item})
+        }
+
+        const footerNode = footerRef.current
+        if (footerNode) {
+            renderPlugins('default.footer', footerNode, {item})
+            renderPlugins(`${item.name}.default.footer`, footerNode, {item})
+        }
+    }, [item])
+
     const handleRequest = useCallback(async (params: RequestParams) => {
         try {
             setLoading(true)
@@ -122,16 +146,12 @@ function DataGridWrapper({me, item}: Props) {
     }, [item, queryService, t])
 
     const openRow = useCallback((row: Row<any>) => {
-        const itemData = row.original
-        const permission = permissionService.findById(itemData.permission.data.id as string) as Permission
-        const canEdit = ACL.canWrite(me, permission)
-
         dispatch(openPage({
             item,
-            viewType: canEdit ? ViewType.edit : ViewType.view,
+            viewType: ViewType.view,
             data: row.original,
         }))
-    }, [me, item, permissionService, dispatch])
+    }, [item, dispatch])
 
     const handleRowDoubleClick = useCallback((row: any) => {
         openRow(row)
@@ -143,7 +163,7 @@ function DataGridWrapper({me, item}: Props) {
             label: t('Open'),
             onClick: () => openRow(row)
         }]}/>
-    ), [openRow])
+    ), [t, openRow])
 
     const hiddenColumnsMemoized = useMemo((): string[] => {
         const {attributes} = item.spec
@@ -162,20 +182,37 @@ function DataGridWrapper({me, item}: Props) {
 
     const dataMemoized = useMemo(() => data, [data])
 
+    function renderContent() {
+
+    }
+
     return (
-        <DataGrid
-            loading={loading}
-            columns={columnsMemoized}
-            data={dataMemoized}
-            initialState={{
-                hiddenColumns: hiddenColumnsMemoized,
-                pageSize: appConfig.query.findAll.defaultPageSize
-            }}
-            getRowContextMenu={getRowContextMenu}
-            onRequest={handleRequest}
-            onRowDoubleClick={handleRowDoubleClick}
-        />
+        <>
+            {hasComponents('default.header') && renderComponents('default.header', {item})}
+            {hasComponents(`${item.name}.default.header`) && renderComponents(`${item.name}.default.header`, {item})}
+            {hasPlugins('default.header', `${item.name}.default.header`) && <div ref={headerRef}/>}
+            {hasComponents('default.content') && renderComponents('default.content', {item})}
+            {hasComponents(`${item.name}.default.content`) && renderComponents(`${item.name}.default.content`, {item})}
+            {hasPlugins('default.content', `${item.name}.default.content`) && <div ref={contentRef}/>}
+            {(!hasComponents('default.content', `${item.name}.default.content`) && !hasPlugins('default.content', `${item.name}.default.content`)) &&
+                <DataGrid
+                    loading={loading}
+                    columns={columnsMemoized}
+                    data={dataMemoized}
+                    initialState={{
+                        hiddenColumns: hiddenColumnsMemoized,
+                        pageSize: appConfig.query.findAll.defaultPageSize
+                    }}
+                    getRowContextMenu={getRowContextMenu}
+                    onRequest={handleRequest}
+                    onRowDoubleClick={handleRowDoubleClick}
+                />
+            }
+            {hasComponents('default.footer') && renderComponents('default.footer', {item})}
+            {hasComponents(`${item.name}.default.footer`) && renderComponents(`${item.name}.default.footer`, {item})}
+            {hasPlugins('default.footer', `${item.name}.default.footer`) && <div ref={footerRef}/>}
+        </>
     )
 }
 
-export default DataGridWrapper
+export default ItemList

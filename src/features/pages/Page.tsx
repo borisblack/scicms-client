@@ -7,7 +7,7 @@ import {useAppDispatch} from '../../util/hooks'
 import {getLabel, IPage, openPage, ViewType} from './pagesSlice'
 import {Button, PageHeader} from 'antd'
 import ItemContent from './ItemContent'
-import DataGridWrapper from './DataGridWrapper'
+import ItemList from './ItemList'
 import {UserInfo} from '../../types'
 import * as ACL from '../../util/acl'
 import PermissionService from '../../services/permission'
@@ -28,7 +28,7 @@ function Page({me, page}: Props) {
     const canCreate = !!permission && ACL.canCreate(me, permission)
 
     function handleCreate(evt: MouseEvent) {
-        dispatch(openPage({item, viewType: ViewType.add}))
+        dispatch(openPage({item, viewType: ViewType.view}))
     }
 
     return (
@@ -40,7 +40,7 @@ function Page({me, page}: Props) {
                         <Button type="primary" onClick={handleCreate}><PlusCircleOutlined /> {t('Create')}</Button> : null}
                 />
                 {viewType === ViewType.default ?
-                    <DataGridWrapper me={me} item={item}/> :
+                    <ItemList me={me} item={item}/> :
                     <ItemContent item={item} viewType={viewType} data={data}/>
                 }
         </div>

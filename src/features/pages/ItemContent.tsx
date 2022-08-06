@@ -15,6 +15,9 @@ function ItemContent({item, data}: Props) {
     const [loading, setLoading] = useState(false)
 
     function renderRelationships() {
+        // const permission = permissionService.findById(data.permission.data.id as string) as Permission
+        // const canEdit = ACL.canWrite(me, permission)
+
         return (
             <Tabs>
                 {Object.keys(item.spec.attributes)

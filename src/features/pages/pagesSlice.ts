@@ -16,9 +16,7 @@ export interface ItemData extends DefaultItemTemplate {
 
 export enum ViewType {
     default = 'default',
-    add = 'add',
-    view = 'view',
-    edit = 'edit'
+    view = 'view'
 }
 
 interface PagesState {
@@ -41,10 +39,10 @@ function generateKey(type: string, viewType: string, id?: string) {
 export function getLabel(page: IPage) {
     const {item, viewType, data} = page
     switch (viewType) {
-        case ViewType.add:
-            return `${item.displayName} *`
         case ViewType.view:
-        case ViewType.edit:
+            if (!data)
+                return `${item.displayName} *`
+
             let displayAttrValue: string = (data as ItemData)[item.displayAttrName || 'id']
             if (displayAttrValue === 'id')
                 displayAttrValue = displayAttrValue.substring(0, 8)
