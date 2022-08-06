@@ -1,8 +1,8 @@
 import _ from 'lodash'
-import {Item} from '../types'
-import {helloComponent} from '../custom-components/hello'
-import {hiComponent} from '../custom-components/hi'
 import {ReactElement} from 'react'
+
+import {Item} from '../types'
+import customComponentConfig from '../config/custom-component'
 
 /* Mount points:
 default.header
@@ -29,6 +29,8 @@ export interface CustomComponent {
     id: string,
     mountPoint: string | 'default.header' | 'default.content' | 'default.footer' | 'view.header' | 'view.footer' | 'view.content' | 'tabs.content' | 'tabs.start' | 'tabs.end',
     priority: number,
+    title?: string // for tabs rendering
+    icon?: string // for tabs rendering
     render: ({context}: CustomComponentRenderProps) => void
 }
 
@@ -40,11 +42,7 @@ interface CustomComponentRenderContext {
     item: Item
 }
 
-// Add custom components here
-const customComponents = [
-    helloComponent,
-    hiComponent
-].sort((a, b) => a.priority - b.priority)
+const customComponents: CustomComponent[] = customComponentConfig.components.sort((a, b) => a.priority - b.priority)
 
 const componentsByMountPoint = _.groupBy(customComponents, component => component.mountPoint)
 

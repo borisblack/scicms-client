@@ -12,8 +12,8 @@ import ItemService from '../../services/item'
 import {useAppDispatch} from '../../util/hooks'
 import {openPage, ViewType} from './pagesSlice'
 import PermissionService from '../../services/permission'
-import {hasPlugins, renderPlugins} from '../../config/plugin'
-import {hasComponents, renderComponents} from '../../config/custom-component'
+import {hasPlugins, renderPlugins} from '../../plugins'
+import {hasComponents, renderComponents} from '../../custom-components'
 
 interface Props {
     me: UserInfo
