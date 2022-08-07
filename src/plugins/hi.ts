@@ -7,6 +7,6 @@ export const hiPlugin: CustomPlugin = {
     title: 'Hi',
     icon: 'MehOutlined',
     render: ({node, context}) => {
-        node.innerHTML = `Hi ${context.item.displayName}!`
+        node.innerHTML = `Hi ${context.item.displayName} from plugin!`
     }
 }

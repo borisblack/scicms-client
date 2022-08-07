@@ -1,5 +1,5 @@
 export interface UserInfo {
-    id?: string
+    id: string
     username: string,
     roles: string[]
 }
@@ -13,10 +13,10 @@ export interface DefaultItemTemplate {
     state: string | null
     permission: {data: Permission | null}
     createdAt: string
-    createdBy: User
+    createdBy: {data: User}
     updatedAt: string | null
-    updatedBy: User | null
-    lockedBy: User | null
+    updatedBy: {data: User | null}
+    lockedBy: {data: User | null}
 }
 
 interface IntermediateItemTemplate {
@@ -188,4 +188,8 @@ interface AllowedLifecycle extends DefaultItemTemplate, IntermediateItemTemplate
 interface AllowedPermission extends DefaultItemTemplate, IntermediateItemTemplate {
     source: {data: Item}
     target: {data: Permission}
+}
+
+export interface ItemData extends DefaultItemTemplate {
+    [name: string]: any
 }

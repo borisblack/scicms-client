@@ -1,6 +1,6 @@
 import _ from 'lodash'
 
-import {Item} from '../types'
+import {Item, ItemData, UserInfo} from '../types'
 import pluginConfig from '../config/plugin'
 
 /* Plugin points:
@@ -39,7 +39,9 @@ export interface CustomPluginRenderProps {
 }
 
 export interface CustomPluginRenderContext {
+    me: UserInfo
     item: Item
+    data?: ItemData
 }
 
 const plugins: CustomPlugin[] = pluginConfig.plugins.sort((a, b) => a.priority - b.priority)

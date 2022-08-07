@@ -6,7 +6,7 @@ interface PluginConfig {
     plugins: CustomPlugin[]
 }
 
-// Add new plugins here
+// Add plugins here
 const pluginConfig: PluginConfig = {
     plugins: [
         helloPlugin,

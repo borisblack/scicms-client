@@ -1,6 +1,6 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit'
 import {RootState} from '../../store'
-import {DefaultItemTemplate, Item} from '../../types'
+import {Item, ItemData} from '../../types'
 import _ from 'lodash'
 
 export interface IPage {
@@ -8,10 +8,6 @@ export interface IPage {
     item: Item
     viewType: ViewType
     data?: ItemData
-}
-
-export interface ItemData extends DefaultItemTemplate {
-    [name: string]: any
 }
 
 export enum ViewType {
@@ -36,8 +32,7 @@ function generateKey(type: string, viewType: string, id?: string) {
     return key
 }
 
-export function getLabel(page: IPage) {
-    const {item, viewType, data} = page
+export function getLabel(item: Item, viewType: ViewType, data?: ItemData) {
     switch (viewType) {
         case ViewType.view:
             if (!data)
@@ -79,11 +74,19 @@ const slice = createSlice({
             else
                 state.activeKey = undefined
         },
-        setActiveKey: (state, action) => {
+        setActiveKey: (state, action: PayloadAction<string>) => {
             const {pages} = state
             const key = action.payload
             if (pages.hasOwnProperty(key))
                 state.activeKey = action.payload
+        },
+        updateActivePage: (state, action: PayloadAction<ItemData>) => {
+            const {activeKey} = state
+            if (!activeKey)
+                return
+
+            const page = state.pages[activeKey]
+            page.data = action.payload
         },
         reset: () => initialState
     },
@@ -93,6 +96,6 @@ const slice = createSlice({
 export const selectPages = (state: RootState) => Object.values(state.pages.pages) as IPage[]
 export const selectActiveKey = (state: RootState) => state.pages.activeKey
 
-export const {openPage, closePage, setActiveKey, reset} = slice.actions
+export const {openPage, closePage, setActiveKey, updateActivePage, reset} = slice.actions
 
 export default slice.reducer

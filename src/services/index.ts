@@ -3,6 +3,7 @@ import config from '../config'
 import {codeMessage} from '../i18n'
 import {ApolloClient, ApolloLink, from, InMemoryCache} from '@apollo/client'
 import {createUploadLink} from 'apollo-upload-client'
+import {GraphQLError} from 'graphql/error'
 
 export const storeJwt = (jwt: string) => { localStorage.setItem('jwt', jwt) }
 
@@ -78,3 +79,7 @@ export const apolloClient = new ApolloClient({
         }
     }
 })
+
+export const throwGraphQLErrors = (errors: ReadonlyArray<GraphQLError>) => {
+    throw new Error(errors.map(err => err.message).join('; '))
+}

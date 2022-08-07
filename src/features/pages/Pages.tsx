@@ -41,12 +41,12 @@ function Pages({me}: Props) {
             onEdit={handleTabsEdit}
         >
             {pages.map(page => {
-                const {item, viewType} = page
+                const {item, viewType, data} = page
                 const Icon = (viewType === ViewType.default) ? SearchOutlined : (item.icon ? (icons as any)[item.icon] : null)
                 return (
                     <TabPane
                         key={page.key}
-                        tab={<span>{Icon ? <Icon/> : null}{getLabel(page)}</span>}
+                        tab={<span>{Icon ? <Icon/> : null}{getLabel(item, viewType, data)}</span>}
                         style={{background: '#fff'}}
                     >
                         <Page me={me} page={page}/>

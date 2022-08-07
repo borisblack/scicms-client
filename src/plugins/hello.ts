@@ -7,6 +7,6 @@ export const helloPlugin: CustomPlugin = {
     title: 'Hello',
     icon: 'SmileOutlined',
     render: ({node, context}) => {
-        node.innerHTML = `Hello ${context.item.displayName}!`
+        node.innerHTML = `Hello ${context.item.displayName} from plugin!`
     }
 }

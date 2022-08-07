@@ -3,6 +3,7 @@ import ItemService from '../../services/item'
 import PermissionService from '../../services/permission'
 import {RootState} from '../../store'
 import {UserInfo} from '../../types'
+import {message} from 'antd'
 
 interface RegistryState {
     isInitialized: boolean
@@ -45,14 +46,14 @@ const registrySlice = createSlice({
             .addCase(initializeIfNeeded.pending, state => {
                 state.loading = true
             })
-            .addCase(initializeIfNeeded.fulfilled, (state: RegistryState, action) => {
+            .addCase(initializeIfNeeded.fulfilled, state => {
                 state.isInitialized = true
                 state.loading = false
             })
             .addCase(initializeIfNeeded.rejected, (state, action) => {
                 state.isInitialized = false
                 state.loading = false
-                throw new Error(action.error.message)
+                message.error(action.error.message)
             })
     }
 })

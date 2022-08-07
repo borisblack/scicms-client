@@ -1,8 +1,10 @@
-import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
+import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit'
+import {message} from 'antd'
+
+import {RootState} from '../../store'
 import {getExpireAt, getJwt, removeExpireAt, removeJwt, storeExpireAt, storeJwt} from '../../services'
 import {DateTime} from 'luxon'
 import AuthService, {JwtTokenResponse} from '../../services/auth'
-import {RootState} from '../../store'
 import {UserInfo} from '../../types'
 
 export interface AuthState {
@@ -10,7 +12,6 @@ export interface AuthState {
     jwt: string | null
     expireAt: number | null
     me: UserInfo | null
-    error: Error | null
 }
 
 const authService = AuthService.getInstance()
@@ -19,8 +20,7 @@ const initialState: AuthState = {
     loading: false,
     jwt: getJwt(),
     expireAt: getExpireAt(),
-    me: null,
-    error: null
+    me: null
 }
 
 const login = createAsyncThunk(
@@ -53,69 +53,57 @@ const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {},
-    extraReducers: {
-        [login.pending as any]: (state: AuthState) => {
-            state.loading = true
-            state.error = null
-        },
-        [login.fulfilled as any]: (state: AuthState, action: {payload: JwtTokenResponse}) => {
-            const {jwt, expirationIntervalMillis, user} = action.payload
-            const expireAt = DateTime.now().plus({millisecond: expirationIntervalMillis}).toMillis()
-            storeJwt(jwt)
-            storeExpireAt(expireAt)
-            state.jwt = jwt
-            state.expireAt = expireAt
-            state.me = {
-                username: user.username,
-                roles: user.roles
-            }
-            state.loading = false
-            state.error = null
-        },
-        [login.rejected as any]: (state: AuthState, action: {error: Error}) => {
-            state.error = action.error
-            state.loading = false
-        },
-        [fetchMeIfNeeded.pending as any]: (state: AuthState) => {
-            state.loading = true
-            state.error = null
-        },
-        [fetchMeIfNeeded.fulfilled as any]: (state: AuthState, action: {payload: UserInfo}) => {
-            const me = action.payload
-            state.me = {
-                username: me.username,
-                roles: me.roles
-            }
-            state.loading = false
-            state.error = null
-        },
-        [fetchMeIfNeeded.rejected as any]: (state: AuthState, action: {error: Error}) => {
-            state.error = action.error
-            state.me = null
-            state.loading = false
-        },
-        [logout.pending as any]: (state: AuthState) => {
-            state.loading = true
-            state.error = null
-        },
-        [logout.fulfilled as any]: (state: AuthState) => {
-            removeJwt()
-            removeExpireAt()
-            state.jwt = null
-            state.expireAt = null
-            state.me = null
-            state.loading = false
-            state.error = null
-        },
-        [logout.rejected as any]: (state: AuthState, action: {error: Error}) => {
-            removeJwt()
-            removeExpireAt()
-            state.error = action.error
-            state.jwt = null
-            state.expireAt = null
-            state.me = null
-            state.loading = false
-        }
+    extraReducers: builder => {
+        builder
+            .addCase(login.pending, state => {
+                state.loading = true
+            })
+            .addCase(login.fulfilled, (state, action: PayloadAction<JwtTokenResponse>) => {
+                const {jwt, expirationIntervalMillis, user} = action.payload
+                const expireAt = DateTime.now().plus({millisecond: expirationIntervalMillis}).toMillis()
+                storeJwt(jwt)
+                storeExpireAt(expireAt)
+                state.jwt = jwt
+                state.expireAt = expireAt
+                state.me = user
+                state.loading = false
+            })
+            .addCase(login.rejected, (state, action) => {
+                state.loading = false
+                message.error(action.error.message)
+            })
+            .addCase(fetchMeIfNeeded.pending, state => {
+                state.loading = true
+            })
+            .addCase(fetchMeIfNeeded.fulfilled, (state, action: PayloadAction<UserInfo>) => {
+                state.me = action.payload
+                state.loading = false
+            })
+            .addCase(fetchMeIfNeeded.rejected, (state, action) => {
+                state.me = null
+                state.loading = false
+                message.error(action.error.message)
+            })
+            .addCase(logout.pending, state => {
+                state.loading = true
+            })
+            .addCase(logout.fulfilled, state => {
+                removeJwt()
+                removeExpireAt()
+                state.jwt = null
+                state.expireAt = null
+                state.me = null
+                state.loading = false
+            })
+            .addCase(logout.rejected, (state, action) => {
+                removeJwt()
+                removeExpireAt()
+                state.jwt = null
+                state.expireAt = null
+                state.me = null
+                state.loading = false
+                message.error(action.error.message)
+            })
     }
 })
 
@@ -128,7 +116,5 @@ export const selectJwt = (state: RootState) => state.auth.jwt
 export const selectIsExpired = (state: RootState) => !!state.auth.expireAt && state.auth.expireAt < DateTime.now().toMillis()
 
 export const selectMe = (state: RootState) => state.auth.me
-
-export const selectError = (state: RootState) => state.auth.error
 
 export default authSlice.reducer

@@ -12,6 +12,7 @@ export interface JwtTokenResponse {
 const ME_QUERY = gql`
     query {
         me {
+            id
             username
             roles
         }

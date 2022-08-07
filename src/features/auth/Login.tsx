@@ -1,9 +1,9 @@
 import React, {useCallback, useEffect} from 'react'
-import {Col, Layout, message, Row, Spin} from 'antd'
+import {Col, Layout, Row, Spin} from 'antd'
 
 import logo from '../../logo.svg'
 import './Login.css'
-import {fetchMeIfNeeded, login, selectError, selectIsExpired, selectJwt, selectLoading, selectMe} from './authSlice'
+import {fetchMeIfNeeded, login, selectIsExpired, selectJwt, selectLoading, selectMe} from './authSlice'
 import LoginForm from './LoginForm'
 import {useTranslation} from 'react-i18next'
 import {useAppDispatch, useAppSelector} from '../../util/hooks'
@@ -16,7 +16,6 @@ function Login() {
     const jwt = useAppSelector(selectJwt)
     const isExpired = useAppSelector(selectIsExpired)
     const me = useAppSelector(selectMe)
-    const authError = useAppSelector(selectError)
     const loading = useAppSelector(selectLoading)
 
     useEffect(() => {
@@ -24,17 +23,8 @@ function Login() {
             dispatch(fetchMeIfNeeded())
     }, [jwt, isExpired, me, dispatch])
 
-    useEffect(() => {
-        if (authError)
-            message.error(authError.message)
-    }, [authError])
-
     const handleLogin = useCallback(async (credentials: {username: string, password: string}) => {
-        try {
-            await dispatch(login(credentials))
-        } catch (e: any) {
-            message.error(e.message)
-        }
+        dispatch(login(credentials))
     }, [dispatch])
 
     return (

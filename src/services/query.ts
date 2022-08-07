@@ -1,12 +1,10 @@
 import _ from 'lodash'
 import {gql} from '@apollo/client'
-
-import {Attribute, AttrType, Item, RelType} from '../types'
-import {apolloClient} from './index'
-import appConfig from '../config'
-import {RequestParams} from '../components/datagrid/DataGrid'
 import {ColumnFiltersState} from '@tanstack/react-table'
 
+import {apolloClient, throwGraphQLErrors} from './index'
+import {Attribute, AttrType, Item, RelType} from '../types'
+import appConfig from '../config'
 import {DateTime} from 'luxon'
 import {
     DATE_FORMAT_STRING,
@@ -22,6 +20,11 @@ import {
     YEAR_MONTH_FORMAT_STRING
 } from '../config/constants'
 import ItemService from './item'
+import {RequestParams} from '../components/datagrid/DataGrid'
+
+interface Response<T> {
+    data: T
+}
 
 type FiltersInput<FiltersType> = {
     and?: [FiltersType]
@@ -190,6 +193,28 @@ export default class QueryService {
 
     private itemService = ItemService.getInstance()
 
+    findById = (item: Item, id: string): Promise<Response<any>> => {
+        const query = gql(this.buildFindByIdQuery(item))
+
+        return apolloClient.query({query, variables: {id}})
+            .then(result => {
+                if (result.errors) {
+                    throwGraphQLErrors(result.errors)
+                }
+                return result.data[item.name]
+            })
+    }
+
+    private buildFindByIdQuery = (item: Item) => `
+        query find${item.displayName ?? _.upperFirst(item.name)} ($id: ID!) {
+            ${item.name} (id: $id) {
+                data {
+                    ${this.listNonCollectionAttributes(item).join('\n')}
+                }
+            }
+        }
+    `
+
     findAll = (item: Item, {sorting, filters, pagination}: RequestParams): Promise<ResponseCollection<any>> => {
         const query = gql(this.buildFindAllQuery(item))
         const {page, pageSize} = pagination
@@ -204,14 +229,14 @@ export default class QueryService {
         })
             .then(result => {
                 if (result.errors) {
-                    throw new Error(result.errors.map(err => err.message).join('; '))
+                    throwGraphQLErrors(result.errors)
                 }
                 return result.data[item.pluralName]
             })
     }
 
     private buildFindAllQuery = (item: Item) => `
-        query findAll${_.upperFirst(item.pluralName)}($sort: [String], $filters: ${_.upperFirst(item.name)}FiltersInput, $pagination: PaginationInput) {
+        query findAll${_.upperFirst(item.pluralName)} ($sort: [String], $filters: ${_.upperFirst(item.name)}FiltersInput, $pagination: PaginationInput) {
             ${item.pluralName} (
                 sort: $sort
                 filters: $filters

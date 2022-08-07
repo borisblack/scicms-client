@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import {ReactElement} from 'react'
 
-import {Item} from '../types'
+import {Item, ItemData, UserInfo} from '../types'
 import customComponentConfig from '../config/custom-component'
 
 /* Mount points:
@@ -39,7 +39,9 @@ export interface CustomComponentRenderProps {
 }
 
 interface CustomComponentRenderContext {
+    me: UserInfo
     item: Item
+    data?: ItemData
 }
 
 const customComponents: CustomComponent[] = customComponentConfig.components.sort((a, b) => a.priority - b.priority)
