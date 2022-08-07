@@ -17,6 +17,7 @@ import * as icons from '@ant-design/icons'
 import {PlusCircleOutlined} from '@ant-design/icons'
 import PermissionService from '../../services/permission'
 import * as ACL from '../../util/acl'
+import styles from './Page.module.css'
 
 interface Props {
     me: UserInfo
@@ -195,6 +196,7 @@ function ItemList({me, item}: Props) {
 
         return (
             <PageHeader
+                className={styles.pageHeader}
                 title={<span>{Icon ? <Icon/> : null}&nbsp;&nbsp;{getLabel(item, ViewType.default)}</span>}
                 extra={canCreate && <Button type="primary" onClick={handleCreate}><PlusCircleOutlined /> {t('Create')}</Button>}
             />

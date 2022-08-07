@@ -1,5 +1,5 @@
 import React, {MouseEvent, ReactNode, useEffect, useMemo, useRef, useState} from 'react'
-import {Button, PageHeader, Spin, Tabs} from 'antd'
+import {Button, Col, PageHeader, Row, Spin, Tabs} from 'antd'
 
 import {AttrType, Item, ItemData, RelType, UserInfo} from '../../types'
 import PermissionService from '../../services/permission'
@@ -11,6 +11,7 @@ import * as ACL from '../../util/acl'
 import {getLabel, ViewType} from './pagesSlice'
 import {hasPlugins, renderPlugins} from '../../plugins'
 import {hasComponents, renderComponents} from '../../custom-components'
+import styles from './Page.module.css'
 
 interface Props {
     me: UserInfo
@@ -90,7 +91,8 @@ function ItemContent({me, item, data}: Props) {
 
         return (
             <PageHeader
-                title={<span>{Icon ? <Icon/> : null}&nbsp;&nbsp;{getLabel(item, ViewType.default)}</span>}
+                className={styles.pageHeader}
+                title={<span>{Icon ? <Icon/> : null}&nbsp;&nbsp;{getLabel(item, ViewType.view, data)}</span>}
                 extra={extra}
             />
         )
@@ -128,7 +130,10 @@ function ItemContent({me, item, data}: Props) {
             {hasPlugins('view.content', `${item.name}.view.content`) && <div ref={contentRef}/>}
             {(!hasComponents('view.content', `${item.name}.view.content`) && !hasPlugins('view.content', `${item.name}.view.content`)) &&
                 <Spin spinning={loading}>
-                    Render content here
+                    <Row>
+                        <Col span={12}>Left</Col>
+                        <Col span={12}>Right</Col>
+                    </Row>
                 </Spin>
             }
             {hasComponents('view.footer') && renderComponents('view.footer', {me, item})}
