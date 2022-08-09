@@ -1,12 +1,13 @@
 import React, {useCallback} from 'react'
 import {Tabs} from 'antd'
 
-import {closePage, getLabel, selectActiveKey, selectPages, setActiveKey, ViewType} from './pagesSlice'
-import Page from './Page'
+import {closePage, getLabel, openPage, selectActiveKey, selectPages, setActiveKey, ViewType} from './pagesSlice'
 import {useAppDispatch, useAppSelector} from '../../util/hooks'
 import * as icons from '@ant-design/icons'
 import {SearchOutlined} from '@ant-design/icons'
-import {UserInfo} from '../../types'
+import {Item, ItemData, UserInfo} from '../../types'
+import DefaultPage from './DefaultPage'
+import ViewPage from './ViewPage'
 
 interface Props {
     me: UserInfo,
@@ -27,6 +28,18 @@ function Pages({me}: Props) {
         if (action === 'remove')
             dispatch(closePage(e as string))
     }, [dispatch])
+
+    const handleCreate = (item: Item) => {
+        dispatch(openPage({item, viewType: ViewType.view}))
+    }
+
+    const handleView = (item: Item, data: ItemData) => {
+        dispatch(openPage({
+            item,
+            viewType: ViewType.view,
+            data,
+        }))
+    }
 
     if (pages.length === 0)
         return null
@@ -49,7 +62,23 @@ function Pages({me}: Props) {
                         tab={<span>{Icon ? <Icon/> : null}{getLabel(item, viewType, data)}</span>}
                         style={{background: '#fff'}}
                     >
-                        <Page me={me} page={page}/>
+                        <div className="page-content">
+                            {viewType === ViewType.default ?
+                                <DefaultPage
+                                    me={me}
+                                    page={page}
+                                    onCreate={() => handleCreate(page.item)}
+                                    onView={data => handleView(page.item, data)}
+                                    onDelete={() => {}}
+                                /> :
+                                <ViewPage
+                                    me={me}
+                                    page={page}
+                                    onUpdate={() => {}}
+                                    onDelete={() => {}}
+                                />
+                            }
+                        </div>
                     </TabPane>
                 )
             })}

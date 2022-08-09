@@ -2,7 +2,7 @@ import {CustomPlugin} from '.'
 
 export const helloPlugin: CustomPlugin = {
     id: 'helloPlugin',
-    pluginPoint: 'item.view.header',
+    pluginPoint: 'item.view.footer',
     priority: 10,
     title: 'Hello',
     icon: 'SmileOutlined',

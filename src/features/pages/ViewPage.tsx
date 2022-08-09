@@ -1,33 +1,33 @@
 import React, {MouseEvent, ReactNode, useEffect, useMemo, useRef, useState} from 'react'
 import {Button, Col, PageHeader, Row, Spin, Tabs} from 'antd'
 
-import {AttrType, Item, ItemData, RelType, UserInfo} from '../../types'
+import {AttrType, RelType, UserInfo} from '../../types'
 import PermissionService from '../../services/permission'
 import * as icons from '@ant-design/icons'
 import {DeleteOutlined, SaveOutlined, UnlockOutlined} from '@ant-design/icons'
 import {useTranslation} from 'react-i18next'
-import {useAppDispatch} from '../../util/hooks'
 import * as ACL from '../../util/acl'
-import {getLabel, ViewType} from './pagesSlice'
+import {getLabel, IPage, ViewType} from './pagesSlice'
 import {hasPlugins, renderPlugins} from '../../plugins'
 import {hasComponents, renderComponents} from '../../custom-components'
 import styles from './Page.module.css'
 
 interface Props {
     me: UserInfo
-    item: Item
-    data?: ItemData
+    page: IPage
+    onUpdate: () => void
+    onDelete: () => void
 }
 
 const TabPane = Tabs.TabPane
 
-function ItemContent({me, item, data}: Props) {
+function ViewPage({me, page}: Props) {
     const {t} = useTranslation()
-    const dispatch = useAppDispatch()
     const [loading, setLoading] = useState(false)
     const headerRef = useRef<HTMLDivElement>(null)
     const contentRef = useRef<HTMLDivElement>(null)
     const footerRef = useRef<HTMLDivElement>(null)
+    const {item, data} = page
 
     const permissionService = useMemo(() => PermissionService.getInstance(), [])
 
@@ -121,10 +121,11 @@ function ItemContent({me, item, data}: Props) {
 
     return (
         <>
-            {renderPageHeader()}
             {hasComponents('view.header') && renderComponents('view.header', {me, item})}
             {hasComponents(`${item.name}.view.header`) && renderComponents(`${item.name}.view.header`, {me, item})}
             {hasPlugins('view.header', `${item.name}.view.header`) && <div ref={headerRef}/>}
+            {(!hasComponents('view.header', `${item.name}.view.header`) && !hasPlugins('view.header', `${item.name}.view.header`)) && renderPageHeader()}
+
             {hasComponents('view.content') && renderComponents('view.content', {me, item})}
             {hasComponents(`${item.name}.view.content`) && renderComponents(`${item.name}.view.content`, {me, item})}
             {hasPlugins('view.content', `${item.name}.view.content`) && <div ref={contentRef}/>}
@@ -136,6 +137,7 @@ function ItemContent({me, item, data}: Props) {
                     </Row>
                 </Spin>
             }
+
             {hasComponents('view.footer') && renderComponents('view.footer', {me, item})}
             {hasComponents(`${item.name}.view.footer`) && renderComponents(`${item.name}.view.footer`, {me, item})}
             {hasPlugins('view.footer', `${item.name}.view.footer`) && <div ref={footerRef}/>}
@@ -143,4 +145,4 @@ function ItemContent({me, item, data}: Props) {
     )
 }
 
-export default ItemContent
+export default ViewPage

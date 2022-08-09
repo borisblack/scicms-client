@@ -5,12 +5,11 @@ import {createColumnHelper, Row} from '@tanstack/react-table'
 import {Button, Checkbox, Menu, message, PageHeader} from 'antd'
 
 import appConfig from '../../config'
-import {Attribute, AttrType, Item, RelType, UserInfo} from '../../types'
+import {Attribute, AttrType, ItemData, RelType, UserInfo} from '../../types'
 import QueryService from '../../services/query'
 import DataGrid, {DataWithPagination, RequestParams} from '../../components/datagrid/DataGrid'
 import ItemService from '../../services/item'
-import {useAppDispatch} from '../../util/hooks'
-import {getLabel, openPage, ViewType} from './pagesSlice'
+import {getLabel, IPage, ViewType} from './pagesSlice'
 import {hasPlugins, renderPlugins} from '../../plugins'
 import {hasComponents, renderComponents} from '../../custom-components'
 import * as icons from '@ant-design/icons'
@@ -21,7 +20,10 @@ import styles from './Page.module.css'
 
 interface Props {
     me: UserInfo
-    item: Item
+    page: IPage
+    onCreate: () => void
+    onView: (data: ItemData) => void
+    onDelete: () => void
 }
 
 const columnHelper = createColumnHelper<any>()
@@ -35,14 +37,14 @@ const initialData: DataWithPagination<any> = {
     }
 }
 
-function ItemList({me, item}: Props) {
+function DefaultPage({me, page, onCreate, onView}: Props) {
     const {t} = useTranslation()
-    const dispatch = useAppDispatch()
     const [loading, setLoading] = useState(false)
     const [data, setData] = useState(initialData)
     const headerRef = useRef<HTMLDivElement>(null)
     const contentRef = useRef<HTMLDivElement>(null)
     const footerRef = useRef<HTMLDivElement>(null)
+    const {item} = page
 
     const itemService = useMemo(() => ItemService.getInstance(), [])
     const queryService = useMemo(() => QueryService.getInstance(), [])
@@ -149,25 +151,15 @@ function ItemList({me, item}: Props) {
         }
     }, [item, queryService, t])
 
-    const openRow = useCallback((row: Row<any>) => {
-        dispatch(openPage({
-            item,
-            viewType: ViewType.view,
-            data: row.original,
-        }))
-    }, [item, dispatch])
+    const handleRowDoubleClick = useCallback((row: Row<ItemData>) => { onView(row.original) }, [onView])
 
-    const handleRowDoubleClick = useCallback((row: any) => {
-        openRow(row)
-    }, [openRow])
-
-    const getRowContextMenu = useCallback((row: any) => (
+    const getRowContextMenu = useCallback((row: Row<ItemData>) => (
         <Menu items={[{
             key: 'open',
             label: t('Open'),
-            onClick: () => openRow(row)
+            onClick: () => onView(row.original)
         }]}/>
-    ), [t, openRow])
+    ), [t, onView])
 
     const hiddenColumnsMemoized = useMemo((): string[] => {
         const {attributes} = item.spec
@@ -184,9 +176,7 @@ function ItemList({me, item}: Props) {
         return hiddenColumns
     }, [item])
 
-    function handleCreate(evt: MouseEvent) {
-        dispatch(openPage({item, viewType: ViewType.view}))
-    }
+    const handleCreate = (evt: MouseEvent) => { onCreate() }
 
     function renderPageHeader(): ReactNode {
         const Icon = item.icon ? (icons as any)[item.icon] : null
@@ -207,10 +197,11 @@ function ItemList({me, item}: Props) {
 
     return (
         <>
-            {renderPageHeader()}
             {hasComponents('default.header') && renderComponents('default.header', {me, item})}
             {hasComponents(`${item.name}.default.header`) && renderComponents(`${item.name}.default.header`, {me, item})}
             {hasPlugins('default.header', `${item.name}.default.header`) && <div ref={headerRef}/>}
+            {(!hasComponents('default.header', `${item.name}.default.header`) && !hasPlugins('default.header', `${item.name}.default.header`)) && renderPageHeader()}
+
             {hasComponents('default.content') && renderComponents('default.content', {me, item})}
             {hasComponents(`${item.name}.default.content`) && renderComponents(`${item.name}.default.content`, {me, item})}
             {hasPlugins('default.content', `${item.name}.default.content`) && <div ref={contentRef}/>}
@@ -228,6 +219,7 @@ function ItemList({me, item}: Props) {
                     onRowDoubleClick={handleRowDoubleClick}
                 />
             }
+
             {hasComponents('default.footer') && renderComponents('default.footer', {me, item})}
             {hasComponents(`${item.name}.default.footer`) && renderComponents(`${item.name}.default.footer`, {me, item})}
             {hasPlugins('default.footer', `${item.name}.default.footer`) && <div ref={footerRef}/>}
@@ -235,4 +227,4 @@ function ItemList({me, item}: Props) {
     )
 }
 
-export default ItemList
+export default DefaultPage
