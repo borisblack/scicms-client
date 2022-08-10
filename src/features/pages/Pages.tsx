@@ -1,5 +1,6 @@
-import React, {useCallback} from 'react'
-import {Tabs} from 'antd'
+import React, {useCallback, useMemo} from 'react'
+import {useTranslation} from 'react-i18next'
+import {message, Tabs} from 'antd'
 
 import {closePage, getLabel, openPage, selectActiveKey, selectPages, setActiveKey, ViewType} from './pagesSlice'
 import {useAppDispatch, useAppSelector} from '../../util/hooks'
@@ -8,6 +9,7 @@ import {SearchOutlined} from '@ant-design/icons'
 import {Item, ItemData, UserInfo} from '../../types'
 import DefaultPage from './DefaultPage'
 import ViewPage from './ViewPage'
+import QueryService from '../../services/query'
 
 interface Props {
     me: UserInfo,
@@ -17,8 +19,11 @@ const TabPane = Tabs.TabPane
 
 function Pages({me}: Props) {
     const dispatch = useAppDispatch()
+    const {t} = useTranslation()
     const pages = useAppSelector(selectPages)
     const activeKey = useAppSelector(selectActiveKey)
+
+    const queryService = useMemo(() => QueryService.getInstance(), [])
 
     const handleTabsChange = useCallback((activeKey: string) => {
         dispatch(setActiveKey(activeKey))
@@ -33,12 +38,17 @@ function Pages({me}: Props) {
         dispatch(openPage({item, viewType: ViewType.view}))
     }
 
-    const handleView = (item: Item, data: ItemData) => {
-        dispatch(openPage({
-            item,
-            viewType: ViewType.view,
-            data,
-        }))
+    const handleView = async (item: Item, data: ItemData) => {
+        const refreshedData = await queryService.findById(item, data.id)
+        if (refreshedData.data) {
+            dispatch(openPage({
+                item,
+                viewType: ViewType.view,
+                data: refreshedData.data,
+            }))
+        } else {
+            message.error(t('Item not found. It may have been removed'))
+        }
     }
 
     if (pages.length === 0)

@@ -18,6 +18,7 @@ const en = {
         'Help': 'Help',
         'Internal server error': 'Internal server error',
         'Invalid username and/or password': 'Invalid username and/or password',
+        'Item not found. It may have been removed': 'Item not found. It may have been removed',
         'Items': 'Items',
         'Login': 'Login',
         'Logout': 'Logout',

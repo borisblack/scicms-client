@@ -151,15 +151,21 @@ function DefaultPage({me, page, onCreate, onView}: Props) {
         }
     }, [item, queryService, t])
 
-    const handleRowDoubleClick = useCallback((row: Row<ItemData>) => { onView(row.original) }, [onView])
+    const handleView = useCallback(async (itemData: ItemData) => {
+        setLoading(true)
+        await onView(itemData)
+        setLoading(false)
+    }, [onView])
+
+    const handleRowDoubleClick = useCallback((row: Row<ItemData>) => handleView(row.original), [handleView])
 
     const getRowContextMenu = useCallback((row: Row<ItemData>) => (
         <Menu items={[{
             key: 'open',
             label: t('Open'),
-            onClick: () => onView(row.original)
+            onClick: () => handleView(row.original)
         }]}/>
-    ), [t, onView])
+    ), [t, handleView])
 
     const hiddenColumnsMemoized = useMemo((): string[] => {
         const {attributes} = item.spec
