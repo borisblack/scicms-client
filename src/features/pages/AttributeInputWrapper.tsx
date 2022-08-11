@@ -1,5 +1,5 @@
 import {FormInstance, Input} from 'antd'
-import {Attribute, AttrType} from '../../types'
+import {Attribute, AttrType, Item} from '../../types'
 import {useMemo} from 'react'
 import ItemService from '../../services/item'
 import FormItem from 'antd/es/form/FormItem'
@@ -7,15 +7,25 @@ import {useTranslation} from 'react-i18next'
 
 interface Props {
     form: FormInstance
+    item: Item
     attrName: string
     attribute: Attribute
     value: any
     canEdit: boolean
 }
 
-export default function AttributeInputWrapper({form, attrName, attribute, value, canEdit}: Props) {
+const MAJOR_REV_ATTR_NAME = 'majorRev'
+
+export default function AttributeInputWrapper({form, item, attrName, attribute, value, canEdit}: Props) {
     const {t} = useTranslation()
     const itemService = useMemo(() => ItemService.getInstance(), [])
+
+    function isEnabled() {
+        if (attrName === MAJOR_REV_ATTR_NAME && !item.manualVersioning)
+            return false
+
+        return !attribute.keyed && canEdit
+    }
 
     switch (attribute.type) {
         case AttrType.string:
@@ -29,7 +39,7 @@ export default function AttributeInputWrapper({form, attrName, attribute, value,
                     initialValue={value}
                     rules={[{required: attribute.required, message: t('Required field')}]}
                 >
-                    <Input disabled={!canEdit}/>
+                    <Input disabled={!isEnabled()}/>
                 </FormItem>
             )
         default:

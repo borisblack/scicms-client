@@ -22,6 +22,9 @@ interface Props {
 }
 
 const TabPane = Tabs.TabPane
+const MAJOR_REV_ATTR_NAME = 'majorRev'
+const MINOR_REV_ATTR_NAME = 'minorRev'
+const LOCALE_ATTR_NAME = 'locale'
 
 function ViewPage({me, page}: Props) {
     const {t} = useTranslation()
@@ -108,7 +111,10 @@ function ViewPage({me, page}: Props) {
         return Object.keys(attributes)
             .filter(attrName => {
                 const attr = attributes[attrName]
-                return !attr.private && (attr.type !== AttrType.relation || (attr.relType !== RelType.oneToMany && attr.relType !== RelType.manyToMany))
+                return !attr.private
+                    && (attr.type !== AttrType.relation || (attr.relType !== RelType.oneToMany && attr.relType !== RelType.manyToMany))
+                    && (item.versioned || (attrName !== MAJOR_REV_ATTR_NAME && attrName !== MINOR_REV_ATTR_NAME))
+                    && (item.localized || attrName !== LOCALE_ATTR_NAME)
             })
             .map(attrName => {
                 const attr = attributes[attrName]
@@ -116,6 +122,7 @@ function ViewPage({me, page}: Props) {
                     <AttributeInputWrapper
                         key={attrName}
                         form={form}
+                        item={item}
                         attrName={attrName}
                         attribute={attr}
                         value={data ? data[attrName] : null}
