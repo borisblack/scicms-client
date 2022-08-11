@@ -75,7 +75,10 @@ function DefaultPage({me, page, onCreate, onView}: Props) {
             case AttrType.time:
                 return value ? DateTime.fromISO(value).toFormat(appConfig.dateTime.timeFormatString) : null
             case AttrType.datetime:
+            case AttrType.timestamp:
                 return value ? DateTime.fromISO(value,).toFormat(appConfig.dateTime.dateTimeFormatString) : null
+            case AttrType.media:
+                return (value && value.data) ? value.data['filename'] : null
             case AttrType.relation:
                 if (attribute.relType === RelType.oneToMany || attribute.relType === RelType.manyToMany)
                     throw new Error('Cannot render oneToMany or manyToMany relation')
@@ -98,7 +101,7 @@ function DefaultPage({me, page, onCreate, onView}: Props) {
                 continue
 
             const attr = attributes[attrName]
-            if (attr.private || attr.type === AttrType.media || (attr.type === AttrType.relation && (attr.relType === RelType.oneToMany || attr.relType === RelType.manyToMany)))
+            if (attr.private || (attr.type === AttrType.relation && (attr.relType === RelType.oneToMany || attr.relType === RelType.manyToMany)))
                 continue
 
             const column = columnHelper.accessor(attrName, {

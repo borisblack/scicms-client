@@ -190,6 +190,16 @@ interface AllowedPermission extends DefaultItemTemplate, IntermediateItemTemplat
     target: {data: Permission}
 }
 
+export interface Media extends DefaultItemTemplate {
+    filename: string
+    displayName: string | null
+    description: string | null
+    fileSize: number
+    mimeType: string
+    path: string
+    checksum: string
+}
+
 export interface ItemData extends DefaultItemTemplate {
     [name: string]: any
 }

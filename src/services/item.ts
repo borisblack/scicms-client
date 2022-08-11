@@ -3,9 +3,11 @@ import {gql} from '@apollo/client'
 import {apolloClient} from '.'
 import {Item} from '../types'
 
-export interface ItemCache {
+interface ItemCache {
     [name: string]: Item
 }
+
+const MEDIA_ITEM_NAME = 'media'
 
 const FIND_ALL_QUERY = gql`
     query {
@@ -75,4 +77,6 @@ export default class ItemService {
         apolloClient.query({query: FIND_ALL_QUERY}).then(res => res.data.items.data)
 
     findByName = (name: string): Item | null => this.items[name] ?? null
+
+    getMedia = (): Item => this.items[MEDIA_ITEM_NAME]
 }

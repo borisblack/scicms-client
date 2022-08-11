@@ -265,26 +265,47 @@ export default class QueryService {
                 continue
 
             const attr = attributes[attrName]
-            if (
-                attr.private
-                || attr.type === AttrType.media
-                || (attr.type === AttrType.relation && (attr.relType === RelType.oneToMany || attr.relType === RelType.manyToMany))
-            )
+            if (attr.private || (attr.type === AttrType.relation && (attr.relType === RelType.oneToMany || attr.relType === RelType.manyToMany)))
                 continue
 
-            if (attr.type === AttrType.relation) {
-                if (appConfig.query.findAll.useDisplayAttrName) {
-                    if (!attr.target)
-                        throw new Error('Illegal attribute')
+            switch (attr.type) {
+                case AttrType.string:
+                case AttrType.text:
+                case AttrType.uuid:
+                case AttrType.email:
+                case AttrType.password:
+                case AttrType.sequence:
+                case AttrType.enum:
+                case AttrType.int:
+                case AttrType.long:
+                case AttrType.float:
+                case AttrType.double:
+                case AttrType.decimal:
+                case AttrType.bool:
+                case AttrType.date:
+                case AttrType.time:
+                case AttrType.datetime:
+                case AttrType.timestamp:
+                case AttrType.json:
+                case AttrType.array:
+                    result.push(attrName)
+                    break
+                case AttrType.media:
+                    result.push(`${attrName} { data { id filename } }`)
+                    break
+                case AttrType.relation:
+                    if (appConfig.query.findAll.useDisplayAttrName) {
+                        if (!attr.target)
+                            throw new Error('Illegal attribute')
 
-                    const subItem = this.itemService.findByName(attr.target)
-                    result.push(`
-                        ${attrName} { data { id ${subItem?.displayAttrName ?? ''} } }`)
-                } else {
-                    result.push(`${attrName} { data { id } }`)
-                }
-            } else {
-                result.push(attrName)
+                        const subItem = this.itemService.findByName(attr.target)
+                        result.push(`${attrName} { data { id ${subItem?.displayAttrName ?? ''} } }`)
+                    } else {
+                        result.push(`${attrName} { data { id } }`)
+                    }
+                    break
+                default:
+                    throw Error('Illegal attribute')
             }
         }
 
@@ -296,11 +317,7 @@ export default class QueryService {
         const filtersInput: FiltersInput<unknown> = {}
         for (const filter of filters) {
             const attr = attributes[filter.id]
-            if (
-                attr.private
-                || attr.type === AttrType.media
-                || (attr.type === AttrType.relation && (attr.relType === RelType.oneToMany || attr.relType === RelType.manyToMany))
-            )
+            if (attr.private || (attr.type === AttrType.relation && (attr.relType === RelType.oneToMany || attr.relType === RelType.manyToMany)))
                 continue
 
             filtersInput[filter.id] = this.buildAttributeFiltersInput(attr, filter.value)
@@ -309,15 +326,11 @@ export default class QueryService {
         return filtersInput
     }
 
-    private buildAttributeFiltersInput(attribute: Attribute, filterValue: any): FiltersInput<unknown> | FilterInput<unknown, unknown> {
-        if (
-            attribute.private
-            || attribute.type === AttrType.media
-            || (attribute.type === AttrType.relation && (attribute.relType === RelType.oneToMany || attribute.relType === RelType.manyToMany))
-        )
+    private buildAttributeFiltersInput(attr: Attribute, filterValue: any): FiltersInput<unknown> | FilterInput<unknown, unknown> {
+        if (attr.private || (attr.type === AttrType.relation && (attr.relType === RelType.oneToMany || attr.relType === RelType.manyToMany)))
             throw Error('Illegal attribute')
 
-        switch (attribute.type) {
+        switch (attr.type) {
             case AttrType.string:
             case AttrType.text:
             case AttrType.uuid:
@@ -349,11 +362,13 @@ export default class QueryService {
             case AttrType.datetime:
             case AttrType.timestamp:
                 return buildDateTimeFilter(filterValue)
+            case AttrType.media:
+                return {filename: {containsi: filterValue}}
             case AttrType.relation:
-                if (!attribute.target)
+                if (!attr.target)
                     throw new Error('Illegal attribute')
 
-                const subItem = this.itemService.findByName(attribute.target) as Item
+                const subItem = this.itemService.findByName(attr.target) as Item
                 const displayAttrName = subItem.displayAttrName ?? 'id'
                 return {
                     [displayAttrName]: this.buildAttributeFiltersInput(subItem.spec.attributes[displayAttrName], filterValue)
