@@ -78,5 +78,13 @@ export default class ItemService {
 
     findByName = (name: string): Item | null => this.items[name] ?? null
 
-    getMedia = (): Item => this.items[MEDIA_ITEM_NAME]
+    getByName(name: string): Item {
+        const itemTemplate = this.findByName(name)
+        if (!itemTemplate)
+            throw new Error(`Item [${name}] not found`)
+
+        return itemTemplate
+    }
+
+    getMedia = (): Item => this.getByName(MEDIA_ITEM_NAME)
 }

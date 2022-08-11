@@ -191,7 +191,7 @@ function DefaultPage({me, page, onCreate, onView}: Props) {
         const Icon = item.icon ? (icons as any)[item.icon] : null
         const permissionId = item.permission.data?.id
         const permission = permissionId ? permissionService.findById(permissionId) : null
-        const canCreate = !permission || ACL.canCreate(me, permission)
+        const canCreate = permission && ACL.canCreate(me, permission)
 
         return (
             <PageHeader

@@ -1,5 +1,5 @@
 import React, {MouseEvent, ReactNode, useEffect, useMemo, useRef, useState} from 'react'
-import {Button, Col, PageHeader, Row, Spin, Tabs} from 'antd'
+import {Button, Col, Form, PageHeader, Row, Spin, Tabs} from 'antd'
 
 import {AttrType, RelType, UserInfo} from '../../types'
 import PermissionService from '../../services/permission'
@@ -11,6 +11,8 @@ import {getLabel, IPage, ViewType} from './pagesSlice'
 import {hasPlugins, renderPlugins} from '../../plugins'
 import {hasComponents, renderComponents} from '../../custom-components'
 import styles from './Page.module.css'
+import ItemTemplateService from '../../services/item-template'
+import AttributeInputWrapper from './AttributeInputWrapper'
 
 interface Props {
     me: UserInfo
@@ -27,9 +29,20 @@ function ViewPage({me, page}: Props) {
     const headerRef = useRef<HTMLDivElement>(null)
     const contentRef = useRef<HTMLDivElement>(null)
     const footerRef = useRef<HTMLDivElement>(null)
+    const [form] = Form.useForm()
     const {item, data} = page
 
+    const itemTemplateService = useMemo(() => ItemTemplateService.getInstance(), [])
     const permissionService = useMemo(() => PermissionService.getInstance(), [])
+
+    const itemPermissionId = item.permission.data?.id
+    const itemPermission = itemPermissionId ? permissionService.findById(itemPermissionId) : null
+    const canCreate = !!itemPermission && ACL.canCreate(me, itemPermission)
+
+    const dataPermissionId = data?.permission.data?.id
+    const dataPermission = dataPermissionId ? permissionService.findById(dataPermissionId) : null
+    const canEdit = !!dataPermission && ACL.canWrite(me, dataPermission)
+    const canDelete = !!dataPermission && ACL.canDelete(me, dataPermission)
 
     useEffect(() => {
         const headerNode = headerRef.current
@@ -66,14 +79,7 @@ function ViewPage({me, page}: Props) {
     function renderPageHeader(): ReactNode {
         const Icon = item.icon ? (icons as any)[item.icon] : null
         const extra: ReactNode[] = []
-        const itemPermissionId = item.permission.data?.id
-        const itemPermission = itemPermissionId ? permissionService.findById(itemPermissionId) : null
-        const canCreate = !itemPermission || ACL.canCreate(me, itemPermission)
         if (data) {
-            const dataPermissionId = data.permission.data?.id
-            const dataPermission = dataPermissionId ? permissionService.findById(dataPermissionId) : null
-            const canEdit = !dataPermission || ACL.canWrite(me, dataPermission)
-            const canDelete = !dataPermission || ACL.canDelete(me, dataPermission)
             if (canEdit) {
                 if (!data.lockedBy.data) {
                     extra.push(<Button key="edit" type="primary" onClick={handleUnlock}><UnlockOutlined/> {t('Edit')}</Button>)
@@ -81,7 +87,6 @@ function ViewPage({me, page}: Props) {
                     extra.push(<Button key="save" type="primary" onClick={handleSave}><SaveOutlined/> {t('Save')}</Button>)
                 }
             }
-
             if (canDelete) {
                 extra.push(<Button key="delete" type="primary" danger onClick={handleDelete}><DeleteOutlined/> {t('Delete')}</Button>)
             }
@@ -96,6 +101,28 @@ function ViewPage({me, page}: Props) {
                 extra={extra}
             />
         )
+    }
+
+    function renderDefaultTemplateAttributes() {
+        const {attributes} = itemTemplateService.getDefault().spec
+        return Object.keys(attributes)
+            .filter(attrName => {
+                const attr = attributes[attrName]
+                return !attr.private && (attr.type !== AttrType.relation || (attr.relType !== RelType.oneToMany && attr.relType !== RelType.manyToMany))
+            })
+            .map(attrName => {
+                const attr = attributes[attrName]
+                return (
+                    <AttributeInputWrapper
+                        key={attrName}
+                        form={form}
+                        attrName={attrName}
+                        attribute={attr}
+                        value={data ? data[attrName] : null}
+                        canEdit={canCreate || canEdit}
+                    />
+                )
+            })
     }
 
     function renderRelationships() {
@@ -131,10 +158,12 @@ function ViewPage({me, page}: Props) {
             {hasPlugins('view.content', `${item.name}.view.content`) && <div ref={contentRef}/>}
             {(!hasComponents('view.content', `${item.name}.view.content`) && !hasPlugins('view.content', `${item.name}.view.content`)) &&
                 <Spin spinning={loading}>
-                    <Row>
-                        <Col span={12}>Left</Col>
-                        <Col span={12}>Right</Col>
-                    </Row>
+                    <Form form={form} size="small" layout="vertical">
+                        <Row>
+                            <Col span={12}>Left</Col>
+                            <Col span={12}>{renderDefaultTemplateAttributes()}</Col>
+                        </Row>
+                    </Form>
                 </Spin>
             }
 

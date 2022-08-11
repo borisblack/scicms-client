@@ -4,6 +4,7 @@ import PermissionService from '../../services/permission'
 import {RootState} from '../../store'
 import {UserInfo} from '../../types'
 import {message} from 'antd'
+import ItemTemplateService from '../../services/item-template'
 
 interface RegistryState {
     isInitialized: boolean
@@ -18,6 +19,7 @@ const initialState: RegistryState = {
 const initializeIfNeeded = createAsyncThunk(
     'auth/initialize',
     async (me?: UserInfo) => {
+        await ItemTemplateService.getInstance().initialize()
         await ItemService.getInstance().initialize()
         await PermissionService.getInstance().initialize(me)
     }, {
@@ -35,8 +37,9 @@ const registrySlice = createSlice({
     initialState,
     reducers: {
         reset: () => {
-            ItemService.getInstance().reset()
             PermissionService.getInstance().reset()
+            ItemService.getInstance().reset()
+            ItemTemplateService.getInstance().reset()
 
             return initialState
         }

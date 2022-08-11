@@ -4,6 +4,16 @@ export interface UserInfo {
     roles: string[]
 }
 
+export interface ItemTemplate {
+    coreVersion: string
+    metadata: BaseMetadata
+    spec: ItemSpec
+}
+
+interface BaseMetadata {
+    name: string
+}
+
 export interface DefaultItemTemplate {
     id: string
     majorRev: string
