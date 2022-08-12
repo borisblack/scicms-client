@@ -41,10 +41,11 @@ function ViewPage({me, page}: Props) {
     const itemPermissionId = item.permission.data?.id
     const itemPermission = itemPermissionId ? permissionService.findById(itemPermissionId) : null
     const canCreate = !!itemPermission && ACL.canCreate(me, itemPermission)
-
+    const isNew = !data
     const dataPermissionId = data?.permission.data?.id
     const dataPermission = dataPermissionId ? permissionService.findById(dataPermissionId) : null
     const canEdit = !!dataPermission && ACL.canWrite(me, dataPermission)
+    const isLocked = data?.lockedBy?.data?.id === me.id
     const canDelete = !!dataPermission && ACL.canDelete(me, dataPermission)
 
     useEffect(() => {
@@ -84,16 +85,16 @@ function ViewPage({me, page}: Props) {
         const extra: ReactNode[] = []
         if (data) {
             if (canEdit) {
-                if (!data.lockedBy.data) {
-                    extra.push(<Button key="edit" type="primary" onClick={handleUnlock}><UnlockOutlined/> {t('Edit')}</Button>)
-                } else if (data.lockedBy.data.id === me.id) {
+                if (isLocked) {
                     extra.push(<Button key="save" type="primary" onClick={handleSave}><SaveOutlined/> {t('Save')}</Button>)
+                } else {
+                    extra.push(<Button key="edit" type="primary" onClick={handleUnlock}><UnlockOutlined/> {t('Edit')}</Button>)
                 }
             }
             if (canDelete) {
                 extra.push(<Button key="delete" type="primary" danger onClick={handleDelete}><DeleteOutlined/> {t('Delete')}</Button>)
             }
-        } else if (canCreate) {
+        } else if (canCreate && isNew) {
             extra.push(<Button key="save" type="primary" onClick={handleSave}><SaveOutlined/> {t('Save')}</Button>)
         }
 
@@ -126,7 +127,7 @@ function ViewPage({me, page}: Props) {
                         attrName={attrName}
                         attribute={attr}
                         value={data ? data[attrName] : null}
-                        canEdit={canCreate || canEdit}
+                        canEdit={(canCreate && isNew) || (canEdit && isLocked)}
                     />
                 )
             })

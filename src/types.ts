@@ -92,13 +92,13 @@ interface User extends DefaultItemTemplate {
 
 export interface Item extends DefaultItemTemplate {
     name: string
-    tableName: string | null
-    displayName: string | null
-    displayAttrName: string | null
-    singularName: string | null
-    pluralName: string,
+    displayName: string
+    pluralName: string
+    displayPluralName: string
+    dataSource: string
+    tableName: string
+    titleAttribute: string
     description: string | null
-    dataSource: string | null
     icon: string | null
     core: boolean | null
     performDdl: boolean | null

@@ -51,11 +51,11 @@ const Navbar = ({collapsed, me}: Props) => {
                     children: toAntdMenuItems(it.children)
                 }
             } else {
-                const item = itemService.findByName(it.itemName) as Item
+                const item = itemService.getByName(it.itemName)
                 const Icon = item.icon ? (icons as any)[item.icon] : null
                 return {
                     key: item.id,
-                    label: _.upperFirst(item.pluralName),
+                    label: item.displayPluralName,
                     icon: Icon ? <Icon/> : null,
                     onClick: () => handleItemClick(item)
                 }

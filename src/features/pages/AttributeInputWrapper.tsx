@@ -4,6 +4,8 @@ import {useMemo} from 'react'
 import ItemService from '../../services/item'
 import FormItem from 'antd/es/form/FormItem'
 import {useTranslation} from 'react-i18next'
+import './AttributeInputWrapper.css'
+import styles from './AttributeInputWrapper.module.css'
 
 interface Props {
     form: FormInstance
@@ -34,6 +36,7 @@ export default function AttributeInputWrapper({form, item, attrName, attribute, 
         case AttrType.uuid:
             return (
                 <FormItem
+                    className={styles.formItem}
                     name={attrName}
                     label={attribute.displayName}
                     initialValue={value}

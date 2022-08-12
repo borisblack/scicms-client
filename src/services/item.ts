@@ -15,13 +15,13 @@ const FIND_ALL_QUERY = gql`
             data {
                 id
                 name
-                tableName
                 displayName
-                displayAttrName
-                singularName
                 pluralName
-                description
+                displayPluralName
                 dataSource
+                tableName
+                titleAttribute
+                description
                 icon
                 core
                 performDdl

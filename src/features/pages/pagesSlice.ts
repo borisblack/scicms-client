@@ -38,7 +38,7 @@ export function getLabel(item: Item, viewType: ViewType, data?: ItemData) {
             if (!data)
                 return `${item.displayName} *`
 
-            let displayAttrValue: string = (data as ItemData)[item.displayAttrName || 'id']
+            let displayAttrValue: string = (data as ItemData)[item.titleAttribute]
             if (displayAttrValue === 'id')
                 displayAttrValue = displayAttrValue.substring(0, 8)
 

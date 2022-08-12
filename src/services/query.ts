@@ -4,7 +4,6 @@ import {ColumnFiltersState} from '@tanstack/react-table'
 
 import {apolloClient, throwGraphQLErrors} from './index'
 import {Attribute, AttrType, Item, RelType} from '../types'
-import appConfig from '../config'
 import {DateTime} from 'luxon'
 import {
     DATE_FORMAT_STRING,
@@ -294,15 +293,11 @@ export default class QueryService {
                     result.push(`${attrName} { data { id filename } }`)
                     break
                 case AttrType.relation:
-                    if (appConfig.query.findAll.useDisplayAttrName) {
-                        if (!attr.target)
-                            throw new Error('Illegal attribute')
+                    if (!attr.target)
+                        throw new Error('Illegal attribute')
 
-                        const subItem = this.itemService.findByName(attr.target)
-                        result.push(`${attrName} { data { id ${subItem?.displayAttrName ?? ''} } }`)
-                    } else {
-                        result.push(`${attrName} { data { id } }`)
-                    }
+                    const subItem = this.itemService.getByName(attr.target)
+                    result.push(`${attrName} { data { id ${subItem.titleAttribute} } }`)
                     break
                 default:
                     throw Error('Illegal attribute')
@@ -368,10 +363,10 @@ export default class QueryService {
                 if (!attr.target)
                     throw new Error('Illegal attribute')
 
-                const subItem = this.itemService.findByName(attr.target) as Item
-                const displayAttrName = subItem.displayAttrName ?? 'id'
+                const subItem = this.itemService.getByName(attr.target)
+                const {titleAttribute} = subItem
                 return {
-                    [displayAttrName]: this.buildAttributeFiltersInput(subItem.spec.attributes[displayAttrName], filterValue)
+                    [titleAttribute]: this.buildAttributeFiltersInput(subItem.spec.attributes[titleAttribute], filterValue)
                 }
             default:
                 throw Error('Illegal attribute')

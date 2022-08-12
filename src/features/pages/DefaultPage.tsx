@@ -86,8 +86,8 @@ function DefaultPage({me, page, onCreate, onView}: Props) {
                 if (!attribute.target)
                     throw new Error('Illegal state')
 
-                const subItem = itemService.findByName(attribute.target)
-                return (value && value.data) ? value.data[subItem?.displayAttrName ?? 'id'] : null
+                const subItem = itemService.getByName(attribute.target)
+                return (value && value.data) ? value.data[subItem.titleAttribute] : null
             default:
                 throw new Error('Illegal attribute')
         }
