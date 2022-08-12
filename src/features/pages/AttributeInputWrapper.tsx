@@ -1,4 +1,4 @@
-import {FormInstance, Input} from 'antd'
+import {Checkbox, FormInstance, Input} from 'antd'
 import {Attribute, AttrType, Item} from '../../types'
 import {useMemo} from 'react'
 import ItemService from '../../services/item'
@@ -17,6 +17,7 @@ interface Props {
 }
 
 const MAJOR_REV_ATTR_NAME = 'majorRev'
+const STATE_ATTR_NAME = 'state'
 
 export default function AttributeInputWrapper({form, item, attrName, attribute, value, canEdit}: Props) {
     const {t} = useTranslation()
@@ -24,6 +25,9 @@ export default function AttributeInputWrapper({form, item, attrName, attribute, 
 
     function isEnabled() {
         if (attrName === MAJOR_REV_ATTR_NAME && !item.manualVersioning)
+            return false
+
+        if (attrName === STATE_ATTR_NAME)
             return false
 
         return !attribute.keyed && canEdit
@@ -43,6 +47,17 @@ export default function AttributeInputWrapper({form, item, attrName, attribute, 
                     rules={[{required: attribute.required, message: t('Required field')}]}
                 >
                     <Input disabled={!isEnabled()}/>
+                </FormItem>
+            )
+        case AttrType.bool:
+            return (
+                <FormItem
+                    className={styles.formItem}
+                    name={attrName}
+                    valuePropName="checked"
+                    initialValue={value}
+                >
+                    <Checkbox disabled={!isEnabled()}>{attribute.displayName}</Checkbox>
                 </FormItem>
             )
         default:
