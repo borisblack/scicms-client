@@ -36,6 +36,7 @@ const ru = {
         'SciCMS': 'SciCMS',
         'SciSolutions': 'SciSolutions',
         'Security': 'Безопасность',
+        'Select': 'Выбрать',
         'Server cannot find the requested resource': 'Сервер не может найти запрашиваемый ресурс',
         'Server successfully returned the requested data': 'Сервер успешно вернул запрошенные данные',
         'Service is unavailable. Server is not ready to process the request': 'Сервис недоступен. Сервер не готов обрабатывать запрос',

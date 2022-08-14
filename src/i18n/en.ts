@@ -36,6 +36,7 @@ const en = {
         'SciCMS': 'SciCMS',
         'SciSolutions': 'SciSolutions',
         'Security': 'Security',
+        'Select': 'Select',
         'Server cannot find the requested resource': 'Server cannot find the requested resource',
         'Server successfully returned the requested data': 'Server successfully returned the requested data',
         'Service is unavailable. Server is not ready to process the request': 'Service is unavailable. Server is not ready to process the request',

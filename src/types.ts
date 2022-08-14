@@ -150,7 +150,9 @@ export interface Attribute {
     minRange?: number
     maxRange?: number
     colHidden?: boolean
-    colWidth?:number
+    colWidth?: number
+    fieldHidden?: boolean
+    fieldWidth?: number
 }
 
 export enum AttrType {

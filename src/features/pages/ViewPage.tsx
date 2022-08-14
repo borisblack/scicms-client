@@ -1,7 +1,7 @@
 import React, {MouseEvent, ReactNode, useEffect, useMemo, useRef, useState} from 'react'
 import {Button, Col, Form, PageHeader, Row, Spin, Tabs} from 'antd'
 
-import {AttrType, RelType, UserInfo} from '../../types'
+import {Attribute, AttrType, RelType, UserInfo} from '../../types'
 import PermissionService from '../../services/permission'
 import * as icons from '@ant-design/icons'
 import {DeleteOutlined, SaveOutlined, UnlockOutlined} from '@ant-design/icons'
@@ -107,30 +107,40 @@ function ViewPage({me, page}: Props) {
         )
     }
 
-    function renderDefaultTemplateAttributes() {
-        const {attributes} = itemTemplateService.getDefault().spec
-        return Object.keys(attributes)
-            .filter(attrName => {
-                const attr = attributes[attrName]
-                return !attr.private
-                    && (attr.type !== AttrType.relation || (attr.relType !== RelType.oneToMany && attr.relType !== RelType.manyToMany))
-                    && (item.versioned || (attrName !== MAJOR_REV_ATTR_NAME && attrName !== MINOR_REV_ATTR_NAME))
-                    && (item.localized || attrName !== LOCALE_ATTR_NAME)
-            })
-            .map(attrName => {
-                const attr = attributes[attrName]
-                return (
-                    <AttributeInputWrapper
-                        key={attrName}
-                        form={form}
-                        item={item}
-                        attrName={attrName}
-                        attribute={attr}
-                        value={data ? data[attrName] : null}
-                        canEdit={(canCreate && isNew) || (canEdit && isLocked)}
-                    />
-                )
-            })
+    const renderAttributes = (attributes: {[name: string]: Attribute}) => Object.keys(attributes)
+        .filter(attrName => {
+            const attr = attributes[attrName]
+            return !attr.private && !attr.fieldHidden
+                && (attr.type !== AttrType.relation || (attr.relType !== RelType.oneToMany && attr.relType !== RelType.manyToMany))
+                && (item.versioned || (attrName !== MAJOR_REV_ATTR_NAME && attrName !== MINOR_REV_ATTR_NAME))
+                && (item.localized || attrName !== LOCALE_ATTR_NAME)
+        })
+        .map(attrName => {
+            const attr = attributes[attrName]
+            return (
+                <AttributeInputWrapper
+                    key={attrName}
+                    form={form}
+                    item={item}
+                    attrName={attrName}
+                    attribute={attr}
+                    value={data ? data[attrName] : null}
+                    canEdit={(canCreate && isNew) || (canEdit && isLocked)}
+                />
+            )
+        })
+
+    const getDefaultTemplateAttributes = () => itemTemplateService.getDefault().spec.attributes
+
+    function getOwnAttributes() {
+        const allAttributes = item.spec.attributes
+        const defaultTemplateAttributes = getDefaultTemplateAttributes()
+        const ownAttributes: {[name: string]: Attribute} = {}
+        for (const attrName in allAttributes) {
+            if (!(attrName in defaultTemplateAttributes))
+                ownAttributes[attrName] = allAttributes[attrName]
+        }
+        return ownAttributes
     }
 
     function renderRelationships() {
@@ -167,9 +177,9 @@ function ViewPage({me, page}: Props) {
             {(!hasComponents('view.content', `${item.name}.view.content`) && !hasPlugins('view.content', `${item.name}.view.content`)) &&
                 <Spin spinning={loading}>
                     <Form form={form} size="small" layout="vertical">
-                        <Row>
-                            <Col span={12}>Left</Col>
-                            <Col span={12}>{renderDefaultTemplateAttributes()}</Col>
+                        <Row gutter={16}>
+                            <Col span={12}>{renderAttributes(getOwnAttributes())}</Col>
+                            <Col span={12}>{renderAttributes(getDefaultTemplateAttributes())}</Col>
                         </Row>
                     </Form>
                 </Spin>

@@ -205,7 +205,7 @@ export default class QueryService {
     }
 
     private buildFindByIdQuery = (item: Item) => `
-        query find${item.displayName ?? _.upperFirst(item.name)} ($id: ID!) {
+        query find${_.upperFirst(item.name)} ($id: ID!) {
             ${item.name} (id: $id) {
                 data {
                     ${this.listNonCollectionAttributes(item).join('\n')}

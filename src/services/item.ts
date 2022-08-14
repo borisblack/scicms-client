@@ -31,7 +31,6 @@ const FIND_ALL_QUERY = gql`
                 localized
                 implementation
                 spec
-                checksum
                 majorRev
                 minorRev
                 locale

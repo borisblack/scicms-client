@@ -14,6 +14,9 @@ export const DATETIME_FORMAT_STRING: string = 'dd.LL.yyyy HH:mm'
 export const STD_DATETIME_FORMAT_STRING: string = 'yyyy-LL-dd HH:mm'
 export const DATE_HOURS_FORMAT_STRING: string = 'dd.LL.yyyy HH'
 export const STD_DATE_HOURS_FORMAT_STRING: string = 'yyyy-LL-dd HH'
+export const MOMENT_DATE_FORMAT_STRING: string = 'DD.MM.YYYY'
+export const MOMENT_DATETIME_FORMAT_STRING: string = 'DD.MM.YYYY HH:mm:ss'
+export const MOMENT_TIME_FORMAT_STRING: string = 'HH:mm:ss'
 
 export const DEFAULT_COLUMN_WIDTH = 130
 export const DEFAULT_PAGE_SIZE = 20

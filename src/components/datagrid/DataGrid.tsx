@@ -9,6 +9,7 @@ import './DataGrid.css'
 import ColumnFilter from './ColumnFilter'
 import Toolbar from './Toolbar'
 import {useTranslation} from 'react-i18next'
+import {ItemData} from '../../types'
 
 interface Props {
     loading: boolean
@@ -18,12 +19,12 @@ interface Props {
         hiddenColumns: string[]
         pageSize: number
     }
-    getRowContextMenu: (row: any) => ReactElement
+    getRowContextMenu?: (row: any) => ReactElement
     onRequest: (params: RequestParams) => void
-    onRowDoubleClick: (row: any) => void
+    onRowDoubleClick: (row: Row<any>) => void
 }
 
-export interface DataWithPagination<T> {
+export interface DataWithPagination<T extends ItemData> {
     data: T[],
     pagination: {
         page: number,
@@ -224,9 +225,10 @@ function DataGrid({loading, columns, data, initialState, getRowContextMenu, onRe
                                 </thead>
 
                                 <tbody className={`ant-table-tbody data-grid ${styles.tbody}`}>
-                                {table.getRowModel().rows.map(row => (
-                                    <Dropdown key={row.id} overlay={getRowContextMenu(row)} trigger={['contextMenu']}>
+                                {table.getRowModel().rows.map(row => {
+                                    const rowContent = (
                                         <tr
+                                            key={row.id}
                                             className={`${styles.tr} ${row.getIsSelected() ? styles.selected : ''}`}
                                             onClick={evt => handleRowSelection(row, evt)}
                                             onDoubleClick={() => onRowDoubleClick(row)}
@@ -241,8 +243,14 @@ function DataGrid({loading, columns, data, initialState, getRowContextMenu, onRe
                                                 </td>
                                             ))}
                                         </tr>
-                                    </Dropdown>
-                                ))}
+                                    )
+
+                                    return getRowContextMenu ? (
+                                        <Dropdown key={row.id} overlay={getRowContextMenu(row)} trigger={['contextMenu']}>
+                                            {rowContent}
+                                        </Dropdown>
+                                    ) : rowContent
+                                })}
                                 </tbody>
                             </table>
                         </div>

@@ -32,9 +32,23 @@ const menuConfig: MenuConfig = {
                 itemName: 'group'
             }, {
                 itemName: 'user'
+            }, {
+                itemName: 'permission'
             }]
         }, {
             itemName: 'item'
+        }, {
+            itemName: 'revisionPolicy'
+        }, {
+            itemName: 'sequence'
+        }, {
+            itemName: 'locale'
+        }, {
+            itemName: 'lifecycle'
+        }, {
+            itemName: 'media'
+        }, {
+            itemName: 'location'
         }]
     }, {
         key: 'design',
@@ -42,7 +56,13 @@ const menuConfig: MenuConfig = {
         icon: 'RocketOutlined',
         roles: [ROLE_ADMIN, ROLE_DESIGNER, ROLE_USER], // TODO: Delete ROLE_USER in production
         children: [{
+            itemName: 'product'
+        }, {
             itemName: 'part'
+        }, {
+            itemName: 'startSheet'
+        }, {
+            itemName: 'changeNotice'
         }]
     }]
 }
