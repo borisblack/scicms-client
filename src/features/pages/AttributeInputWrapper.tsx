@@ -22,11 +22,6 @@ interface Props {
 
 const MAJOR_REV_ATTR_NAME = 'majorRev'
 const STATE_ATTR_NAME = 'state'
-const CREATED_AT_ATTR_NAME = 'createdAt'
-const CREATED_BY_ATTR_NAME = 'createdBy'
-const UPDATED_AT_ATTR_NAME = 'updatedAt'
-const UPDATED_BY_ATTR_NAME = 'updatedBy'
-const LOCKED_BY_ATTR_NAME = 'lockedBy'
 
 const {Password, Search, TextArea} = Input
 
@@ -36,16 +31,14 @@ export default function AttributeInputWrapper({form, item, attrName, attribute, 
     const itemService = useMemo(() => ItemService.getInstance(), [])
 
     function isEnabled() {
+        if (attribute.readOnly)
+            return false
+
         if (attrName === MAJOR_REV_ATTR_NAME && !item.manualVersioning)
             return false
 
         if (attrName === STATE_ATTR_NAME)
             return false
-
-        // if (attrName === CREATED_AT_ATTR_NAME || attrName === CREATED_BY_ATTR_NAME
-        //     || attrName === UPDATED_AT_ATTR_NAME || attrName === UPDATED_BY_ATTR_NAME
-        //     || attrName === LOCKED_BY_ATTR_NAME)
-        //     return false
 
         return !attribute.keyed && canEdit
     }

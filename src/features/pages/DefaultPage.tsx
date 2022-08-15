@@ -7,7 +7,7 @@ import appConfig from '../../config'
 import {ItemData, UserInfo} from '../../types'
 import QueryService from '../../services/query'
 import DataGrid, {RequestParams} from '../../components/datagrid/DataGrid'
-import {getLabel, IPage, ViewType} from './pagesSlice'
+import {getLabel, IPage} from './pagesSlice'
 import {hasPlugins, renderPlugins} from '../../plugins'
 import {hasComponents, renderComponents} from '../../custom-components'
 import * as icons from '@ant-design/icons'
@@ -99,7 +99,7 @@ function DefaultPage({me, page, onCreate, onView}: Props) {
         return (
             <PageHeader
                 className={styles.pageHeader}
-                title={<span>{Icon ? <Icon/> : null}&nbsp;&nbsp;{getLabel(item, ViewType.default)}</span>}
+                title={<span>{Icon ? <Icon/> : null}&nbsp;&nbsp;{getLabel(page)}</span>}
                 extra={canCreate && <Button type="primary" onClick={handleCreate}><PlusCircleOutlined /> {t('Create')}</Button>}
             />
         )

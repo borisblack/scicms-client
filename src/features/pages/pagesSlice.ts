@@ -1,7 +1,6 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit'
 import {RootState} from '../../store'
 import {Item, ItemData} from '../../types'
-import _ from 'lodash'
 
 export interface IPage {
     key: string
@@ -20,33 +19,42 @@ interface PagesState {
     activeKey?: string
 }
 
-const initialState: PagesState = {
-    pages: {}
-}
+const tempIds: {[itemName: string]: number} = {}
 
-function generateKey(type: string, viewType: string, id?: string) {
-    let key = `${type}#${viewType}`
-    if (id !== undefined)
+function generateKey(itemName: string, viewType: ViewType, id?: string) {
+    let key = `${itemName}#${viewType}`
+    if (id !== undefined) {
         key += `#${id}`
+    } else if (viewType === ViewType.view) {
+        const tempId = (tempIds[itemName] ?? 0) + 1
+        tempIds[itemName] = tempId
+        key += `#${tempId}`
+    }
 
     return key
 }
 
-export function getLabel(item: Item, viewType: ViewType, data?: ItemData) {
+export function getLabel(page: IPage) {
+    const {key, item, viewType, data} = page
     switch (viewType) {
         case ViewType.view:
-            if (!data)
-                return `${item.displayName} *`
+            if (data) {
+                let displayAttrValue: string = (data as ItemData)[item.titleAttribute]
+                if (displayAttrValue === 'id')
+                    displayAttrValue = displayAttrValue.substring(0, 8)
 
-            let displayAttrValue: string = (data as ItemData)[item.titleAttribute]
-            if (displayAttrValue === 'id')
-                displayAttrValue = displayAttrValue.substring(0, 8)
-
-            return displayAttrValue
+                return displayAttrValue
+            } else {
+                return `${item.displayName} ${key.substring(key.lastIndexOf('#') + 1)} *`
+            }
         case ViewType.default:
         default:
-            return _.upperFirst(item.pluralName)
+            return item.displayPluralName
     }
+}
+
+const initialState: PagesState = {
+    pages: {}
 }
 
 const slice = createSlice({

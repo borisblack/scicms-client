@@ -7,7 +7,7 @@ import * as icons from '@ant-design/icons'
 import {DeleteOutlined, SaveOutlined, UnlockOutlined} from '@ant-design/icons'
 import {useTranslation} from 'react-i18next'
 import * as ACL from '../../util/acl'
-import {getLabel, IPage, ViewType} from './pagesSlice'
+import {getLabel, IPage} from './pagesSlice'
 import {hasPlugins, renderPlugins} from '../../plugins'
 import {hasComponents, renderComponents} from '../../custom-components'
 import styles from './Page.module.css'
@@ -101,7 +101,7 @@ function ViewPage({me, page}: Props) {
         return (
             <PageHeader
                 className={styles.pageHeader}
-                title={<span>{Icon ? <Icon/> : null}&nbsp;&nbsp;{getLabel(item, ViewType.view, data)}</span>}
+                title={<span>{Icon ? <Icon/> : null}&nbsp;&nbsp;{getLabel(page)}</span>}
                 extra={extra}
             />
         )

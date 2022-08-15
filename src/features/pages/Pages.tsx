@@ -69,7 +69,7 @@ function Pages({me}: Props) {
                 return (
                     <TabPane
                         key={page.key}
-                        tab={<span>{Icon ? <Icon/> : null}{getLabel(item, viewType, data)}</span>}
+                        tab={<span>{Icon ? <Icon/> : null}{getLabel(page)}</span>}
                         style={{background: '#fff'}}
                     >
                         <div className="page-content">

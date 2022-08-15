@@ -143,6 +143,7 @@ export interface Attribute {
     unique: boolean
     indexed: boolean
     private: boolean
+    readOnly: boolean
     pattern?: string
     length?: number
     precision?: number
