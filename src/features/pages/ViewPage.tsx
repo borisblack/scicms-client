@@ -12,7 +12,7 @@ import {hasPlugins, renderPlugins} from '../../plugins'
 import {hasComponents, renderComponents} from '../../custom-components'
 import styles from './Page.module.css'
 import ItemTemplateService from '../../services/item-template'
-import AttributeInputWrapper from './AttributeInputWrapper'
+import AttributeFieldWrapper from './AttributeFieldWrapper'
 
 interface Props {
     me: UserInfo
@@ -118,7 +118,7 @@ function ViewPage({me, page}: Props) {
         .map(attrName => {
             const attr = attributes[attrName]
             return (
-                <AttributeInputWrapper
+                <AttributeFieldWrapper
                     key={attrName}
                     form={form}
                     item={item}

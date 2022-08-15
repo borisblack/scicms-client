@@ -160,9 +160,9 @@ export enum AttrType {
     uuid = 'uuid',
     string = 'string',
     text = 'text',
-    enum = 'enum',
     sequence = 'sequence',
     email = 'email',
+    enum = 'enum',
     password = 'password',
     int = 'int',
     long = 'long',
@@ -177,6 +177,7 @@ export enum AttrType {
     array = 'array',
     json = 'json',
     media = 'media',
+    location = 'location',
     relation = 'relation'
 }
 
