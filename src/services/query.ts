@@ -25,7 +25,7 @@ interface Response<T> {
     data: T
 }
 
-type FiltersInput<FiltersType> = {
+export type FiltersInput<FiltersType> = {
     and?: [FiltersType]
     or?: [FiltersType]
     not?: FiltersType
@@ -214,7 +214,7 @@ export default class QueryService {
         }
     `
 
-    findAll = (item: Item, {sorting, filters, pagination}: RequestParams): Promise<ResponseCollection<any>> => {
+    findAll = (item: Item, {sorting, filters, pagination}: RequestParams, extraFiltersInput?: FiltersInput<unknown>): Promise<ResponseCollection<any>> => {
         const query = gql(this.buildFindAllQuery(item))
         const {page, pageSize} = pagination
 
@@ -222,7 +222,7 @@ export default class QueryService {
             query,
             variables: {
                 sort: sorting.map(it => `${it.id}:${it.desc ? 'desc' : 'asc'}`),
-                filters: this.buildItemFiltersInput(item, filters),
+                filters: {...this.buildItemFiltersInput(item, filters), ...extraFiltersInput},
                 pagination: {page, pageSize}
             }
         })

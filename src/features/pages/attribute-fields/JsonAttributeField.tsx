@@ -1,5 +1,5 @@
 import {AttributeFieldProps} from '.'
-import styles from '../AttributeInputWrapper.module.css'
+import styles from './AttributeField.module.css'
 import {Form, Input} from 'antd'
 import {useTranslation} from 'react-i18next'
 import {AttrType} from '../../../types'

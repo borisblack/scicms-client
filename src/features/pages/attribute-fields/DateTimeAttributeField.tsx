@@ -6,7 +6,7 @@ import {useTranslation} from 'react-i18next'
 import {AttributeFieldProps} from '.'
 import appConfig from '../../../config'
 import {AttrType} from '../../../types'
-import styles from '../AttributeInputWrapper.module.css'
+import styles from './AttributeField.module.css'
 
 const FormItem = Form.Item
 

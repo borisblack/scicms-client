@@ -3,7 +3,7 @@ import {useTranslation} from 'react-i18next'
 
 import {AttributeFieldProps} from '.'
 import {AttrType} from '../../../types'
-import styles from '../AttributeInputWrapper.module.css'
+import styles from './AttributeField.module.css'
 import {FC} from 'react'
 
 const FormItem = Form.Item

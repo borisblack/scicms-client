@@ -1,10 +1,10 @@
-import {Form, Input} from 'antd'
+import {FC} from 'react'
 import {useTranslation} from 'react-i18next'
+import {Form, Input} from 'antd'
 
 import {AttributeFieldProps} from '.'
 import {AttrType} from '../../../types'
-import styles from '../AttributeInputWrapper.module.css'
-import {FC} from 'react'
+import styles from './AttributeField.module.css'
 
 const MAJOR_REV_ATTR_NAME = 'majorRev'
 const STATE_ATTR_NAME = 'state'
@@ -20,6 +20,9 @@ const StringAttributeField: FC<AttributeFieldProps> = ({item, attrName, attribut
 
     function isEnabled() {
         if (attribute.keyed || attribute.readOnly)
+            return false
+
+        if (attribute.type === AttrType.sequence)
             return false
 
         if (attrName === MAJOR_REV_ATTR_NAME && !item.manualVersioning)

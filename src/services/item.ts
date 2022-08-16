@@ -42,6 +42,16 @@ const FIND_ALL_QUERY = gql`
                         id
                     }
                 }
+                allowedLifecycles {
+                    data {
+                        id
+                    }
+                }
+                allowedPermissions {
+                    data {
+                        id
+                    }
+                }
             }
         }
     }

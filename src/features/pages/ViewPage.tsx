@@ -1,7 +1,7 @@
 import React, {MouseEvent, ReactNode, useEffect, useMemo, useRef, useState} from 'react'
 import {Button, Col, Form, PageHeader, Row, Spin, Tabs} from 'antd'
 
-import {Attribute, AttrType, RelType, UserInfo} from '../../types'
+import {Attribute, AttrType, Item, RelType, UserInfo} from '../../types'
 import PermissionService from '../../services/permission'
 import * as icons from '@ant-design/icons'
 import {DeleteOutlined, SaveOutlined, UnlockOutlined} from '@ant-design/icons'
@@ -17,6 +17,7 @@ import AttributeFieldWrapper from './AttributeFieldWrapper'
 interface Props {
     me: UserInfo
     page: IPage
+    onView: (item: Item, id: string) => void
     onUpdate: () => void
     onDelete: () => void
 }
@@ -26,7 +27,7 @@ const MAJOR_REV_ATTR_NAME = 'majorRev'
 const MINOR_REV_ATTR_NAME = 'minorRev'
 const LOCALE_ATTR_NAME = 'locale'
 
-function ViewPage({me, page}: Props) {
+function ViewPage({me, page, onView}: Props) {
     const {t} = useTranslation()
     const [loading, setLoading] = useState(false)
     const headerRef = useRef<HTMLDivElement>(null)
@@ -126,6 +127,7 @@ function ViewPage({me, page}: Props) {
                     attribute={attr}
                     value={data ? data[attrName] : null}
                     canEdit={(canCreate && isNew) || (canEdit && isLocked)}
+                    onView={onView}
                 />
             )
         })

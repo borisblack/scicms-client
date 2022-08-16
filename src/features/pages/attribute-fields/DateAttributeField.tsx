@@ -1,5 +1,5 @@
 import {AttributeFieldProps} from '.'
-import styles from '../AttributeInputWrapper.module.css'
+import styles from './AttributeField.module.css'
 import moment from 'moment/moment'
 import {DatePicker, Form} from 'antd'
 import appConfig from '../../../config'

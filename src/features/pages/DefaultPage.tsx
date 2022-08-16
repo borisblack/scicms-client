@@ -4,7 +4,7 @@ import {Row} from '@tanstack/react-table'
 import {Button, Menu, message, PageHeader} from 'antd'
 
 import appConfig from '../../config'
-import {ItemData, UserInfo} from '../../types'
+import {Item, ItemData, UserInfo} from '../../types'
 import QueryService from '../../services/query'
 import DataGrid, {RequestParams} from '../../components/datagrid/DataGrid'
 import {getLabel, IPage} from './pagesSlice'
@@ -21,7 +21,7 @@ interface Props {
     me: UserInfo
     page: IPage
     onCreate: () => void
-    onView: (data: ItemData) => void
+    onView: (item: Item, id: string) => void
     onDelete: () => void
 }
 
@@ -72,19 +72,19 @@ function DefaultPage({me, page, onCreate, onView}: Props) {
         }
     }, [item])
 
-    const handleView = useCallback(async (itemData: ItemData) => {
+    const handleView = useCallback(async (id: string) => {
         setLoading(true)
-        await onView(itemData)
+        await onView(item, id)
         setLoading(false)
     }, [onView])
 
-    const handleRowDoubleClick = useCallback((row: Row<ItemData>) => handleView(row.original), [handleView])
+    const handleRowDoubleClick = useCallback((row: Row<ItemData>) => handleView(row.original.id), [handleView])
 
     const getRowContextMenu = useCallback((row: Row<ItemData>) => (
         <Menu items={[{
             key: 'open',
             label: t('Open'),
-            onClick: () => handleView(row.original)
+            onClick: () => handleView(row.original.id)
         }]}/>
     ), [t, handleView])
 

@@ -10,7 +10,7 @@ import TextAttributeField from './attribute-fields/TextAttributeField'
 import BoolAttributeField from './attribute-fields/BoolAttributeField'
 import PasswordAttributeField from './attribute-fields/PasswordAttributeField'
 import StringAttributeField from './attribute-fields/StringAttributeField'
-import './AttributeInputWrapper.css'
+import './attribute-fields/AttributeField.css'
 
 const attributeFields: AttributeFields = {
     [AttrType.string]: StringAttributeField,

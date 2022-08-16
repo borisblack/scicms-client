@@ -1,17 +1,26 @@
-import {Form, Input, Modal} from 'antd'
+import {Button, Form, Input, Modal, Tooltip} from 'antd'
 import {FC, useMemo, useState} from 'react'
 
-import {AttrType, Item, ItemData, RelType} from '../../../types'
+import {AttrType, ItemData, Lifecycle, Permission, RelType} from '../../../types'
 import ItemService from '../../../services/item'
-import SearchDataGridWrapper from '../SearchDataGridWrapper'
-import styles from '../AttributeInputWrapper.module.css'
+import SearchDataGridWrapper from './SearchDataGridWrapper'
+import styles from './AttributeField.module.css'
 import {useTranslation} from 'react-i18next'
 import {AttributeFieldProps} from '.'
+import {FolderOpenOutlined} from '@ant-design/icons'
+import {DEFAULT_LIFECYCLE_ID} from '../../../services/lifecycle'
+import {DEFAULT_PERMISSION_ID} from '../../../services/permission'
+import {FiltersInput} from '../../../services/query'
 
-const FormItem = Form.Item
+const OPEN_BTN_WIDTH = 24
+const STATE_ATTR_NAME = 'state'
+const LIFECYCLE_ATTR_NAME = 'lifecycle'
+const PERMISSION_ATTR_NAME = 'permission'
+
+const {Item: FormItem} = Form
 const {Search} = Input
 
-const RelationAttributeField: FC<AttributeFieldProps> = ({form, attrName, attribute, value, canEdit}) => {
+const RelationAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, attribute, value, canEdit, onView}) => {
     if (attribute.type !== AttrType.relation || attribute.relType === RelType.oneToMany || attribute.relType === RelType.manyToMany)
         throw new Error('Illegal attribute')
 
@@ -22,14 +31,47 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({form, attrName, attrib
     const {t} = useTranslation()
     const [isRelationModalVisible, setRelationModalVisible] = useState<boolean>(false)
     const isDisabled = attribute.keyed || attribute.readOnly || !canEdit
+    const id: string | null = form.getFieldValue(`${attrName}.id`) ?? value?.data?.id ?? null
 
     const itemService = useMemo(() => ItemService.getInstance(), [])
     const targetItem = itemService.getByName(target)
 
-    function handleRelationSelect(targetItem: Item, itemData: ItemData) {
+    const extraFiltersInput: FiltersInput<unknown> = useMemo(() => {
+        if (attrName === LIFECYCLE_ATTR_NAME) {
+            const allowedLifecycleIds = [...item.allowedLifecycles.data.map(it => it.id), DEFAULT_LIFECYCLE_ID]
+            return {
+                id: {
+                    in: allowedLifecycleIds
+                }
+            } as FiltersInput<Lifecycle>
+        }
+
+        if (attrName === PERMISSION_ATTR_NAME) {
+            const allowedPermissionIds = [...item.allowedPermissions.data.map(it => it.id), DEFAULT_PERMISSION_ID]
+            return {
+                id: {
+                    in: allowedPermissionIds
+                }
+            } as FiltersInput<Permission>
+        }
+
+        return {} as FiltersInput<unknown>
+    }, [item, attrName])
+
+    function handleRelationSelect(itemData: ItemData) {
         form.setFieldValue(attrName, itemData[targetItem.titleAttribute])
         form.setFieldValue(`${attrName}.id`, itemData.id)
+        if (attrName === LIFECYCLE_ATTR_NAME)
+            form.setFieldValue(STATE_ATTR_NAME, (itemData as Lifecycle).startState)
+
         setRelationModalVisible(false)
+    }
+
+    function openRelation() {
+        if (!id)
+            return
+
+        onView(targetItem, id)
     }
 
     return (
@@ -42,10 +84,15 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({form, attrName, attrib
                 rules={[{required: attribute.required, message: t('Required field')}]}
             >
                 <Search
-                    style={{maxWidth: attribute.fieldWidth}}
+                    style={{maxWidth: attribute.fieldWidth ? attribute.fieldWidth + (!id ? 0 : OPEN_BTN_WIDTH) : undefined}}
                     readOnly
                     disabled={isDisabled}
                     onSearch={() => setRelationModalVisible(true)}
+                    addonAfter={!!id &&
+                        <Tooltip key="open" title={t('Open')}>
+                            <Button type="link" icon={<FolderOpenOutlined/>} onClick={openRelation}/>
+                        </Tooltip>
+                    }
                 />
             </FormItem>
             <FormItem hidden name={`${attrName}.id`} initialValue={value?.data ? value.data.id : null}>
@@ -59,7 +106,7 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({form, attrName, attrib
                 footer={null}
                 onCancel={() => setRelationModalVisible(false)}
             >
-                <SearchDataGridWrapper item={targetItem} onSelect={itemData => handleRelationSelect(targetItem, itemData)}/>
+                <SearchDataGridWrapper item={targetItem} extraFiltersInput={extraFiltersInput} onSelect={itemData => handleRelationSelect(itemData)}/>
             </Modal>
         </>
     )

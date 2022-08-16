@@ -1,11 +1,12 @@
-import {AttributeFieldProps} from '.'
-import styles from '../AttributeInputWrapper.module.css'
+import {FC} from 'react'
+import {useTranslation} from 'react-i18next'
 import moment from 'moment/moment'
 import {Form, TimePicker} from 'antd'
+
+import {AttributeFieldProps} from '.'
 import appConfig from '../../../config'
-import {useTranslation} from 'react-i18next'
 import {AttrType} from '../../../types'
-import {FC} from 'react'
+import styles from './AttributeField.module.css'
 
 const FormItem = Form.Item
 

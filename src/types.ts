@@ -33,7 +33,7 @@ interface IntermediateItemTemplate {
     sortOrder: number | null
 }
 
-interface Lifecycle extends DefaultItemTemplate {
+export interface Lifecycle extends DefaultItemTemplate {
     name: string
     displayName: string | null
     description: string | null

@@ -3,7 +3,7 @@ import {Checkbox, Form} from 'antd'
 
 import {AttributeFieldProps} from '.'
 import {AttrType} from '../../../types'
-import styles from '../AttributeInputWrapper.module.css'
+import styles from './AttributeField.module.css'
 
 const FormItem = Form.Item
 

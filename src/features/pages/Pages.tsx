@@ -6,7 +6,7 @@ import {closePage, getLabel, openPage, selectActiveKey, selectPages, setActiveKe
 import {useAppDispatch, useAppSelector} from '../../util/hooks'
 import * as icons from '@ant-design/icons'
 import {SearchOutlined} from '@ant-design/icons'
-import {Item, ItemData, UserInfo} from '../../types'
+import {Item, UserInfo} from '../../types'
 import DefaultPage from './DefaultPage'
 import ViewPage from './ViewPage'
 import QueryService from '../../services/query'
@@ -38,8 +38,8 @@ function Pages({me}: Props) {
         dispatch(openPage({item, viewType: ViewType.view}))
     }
 
-    const handleView = async (item: Item, data: ItemData) => {
-        const refreshedData = await queryService.findById(item, data.id)
+    const handleView = async (item: Item, id: string) => {
+        const refreshedData = await queryService.findById(item, id)
         if (refreshedData.data) {
             dispatch(openPage({
                 item,
@@ -78,12 +78,13 @@ function Pages({me}: Props) {
                                     me={me}
                                     page={page}
                                     onCreate={() => handleCreate(page.item)}
-                                    onView={data => handleView(page.item, data)}
+                                    onView={handleView}
                                     onDelete={() => {}}
                                 /> :
                                 <ViewPage
                                     me={me}
                                     page={page}
+                                    onView={handleView}
                                     onUpdate={() => {}}
                                     onDelete={() => {}}
                                 />

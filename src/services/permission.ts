@@ -7,6 +7,8 @@ export interface PermissionCache {
     [id: string]: Permission
 }
 
+export const DEFAULT_PERMISSION_ID = '6fd701bf-87e0-4aca-bbfd-fe1e9f85fc71'
+
 const FIND_ALL_QUERY = gql`
     query findAll {
         permissions {

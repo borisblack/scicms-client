@@ -3,7 +3,7 @@ import {useTranslation} from 'react-i18next'
 import {Form, InputNumber} from 'antd'
 
 import {AttributeFieldProps} from '.'
-import styles from '../AttributeInputWrapper.module.css'
+import styles from './AttributeField.module.css'
 import {AttrType} from '../../../types'
 
 const FormItem = Form.Item

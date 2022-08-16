@@ -8,7 +8,7 @@ import {Attribute, AttrType, Item, RelType} from '../types'
 import appConfig from '../config'
 import ItemService from '../services/item'
 import {DataWithPagination, RequestParams} from '../components/datagrid/DataGrid'
-import QueryService from '../services/query'
+import QueryService, {FiltersInput} from '../services/query'
 
 const columnHelper = createColumnHelper<any>()
 const itemService = ItemService.getInstance()
@@ -105,9 +105,9 @@ export function getHiddenColumns(item: Item): string[] {
     return hiddenColumns
 }
 
-export async function findAll(item: Item, params: RequestParams): Promise<DataWithPagination<any>> {
+export async function findAll(item: Item, params: RequestParams, extraFiltersInput?: FiltersInput<unknown>): Promise<DataWithPagination<any>> {
     try {
-        const responseCollection = await queryService.findAll(item, params)
+        const responseCollection = await queryService.findAll(item, params, extraFiltersInput)
         const {page, pageSize, total} = responseCollection.meta.pagination
         return {
             data: responseCollection.data,

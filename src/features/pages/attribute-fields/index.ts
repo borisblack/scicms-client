@@ -9,7 +9,8 @@ export interface AttributeFieldProps {
     attrName: string
     attribute: Attribute
     value: any
-    canEdit: boolean
+    canEdit: boolean,
+    onView: (item: Item, id: string) => void
 }
 
 export interface AttributeFields {
