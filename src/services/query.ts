@@ -290,7 +290,11 @@ export default class QueryService {
                     result.push(attrName)
                     break
                 case AttrType.media:
-                    result.push(`${attrName} { data { id filename } }`)
+                    const media = this.itemService.getMedia()
+                    result.push(`${attrName} { data { id ${media.titleAttribute} } }`)
+                    break
+                case AttrType.location:
+                    result.push(`${attrName} { data { id displayName latitude longitude } }`)
                     break
                 case AttrType.relation:
                     if (!attr.target)

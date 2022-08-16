@@ -214,6 +214,12 @@ export interface Media extends DefaultItemTemplate {
     checksum: string
 }
 
+export interface Location extends DefaultItemTemplate {
+    displayName: string | null
+    latitude: number
+    longitude: number
+}
+
 export interface ItemData extends DefaultItemTemplate {
     [name: string]: any
 }

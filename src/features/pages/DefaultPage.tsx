@@ -5,7 +5,6 @@ import {Button, Menu, message, PageHeader} from 'antd'
 
 import appConfig from '../../config'
 import {Item, ItemData, UserInfo} from '../../types'
-import QueryService from '../../services/query'
 import DataGrid, {RequestParams} from '../../components/datagrid/DataGrid'
 import {getLabel, IPage} from './pagesSlice'
 import {hasPlugins, renderPlugins} from '../../plugins'
@@ -34,7 +33,6 @@ function DefaultPage({me, page, onCreate, onView}: Props) {
     const footerRef = useRef<HTMLDivElement>(null)
     const {item} = page
 
-    const queryService = useMemo(() => QueryService.getInstance(), [])
     const permissionService = useMemo(() => PermissionService.getInstance(), [])
 
     const columnsMemoized = useMemo(() => getColumns(item), [item])
@@ -76,7 +74,7 @@ function DefaultPage({me, page, onCreate, onView}: Props) {
         setLoading(true)
         await onView(item, id)
         setLoading(false)
-    }, [onView])
+    }, [item, onView])
 
     const handleRowDoubleClick = useCallback((row: Row<ItemData>) => handleView(row.original.id), [handleView])
 

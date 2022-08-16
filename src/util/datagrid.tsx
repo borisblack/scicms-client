@@ -4,7 +4,7 @@ import {Checkbox} from 'antd'
 import {DateTime} from 'luxon'
 
 import i18n from '../i18n'
-import {Attribute, AttrType, Item, RelType} from '../types'
+import {Attribute, AttrType, Item, Location, RelType} from '../types'
 import appConfig from '../config'
 import ItemService from '../services/item'
 import {DataWithPagination, RequestParams} from '../components/datagrid/DataGrid'
@@ -38,7 +38,8 @@ export function getColumns(item: Item): ColumnDef<any, any>[] {
             header: attr.displayName,
             cell: info => renderCell(attr, info.getValue()),
             size: attr.colWidth ?? appConfig.ui.dataGrid.defaultColWidth,
-            enableSorting: attr.type !== AttrType.text && attr.type !== AttrType.json && attr.type !== AttrType.array && attr.type !== AttrType.relation
+            enableSorting: attr.type !== AttrType.text && attr.type !== AttrType.json && attr.type !== AttrType.array
+                && attr.type !== AttrType.location && attr.type !== AttrType.relation
         })
 
         columns.push(column)
@@ -75,7 +76,15 @@ const renderCell = (attribute: Attribute, value: any): ReactElement | string | n
         case AttrType.timestamp:
             return value ? DateTime.fromISO(value,).toFormat(appConfig.dateTime.dateTimeFormatString) : null
         case AttrType.media:
-            return (value && value.data) ? value.data['filename'] : null
+            const media = itemService.getMedia()
+            return (value && value.data) ? value.data[media.titleAttribute] : null
+        case AttrType.location:
+            const locationData: Location | null = (value && value.data) ? value.data as Location : null
+            if (locationData) {
+                const {displayName, latitude, longitude} = locationData
+                return displayName && `${latitude}, ${longitude}`
+            }
+            return null
         case AttrType.relation:
             if (attribute.relType === RelType.oneToMany || attribute.relType === RelType.manyToMany)
                 throw new Error('Cannot render oneToMany or manyToMany relation')

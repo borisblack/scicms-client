@@ -9,7 +9,7 @@ import {FiltersInput} from '../../../services/query'
 
 interface Props {
     item: Item
-    extraFiltersInput?: FiltersInput<any>
+    extraFiltersInput?: FiltersInput<unknown>
     onSelect: (itemData: ItemData) => void
 }
 
@@ -30,7 +30,7 @@ export default function SearchDataGridWrapper({item, extraFiltersInput, onSelect
         } finally {
             setLoading(false)
         }
-    }, [item])
+    }, [item, extraFiltersInput])
 
     const handleRowDoubleClick = (row: Row<ItemData>) => onSelect(row.original)
 

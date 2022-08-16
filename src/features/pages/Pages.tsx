@@ -64,7 +64,7 @@ function Pages({me}: Props) {
             onEdit={handleTabsEdit}
         >
             {pages.map(page => {
-                const {item, viewType, data} = page
+                const {item, viewType} = page
                 const Icon = (viewType === ViewType.default) ? SearchOutlined : (item.icon ? (icons as any)[item.icon] : null)
                 return (
                     <TabPane

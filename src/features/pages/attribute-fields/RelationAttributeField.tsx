@@ -12,7 +12,8 @@ import {DEFAULT_LIFECYCLE_ID} from '../../../services/lifecycle'
 import {DEFAULT_PERMISSION_ID} from '../../../services/permission'
 import {FiltersInput} from '../../../services/query'
 
-const OPEN_BTN_WIDTH = 24
+const OPEN_BUTTON_WIDTH = 24
+const RELATION_MODAL_WIDTH = 800
 const STATE_ATTR_NAME = 'state'
 const LIFECYCLE_ATTR_NAME = 'lifecycle'
 const PERMISSION_ATTR_NAME = 'permission'
@@ -29,6 +30,7 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, 
         throw new Error('Target is undefined')
 
     const {t} = useTranslation()
+    const [viewLoading, setViewLoading] = useState<boolean>(false)
     const [isRelationModalVisible, setRelationModalVisible] = useState<boolean>(false)
     const isDisabled = attribute.keyed || attribute.readOnly || !canEdit
     const id: string | null = form.getFieldValue(`${attrName}.id`) ?? value?.data?.id ?? null
@@ -67,11 +69,17 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, 
         setRelationModalVisible(false)
     }
 
-    function openRelation() {
+    async function openRelation() {
         if (!id)
             return
 
-        onView(targetItem, id)
+        setViewLoading(true)
+        try {
+            onView(targetItem, id)
+        } finally {
+            setViewLoading(false)
+        }
+
     }
 
     return (
@@ -84,13 +92,13 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, 
                 rules={[{required: attribute.required, message: t('Required field')}]}
             >
                 <Search
-                    style={{maxWidth: attribute.fieldWidth ? attribute.fieldWidth + (!id ? 0 : OPEN_BTN_WIDTH) : undefined}}
+                    style={{maxWidth: attribute.fieldWidth ? attribute.fieldWidth + (!id ? 0 : OPEN_BUTTON_WIDTH) : undefined}}
                     readOnly
                     disabled={isDisabled}
                     onSearch={() => setRelationModalVisible(true)}
                     addonAfter={!!id &&
                         <Tooltip key="open" title={t('Open')}>
-                            <Button type="link" icon={<FolderOpenOutlined/>} onClick={openRelation}/>
+                            <Button type="link" icon={<FolderOpenOutlined/>} onClick={openRelation} loading={viewLoading}/>
                         </Tooltip>
                     }
                 />
@@ -102,11 +110,15 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, 
                 title={`${t('Select')} ${attribute.displayName}`}
                 visible={isRelationModalVisible}
                 destroyOnClose
-                width={800}
+                width={RELATION_MODAL_WIDTH}
                 footer={null}
                 onCancel={() => setRelationModalVisible(false)}
             >
-                <SearchDataGridWrapper item={targetItem} extraFiltersInput={extraFiltersInput} onSelect={itemData => handleRelationSelect(itemData)}/>
+                <SearchDataGridWrapper
+                    item={targetItem}
+                    extraFiltersInput={extraFiltersInput}
+                    onSelect={itemData => handleRelationSelect(itemData)}
+                />
             </Modal>
         </>
     )
