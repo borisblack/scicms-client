@@ -218,6 +218,7 @@ export interface Location extends DefaultItemTemplate {
     displayName: string | null
     latitude: number
     longitude: number
+    sortOrder: number | null
 }
 
 export interface ItemData extends DefaultItemTemplate {
