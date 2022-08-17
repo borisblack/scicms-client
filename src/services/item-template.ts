@@ -12,11 +12,22 @@ const DEFAULT_ITEM_TEMPLATE_NAME = 'defaultItemTemplate'
 const FIND_ALL_QUERY = gql`
     query {
         itemTemplates {
-            coreVersion
-            metadata {
+            data {
+                id
                 name
+                spec
+                majorRev
+                minorRev
+                locale
+                state
+                createdAt
+                updatedAt
+                permission {
+                    data {
+                        id
+                    }
+                }
             }
-            spec
         }
     }
 `
@@ -37,7 +48,7 @@ export default class ItemTemplateService {
         const itemTemplateList = await this.findAll()
         const itemTemplates: ItemTemplateCache = {}
         itemTemplateList.forEach(it => {
-            itemTemplates[it.metadata.name] = it
+            itemTemplates[it.name] = it
         })
         this.itemTemplates = itemTemplates
     }
@@ -47,7 +58,7 @@ export default class ItemTemplateService {
     }
 
     private findAll = (): Promise<ItemTemplate[]> =>
-        apolloClient.query({query: FIND_ALL_QUERY}).then(res => res.data.itemTemplates)
+        apolloClient.query({query: FIND_ALL_QUERY}).then(res => res.data.itemTemplates.data)
 
     findByName = (name: string): ItemTemplate | null => this.itemTemplates[name] ?? null
 

@@ -39,7 +39,7 @@ export function getColumns(item: Item): ColumnDef<any, any>[] {
             cell: info => renderCell(attr, info.getValue()),
             size: attr.colWidth ?? appConfig.ui.dataGrid.defaultColWidth,
             enableSorting: attr.type !== AttrType.text && attr.type !== AttrType.json && attr.type !== AttrType.array
-                && attr.type !== AttrType.location && attr.type !== AttrType.relation
+                && attr.type !== AttrType.media && attr.type !== AttrType.location && attr.type !== AttrType.relation
         })
 
         columns.push(column)
