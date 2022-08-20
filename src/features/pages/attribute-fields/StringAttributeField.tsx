@@ -11,7 +11,7 @@ const STATE_ATTR_NAME = 'state'
 
 const FormItem = Form.Item
 
-const StringAttributeField: FC<AttributeFieldProps> = ({item, attrName, attribute, value, canEdit}) => {
+const StringAttributeField: FC<AttributeFieldProps> = ({item, attrName, attribute, value}) => {
     if (attribute.type !== AttrType.string && attribute.type !== AttrType.uuid
         && attribute.type !== AttrType.email && attribute.type !== AttrType.sequence)
         throw new Error('Illegal attribute')
@@ -28,10 +28,7 @@ const StringAttributeField: FC<AttributeFieldProps> = ({item, attrName, attribut
         if (attrName === MAJOR_REV_ATTR_NAME && !item.manualVersioning)
             return false
 
-        if (attrName === STATE_ATTR_NAME)
-            return false
-
-        return canEdit
+        return attrName !== STATE_ATTR_NAME
     }
 
     return (

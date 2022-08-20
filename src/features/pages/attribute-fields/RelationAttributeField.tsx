@@ -21,7 +21,7 @@ const PERMISSION_ATTR_NAME = 'permission'
 const {Item: FormItem} = Form
 const {Search} = Input
 
-const RelationAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, attribute, value, canEdit, onView}) => {
+const RelationAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, attribute, value, onView}) => {
     if (attribute.type !== AttrType.relation || attribute.relType === RelType.oneToMany || attribute.relType === RelType.manyToMany)
         throw new Error('Illegal attribute')
 
@@ -32,7 +32,7 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, 
     const {t} = useTranslation()
     const [viewLoading, setViewLoading] = useState<boolean>(false)
     const [isRelationModalVisible, setRelationModalVisible] = useState<boolean>(false)
-    const isDisabled = attribute.keyed || attribute.readOnly || !canEdit
+    const isDisabled = attribute.keyed || attribute.readOnly
     const id: string | null = form.getFieldValue(`${attrName}.id`) ?? value?.data?.id ?? null
 
     const itemService = useMemo(() => ItemService.getInstance(), [])

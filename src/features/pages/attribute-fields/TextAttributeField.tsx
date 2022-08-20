@@ -8,12 +8,12 @@ import {FC} from 'react'
 const FormItem = Form.Item
 const {TextArea} = Input
 
-const TextAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, value, canEdit}) => {
+const TextAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, value}) => {
     if (attribute.type !== AttrType.text)
         throw new Error('Illegal attribute')
 
     const {t} = useTranslation()
-    const isDisabled = attribute.keyed || attribute.readOnly || !canEdit
+    const isDisabled = attribute.keyed || attribute.readOnly
 
     return (
         <FormItem

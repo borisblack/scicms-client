@@ -126,7 +126,6 @@ function ViewPage({me, page, onView}: Props) {
                     attrName={attrName}
                     attribute={attr}
                     value={data ? data[attrName] : null}
-                    canEdit={(canCreate && isNew) || (canEdit && isLocked)}
                     onView={onView}
                 />
             )
@@ -178,7 +177,7 @@ function ViewPage({me, page, onView}: Props) {
             {hasPlugins('view.content', `${item.name}.view.content`) && <div ref={contentRef}/>}
             {(!hasComponents('view.content', `${item.name}.view.content`) && !hasPlugins('view.content', `${item.name}.view.content`)) &&
                 <Spin spinning={loading}>
-                    <Form form={form} size="small" layout="vertical">
+                    <Form form={form} size="small" layout="vertical" disabled={!((canCreate && isNew) || (canEdit && isLocked))}>
                         <Row gutter={16}>
                             <Col span={12}>{renderAttributes(getOwnAttributes())}</Col>
                             <Col span={12}>{renderAttributes(getDefaultTemplateAttributes())}</Col>

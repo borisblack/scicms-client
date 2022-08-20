@@ -84,7 +84,8 @@ export default class ItemService {
     }
 
     private findAll = (): Promise<Item[]> =>
-        apolloClient.query({query: FIND_ALL_QUERY}).then(res => res.data.items.data)
+        apolloClient.query({query: FIND_ALL_QUERY})
+            .then(res => res.data.items.data)
 
     findByName = (name: string): Item | null => this.items[name] ?? null
 

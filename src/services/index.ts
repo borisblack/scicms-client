@@ -47,8 +47,7 @@ export const throwAxiosResponseError = (e: AxiosError) => {
 }
 
 // Setup ApolloClient
-// const httpLink = new HttpLink({ uri: `${config.backendUrl}/graphql` })
-const uploadLink = createUploadLink({ uri: `${config.backendUrl}/graphql` })
+const uploadLink = createUploadLink({uri: `${config.backendUrl}/graphql`})
 
 const authMiddleware = new ApolloLink((operation, forward) => {
     operation.setContext((context: Record<string, any>) => {
@@ -71,15 +70,17 @@ export const apolloClient = new ApolloClient({
     defaultOptions: {
         query: {
             fetchPolicy: 'no-cache',
-            errorPolicy: 'all'
+            errorPolicy: 'all',
         },
         watchQuery: {
             fetchPolicy: 'no-cache',
             errorPolicy: 'all'
-        }
+        },
     }
 })
 
+export const getGraphQLErrorMessages = (errors: ReadonlyArray<GraphQLError>) => errors.map(err => err.message).join('; ')
+
 export const throwGraphQLErrors = (errors: ReadonlyArray<GraphQLError>) => {
-    throw new Error(errors.map(err => err.message).join('; '))
+    throw new Error(getGraphQLErrorMessages(errors))
 }

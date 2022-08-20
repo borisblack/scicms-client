@@ -209,6 +209,16 @@ export interface Media extends DefaultItemTemplate {
     checksum: string
 }
 
+export interface MediaInfo {
+    id: string
+    filename: string
+    description: string | null
+    fileSize: number
+    mimetype: string
+    checksum: string
+    createdAt: string
+}
+
 export interface Location extends DefaultItemTemplate {
     displayName: string | null
     latitude: number

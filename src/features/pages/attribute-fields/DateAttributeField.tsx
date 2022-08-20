@@ -9,12 +9,12 @@ import {FC} from 'react'
 
 const FormItem = Form.Item
 
-const DateAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, value, canEdit}) => {
+const DateAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, value}) => {
     if (attribute.type !== AttrType.date)
         throw new Error('Illegal attribute')
 
     const {t} = useTranslation()
-    const isDisabled = attribute.keyed || attribute.readOnly || !canEdit
+    const isDisabled = attribute.keyed || attribute.readOnly
 
     return (
         <FormItem

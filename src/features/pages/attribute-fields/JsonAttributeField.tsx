@@ -8,12 +8,12 @@ import {FC} from 'react'
 const FormItem = Form.Item
 const {TextArea} = Input
 
-const JsonAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, value, canEdit}) => {
+const JsonAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, value}) => {
     if (attribute.type !== AttrType.json && attribute.type !== AttrType.array)
         throw new Error('Illegal attribute')
 
     const {t} = useTranslation()
-    const isDisabled = attribute.keyed || attribute.readOnly || !canEdit
+    const isDisabled = attribute.keyed || attribute.readOnly
 
     return (
         <FormItem

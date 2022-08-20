@@ -10,12 +10,12 @@ import styles from './AttributeField.module.css'
 
 const FormItem = Form.Item
 
-const TimeAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, value, canEdit}) => {
+const TimeAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, value}) => {
     if (attribute.type !== AttrType.time)
         throw new Error('Illegal attribute')
 
     const {t} = useTranslation()
-    const isDisabled = attribute.keyed || attribute.readOnly || !canEdit
+    const isDisabled = attribute.keyed || attribute.readOnly
 
     return (
         <FormItem

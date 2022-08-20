@@ -7,11 +7,11 @@ import styles from './AttributeField.module.css'
 
 const FormItem = Form.Item
 
-const BoolAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, value, canEdit}) => {
+const BoolAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, value}) => {
     if (attribute.type !== AttrType.bool)
         throw new Error('Illegal attribute')
 
-    const isDisabled = attribute.keyed || attribute.readOnly || !canEdit
+    const isDisabled = attribute.keyed || attribute.readOnly
 
     return (
         <FormItem
