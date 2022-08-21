@@ -7,7 +7,7 @@ import SearchDataGridWrapper from './SearchDataGridWrapper'
 import styles from './AttributeField.module.css'
 import {useTranslation} from 'react-i18next'
 import {AttributeFieldProps} from '.'
-import {FolderOpenOutlined} from '@ant-design/icons'
+import {ClearOutlined, FolderOpenOutlined} from '@ant-design/icons'
 import {DEFAULT_LIFECYCLE_ID} from '../../../services/lifecycle'
 import {DEFAULT_PERMISSION_ID} from '../../../services/permission'
 import {FiltersInput} from '../../../services/query'
@@ -30,11 +30,10 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, 
         throw new Error('Target is undefined')
 
     const {t} = useTranslation()
-    const [viewLoading, setViewLoading] = useState<boolean>(false)
+    const [loading, setLoading] = useState<boolean>(false)
     const [isRelationModalVisible, setRelationModalVisible] = useState<boolean>(false)
     const isDisabled = attribute.keyed || attribute.readOnly
-    const id: string | null = form.getFieldValue(`${attrName}.id`) ?? value?.data?.id ?? null
-
+    const [currentId, setCurrentId] = useState(value?.data?.id)
     const itemService = useMemo(() => ItemService.getInstance(), [])
     const targetItem = itemService.getByName(target)
 
@@ -61,6 +60,7 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, 
     }, [item, attrName])
 
     function handleRelationSelect(itemData: ItemData) {
+        setCurrentId(itemData.id)
         form.setFieldValue(attrName, itemData[targetItem.titleAttribute])
         form.setFieldValue(`${attrName}.id`, itemData.id)
         if (attrName === LIFECYCLE_ATTR_NAME)
@@ -70,16 +70,24 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, 
     }
 
     async function openRelation() {
-        if (!id)
+        if (!currentId)
             return
 
-        setViewLoading(true)
+        setLoading(true)
         try {
-            onView(targetItem, id)
+            onView(targetItem, currentId)
         } finally {
-            setViewLoading(false)
+            setLoading(false)
         }
 
+    }
+
+    function handleClear() {
+        setCurrentId(null)
+        form.setFieldValue(attrName, null)
+        form.setFieldValue(`${attrName}.id`, null)
+        if (attrName === LIFECYCLE_ATTR_NAME)
+            form.setFieldValue(STATE_ATTR_NAME, null)
     }
 
     return (
@@ -92,15 +100,18 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, 
                 rules={[{required: attribute.required, message: t('Required field')}]}
             >
                 <Search
-                    style={{maxWidth: attribute.fieldWidth ? attribute.fieldWidth + (!id ? 0 : OPEN_BUTTON_WIDTH) : undefined}}
+                    style={{maxWidth: attribute.fieldWidth ? attribute.fieldWidth + (currentId ? OPEN_BUTTON_WIDTH * 2 : 0) : undefined}}
                     readOnly
                     disabled={isDisabled}
                     onSearch={() => setRelationModalVisible(true)}
-                    addonAfter={!!id &&
+                    addonAfter={currentId && [
                         <Tooltip key="open" title={t('Open')}>
-                            <Button type="link" icon={<FolderOpenOutlined/>} onClick={openRelation} loading={viewLoading}/>
+                            <Button type="link" icon={<FolderOpenOutlined/>} onClick={openRelation} loading={loading}/>
+                        </Tooltip>,
+                        <Tooltip key="clear" title={t('Clear')}>
+                            <Button type="link" icon={<ClearOutlined/>} onClick={handleClear}/>
                         </Tooltip>
-                    }
+                    ]}
                 />
             </FormItem>
             <FormItem hidden name={`${attrName}.id`} initialValue={value?.data ? value.data.id : null}>

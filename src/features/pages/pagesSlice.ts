@@ -78,7 +78,7 @@ const slice = createSlice({
             // Set new active key
             const keys = Object.keys(pages)
             if (keys.length > 0)
-                state.activeKey = keys[0]
+                state.activeKey = keys[keys.length - 1]
             else
                 state.activeKey = undefined
         },

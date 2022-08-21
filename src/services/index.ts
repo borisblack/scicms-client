@@ -79,8 +79,8 @@ export const apolloClient = new ApolloClient({
     }
 })
 
-export const getGraphQLErrorMessages = (errors: ReadonlyArray<GraphQLError>) => errors.map(err => err.message).join('; ')
+export const extractGraphQLErrorMessages = (errors: ReadonlyArray<GraphQLError>) => errors.map(err => err.message).join('; ')
 
 export const throwGraphQLErrors = (errors: ReadonlyArray<GraphQLError>) => {
-    throw new Error(getGraphQLErrorMessages(errors))
+    throw new Error(extractGraphQLErrorMessages(errors))
 }
