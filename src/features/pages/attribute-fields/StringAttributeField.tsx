@@ -1,6 +1,6 @@
 import {FC} from 'react'
 import {useTranslation} from 'react-i18next'
-import {Form, Input} from 'antd'
+import {Form, FormRule, Input} from 'antd'
 
 import {AttributeFieldProps} from '.'
 import {AttrType} from '../../../types'
@@ -31,13 +31,25 @@ const StringAttributeField: FC<AttributeFieldProps> = ({item, attrName, attribut
         return attrName !== STATE_ATTR_NAME
     }
 
+    const rules: FormRule[] = [{required: attribute.required, message: t('Required field')}]
+    switch (attribute.type) {
+        case AttrType.uuid:
+            rules.push({type: 'regexp', pattern: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/})
+            break
+        case AttrType.email:
+            rules.push({type: 'email'})
+            break
+        default:
+            break
+    }
+
     return (
         <FormItem
             className={styles.formItem}
             name={attrName}
             label={attribute.displayName}
             initialValue={value}
-            rules={[{required: attribute.required, message: t('Required field')}]}
+            rules={rules}
         >
             <Input style={{maxWidth: attribute.fieldWidth}} maxLength={attribute.length} disabled={!isEnabled()}/>
         </FormItem>

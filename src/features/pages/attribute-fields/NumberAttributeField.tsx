@@ -23,7 +23,10 @@ const NumberAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, val
             name={attrName}
             label={attribute.displayName}
             initialValue={value}
-            rules={[{required: attribute.required, message: t('Required field')}]}
+            rules={[
+                { type: 'number', min: attribute.minRange, max: attribute.maxRange },
+                {required: attribute.required, message: t('Required field')}
+            ]}
         >
             <InputNumber
                 style={{maxWidth: attribute.fieldWidth}}
