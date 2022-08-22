@@ -20,6 +20,7 @@ const ru = {
         'Groups': 'Группы',
         'Help': 'Справка',
         'Internal server error': 'Внутренняя ошибка сервера',
+        'Invalid filter format': 'Неверный формат фильтра',
         'Invalid username and/or password': 'Неверно имя пользователя и/или пароль',
         'Item not found. It may have been removed': 'Запись не найдена. Возможно, она была удалена',
         'Items': 'Сущности',

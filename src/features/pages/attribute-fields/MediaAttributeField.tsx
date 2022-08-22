@@ -72,6 +72,7 @@ const MediaAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, att
             if (onSuccess)
                 onSuccess(mediaRef)
         } catch (e: any) {
+            message.error(e.message)
             file.status = 'error'
             setFileList([file])
 
@@ -99,7 +100,8 @@ const MediaAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, att
             mediaRef.current = null
             setFileList([])
             form.setFieldValue(`${attrName}.id`, null)
-        } catch (e) {
+        } catch (e: any) {
+            message.error(e.message)
             file.status = 'error'
             setFileList([file])
             return false

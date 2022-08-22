@@ -1,7 +1,8 @@
 import axios from 'axios'
 import {gql} from '@apollo/client'
 
-import {apolloClient, throwGraphQLErrors} from '.'
+import i18n from '../i18n'
+import {apolloClient, extractGraphQLErrorMessages} from '.'
 import {Media, MediaInfo} from '../types'
 import appConfig from '../config'
 
@@ -81,8 +82,10 @@ export default class MediaService {
             variables: {file}
         })
 
-        if (res.errors)
-            throwGraphQLErrors(res.errors)
+        if (res.errors) {
+            console.error(extractGraphQLErrorMessages(res.errors))
+            throw new Error(i18n.t('An error occurred while executing the request'))
+        }
 
         return res.data.upload
     }
@@ -96,16 +99,20 @@ export default class MediaService {
             variables: {files}
         })
 
-        if (res.errors)
-            throwGraphQLErrors(res.errors)
+        if (res.errors) {
+            console.error(extractGraphQLErrorMessages(res.errors))
+            throw new Error(i18n.t('An error occurred while executing the request'))
+        }
 
         return res.data.uploadMultiple
     }
 
     async deleteById(id: string): Promise<Media> {
         const res = await apolloClient.mutate({mutation: DELETE_MEDIA_MUTATION, variables: {id}})
-        if (res.errors)
-            throwGraphQLErrors(res.errors)
+        if (res.errors) {
+            console.error(extractGraphQLErrorMessages(res.errors))
+            throw new Error(i18n.t('An error occurred while executing the request'))
+        }
 
         return res.data.deleteMedia.data
     }

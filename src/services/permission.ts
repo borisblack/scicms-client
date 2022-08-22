@@ -1,6 +1,7 @@
 import {gql} from '@apollo/client'
 
-import {apolloClient} from '.'
+import i18n from '../i18n'
+import {apolloClient, extractGraphQLErrorMessages} from '.'
 import {Permission, UserInfo} from '../types'
 
 export interface PermissionCache {
@@ -105,10 +106,24 @@ export default class PermissionService {
     }
 
     findAll = (): Promise<Permission[]> =>
-        apolloClient.query({query: FIND_ALL_QUERY}).then(res => res.data.permissions.data)
+        apolloClient.query({query: FIND_ALL_QUERY})
+            .then(res => {
+                if (res.errors) {
+                    console.error(extractGraphQLErrorMessages(res.errors))
+                    throw new Error(i18n.t('An error occurred while executing the request'))
+                }
+                return res.data.permissions.data
+            })
 
     findAllByIdentityNames = (identityNames: string[]): Promise<Permission[]> =>
-        apolloClient.query({query: FIND_ALL_BY_IDENTITY_NAMES_QUERY, variables: {identityNames}}).then(res => res.data.permissions.data)
+        apolloClient.query({query: FIND_ALL_BY_IDENTITY_NAMES_QUERY, variables: {identityNames}})
+            .then(res => {
+                if (res.errors) {
+                    console.error(extractGraphQLErrorMessages(res.errors))
+                    throw new Error(i18n.t('An error occurred while executing the request'))
+                }
+                return res.data.permissions.data
+            })
 
     findById = (id: string): Permission | null => this.permissions[id] ?? null
 }

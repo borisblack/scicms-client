@@ -7,7 +7,7 @@ import SearchDataGridWrapper from './SearchDataGridWrapper'
 import styles from './AttributeField.module.css'
 import {useTranslation} from 'react-i18next'
 import {AttributeFieldProps} from '.'
-import {ClearOutlined, FolderOpenOutlined} from '@ant-design/icons'
+import {CloseCircleOutlined, FolderOpenOutlined} from '@ant-design/icons'
 import {DEFAULT_LIFECYCLE_ID} from '../../../services/lifecycle'
 import {DEFAULT_PERMISSION_ID} from '../../../services/permission'
 import {FiltersInput} from '../../../services/query'
@@ -109,7 +109,7 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, 
                             <Button type="link" icon={<FolderOpenOutlined/>} onClick={openRelation} loading={loading}/>
                         </Tooltip>,
                         <Tooltip key="clear" title={t('Clear')}>
-                            <Button type="link" icon={<ClearOutlined/>} onClick={handleClear}/>
+                            <Button type="link" icon={<CloseCircleOutlined/>} onClick={handleClear}/>
                         </Tooltip>
                     ]}
                 />

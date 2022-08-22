@@ -1,4 +1,5 @@
 import customEn from './custom/en'
+import i18n from './index'
 
 const en = {
     translation: {
@@ -19,6 +20,7 @@ const en = {
         'Gateway error': 'Gateway error',
         'Groups': 'Groups',
         'Help': 'Help',
+        'Invalid filter format': 'Invalid filter format',
         'Internal server error': 'Internal server error',
         'Invalid username and/or password': 'Invalid username and/or password',
         'Item not found. It may have been removed': 'Item not found. It may have been removed',

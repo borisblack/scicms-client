@@ -1,6 +1,7 @@
 import {gql} from '@apollo/client'
 
-import {apolloClient} from '.'
+import i18n from '../i18n'
+import {apolloClient, extractGraphQLErrorMessages} from '.'
 import {ItemTemplate} from '../types'
 
 interface ItemTemplateCache {
@@ -58,7 +59,15 @@ export default class ItemTemplateService {
     }
 
     private findAll = (): Promise<ItemTemplate[]> =>
-        apolloClient.query({query: FIND_ALL_QUERY}).then(res => res.data.itemTemplates.data)
+        apolloClient.query({query: FIND_ALL_QUERY})
+            .then(res => {
+                if (res.errors) {
+                    console.error(extractGraphQLErrorMessages(res.errors))
+                    throw new Error(i18n.t('An error occurred while executing the request'))
+                }
+
+                return res.data.itemTemplates.data
+            })
 
     findByName = (name: string): ItemTemplate | null => this.itemTemplates[name] ?? null
 

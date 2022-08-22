@@ -2,8 +2,6 @@ import {ReactElement} from 'react'
 import {ColumnDef, createColumnHelper} from '@tanstack/react-table'
 import {Checkbox} from 'antd'
 import {DateTime} from 'luxon'
-
-import i18n from '../i18n'
 import {Attribute, AttrType, Item, Location, RelType} from '../types'
 import appConfig from '../config'
 import ItemService from '../services/item'
@@ -115,15 +113,10 @@ export function getHiddenColumns(item: Item): string[] {
 }
 
 export async function findAll(item: Item, params: RequestParams, extraFiltersInput?: FiltersInput<unknown>): Promise<DataWithPagination<any>> {
-    try {
-        const responseCollection = await queryService.findAll(item, params, extraFiltersInput)
-        const {page, pageSize, total} = responseCollection.meta.pagination
-        return {
-            data: responseCollection.data,
-            pagination: {page, pageSize, total}
-        }
-    } catch (e: any) {
-        console.error(e.message)
-        throw new Error(i18n.t('An error occurred while executing the request'))
+    const responseCollection = await queryService.findAll(item, params, extraFiltersInput)
+    const {page, pageSize, total} = responseCollection.meta.pagination
+    return {
+        data: responseCollection.data,
+        pagination: {page, pageSize, total}
     }
 }

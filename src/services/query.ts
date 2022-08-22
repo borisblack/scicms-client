@@ -2,7 +2,8 @@ import _ from 'lodash'
 import {gql} from '@apollo/client'
 import {ColumnFiltersState} from '@tanstack/react-table'
 
-import {apolloClient, throwGraphQLErrors} from './index'
+import i18n from '../i18n'
+import {apolloClient, extractGraphQLErrorMessages} from './index'
 import {Attribute, AttrType, Item, RelType} from '../types'
 import {DateTime} from 'luxon'
 import {
@@ -103,7 +104,7 @@ function buildDateFilter(filterValue: string): FilterInput<unknown, string> {
         return {gte: dt.toISODate(), lte: endDt.toISODate()}
     }
 
-    return {}
+    throw new Error(i18n.t('Invalid filter format'))
 }
 
 function buildTimeFilter(filterValue: string): FilterInput<unknown, string> {
@@ -119,7 +120,7 @@ function buildTimeFilter(filterValue: string): FilterInput<unknown, string> {
         return {gte: dt.toISOTime(), lte: endDt.toISOTime()}
     }
 
-    return {}
+    throw new Error(i18n.t('Invalid filter format'))
 }
 
 function buildDateTimeFilter(filterValue: string): FilterInput<unknown, string> {
@@ -177,7 +178,7 @@ function buildDateTimeFilter(filterValue: string): FilterInput<unknown, string> 
         return {gte: dt.toISO(), lte: endDt.toISO()}
     }
 
-    return {}
+    throw new Error(i18n.t('Invalid filter format'))
 }
 
 export default class QueryService {
@@ -198,7 +199,8 @@ export default class QueryService {
         return apolloClient.query({query, variables: {id}})
             .then(result => {
                 if (result.errors) {
-                    throwGraphQLErrors(result.errors)
+                    console.error(extractGraphQLErrorMessages(result.errors))
+                    throw new Error(i18n.t('An error occurred while executing the request'))
                 }
                 return result.data[item.name]
             })
@@ -228,7 +230,8 @@ export default class QueryService {
         })
             .then(result => {
                 if (result.errors) {
-                    throwGraphQLErrors(result.errors)
+                    console.error(extractGraphQLErrorMessages(result.errors))
+                    throw new Error(i18n.t('An error occurred while executing the request'))
                 }
                 return result.data[item.pluralName]
             })
@@ -376,6 +379,6 @@ export default class QueryService {
                 throw Error('Illegal attribute')
         }
 
-        return {}
+        throw new Error('Illegal attribute')
     }
 }
