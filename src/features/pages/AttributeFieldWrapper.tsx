@@ -12,6 +12,7 @@ import PasswordAttributeField from './attribute-fields/PasswordAttributeField'
 import StringAttributeField from './attribute-fields/StringAttributeField'
 import './attribute-fields/AttributeField.css'
 import MediaAttributeField from './attribute-fields/MediaAttributeField'
+import LocationAttributeField from './attribute-fields/LocationAttributeField'
 
 const attributeFields: AttributeFields = {
     [AttrType.string]: StringAttributeField,
@@ -34,7 +35,7 @@ const attributeFields: AttributeFields = {
     [AttrType.datetime]: DateTimeAttributeField,
     [AttrType.timestamp]: DateTimeAttributeField,
     [AttrType.media]: MediaAttributeField,
-    // [AttrType.location]: null
+    [AttrType.location]: LocationAttributeField,
     [AttrType.relation]: RelationAttributeField
 }
 
