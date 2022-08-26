@@ -79,8 +79,8 @@ const renderCell = (attribute: Attribute, value: any): ReactElement | string | n
         case AttrType.location:
             const locationData: Location | null = (value && value.data) ? value.data as Location : null
             if (locationData) {
-                const {displayName, latitude, longitude} = locationData
-                return displayName && `${latitude}, ${longitude}`
+                const {latitude, longitude} = locationData
+                return `${latitude}, ${longitude}`
             }
             return null
         case AttrType.relation:

@@ -1,14 +1,14 @@
 import {Button, Form, Input, InputNumber, Modal} from 'antd'
 import {FC, useMemo, useState} from 'react'
 
-import {AttrType, ItemData, Lifecycle, Permission} from '../../../types'
+import {AttrType, ItemData, Lifecycle, Location, Permission} from '../../../types'
 import ItemService from '../../../services/item'
 import {useTranslation} from 'react-i18next'
 import {AttributeFieldProps} from '.'
 import {DEFAULT_LIFECYCLE_ID} from '../../../services/lifecycle'
 import {DEFAULT_PERMISSION_ID} from '../../../services/permission'
 import {FiltersInput} from '../../../services/query'
-import LocationView from './LocationView'
+import LocationForm from './LocationForm'
 import styles from './AttributeField.module.css'
 import {EditOutlined} from '@ant-design/icons'
 
@@ -32,6 +32,8 @@ const LocationAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, 
     const [currentId, setCurrentId] = useState(value?.data?.id)
     const itemService = useMemo(() => ItemService.getInstance(), [])
     const locationItem = itemService.getLocation()
+    const locationData = value?.data as Location
+    const [locationForm] = Form.useForm()
 
     const extraFiltersInput: FiltersInput<unknown> = useMemo(() => {
         if (attrName === LIFECYCLE_ATTR_NAME) {
@@ -100,26 +102,35 @@ const LocationAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, 
                 className={styles.formItem}
                 name={attrName}
                 label={label}
-                initialValue={value?.data ? value.data.id : null}
+                initialValue={locationData?.id}
                 rules={[{required: attribute.required}]}
             >
                 <InputGroup compact>
-                    <FormItem name={[attrName, 'latitude']} noStyle>
+                    <FormItem name={[attrName, 'latitude']} noStyle initialValue={locationData?.latitude}>
                         <InputNumber
-                            style={{width: '50%'}}
+                            style={{width: '25%'}}
                             placeholder={t('Latitude')}
                             min={-90}
                             max={90}
-                            readOnly
+                            disabled
                         />
                     </FormItem>
-                    <FormItem name={[attrName, 'longitude']} noStyle>
+                    <FormItem name={[attrName, 'longitude']} noStyle initialValue={locationData?.longitude}>
                         <InputNumber
-                            style={{width: '50%'}}
+                            style={{width: '25%'}}
                             placeholder={t('Longitude')}
                             min={-180}
                             max={180}
-                            readOnly
+                            disabled
+                        />
+                    </FormItem>
+                    <FormItem name={[attrName, 'label']} noStyle initialValue={locationData?.displayName}>
+                        <InputNumber
+                            style={{width: '50%'}}
+                            placeholder={t('Label')}
+                            min={-180}
+                            max={180}
+                            disabled
                         />
                     </FormItem>
                 </InputGroup>
@@ -131,8 +142,8 @@ const LocationAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, 
                 onOk={() => {}}
                 onCancel={() => setLocationModalVisible(false)}
             >
-                <Form form={form} size="small" layout="vertical" onFinish={handleLocationFormFinish}>
-                    <LocationView attrName={attrName} data={value?.data} />
+                <Form form={locationForm} size="small" layout="vertical" onFinish={handleLocationFormFinish}>
+                    <LocationForm data={locationData} />
                 </Form>
             </Modal>
         </>

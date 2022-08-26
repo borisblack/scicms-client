@@ -366,6 +366,8 @@ export default class QueryService {
                 return buildDateTimeFilter(filterValue)
             case AttrType.media:
                 return {filename: {containsi: filterValue}}
+            case AttrType.location:
+                return {or: [{latitude: {eq: parseFloat(filterValue)}}, {longitude: {eq: parseFloat(filterValue)}}] as any}
             case AttrType.relation:
                 if (!attr.target)
                     throw new Error('Illegal attribute')

@@ -24,6 +24,7 @@ const ru = {
         'Invalid username and/or password': 'Неверно имя пользователя и/или пароль',
         'Item not found. It may have been removed': 'Запись не найдена. Возможно, она была удалена',
         'Items': 'Сущности',
+        'Label': 'Метка',
         'Latitude': 'Широта',
         'Login': 'Вход',
         'Logout': 'Выход',

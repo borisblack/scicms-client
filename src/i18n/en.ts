@@ -1,5 +1,4 @@
 import customEn from './custom/en'
-import i18n from './index'
 
 const en = {
     translation: {
@@ -25,6 +24,7 @@ const en = {
         'Invalid username and/or password': 'Invalid username and/or password',
         'Item not found. It may have been removed': 'Item not found. It may have been removed',
         'Items': 'Items',
+        'Label': 'Label',
         'Latitude': 'Latitude',
         'Login': 'Login',
         'Logout': 'Logout',
