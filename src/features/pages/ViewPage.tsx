@@ -13,6 +13,8 @@ import {hasComponents, renderComponents} from '../../custom-components'
 import styles from './Page.module.css'
 import ItemTemplateService from '../../services/item-template'
 import AttributeFieldWrapper from './AttributeFieldWrapper'
+import QueryService from '../../services/query'
+import appConfig from '../../config'
 
 interface Props {
     me: UserInfo
@@ -38,6 +40,7 @@ function ViewPage({me, page, onView}: Props) {
 
     const itemTemplateService = useMemo(() => ItemTemplateService.getInstance(), [])
     const permissionService = useMemo(() => PermissionService.getInstance(), [])
+    const queryService = useMemo(() => QueryService.getInstance(), [])
 
     const itemPermissionId = item.permission.data?.id
     const itemPermission = itemPermissionId ? permissionService.findById(itemPermissionId) : null
@@ -132,8 +135,14 @@ function ViewPage({me, page, onView}: Props) {
             )
         })
 
-    function handleFieldChange(attrName: string, value: any) {
-        console.log(`Attribute [${attrName}] has changed to [${value}]`)
+    async function handleFieldChange(attrName: string, value: any) {
+        if (attrName === LOCALE_ATTR_NAME && data && (data?.locale ?? appConfig.defaultCoreLocale) !== value) {
+            const existingLocalization = await queryService.findLocalization(item, data.configId, data.majorRev, value)
+            if (!existingLocalization)
+                return
+
+            // TODO: Load localization and set createLocalization flag
+        }
     }
 
     const getDefaultTemplateAttributes = () => itemTemplateService.getDefault().spec.attributes

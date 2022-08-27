@@ -6,6 +6,7 @@ export interface UserInfo {
 
 export interface DefaultItemTemplate {
     id: string
+    configId: string
     majorRev: string
     minorRev: string | null
     locale: string | null

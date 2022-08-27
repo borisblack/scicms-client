@@ -17,6 +17,7 @@ import {
 
 interface AppConfig {
     backendUrl: string
+    defaultCoreLocale: string
     i18nLng: string
     antdLocale: Locale
     dateTime: {
@@ -42,6 +43,7 @@ interface AppConfig {
 
 const appConfig: AppConfig = {
     backendUrl: 'http://localhost:8079',
+    defaultCoreLocale: 'en-US',
     i18nLng: 'ru',
     antdLocale: ruRU,
     dateTime: {

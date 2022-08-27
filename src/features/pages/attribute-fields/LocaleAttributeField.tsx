@@ -28,7 +28,7 @@ const LocaleAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, val
             rules={[{required: attribute.required}]}
         >
             <Select style={{maxWidth: attribute.fieldWidth}} disabled={isDisabled} onSelect={(val: any) => onChange(val)}>
-                {locales.map(it => <SelectOption key={it.id} value={it.name}>{it.displayName}</SelectOption>)}
+                {locales.map(it => <SelectOption key={it.name} value={it.name}>{it.displayName}</SelectOption>)}
             </Select>
         </FormItem>
     )

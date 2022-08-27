@@ -4,7 +4,7 @@ import {ColumnFiltersState} from '@tanstack/react-table'
 
 import i18n from '../i18n'
 import {apolloClient, extractGraphQLErrorMessages} from './index'
-import {Attribute, AttrType, Item, RelType} from '../types'
+import {Attribute, AttrType, Item, ItemData, RelType} from '../types'
 import {DateTime} from 'luxon'
 import {
     DATE_FORMAT_STRING,
@@ -383,4 +383,37 @@ export default class QueryService {
 
         throw new Error('Illegal attribute')
     }
+
+    findLocalization = async (item: Item, configId: string, majorRev: string, locale: string): Promise<ItemData | null> => {
+        const query = gql(this.buildFindAllLocalizations(item))
+        const res = await apolloClient.query({query, variables: {configId, majorRev, locale}})
+        if (res.errors) {
+            console.error(extractGraphQLErrorMessages(res.errors))
+            throw new Error(i18n.t('An error occurred while executing the request'))
+        }
+        const data = res.data[item.pluralName].data as ItemData[]
+        if (data.length > 1) {
+            throw new Error('The localization request returned more than one record')
+        }
+
+        return data.length === 1 ? data[0] : null
+    }
+
+    private buildFindAllLocalizations = (item: Item) => `
+        query findAll${_.upperFirst(item.name)}Localizations ($configId: String!, majorRev: String!, $locale: String!) {
+            ${item.pluralName} (
+                majorRev: $majorRev
+                locale: $locale
+                filters: {
+                    configId: {
+                        eq: $configId
+                    }
+                }
+            ) {
+                data {
+                    id
+                }
+            }
+        }
+    `
 }
