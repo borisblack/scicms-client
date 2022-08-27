@@ -126,10 +126,15 @@ function ViewPage({me, page, onView}: Props) {
                     attrName={attrName}
                     attribute={attr}
                     value={data ? data[attrName] : null}
-                    onView={onView}
+                    onChange={(value: any) => handleFieldChange(attrName, value)}
+                    onItemView={onView}
                 />
             )
         })
+
+    function handleFieldChange(attrName: string, value: any) {
+        console.log(`Attribute [${attrName}] has changed to [${value}]`)
+    }
 
     const getDefaultTemplateAttributes = () => itemTemplateService.getDefault().spec.attributes
 

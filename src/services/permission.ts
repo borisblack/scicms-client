@@ -19,7 +19,7 @@ const FIND_ALL_QUERY = gql`
                 access {
                     data {
                         id
-                        displayName
+                        label
                         sortOrder
                         mask
                         target {
@@ -53,7 +53,7 @@ const FIND_ALL_BY_IDENTITY_NAMES_QUERY = gql`
                 ) {
                     data {
                         id
-                        displayName
+                        label
                         sortOrder
                         mask
                         target {
@@ -89,7 +89,7 @@ export default class PermissionService {
         return PermissionService.instance
     }
 
-    permissions: PermissionCache = {}
+    private permissions: PermissionCache = {}
 
     async initialize(me?: UserInfo) {
         if (me) {

@@ -21,7 +21,7 @@ const PERMISSION_ATTR_NAME = 'permission'
 const {Item: FormItem} = Form
 const {Search} = Input
 
-const RelationAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, attribute, value, onView}) => {
+const RelationAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, attribute, value, onItemView}) => {
     if (attribute.type !== AttrType.relation || attribute.relType === RelType.oneToMany || attribute.relType === RelType.manyToMany)
         throw new Error('Illegal attribute')
 
@@ -75,7 +75,7 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, 
 
         setLoading(true)
         try {
-            onView(targetItem, currentId)
+            onItemView(targetItem, currentId)
         } finally {
             setLoading(false)
         }

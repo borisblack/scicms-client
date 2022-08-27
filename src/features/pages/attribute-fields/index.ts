@@ -9,7 +9,8 @@ export interface AttributeFieldProps {
     attrName: string
     attribute: Attribute
     value: any
-    onView: (item: Item, id: string) => void
+    onChange: (value: any) => void
+    onItemView: (item: Item, id: string) => void
 }
 
 export interface AttributeFields {

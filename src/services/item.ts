@@ -69,7 +69,7 @@ export default class ItemService {
         return ItemService.instance
     }
 
-    items: ItemCache = {}
+    private items: ItemCache = {}
 
     async initialize() {
         const data = await this.findAll()

@@ -294,10 +294,10 @@ export default class QueryService {
                     break
                 case AttrType.media:
                     const media = this.itemService.getMedia()
-                    result.push(`${attrName} { data { id ${media.titleAttribute} } }`)
+                    result.push(`${attrName} { data { id ${media.titleAttribute} ${media.titleAttribute === 'filename' ? '' : 'filename'} } }`)
                     break
                 case AttrType.location:
-                    result.push(`${attrName} { data { id displayName latitude longitude } }`)
+                    result.push(`${attrName} { data { id latitude longitude label } }`)
                     break
                 case AttrType.relation:
                     if (!attr.target)
@@ -367,7 +367,7 @@ export default class QueryService {
             case AttrType.media:
                 return {filename: {containsi: filterValue}}
             case AttrType.location:
-                return {or: [{latitude: {eq: parseFloat(filterValue)}}, {longitude: {eq: parseFloat(filterValue)}}] as any}
+                return {label: {containsi: filterValue}}
             case AttrType.relation:
                 if (!attr.target)
                     throw new Error('Illegal attribute')

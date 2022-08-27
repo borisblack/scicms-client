@@ -5,6 +5,7 @@ import {RootState} from '../../store'
 import {UserInfo} from '../../types'
 import {message} from 'antd'
 import ItemTemplateService from '../../services/item-template'
+import LocaleService from '../../services/locale'
 
 interface RegistryState {
     isInitialized: boolean
@@ -19,9 +20,12 @@ const initialState: RegistryState = {
 const initializeIfNeeded = createAsyncThunk(
     'auth/initialize',
     async (me?: UserInfo) => {
-        await ItemTemplateService.getInstance().initialize()
-        await ItemService.getInstance().initialize()
-        await PermissionService.getInstance().initialize(me)
+        await Promise.all([
+            ItemTemplateService.getInstance().initialize(),
+            ItemService.getInstance().initialize(),
+            PermissionService.getInstance().initialize(me),
+            LocaleService.getInstance().initialize()
+        ])
     }, {
         condition: (credentials, {getState}) => shouldInitialize(getState() as {registry: RegistryState})
     }
@@ -40,6 +44,7 @@ const registrySlice = createSlice({
             PermissionService.getInstance().reset()
             ItemService.getInstance().reset()
             ItemTemplateService.getInstance().reset()
+            LocaleService.getInstance().reset()
 
             return initialState
         }

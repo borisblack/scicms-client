@@ -60,7 +60,7 @@ export interface Permission extends DefaultItemTemplate {
 }
 
 export interface Access extends DefaultItemTemplate, IntermediateItemTemplate {
-    displayName: string | null
+    label: string | null
     source: {data: Permission}
     target: {data: Identity}
     mask: number
@@ -201,7 +201,7 @@ interface AllowedPermission extends DefaultItemTemplate, IntermediateItemTemplat
 
 export interface Media extends DefaultItemTemplate {
     filename: string
-    displayName: string | null
+    label: string | null
     description: string | null
     fileSize: number
     mimeType: string
@@ -220,10 +220,15 @@ export interface MediaInfo {
 }
 
 export interface Location extends DefaultItemTemplate {
-    displayName: string | null
     latitude: number
     longitude: number
+    label: string
     sortOrder: number | null
+}
+
+export interface Locale extends DefaultItemTemplate {
+    name: string
+    displayName: string | null
 }
 
 export interface ItemData extends DefaultItemTemplate {

@@ -29,7 +29,7 @@ const NumberAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, val
             ]}
         >
             <InputNumber
-                style={{maxWidth: attribute.fieldWidth}}
+                style={{width: attribute.fieldWidth}}
                 min={attribute.minRange}
                 max={attribute.maxRange}
                 disabled={isDisabled}

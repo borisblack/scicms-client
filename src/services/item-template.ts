@@ -43,7 +43,7 @@ export default class ItemTemplateService {
         return ItemTemplateService.instance
     }
 
-    itemTemplates: ItemTemplateCache = {}
+    private itemTemplates: ItemTemplateCache = {}
 
     async initialize() {
         const itemTemplateList = await this.findAll()

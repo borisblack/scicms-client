@@ -10,16 +10,20 @@ import TextAttributeField from './attribute-fields/TextAttributeField'
 import BoolAttributeField from './attribute-fields/BoolAttributeField'
 import PasswordAttributeField from './attribute-fields/PasswordAttributeField'
 import StringAttributeField from './attribute-fields/StringAttributeField'
-import './attribute-fields/AttributeField.css'
+import LocaleAttributeField from './attribute-fields/LocaleAttributeField'
 import MediaAttributeField from './attribute-fields/MediaAttributeField'
 import LocationAttributeField from './attribute-fields/LocationAttributeField'
+import EnumAttributeField from './attribute-fields/EnumAttributeField'
+import './attribute-fields/AttributeField.css'
+
+const LOCALE_ATTR_NAME = 'locale'
 
 const attributeFields: AttributeFields = {
     [AttrType.string]: StringAttributeField,
     [AttrType.uuid]: StringAttributeField,
     [AttrType.sequence]: StringAttributeField,
     [AttrType.email]: StringAttributeField,
-    // [AttrType.enum]: null,
+    [AttrType.enum]: EnumAttributeField,
     [AttrType.password]: PasswordAttributeField,
     [AttrType.bool]: BoolAttributeField,
     [AttrType.text]: TextAttributeField,
@@ -40,13 +44,11 @@ const attributeFields: AttributeFields = {
 }
 
 export default function AttributeFieldWrapper(props: AttributeFieldProps) {
-    const {attribute} = props
+    const {attrName, attribute} = props
 
-    const AttributeFieldComponent = attributeFields[attribute.type]
-    if (!AttributeFieldComponent) {
-        // TODO: throw new Error('Illegal attribute')
-        return null
-    }
+    const AttributeFieldComponent = (attribute.type === AttrType.string && attrName === LOCALE_ATTR_NAME) ? LocaleAttributeField : attributeFields[attribute.type]
+    if (!AttributeFieldComponent)
+        throw new Error('Illegal attribute')
 
     return <AttributeFieldComponent {...props}/>
 }

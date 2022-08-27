@@ -12,7 +12,7 @@ import styles from './AttributeField.module.css'
 const {Item: FormItem} = Form
 const {Dragger} = Upload
 
-const MediaAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, attribute, value, onView}) => {
+const MediaAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, attribute, value, onItemView}) => {
     if (attribute.type !== AttrType.media)
         throw new Error('Illegal attribute')
 

@@ -1,15 +1,17 @@
 import {ReactElement} from 'react'
 import {ColumnDef, createColumnHelper} from '@tanstack/react-table'
-import {Checkbox} from 'antd'
+import {Button, Checkbox} from 'antd'
 import {DateTime} from 'luxon'
-import {Attribute, AttrType, Item, Location, RelType} from '../types'
+import {Attribute, AttrType, Item, Location, Media, RelType} from '../types'
 import appConfig from '../config'
 import ItemService from '../services/item'
 import {DataWithPagination, RequestParams} from '../components/datagrid/DataGrid'
 import QueryService, {FiltersInput} from '../services/query'
+import MediaService from '../services/media'
 
 const columnHelper = createColumnHelper<any>()
 const itemService = ItemService.getInstance()
+const mediaService = MediaService.getInstance()
 const queryService = QueryService.getInstance()
 
 export const getInitialData = (): DataWithPagination<any> => ({
@@ -75,14 +77,18 @@ const renderCell = (attribute: Attribute, value: any): ReactElement | string | n
             return value ? DateTime.fromISO(value,).toFormat(appConfig.dateTime.dateTimeFormatString) : null
         case AttrType.media:
             const media = itemService.getMedia()
-            return (value && value.data) ? value.data[media.titleAttribute] : null
+            const mediaData: Media | null = value?.data
+            if (!mediaData)
+                return null
+
+            return (
+                <Button type="link" onClick={() => mediaService.download(mediaData.id, mediaData.filename)}>
+                    {media.titleAttribute}
+                </Button>
+            )
         case AttrType.location:
             const locationData: Location | null = (value && value.data) ? value.data as Location : null
-            if (locationData) {
-                const {latitude, longitude} = locationData
-                return `${latitude}, ${longitude}`
-            }
-            return null
+            return locationData ? locationData.label : null
         case AttrType.relation:
             if (attribute.relType === RelType.oneToMany || attribute.relType === RelType.manyToMany)
                 throw new Error('Cannot render oneToMany or manyToMany relation')
