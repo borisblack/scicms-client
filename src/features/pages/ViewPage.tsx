@@ -1,7 +1,7 @@
 import React, {MouseEvent, ReactNode, useEffect, useMemo, useRef, useState} from 'react'
-import {Button, Col, Form, PageHeader, Row, Spin, Tabs} from 'antd'
+import {Button, Col, Form, message, PageHeader, Row, Spin, Tabs} from 'antd'
 
-import {Attribute, AttrType, Item, RelType, UserInfo} from '../../types'
+import {Attribute, AttrType, Item, ItemData, RelType, UserInfo} from '../../types'
 import PermissionService from '../../services/permission'
 import * as icons from '@ant-design/icons'
 import {DeleteOutlined, SaveOutlined, UnlockOutlined} from '@ant-design/icons'
@@ -14,14 +14,24 @@ import styles from './Page.module.css'
 import ItemTemplateService from '../../services/item-template'
 import AttributeFieldWrapper from './AttributeFieldWrapper'
 import QueryService from '../../services/query'
-import appConfig from '../../config'
+import CoreConfigService from '../../services/core-config'
+import {parseValues} from '../../util/form'
+import {usePrevious} from '../../util/hooks'
 
 interface Props {
     me: UserInfo
     page: IPage
-    onView: (item: Item, id: string) => void
-    onUpdate: () => void
+    onItemView: (item: Item, id: string) => void
+    onUpdate: (data: ItemData) => void
     onDelete: () => void
+}
+
+enum Operation {
+    CREATE = 'CREATE',
+    CREATE_VERSION = 'CREATE_VERSION',
+    CREATE_LOCALIZATION = 'CREATE_LOCALIZATION',
+    UPDATE = 'UPDATE',
+    VIEW = 'VIEW'
 }
 
 const TabPane = Tabs.TabPane
@@ -29,15 +39,18 @@ const MAJOR_REV_ATTR_NAME = 'majorRev'
 const MINOR_REV_ATTR_NAME = 'minorRev'
 const LOCALE_ATTR_NAME = 'locale'
 
-function ViewPage({me, page, onView}: Props) {
+function ViewPage({me, page, onItemView, onUpdate}: Props) {
     const {t} = useTranslation()
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState<boolean>(false)
+    const [operation, setOperation] = useState<Operation>(Operation.VIEW)
     const headerRef = useRef<HTMLDivElement>(null)
     const contentRef = useRef<HTMLDivElement>(null)
     const footerRef = useRef<HTMLDivElement>(null)
     const [form] = Form.useForm()
     const {item, data} = page
+    const prevId = usePrevious(data?.id)
 
+    const coreConfigService = useMemo(() => CoreConfigService.getInstance(), [])
     const itemTemplateService = useMemo(() => ItemTemplateService.getInstance(), [])
     const permissionService = useMemo(() => PermissionService.getInstance(), [])
     const queryService = useMemo(() => QueryService.getInstance(), [])
@@ -51,6 +64,13 @@ function ViewPage({me, page, onView}: Props) {
     const canEdit = !!dataPermission && ACL.canWrite(me, dataPermission)
     const isLocked = data?.lockedBy?.data?.id === me.id
     const canDelete = !!dataPermission && ACL.canDelete(me, dataPermission)
+
+    useEffect(() => {
+        if (prevId !== data?.id) {
+            console.log('Reset fields')
+            form.resetFields()
+        }
+    }, [form, prevId, data?.id])
 
     useEffect(() => {
         const headerNode = headerRef.current
@@ -129,19 +149,40 @@ function ViewPage({me, page, onView}: Props) {
                     attrName={attrName}
                     attribute={attr}
                     value={data ? data[attrName] : null}
+                    setLoading={setLoading}
                     onChange={(value: any) => handleFieldChange(attrName, value)}
-                    onItemView={onView}
+                    onItemView={onItemView}
                 />
             )
         })
 
     async function handleFieldChange(attrName: string, value: any) {
-        if (attrName === LOCALE_ATTR_NAME && data && (data?.locale ?? appConfig.defaultCoreLocale) !== value) {
-            const existingLocalization = await queryService.findLocalization(item, data.configId, data.majorRev, value)
-            if (!existingLocalization)
+        if (attrName === LOCALE_ATTR_NAME) {
+            if (!item.localized)
+                throw new Error('Illegal state. Cannot change locale on non localized item')
+
+            if (!value)
                 return
 
-            // TODO: Load localization and set createLocalization flag
+            if (operation !== Operation.UPDATE)
+                return
+
+            if (!data || (data.locale ?? coreConfigService.coreConfig.i18n.defaultLocale) === value)
+                return
+
+            setLoading(true)
+            try {
+                const existingLocalization = await queryService.findLocalization(item, data.configId, data.majorRev, value)
+                if (!existingLocalization)
+                    return
+
+                setOperation(Operation.CREATE_LOCALIZATION)
+                onUpdate(existingLocalization)
+            } catch (e: any) {
+                message.error(e.message)
+            } finally {
+                setLoading(false)
+            }
         }
     }
 
@@ -156,6 +197,12 @@ function ViewPage({me, page, onView}: Props) {
                 ownAttributes[attrName] = allAttributes[attrName]
         }
         return ownAttributes
+    }
+
+    function handleFormFinish(values: any) {
+        const parsedValues = parseValues(item, data, values)
+        console.log(`Values: ${values}`)
+        console.log(`Parsed values: ${parsedValues}`)
     }
 
     function renderRelationships() {
@@ -180,7 +227,7 @@ function ViewPage({me, page, onView}: Props) {
     }
 
     return (
-        <>
+        <Spin spinning={loading}>
             {hasComponents('view.header') && renderComponents('view.header', {me, item})}
             {hasComponents(`${item.name}.view.header`) && renderComponents(`${item.name}.view.header`, {me, item})}
             {hasPlugins('view.header', `${item.name}.view.header`) && <div ref={headerRef}/>}
@@ -190,20 +237,24 @@ function ViewPage({me, page, onView}: Props) {
             {hasComponents(`${item.name}.view.content`) && renderComponents(`${item.name}.view.content`, {me, item})}
             {hasPlugins('view.content', `${item.name}.view.content`) && <div ref={contentRef}/>}
             {(!hasComponents('view.content', `${item.name}.view.content`) && !hasPlugins('view.content', `${item.name}.view.content`)) &&
-                <Spin spinning={loading}>
-                    <Form form={form} size="small" layout="vertical" disabled={!((canCreate && isNew) || (canEdit && isLocked))}>
-                        <Row gutter={16}>
-                            <Col span={12}>{renderAttributes(getOwnAttributes())}</Col>
-                            <Col span={12}>{renderAttributes(getDefaultTemplateAttributes())}</Col>
-                        </Row>
-                    </Form>
-                </Spin>
+                <Form
+                    form={form}
+                    size="small"
+                    layout="vertical"
+                    disabled={!((canCreate && isNew) || (canEdit && isLocked))}
+                    onFinish={handleFormFinish}
+                >
+                    <Row gutter={16}>
+                        <Col span={12}>{renderAttributes(getOwnAttributes())}</Col>
+                        <Col span={12}>{renderAttributes(getDefaultTemplateAttributes())}</Col>
+                    </Row>
+                </Form>
             }
 
             {hasComponents('view.footer') && renderComponents('view.footer', {me, item})}
             {hasComponents(`${item.name}.view.footer`) && renderComponents(`${item.name}.view.footer`, {me, item})}
             {hasPlugins('view.footer', `${item.name}.view.footer`) && <div ref={footerRef}/>}
-        </>
+        </Spin>
     )
 }
 

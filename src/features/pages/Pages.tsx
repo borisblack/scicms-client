@@ -1,12 +1,21 @@
 import React, {useCallback, useMemo} from 'react'
 import {useTranslation} from 'react-i18next'
 import {message, Tabs} from 'antd'
-
-import {closePage, getLabel, openPage, selectActiveKey, selectPages, setActiveKey, ViewType} from './pagesSlice'
-import {useAppDispatch, useAppSelector} from '../../util/hooks'
 import * as icons from '@ant-design/icons'
 import {SearchOutlined} from '@ant-design/icons'
-import {Item, UserInfo} from '../../types'
+
+import {
+    closePage,
+    getLabel,
+    openPage,
+    selectActiveKey,
+    selectPages,
+    setActiveKey,
+    updateActivePage,
+    ViewType
+} from './pagesSlice'
+import {useAppDispatch, useAppSelector} from '../../util/hooks'
+import {Item, ItemData, UserInfo} from '../../types'
 import DefaultPage from './DefaultPage'
 import ViewPage from './ViewPage'
 import QueryService from '../../services/query'
@@ -38,7 +47,7 @@ function Pages({me}: Props) {
         dispatch(openPage({item, viewType: ViewType.view}))
     }
 
-    const handleView = async (item: Item, id: string) => {
+    const handleItemView = async (item: Item, id: string) => {
         const refreshedData = await queryService.findById(item, id)
         if (refreshedData.data) {
             dispatch(openPage({
@@ -49,6 +58,10 @@ function Pages({me}: Props) {
         } else {
             message.error(t('Item not found. It may have been removed'))
         }
+    }
+
+    const handleUpdate = async (data: ItemData) => {
+        dispatch(updateActivePage(data))
     }
 
     if (pages.length === 0)
@@ -77,15 +90,15 @@ function Pages({me}: Props) {
                                 <DefaultPage
                                     me={me}
                                     page={page}
+                                    onItemView={handleItemView}
                                     onCreate={() => handleCreate(page.item)}
-                                    onView={handleView}
                                     onDelete={() => {}}
                                 /> :
                                 <ViewPage
                                     me={me}
                                     page={page}
-                                    onView={handleView}
-                                    onUpdate={() => {}}
+                                    onItemView={handleItemView}
+                                    onUpdate={handleUpdate}
                                     onDelete={() => {}}
                                 />
                             }

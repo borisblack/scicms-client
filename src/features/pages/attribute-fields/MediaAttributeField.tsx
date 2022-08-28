@@ -1,33 +1,26 @@
-import {Form, Input, message, Upload} from 'antd'
 import {FC, useMemo, useRef, useState} from 'react'
-import {RcFile, UploadFile} from 'antd/es/upload/interface'
-import {UploadRequestOption} from 'rc-upload/es/interface'
-import {AttrType, Media, MediaInfo} from '../../../types'
 import {useTranslation} from 'react-i18next'
+import {Button, Form, Input, message, Upload} from 'antd'
+import {UploadOutlined} from '@ant-design/icons'
+import {RcFile, UploadFile} from 'antd/es/upload/interface'
+
+import {AttrType, Media, MediaInfo} from '../../../types'
 import {AttributeFieldProps} from '.'
-import {InboxOutlined} from '@ant-design/icons'
 import MediaService from '../../../services/media'
 import styles from './AttributeField.module.css'
 
 const {Item: FormItem} = Form
-const {Dragger} = Upload
 
-const MediaAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, attribute, value, onItemView}) => {
+const MediaAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, attribute, value, setLoading}) => {
     if (attribute.type !== AttrType.media)
         throw new Error('Illegal attribute')
 
-    const media = value?.data as Media | null
+    const mediaData = value?.data as Media | null
     const {t} = useTranslation()
     const [fileList, setFileList] = useState<UploadFile[]>(getInitialUploadFileList())
-    const mediaRef = useRef<Media | MediaInfo | null>(media)
+    const mediaRef = useRef<Media | MediaInfo | null>(mediaData)
     const isDisabled = attribute.keyed || attribute.readOnly
     const mediaService = useMemo(() => MediaService.getInstance(), [])
-
-    // TODO: Remove file on unmount if changes are not saved
-    // useEffect(() => () => {
-    //     if (mediaRef.current)
-    //         mediaService.deleteById(mediaRef.current.id)
-    // }, [mediaService])
 
     const normFile = (e: any) => {
         if (Array.isArray(e))
@@ -37,80 +30,60 @@ const MediaAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, att
     }
 
     function getInitialUploadFileList(): UploadFile[] {
-        if (!media)
+        if (!mediaData)
             return []
 
         return [{
             uid: '-1',
-            name: media.filename,
+            name: mediaData.filename,
             status: 'done',
-            url: mediaService.getDownloadUrlById(media.id)
+            url: mediaService.getDownloadUrlById(mediaData.id)
         }]
     }
 
     function beforeUpload(file: RcFile) {
-        if (fileList.length > 0) {
-            message.error(t('Support for single upload only'))
-            return Upload.LIST_IGNORE
-        }
-
         setFileList([file])
+        return false
     }
 
-    async function customRequest(opts: UploadRequestOption<any>) {
-        const {file: fileToUpload, onSuccess, onError} = opts
-        const file = fileList[0]
-
-        try {
-            const uploadedMediaInfo = await mediaService.upload(fileToUpload as RcFile)
-            mediaRef.current = uploadedMediaInfo
-            file.status = 'done'
-            file.url = mediaService.getDownloadUrlById(uploadedMediaInfo.id)
-            form.setFieldValue(`${attrName}.id`, uploadedMediaInfo.id)
-            setFileList([file])
-
-            if (onSuccess)
-                onSuccess(mediaRef)
-        } catch (e: any) {
-            message.error(e.message)
-            file.status = 'error'
-            setFileList([file])
-
-            if (onError)
-                onError(e)
-        }
-    }
-
-    function handlePreview(file: UploadFile) {
+    async function handleDownload(file: UploadFile) {
         if (!mediaRef.current)
             throw Error('Illegal state')
 
         const {id, filename} = mediaRef.current
-        mediaService.download(id, filename)
+        setLoading(true)
+        try {
+            await mediaService.download(id, filename)
+        } finally {
+            setLoading(false)
+        }
     }
 
     async function handleRemove(file: UploadFile) {
-        if (!mediaRef.current)
-            throw Error('Illegal state')
-
         file.status = 'uploading'
         setFileList([file])
-        try {
-            await mediaService.deleteById(mediaRef.current.id)
-            mediaRef.current = null
-            setFileList([])
-            form.setFieldValue(`${attrName}.id`, null)
-        } catch (e: any) {
-            message.error(e.message)
-            file.status = 'error'
-            setFileList([file])
-            return false
+        setLoading(true)
+        if (mediaRef.current) {
+            try {
+                await mediaService.deleteById(mediaRef.current.id)
+                mediaRef.current = null
+            } catch (e: any) {
+                file.status = 'error'
+                setFileList([file])
+                message.error(e.message)
+                return false
+            } finally {
+                setLoading(false)
+            }
         }
+
+        setFileList([])
+        form.setFieldValue(`${attrName}.id`, null)
     }
 
     return (
         <>
-            <FormItem hidden name={`${attrName}.id`} initialValue={value?.data ? value.data.id : null}>
+            <FormItem hidden name={`${attrName}.id`} initialValue={mediaData?.id}>
                 <Input/>
             </FormItem>
             <FormItem
@@ -131,23 +104,18 @@ const MediaAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, att
                     }})
                 ]}
             >
-                <Dragger
+                <Upload
                     name="files"
                     listType="picture"
                     maxCount={1}
                     disabled={isDisabled}
                     fileList={fileList}
                     beforeUpload={beforeUpload}
-                    customRequest={customRequest}
-                    onPreview={handlePreview}
+                    onDownload={handleDownload}
                     onRemove={handleRemove}
                 >
-                    <p className="ant-upload-drag-icon">
-                        <InboxOutlined />
-                    </p>
-                    <p className="ant-upload-text">{t('Click or drag file to this area to upload')}</p>
-                    <p className="ant-upload-hint">{t('Support for single upload only')}</p>
-                </Dragger>
+                    {fileList.length === 0 && <Button size="middle" icon={<UploadOutlined />}>{t('Add')}</Button>}
+                </Upload>
             </FormItem>
         </>
     )

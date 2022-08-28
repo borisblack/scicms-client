@@ -44,18 +44,12 @@ const DELETE_MEDIA_MUTATION = gql`
                 id
                 configId
                 filename
-                displayName
+                label
                 description
                 fileSize
                 mimeType
                 path
                 checksum
-                majorRev
-                minorRev
-                locale
-                state
-                createdAt
-                updatedAt
             }
         }
     }
@@ -129,5 +123,5 @@ export default class MediaService {
         URL.revokeObjectURL(url)
     }
 
-    getDownloadUrlById = (id: string): string => `${appConfig.backendUrl}/api/media/${id}/download`
+    getDownloadUrlById = (id: string): string => `${appConfig.coreUrl}/api/media/${id}/download`
 }

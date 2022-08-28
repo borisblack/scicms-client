@@ -9,6 +9,7 @@ export interface AttributeFieldProps {
     attrName: string
     attribute: Attribute
     value: any
+    setLoading: (loading: boolean) => void
     onChange: (value: any) => void
     onItemView: (item: Item, id: string) => void
 }

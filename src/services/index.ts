@@ -22,7 +22,7 @@ export const removeExpireAt = () => { localStorage.removeItem('expireAt') }
 
 // Setup Axios
 axios.defaults.headers.common['X-Requested-Width'] = 'XMLHttpRequest'
-axios.defaults.baseURL = config.backendUrl
+axios.defaults.baseURL = config.coreUrl
 axios.interceptors.request.use((config: AxiosRequestConfig) => {
     const jwt = getJwt()
     if (jwt) {
@@ -47,7 +47,7 @@ export const throwAxiosResponseError = (e: AxiosError) => {
 }
 
 // Setup ApolloClient
-const uploadLink = createUploadLink({uri: `${config.backendUrl}/graphql`})
+const uploadLink = createUploadLink({uri: `${config.coreUrl}/graphql`})
 
 const authMiddleware = new ApolloLink((operation, forward) => {
     operation.setContext((context: Record<string, any>) => {

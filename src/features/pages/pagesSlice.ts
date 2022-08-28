@@ -89,12 +89,31 @@ const slice = createSlice({
                 state.activeKey = action.payload
         },
         updateActivePage: (state, action: PayloadAction<ItemData>) => {
-            const {activeKey} = state
+            const itemData = action.payload
+            const {pages, activeKey} = state
             if (!activeKey)
                 return
 
-            const page = state.pages[activeKey]
-            page.data = action.payload
+            const newPages: {[key: string]: IPage} = {}
+            for (const key in pages) {
+                if (!pages.hasOwnProperty(key))
+                    continue
+
+                const page = pages[key]
+                if (page.key === activeKey) {
+                    const newKey = generateKey(page.item.name, page.viewType, itemData.id)
+                    newPages[newKey] = {
+                        key: newKey,
+                        item: page.item,
+                        viewType: page.viewType,
+                        data: itemData
+                    }
+                } else {
+                    newPages[key] = page
+                }
+            }
+
+            state.pages = newPages
         },
         reset: () => initialState
     },

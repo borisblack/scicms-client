@@ -2,7 +2,8 @@
     height: 0;
 }
 
-.ant-table.ant-table-small .ant-table-thead > tr > th {
+.ant-table.ant-table-small .ant-table-thead > tr > th,
+.ant-table.ant-table-middle .ant-table-thead > tr > th {
     padding-bottom: 0;
 }
 

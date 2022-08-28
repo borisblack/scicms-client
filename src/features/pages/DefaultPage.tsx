@@ -19,12 +19,12 @@ import {findAll, getColumns, getHiddenColumns, getInitialData} from '../../util/
 interface Props {
     me: UserInfo
     page: IPage
+    onItemView: (item: Item, id: string) => void
     onCreate: () => void
-    onView: (item: Item, id: string) => void
     onDelete: () => void
 }
 
-function DefaultPage({me, page, onCreate, onView}: Props) {
+function DefaultPage({me, page, onCreate, onItemView}: Props) {
     const {t} = useTranslation()
     const [loading, setLoading] = useState(false)
     const [data, setData] = useState(getInitialData())
@@ -72,9 +72,9 @@ function DefaultPage({me, page, onCreate, onView}: Props) {
 
     const handleView = useCallback(async (id: string) => {
         setLoading(true)
-        await onView(item, id)
+        await onItemView(item, id)
         setLoading(false)
-    }, [item, onView])
+    }, [item, onItemView])
 
     const handleRowDoubleClick = useCallback((row: Row<ItemData>) => handleView(row.original.id), [handleView])
 

@@ -16,7 +16,7 @@ const LocaleAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, val
         throw new Error('Illegal attribute')
 
     const localeService = useMemo(() => LocaleService.getInstance(), [])
-    const locales = useMemo(() => localeService.list(), [localeService])
+    const locales = useMemo(() => localeService.locales, [localeService])
     const isDisabled = attribute.keyed || attribute.readOnly
 
     return (

@@ -98,36 +98,6 @@ function DataGrid({loading, columns, data, initialState, getRowContextMenu, onRe
 
     useEffect(() => setRowSelection({}), [data])
 
-    // function handleSortingChange(header: Header<any, unknown>, evt: MouseEvent) {
-    //     const toggleSortingHandler = header.column.getToggleSortingHandler()
-    //     if (toggleSortingHandler)
-    //         toggleSortingHandler(evt)
-    //     else
-    //         return
-    //
-    //     let desc: boolean | null = null
-    //     switch (header.column.getIsSorted()) {
-    //         case 'asc':
-    //             desc = true
-    //             break
-    //         case 'desc':
-    //             desc = null
-    //             break
-    //         case false:
-    //             desc = false
-    //             break
-    //         default:
-    //             break
-    //     }
-    //
-    //     const newSorting = sorting.filter(it => it.id !== header.id)
-    //     if (desc !== null)
-    //         newSorting.push({id: header.id, desc})
-    //
-    //     const {page, pageSize} = data.pagination
-    //     refresh({page, pageSize})
-    // }
-
     const handleFilterSubmit = useCallback((columnId: string) => {
         const {page, pageSize} = data.pagination
         refresh({page, pageSize})

@@ -12,7 +12,7 @@ import {DEFAULT_LIFECYCLE_ID} from '../../../services/lifecycle'
 import {DEFAULT_PERMISSION_ID} from '../../../services/permission'
 import {FiltersInput} from '../../../services/query'
 
-const OPEN_BUTTON_WIDTH = 24
+const SUFFIX_BUTTON_WIDTH = 24
 const RELATION_MODAL_WIDTH = 800
 const STATE_ATTR_NAME = 'state'
 const LIFECYCLE_ATTR_NAME = 'lifecycle'
@@ -100,16 +100,27 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, 
                 rules={[{required: attribute.required, message: t('Required field')}]}
             >
                 <Search
-                    style={{maxWidth: attribute.fieldWidth ? attribute.fieldWidth + (currentId ? OPEN_BUTTON_WIDTH * 2 : 0) : undefined}}
+                    style={{maxWidth: attribute.fieldWidth ? attribute.fieldWidth + (currentId ? (SUFFIX_BUTTON_WIDTH * 2 + 4) : 0) : undefined}}
                     readOnly
                     disabled={isDisabled}
                     onSearch={() => setRelationModalVisible(true)}
                     addonAfter={currentId && [
                         <Tooltip key="open" title={t('Open')}>
-                            <Button type="link" icon={<FolderOpenOutlined/>} onClick={openRelation} loading={loading}/>
+                            <Button
+                                type="link"
+                                style={{marginLeft: 4, width: SUFFIX_BUTTON_WIDTH}}
+                                icon={<FolderOpenOutlined/>}
+                                loading={loading}
+                                onClick={openRelation}
+                            />
                         </Tooltip>,
                         <Tooltip key="clear" title={t('Clear')}>
-                            <Button type="link" icon={<CloseCircleOutlined/>} onClick={handleClear}/>
+                            <Button
+                                type="link"
+                                style={{width: SUFFIX_BUTTON_WIDTH}}
+                                icon={<CloseCircleOutlined/>}
+                                onClick={handleClear}
+                            />
                         </Tooltip>
                     ]}
                 />

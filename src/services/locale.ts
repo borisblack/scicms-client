@@ -4,10 +4,6 @@ import i18n from '../i18n'
 import {apolloClient, extractGraphQLErrorMessages} from '.'
 import {Locale} from '../types'
 
-interface LocaleCache {
-    [name: string]: Locale
-}
-
 const FIND_ALL_QUERY = gql`
     query {
         locales {
@@ -35,41 +31,30 @@ export default class LocaleService {
         return LocaleService.instance
     }
 
-    private locales: LocaleCache = {}
+    private _locales: Locale[] | null = null
+
+    get locales(): Locale[] {
+        if (!this._locales)
+            throw new Error('Locales not initialized')
+
+        return this._locales
+    }
 
     async initialize() {
-        const localeList = await this.findAll()
-        const locales: LocaleCache = {}
-        localeList.forEach(it => {
-            locales[it.name] = it
-        })
-        this.locales = locales
+        this._locales = await this.findAll()
     }
 
     reset() {
-        this.locales = {}
+        this._locales = null
     }
 
-    private findAll = (): Promise<Locale[]> =>
-        apolloClient.query({query: FIND_ALL_QUERY})
-            .then(res => {
-                if (res.errors) {
-                    console.error(extractGraphQLErrorMessages(res.errors))
-                    throw new Error(i18n.t('An error occurred while executing the request'))
-                }
+    private async findAll(): Promise<Locale[]> {
+        const res = await apolloClient.query({query: FIND_ALL_QUERY})
+        if (res.errors) {
+            console.error(extractGraphQLErrorMessages(res.errors))
+            throw new Error(i18n.t('An error occurred while executing the request'))
+        }
 
-                return res.data.locales.data
-            })
-
-    findByName = (name: string): Locale | null => this.locales[name] ?? null
-
-    getByName(name: string): Locale {
-        const locale = this.findByName(name)
-        if (!locale)
-            throw new Error(`Locale [${name}] not found`)
-
-        return locale
+        return res.data.locales.data
     }
-
-    list = (): Locale[] => Object.keys(this.locales).map(key => this.locales[key])
 }
