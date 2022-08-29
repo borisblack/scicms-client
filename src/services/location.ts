@@ -4,14 +4,17 @@ import i18n from '../i18n'
 import {apolloClient, extractGraphQLErrorMessages} from '.'
 import {Location} from '../types'
 
+export interface LocationInput {
+    latitude: number
+    longitude: number
+    label: string
+    permission?: string
+}
+
 const CREATE_MUTATION = gql`
-    mutation createLocation($latitude: Float!, $longitude: Float!, $label: String!) {
+    mutation createLocation($data: LocationInput!) {
         createLocation(
-            data: {
-                latitude: $latitude
-                longitude: $longitude
-                label: $label
-            }
+            data: $data
         ) {
             data {
                 id
@@ -24,14 +27,10 @@ const CREATE_MUTATION = gql`
 `
 
 const UPDATE_MUTATION = gql`
-    mutation updateLocation($id: ID!, $latitude: Float!, $longitude: Float!, $label: String!) {
+    mutation updateLocation($id: ID!, $data: LocationInput!) {
         updateLocation(
             id: $id
-            data: {
-                latitude: $latitude
-                longitude: $longitude
-                label: $label
-            }
+            data: $data
         ) {
             data {
                 id
@@ -53,8 +52,8 @@ export default class LocationService {
         return LocationService.instance
     }
 
-    async create(latitude: number, longitude: number, label: string): Promise<Location> {
-        const res = await apolloClient.mutate({mutation: CREATE_MUTATION, variables: {latitude, longitude, label}})
+    async create(data: LocationInput): Promise<Location> {
+        const res = await apolloClient.mutate({mutation: CREATE_MUTATION, variables: {data}})
         if (res.errors) {
             console.error(extractGraphQLErrorMessages(res.errors))
             throw new Error(i18n.t('An error occurred while executing the request'))
@@ -63,8 +62,8 @@ export default class LocationService {
         return res.data.createLocation.data
     }
 
-    async update(id: string, latitude: number, longitude: number, label: string): Promise<Location> {
-        const res = await apolloClient.mutate({mutation: UPDATE_MUTATION, variables: {id, latitude, longitude, label}})
+    async update(id: string, data: LocationInput): Promise<Location> {
+        const res = await apolloClient.mutate({mutation: UPDATE_MUTATION, variables: {id, data}})
         if (res.errors) {
             console.error(extractGraphQLErrorMessages(res.errors))
             throw new Error(i18n.t('An error occurred while executing the request'))

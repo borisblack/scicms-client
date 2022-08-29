@@ -1,6 +1,6 @@
 import {Attribute, AttrType, Item, ItemData, Location} from '../types'
-import MediaService from '../services/media'
-import LocationService from '../services/location'
+import MediaService, {UploadInput} from '../services/media'
+import LocationService, {LocationInput} from '../services/location'
 
 const mediaService = MediaService.getInstance()
 const locationService = LocationService.getInstance()
@@ -22,12 +22,22 @@ export async function parseValues(item: Item, data: ItemData | undefined, values
 
 async function parseValue(attrName: string, attribute: Attribute, data: ItemData | undefined, values: any): Promise<any> {
     const value = values[attrName]
+    const prevItemPermissionId = data?.permission.data?.id
+    const itemPermissionId = values['permission.id']
     switch (attribute.type) {
         case AttrType.media:
             const mediaId = values[`${attrName}.id`]
-            if (!mediaId) {
+            if (mediaId) {
+                if (itemPermissionId !== prevItemPermissionId) {
+                    await mediaService.update(mediaId, {permission: itemPermissionId})
+                }
+            } else {
                 const fileList = value as File[]
-                const mediaInfo = await mediaService.upload(fileList[0])
+                const input: UploadInput = {file: fileList[0]}
+                if (itemPermissionId)
+                    input.permission = itemPermissionId
+
+                const mediaInfo = await mediaService.upload(input)
                 return mediaInfo.id
             }
             return mediaId
@@ -37,15 +47,19 @@ async function parseValue(attrName: string, attribute: Attribute, data: ItemData
             const longitude = values[`${attrName}.longitude`]
             const label = values[`${attrName}.label`]
             if (locationId) {
-                const prevLocation: Location | null = data ? data[attrName].data as Location : null
+                const prevLocation = data ? data[attrName].data as Location : null
                 if (prevLocation) {
-                    if (prevLocation.latitude !== latitude || prevLocation.longitude !== longitude || prevLocation.label !== label) {
-                        await locationService.update(locationId, latitude, longitude, label)
+                    if (prevLocation.latitude !== latitude || prevLocation.longitude !== longitude || prevLocation.label !== label || itemPermissionId !== prevItemPermissionId) {
+                        await locationService.update(locationId, {latitude, longitude, label, permission: itemPermissionId})
                     }
                 }
                 return locationId
             } else {
-                const location = await locationService.create(latitude, longitude, label)
+                const input: LocationInput = {latitude, longitude, label}
+                if (itemPermissionId)
+                    input.permission = itemPermissionId
+
+                const location = await locationService.create(input)
                 return location.id
             }
         case AttrType.relation:

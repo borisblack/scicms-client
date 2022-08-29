@@ -6,11 +6,26 @@ import {apolloClient, extractGraphQLErrorMessages} from '.'
 import {Media, MediaInfo} from '../types'
 import appConfig from '../config'
 
+export interface UploadInput {
+    file: File,
+    label?: string,
+    description?: string,
+    permission?: string
+}
+
+export interface MediaInput {
+    label?: String
+    description?: String
+    lifecycle?: String
+    permission?: String
+}
+
 const UPLOAD_MUTATION = gql`
-    mutation ($file: Upload!) {
-        upload(file: $file) {
+    mutation upload($input: UploadInput!) {
+        upload(input: $input) {
             id
             filename
+            label
             description
             fileSize
             mimetype
@@ -21,10 +36,11 @@ const UPLOAD_MUTATION = gql`
 `
 
 const UPLOAD_MULTIPLE_MUTATION = gql`
-    mutation ($files: [Upload!]!) {
-        uploadMultiple(files: $files) {
+    mutation uploadMultiple($input: [UploadInput!]!) {
+        uploadMultiple(input: $input) {
             id
             filename
+            label
             description
             fileSize
             mimetype
@@ -34,15 +50,34 @@ const UPLOAD_MULTIPLE_MUTATION = gql`
     }
 `
 
+const UPDATE_MEDIA_MUTATION = gql`
+    mutation updateMedia($id: ID!, $data: MediaInput!) {
+        updateMedia(
+            id: $id
+            data: $data
+        ) {
+            data {
+                id
+                filename
+                label
+                description
+                fileSize
+                mimeType
+                path
+                checksum
+            }
+        }
+    }
+`
+
 const DELETE_MEDIA_MUTATION = gql`
-    mutation ($id: ID!) {
+    mutation deleteMedia($id: ID!) {
         deleteMedia(
             id: $id
             deletingStrategy: NO_ACTION
         ) {
             data {
                 id
-                configId
                 filename
                 label
                 description
@@ -67,13 +102,13 @@ export default class MediaService {
         return MediaService.instance
     }
 
-    async upload(file: File): Promise<MediaInfo> {
+    async upload(input: UploadInput): Promise<MediaInfo> {
         const res = await apolloClient.mutate({
             mutation: UPLOAD_MUTATION,
             context: {
                 headers: {[APOLLO_REQUIRE_PREFLIGHT_HEADER]: true}
             },
-            variables: {file}
+            variables: {input}
         })
 
         if (res.errors) {
@@ -84,13 +119,13 @@ export default class MediaService {
         return res.data.upload
     }
 
-    async uploadMultiple(files: File[]): Promise<MediaInfo[]> {
+    async uploadMultiple(input: UploadInput[]): Promise<MediaInfo[]> {
         const res = await apolloClient.mutate({
             mutation: UPLOAD_MULTIPLE_MUTATION,
             context: {
                 headers: {[APOLLO_REQUIRE_PREFLIGHT_HEADER]: true}
             },
-            variables: {files}
+            variables: {input}
         })
 
         if (res.errors) {
@@ -99,6 +134,16 @@ export default class MediaService {
         }
 
         return res.data.uploadMultiple
+    }
+
+    async update(id: string, data: MediaInput): Promise<Media> {
+        const res = await apolloClient.mutate({mutation: UPDATE_MEDIA_MUTATION, variables: {id, data}})
+        if (res.errors) {
+            console.error(extractGraphQLErrorMessages(res.errors))
+            throw new Error(i18n.t('An error occurred while executing the request'))
+        }
+
+        return res.data.updateMedia.data
     }
 
     async deleteById(id: string): Promise<Media> {
