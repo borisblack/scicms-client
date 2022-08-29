@@ -2,7 +2,7 @@ import {gql} from '@apollo/client'
 
 import i18n from '../i18n'
 import {apolloClient, extractGraphQLErrorMessages} from '.'
-import {Item} from '../types'
+import {AttrType, Item, RelType} from '../types'
 
 interface ItemCache {
     [name: string]: Item
@@ -107,4 +107,59 @@ export default class ItemService {
     getMedia = (): Item => this.getByName(MEDIA_ITEM_NAME)
 
     getLocation = (): Item => this.getByName(LOCATION_ITEM_NAME)
+
+    listNonCollectionAttributes = (item: Item): string[] => {
+        const result: string[] = []
+        const {attributes} = item.spec
+        for (const attrName in attributes) {
+            if (!attributes.hasOwnProperty(attrName))
+                continue
+
+            const attr = attributes[attrName]
+            if (attr.private || (attr.type === AttrType.relation && (attr.relType === RelType.oneToMany || attr.relType === RelType.manyToMany)))
+                continue
+
+            switch (attr.type) {
+                case AttrType.string:
+                case AttrType.text:
+                case AttrType.uuid:
+                case AttrType.email:
+                case AttrType.password:
+                case AttrType.sequence:
+                case AttrType.enum:
+                case AttrType.int:
+                case AttrType.long:
+                case AttrType.float:
+                case AttrType.double:
+                case AttrType.decimal:
+                case AttrType.bool:
+                case AttrType.date:
+                case AttrType.time:
+                case AttrType.datetime:
+                case AttrType.timestamp:
+                case AttrType.json:
+                case AttrType.array:
+                    result.push(attrName)
+                    break
+                case AttrType.media:
+                    const media = this.getMedia()
+                    result.push(`${attrName} { data { id ${media.titleAttribute} ${media.titleAttribute === 'filename' ? '' : 'filename'} } }`)
+                    break
+                case AttrType.location:
+                    result.push(`${attrName} { data { id latitude longitude label } }`)
+                    break
+                case AttrType.relation:
+                    if (!attr.target)
+                        throw new Error('Illegal attribute')
+
+                    const subItem = this.getByName(attr.target)
+                    result.push(`${attrName} { data { id ${subItem.titleAttribute} } }`)
+                    break
+                default:
+                    throw Error('Illegal attribute')
+            }
+        }
+
+        return result
+    }
 }

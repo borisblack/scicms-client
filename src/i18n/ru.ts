@@ -2,6 +2,7 @@ import customRu from './custom/ru'
 
 const ru = {
     translation: {
+        'A new version will be created': '',
         'Access is denied': 'Доступ запрещен',
         'Add': 'Добавить',
         'Administration': 'Администрирование',

@@ -2,6 +2,7 @@ import customEn from './custom/en'
 
 const en = {
     translation: {
+        'A new version will be created': 'Будет создана новая версия',
         'Access is denied': 'Access is denied',
         'Add': 'Add',
         'An error occurred while executing the request': 'An error occurred while executing the request',

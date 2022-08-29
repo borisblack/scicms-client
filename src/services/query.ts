@@ -4,7 +4,7 @@ import {ColumnFiltersState} from '@tanstack/react-table'
 
 import i18n from '../i18n'
 import {apolloClient, extractGraphQLErrorMessages} from './index'
-import {Attribute, AttrType, Item, ItemData, RelType} from '../types'
+import {Attribute, AttrType, Item, ItemData, RelType, Response, ResponseCollection} from '../types'
 import {DateTime} from 'luxon'
 import {
     DATE_FORMAT_STRING,
@@ -21,10 +21,6 @@ import {
 } from '../config/constants'
 import ItemService from './item'
 import {RequestParams} from '../components/datagrid/DataGrid'
-
-interface Response<T> {
-    data: T
-}
 
 export type FiltersInput<FiltersType> = {
     and?: [FiltersType]
@@ -53,24 +49,6 @@ type FilterInput<FilterType, ElementType> = {
     notIn?: ElementType[]
     null?: boolean
     notNull?: boolean
-}
-
-interface ResponseCollection<T> {
-    data: T[]
-    meta: ResponseCollectionMeta
-}
-
-interface ResponseCollectionMeta {
-    pagination: Pagination
-}
-
-interface Pagination {
-    limit?: number
-    page: number
-    pageCount?: number
-    pageSize: number
-    start?: number
-    total: number
 }
 
 function buildDateFilter(filterValue: string): FilterInput<unknown, string> {
@@ -193,7 +171,7 @@ export default class QueryService {
 
     private itemService = ItemService.getInstance()
 
-    findById = (item: Item, id: string): Promise<Response<any>> => {
+    findById = (item: Item, id: string): Promise<Response> => {
         const query = gql(this.buildFindByIdQuery(item))
 
         return apolloClient.query({query, variables: {id}})
@@ -210,7 +188,7 @@ export default class QueryService {
         query find${_.upperFirst(item.name)} ($id: ID!) {
             ${item.name} (id: $id) {
                 data {
-                    ${this.listNonCollectionAttributes(item).join('\n')}
+                    ${this.itemService.listNonCollectionAttributes(item).join('\n')}
                 }
             }
         }
@@ -245,7 +223,7 @@ export default class QueryService {
                 pagination: $pagination
             ) {
                 data {
-                    ${this.listNonCollectionAttributes(item).join('\n')}
+                    ${this.itemService.listNonCollectionAttributes(item).join('\n')}
                 }
                 meta {
                     pagination {
@@ -258,61 +236,6 @@ export default class QueryService {
             }
         }
     `
-
-    private listNonCollectionAttributes = (item: Item): string[] => {
-        const result: string[] = []
-        const {attributes} = item.spec
-        for (const attrName in attributes) {
-            if (!attributes.hasOwnProperty(attrName))
-                continue
-
-            const attr = attributes[attrName]
-            if (attr.private || (attr.type === AttrType.relation && (attr.relType === RelType.oneToMany || attr.relType === RelType.manyToMany)))
-                continue
-
-            switch (attr.type) {
-                case AttrType.string:
-                case AttrType.text:
-                case AttrType.uuid:
-                case AttrType.email:
-                case AttrType.password:
-                case AttrType.sequence:
-                case AttrType.enum:
-                case AttrType.int:
-                case AttrType.long:
-                case AttrType.float:
-                case AttrType.double:
-                case AttrType.decimal:
-                case AttrType.bool:
-                case AttrType.date:
-                case AttrType.time:
-                case AttrType.datetime:
-                case AttrType.timestamp:
-                case AttrType.json:
-                case AttrType.array:
-                    result.push(attrName)
-                    break
-                case AttrType.media:
-                    const media = this.itemService.getMedia()
-                    result.push(`${attrName} { data { id ${media.titleAttribute} ${media.titleAttribute === 'filename' ? '' : 'filename'} } }`)
-                    break
-                case AttrType.location:
-                    result.push(`${attrName} { data { id latitude longitude label } }`)
-                    break
-                case AttrType.relation:
-                    if (!attr.target)
-                        throw new Error('Illegal attribute')
-
-                    const subItem = this.itemService.getByName(attr.target)
-                    result.push(`${attrName} { data { id ${subItem.titleAttribute} } }`)
-                    break
-                default:
-                    throw Error('Illegal attribute')
-            }
-        }
-
-        return result
-    }
 
     private buildItemFiltersInput = (item: Item, filters: ColumnFiltersState): FiltersInput<unknown> => {
         const {attributes} = item.spec

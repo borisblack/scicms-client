@@ -1,5 +1,5 @@
 import React, {MouseEvent, ReactNode, useEffect, useMemo, useRef, useState} from 'react'
-import {Button, Col, Form, message, PageHeader, Row, Spin, Tabs} from 'antd'
+import {Alert, Button, Col, Form, message, PageHeader, Row, Spin, Tabs} from 'antd'
 
 import {Attribute, AttrType, Item, ItemData, RelType, UserInfo} from '../../types'
 import PermissionService from '../../services/permission'
@@ -123,11 +123,14 @@ function ViewPage({me, page, onItemView, onUpdate}: Props) {
         }
 
         return (
-            <PageHeader
-                className={styles.pageHeader}
-                title={<span>{Icon ? <Icon/> : null}&nbsp;&nbsp;{getLabel(page)}</span>}
-                extra={extra}
-            />
+            <>
+                {operation === Operation.CREATE_VERSION && <Alert type="warning" message={t('A new version will be created')}/>}
+                <PageHeader
+                    className={styles.pageHeader}
+                    title={<span>{Icon ? <Icon/> : null}&nbsp;&nbsp;{getLabel(page)}</span>}
+                    extra={extra}
+                />
+            </>
         )
     }
 

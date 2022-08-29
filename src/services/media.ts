@@ -3,7 +3,7 @@ import {gql} from '@apollo/client'
 
 import i18n from '../i18n'
 import {apolloClient, extractGraphQLErrorMessages} from '.'
-import {Media, MediaInfo} from '../types'
+import {DeletingStrategy, Media, MediaInfo} from '../types'
 import appConfig from '../config'
 
 export interface UploadInput {
@@ -71,10 +71,10 @@ const UPDATE_MEDIA_MUTATION = gql`
 `
 
 const DELETE_MEDIA_MUTATION = gql`
-    mutation deleteMedia($id: ID!) {
+    mutation deleteMedia($id: ID!, $deletingStrategy: DeletingStrategy!) {
         deleteMedia(
             id: $id
-            deletingStrategy: NO_ACTION
+            deletingStrategy: $deletingStrategy
         ) {
             data {
                 id
@@ -147,7 +147,10 @@ export default class MediaService {
     }
 
     async deleteById(id: string): Promise<Media> {
-        const res = await apolloClient.mutate({mutation: DELETE_MEDIA_MUTATION, variables: {id}})
+        const res = await apolloClient.mutate({
+            mutation: DELETE_MEDIA_MUTATION,
+            variables: {id, deletingStrategy: DeletingStrategy.NO_ACTION}
+        })
         if (res.errors) {
             console.error(extractGraphQLErrorMessages(res.errors))
             throw new Error(i18n.t('An error occurred while executing the request'))

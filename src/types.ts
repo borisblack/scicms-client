@@ -235,3 +235,36 @@ export interface Locale extends DefaultItemTemplate {
 export interface ItemData extends DefaultItemTemplate {
     [name: string]: any
 }
+
+export enum DeletingStrategy {
+    NO_ACTION = 'NO_ACTION',
+    SET_NULL = 'SET_NULL',
+    CASCADE = 'CASCADE'
+}
+
+export interface Response {
+    data: ItemData
+}
+
+export interface FlaggedResponse {
+    success: boolean
+    data: ItemData
+}
+
+export interface ResponseCollection<T extends ItemData> {
+    data: T[]
+    meta: ResponseCollectionMeta
+}
+
+interface ResponseCollectionMeta {
+    pagination: Pagination
+}
+
+interface Pagination {
+    limit?: number
+    page: number
+    pageCount?: number
+    pageSize: number
+    start?: number
+    total: number
+}

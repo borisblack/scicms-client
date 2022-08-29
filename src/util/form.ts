@@ -1,5 +1,5 @@
 import {Attribute, AttrType, Item, ItemData, Location} from '../types'
-import MediaService, {UploadInput} from '../services/media'
+import MediaService from '../services/media'
 import LocationService, {LocationInput} from '../services/location'
 
 const mediaService = MediaService.getInstance()
@@ -33,11 +33,7 @@ async function parseValue(attrName: string, attribute: Attribute, data: ItemData
                 }
             } else {
                 const fileList = value as File[]
-                const input: UploadInput = {file: fileList[0]}
-                if (itemPermissionId)
-                    input.permission = itemPermissionId
-
-                const mediaInfo = await mediaService.upload(input)
+                const mediaInfo = await mediaService.upload({file: fileList[0], permission: itemPermissionId})
                 return mediaInfo.id
             }
             return mediaId
@@ -55,10 +51,7 @@ async function parseValue(attrName: string, attribute: Attribute, data: ItemData
                 }
                 return locationId
             } else {
-                const input: LocationInput = {latitude, longitude, label}
-                if (itemPermissionId)
-                    input.permission = itemPermissionId
-
+                const input: LocationInput = {latitude, longitude, label, permission: itemPermissionId}
                 const location = await locationService.create(input)
                 return location.id
             }
