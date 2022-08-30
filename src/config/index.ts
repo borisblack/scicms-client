@@ -14,6 +14,7 @@ import {
     MOMENT_TIME_FORMAT_STRING,
     TIME_FORMAT_STRING
 } from './constants'
+import {DeletingStrategy} from '../types'
 
 interface AppConfig {
     coreUrl: string
@@ -32,7 +33,11 @@ interface AppConfig {
         findAll: {
             defaultPageSize: number
         }
-    },
+    }
+    mutation: {
+        defaultCopyCollectionRelations: boolean
+        defaultDeletingStrategy: DeletingStrategy
+    }
     ui: {
         dataGrid: {
             defaultColWidth: number
@@ -57,6 +62,10 @@ const appConfig: AppConfig = {
         findAll: {
             defaultPageSize: DEFAULT_PAGE_SIZE
         }
+    },
+    mutation: {
+        defaultCopyCollectionRelations: true,
+        defaultDeletingStrategy: DeletingStrategy.CASCADE
     },
     ui: {
         dataGrid: {

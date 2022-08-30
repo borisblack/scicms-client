@@ -1,4 +1,4 @@
-import {DeletingStrategy, Item, ItemData, Response, ResponseCollection} from '../types'
+import {DeletingStrategy, Item, ItemData, ResponseCollection} from '../types'
 import _ from 'lodash'
 import ItemService from './item'
 import {gql} from '@apollo/client'
@@ -21,7 +21,7 @@ export default class MutationService {
 
     private itemService = ItemService.getInstance()
 
-    async create(item: Item, data: ItemInput, locale?: string): Promise<Response> {
+    async create(item: Item, data: ItemInput, locale?: string): Promise<ItemData> {
         if (!item.localized && locale)
             throw new Error('The locale attribute can be specified for localized item only.')
 
@@ -50,7 +50,7 @@ export default class MutationService {
         `
     }
 
-    async createVersion(item: Item, id: string, data: ItemInput, majorRev?: string, locale?: string, copyCollectionRelations?: boolean): Promise<Response> {
+    async createVersion(item: Item, id: string, data: ItemInput, majorRev?: string, locale?: string | null, copyCollectionRelations?: boolean): Promise<ItemData> {
         if (!item.versioned)
             throw new Error('Item is not versioned')
 
@@ -96,7 +96,7 @@ export default class MutationService {
         `
     }
 
-    async createLocalization(item: Item, id: string, data: ItemInput, locale: string, copyCollectionRelations?: boolean): Promise<Response> {
+    async createLocalization(item: Item, id: string, data: ItemInput, locale: string, copyCollectionRelations?: boolean): Promise<ItemData> {
         if (!item.localized)
             throw new Error('Item is not localized')
 
@@ -130,7 +130,7 @@ export default class MutationService {
         `
     }
 
-    async update(item: Item, id: string, data: ItemInput): Promise<Response> {
+    async update(item: Item, id: string, data: ItemInput): Promise<ItemData> {
         const mutation = gql(this.buildUpdateMutation(item))
         const res = await apolloClient.mutate({mutation, variables: {id, data}})
         if (res.errors) {
@@ -156,7 +156,7 @@ export default class MutationService {
         `
     }
 
-    async delete(item: Item, id: string, deletingStrategy: DeletingStrategy): Promise<Response> {
+    async delete(item: Item, id: string, deletingStrategy: DeletingStrategy): Promise<ItemData> {
         const mutation = gql(this.buildDeleteMutation(item))
         const res = await apolloClient.mutate({mutation, variables: {id, deletingStrategy}})
         if (res.errors) {
@@ -217,7 +217,7 @@ export default class MutationService {
         `
     }
 
-    async lock(item: Item, id: string): Promise<Boolean> {
+    async lock(item: Item, id: string): Promise<boolean> {
         const mutation = gql(this.buildLockMutation(item))
         const res = await apolloClient.mutate({mutation, variables: {id}})
         if (res.errors) {
@@ -233,12 +233,15 @@ export default class MutationService {
             mutation lock${capitalizedItemName}($id: ID!) {
                 lock${capitalizedItemName}(id: $id) {
                     success
+                    data {
+                        id
+                    }
                 }
             }
         `
     }
 
-    async unlock(item: Item, id: string): Promise<Boolean> {
+    async unlock(item: Item, id: string): Promise<boolean> {
         const mutation = gql(this.buildUnlockMutation(item))
         const res = await apolloClient.mutate({mutation, variables: {id}})
         if (res.errors) {
@@ -254,12 +257,15 @@ export default class MutationService {
             mutation unlock${capitalizedItemName}($id: ID!) {
                 unlock${capitalizedItemName}(id: $id) {
                     success
+                    data {
+                        id
+                    }
                 }
             }
         `
     }
 
-    async promote(item: Item, id: string, state: string): Promise<Response> {
+    async promote(item: Item, id: string, state: string): Promise<ItemData> {
         const mutation = gql(this.buildPromoteMutation(item))
         const res = await apolloClient.mutate({mutation, variables: {id, state}})
         if (res.errors) {

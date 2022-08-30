@@ -2,10 +2,18 @@ import {Attribute, AttrType, Item, ItemData, Location} from '../types'
 import MediaService from '../services/media'
 import LocationService, {LocationInput} from '../services/location'
 
+const MINOR_REV_ATTR_NAME = 'minorRev'
+
 const mediaService = MediaService.getInstance()
 const locationService = LocationService.getInstance()
 
-export async function parseValues(item: Item, data: ItemData | undefined, values: any): Promise<{[name: string]: any}> {
+interface FilteredItemData {
+    majorRev?: string
+    locale?: string | null
+    state?: string | null
+}
+
+export async function parseValues(item: Item, data: ItemData | undefined, values: any): Promise<ItemData> {
     const parsedValues: {[name: string]: any} = {}
     const {attributes} = item.spec
 
@@ -13,11 +21,17 @@ export async function parseValues(item: Item, data: ItemData | undefined, values
         if (!values.hasOwnProperty(key) || !attributes.hasOwnProperty(key))
             continue
 
+        if (!item.versioned && key === MINOR_REV_ATTR_NAME)
+            continue
+
         const attribute = attributes[key]
+        if (attribute.keyed || attribute.readOnly)
+            continue
+
         parsedValues[key] = await parseValue(key, attribute, data, values)
     }
 
-    return parsedValues
+    return parsedValues as ItemData
 }
 
 async function parseValue(attrName: string, attribute: Attribute, data: ItemData | undefined, values: any): Promise<any> {
@@ -60,4 +74,10 @@ async function parseValue(attrName: string, attribute: Attribute, data: ItemData
         default:
             return value
     }
+}
+
+export function filterValues(values: FilteredItemData) {
+    delete values.majorRev
+    delete values.locale
+    delete values.state
 }

@@ -143,7 +143,7 @@ export default class ItemService {
                     break
                 case AttrType.media:
                     const media = this.getMedia()
-                    result.push(`${attrName} { data { id ${media.titleAttribute} ${media.titleAttribute === 'filename' ? '' : 'filename'} } }`)
+                    result.push(`${attrName} { data { id ${media.titleAttribute === 'id' ? '' : media.titleAttribute} ${media.titleAttribute === 'filename' ? '' : 'filename'} } }`)
                     break
                 case AttrType.location:
                     result.push(`${attrName} { data { id latitude longitude label } }`)
@@ -153,7 +153,7 @@ export default class ItemService {
                         throw new Error('Illegal attribute')
 
                     const subItem = this.getByName(attr.target)
-                    result.push(`${attrName} { data { id ${subItem.titleAttribute} } }`)
+                    result.push(`${attrName} { data { id ${subItem.titleAttribute === 'id' ? '' : subItem.titleAttribute} } }`)
                     break
                 default:
                     throw Error('Illegal attribute')
