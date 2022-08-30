@@ -61,6 +61,12 @@ const slice = createSlice({
     name: 'pages',
     initialState,
     reducers: {
+        setActiveKey: (state, action: PayloadAction<string>) => {
+            const {pages} = state
+            const key = action.payload
+            if (pages.hasOwnProperty(key))
+                state.activeKey = action.payload
+        },
         openPage: (state, action: PayloadAction<{item: Item, viewType: ViewType, data?: ItemData}>) => {
             const {pages} = state
             const {item, viewType, data} = action.payload
@@ -82,11 +88,19 @@ const slice = createSlice({
             else
                 state.activeKey = undefined
         },
-        setActiveKey: (state, action: PayloadAction<string>) => {
-            const {pages} = state
-            const key = action.payload
-            if (pages.hasOwnProperty(key))
-                state.activeKey = action.payload
+        closeActivePage: (state) => {
+            const {activeKey, pages} = state
+            if (!activeKey)
+                return
+
+            delete pages[activeKey]
+
+            // Set new active key
+            const keys = Object.keys(pages)
+            if (keys.length > 0)
+                state.activeKey = keys[keys.length - 1]
+            else
+                state.activeKey = undefined
         },
         updateActivePage: (state, action: PayloadAction<ItemData>) => {
             const itemData = action.payload
@@ -123,6 +137,6 @@ const slice = createSlice({
 export const selectPages = (state: RootState) => Object.values(state.pages.pages) as IPage[]
 export const selectActiveKey = (state: RootState) => state.pages.activeKey
 
-export const {openPage, closePage, setActiveKey, updateActivePage, reset} = slice.actions
+export const {setActiveKey, openPage, closePage, closeActivePage, updateActivePage, reset} = slice.actions
 
 export default slice.reducer

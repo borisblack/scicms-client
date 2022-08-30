@@ -5,6 +5,7 @@ import * as icons from '@ant-design/icons'
 import {SearchOutlined} from '@ant-design/icons'
 
 import {
+    closeActivePage,
     closePage,
     getLabel,
     openPage,
@@ -60,9 +61,9 @@ function Pages({me}: Props) {
         }
     }
 
-    const handleUpdate = async (data: ItemData) => {
-        dispatch(updateActivePage(data))
-    }
+    const handleUpdate = (data: ItemData) => dispatch(updateActivePage(data))
+
+    const handleClose = () => dispatch(closeActivePage())
 
     if (pages.length === 0)
         return null
@@ -99,7 +100,7 @@ function Pages({me}: Props) {
                                     page={page}
                                     onItemView={handleItemView}
                                     onUpdate={handleUpdate}
-                                    onDelete={() => {}}
+                                    onDelete={handleClose}
                                 />
                             }
                         </div>

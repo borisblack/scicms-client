@@ -65,7 +65,7 @@ const LOCALE_ATTR_NAME = 'locale'
 const TabPane = Tabs.TabPane
 const {confirm} = Modal
 
-function ViewPage({me, page, onItemView, onUpdate}: Props) {
+function ViewPage({me, page, onItemView, onUpdate, onDelete}: Props) {
     const {item, data} = page
     const {t} = useTranslation()
     const [loading, setLoading] = useState<boolean>(false)
@@ -278,7 +278,8 @@ function ViewPage({me, page, onItemView, onUpdate}: Props) {
         try {
             const deleted = await mutationService.delete(item, data.id, appConfig.mutation.defaultDeletingStrategy)
             await onUpdate(deleted)
-            setLockedByMe(false)
+            await setLockedByMe(false)
+            onDelete()
         } catch (e: any) {
             message.error(e.message)
         } finally {
@@ -298,7 +299,8 @@ function ViewPage({me, page, onItemView, onUpdate}: Props) {
             const purged = await mutationService.purge(item, data.id, appConfig.mutation.defaultDeletingStrategy)
             const deleted = purged.data.find(it => it.id === data.id) as ItemData
             await onUpdate(deleted)
-            setLockedByMe(false)
+            await setLockedByMe(false)
+            onDelete()
         } catch (e: any) {
             message.error(e.message)
         } finally {
