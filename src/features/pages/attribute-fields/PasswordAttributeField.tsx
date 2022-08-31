@@ -22,7 +22,7 @@ const PasswordAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, v
             name={attrName}
             label={attribute.displayName}
             initialValue={value}
-            rules={[{required: attribute.required, message: t('Required field')}]}
+            rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
         >
             <Password style={{maxWidth: attribute.fieldWidth}} maxLength={attribute.length} disabled={isDisabled}/>
         </FormItem>

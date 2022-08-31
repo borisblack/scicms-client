@@ -97,7 +97,7 @@ const MediaAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, att
                 rules={[
                     ({ getFieldValue }) => ({
                     validator(_, value) {
-                        if (!attribute.required || getFieldValue(`${attrName}.id`))
+                        if (!attribute.required || attribute.readOnly || getFieldValue(`${attrName}.id`))
                             return Promise.resolve()
 
                         return Promise.reject(new Error(t('Required field')))

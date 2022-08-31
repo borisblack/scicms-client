@@ -25,7 +25,7 @@ const NumberAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, val
             initialValue={value}
             rules={[
                 { type: 'number', min: attribute.minRange, max: attribute.maxRange },
-                {required: attribute.required, message: t('Required field')}
+                {required: attribute.required && !attribute.readOnly, message: t('Required field')}
             ]}
         >
             <InputNumber

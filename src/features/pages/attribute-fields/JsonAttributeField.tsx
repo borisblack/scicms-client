@@ -21,7 +21,7 @@ const JsonAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, value
             name={attrName}
             label={attribute.displayName}
             initialValue={value ? JSON.stringify(value) : null}
-            rules={[{required: attribute.required, message: t('Required field')}]}
+            rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
         >
             <TextArea style={{maxWidth: attribute.fieldWidth}} disabled={isDisabled} rows={4}/>
         </FormItem>

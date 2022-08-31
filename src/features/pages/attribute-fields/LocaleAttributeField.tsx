@@ -5,6 +5,7 @@ import {AttributeFieldProps} from '.'
 import {AttrType} from '../../../types'
 import styles from './AttributeField.module.css'
 import LocaleService from '../../../services/locale'
+import {useTranslation} from 'react-i18next'
 
 const LOCALE_ATTR_NAME = 'locale'
 
@@ -15,6 +16,7 @@ const LocaleAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, val
     if (attribute.type !== AttrType.string || attrName !== LOCALE_ATTR_NAME)
         throw new Error('Illegal attribute')
 
+    const {t} = useTranslation()
     const localeService = useMemo(() => LocaleService.getInstance(), [])
     const locales = useMemo(() => localeService.locales, [localeService])
     const isDisabled = attribute.keyed || attribute.readOnly
@@ -25,7 +27,7 @@ const LocaleAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, val
             name={attrName}
             label={attribute.displayName}
             initialValue={value}
-            rules={[{required: attribute.required}]}
+            rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
         >
             <Select style={{maxWidth: attribute.fieldWidth}} disabled={isDisabled} onSelect={(val: any) => onChange(val)}>
                 {locales.map(it => <SelectOption key={it.name} value={it.name}>{it.displayName}</SelectOption>)}

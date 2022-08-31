@@ -8,6 +8,7 @@ const mediaService = MediaService.getInstance()
 const locationService = LocationService.getInstance()
 
 interface FilteredItemData {
+    id?: string
     majorRev?: string
     locale?: string | null
     state?: string | null
@@ -77,6 +78,7 @@ async function parseValue(attrName: string, attribute: Attribute, data: ItemData
 }
 
 export function filterValues(values: FilteredItemData) {
+    delete values.id
     delete values.majorRev
     delete values.locale
     delete values.state

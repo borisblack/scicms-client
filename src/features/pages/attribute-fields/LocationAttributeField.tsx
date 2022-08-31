@@ -56,7 +56,7 @@ const LocationAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, 
                         name={[attrName, 'label']}
                         noStyle
                         initialValue={locationData?.label}
-                        rules={[{required: attribute.required}]}
+                        rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
                     >
                         <Input style={{width: '50%'}} placeholder={t('Label')}/>
                     </FormItem>

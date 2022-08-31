@@ -13,7 +13,6 @@ import AttributeFieldWrapper from './AttributeFieldWrapper'
 import QueryService from '../../services/query'
 import CoreConfigService from '../../services/core-config'
 import {filterValues, parseValues} from '../../util/form'
-import {usePrevious} from '../../util/hooks'
 import MutationService from '../../services/mutation'
 import appConfig from '../../config'
 import ViewPageHeader from './ViewPageHeader'
@@ -35,15 +34,15 @@ const TabPane = Tabs.TabPane
 
 function ViewPage({me, page, onItemView, onUpdate, onDelete}: Props) {
     const {item, data} = page
+    const isNew = !data
     const {t} = useTranslation()
     const [loading, setLoading] = useState<boolean>(false)
     const [isLockedByMe, setLockedByMe] = useState<boolean>(data?.lockedBy?.data?.id === me.id)
-    const [operation, setOperation] = useState<Operation>(Operation.VIEW)
+    const [operation, setOperation] = useState<Operation>(isNew ? Operation.CREATE : Operation.VIEW)
     const headerRef = useRef<HTMLDivElement>(null)
     const contentRef = useRef<HTMLDivElement>(null)
     const footerRef = useRef<HTMLDivElement>(null)
     const [form] = Form.useForm()
-    const prevId = usePrevious(data?.id)
 
     const coreConfigService = useMemo(() => CoreConfigService.getInstance(), [])
     const itemTemplateService = useMemo(() => ItemTemplateService.getInstance(), [])
@@ -54,7 +53,6 @@ function ViewPage({me, page, onItemView, onUpdate, onDelete}: Props) {
     const itemPermissionId = item.permission.data?.id
     const itemPermission = itemPermissionId ? permissionService.findById(itemPermissionId) : null
     const canCreate = !!itemPermission && ACL.canCreate(me, itemPermission)
-    const isNew = !data
     const dataPermissionId = data?.permission.data?.id
     const dataPermission = dataPermissionId ? permissionService.findById(dataPermissionId) : null
     const canEdit = !!dataPermission && (item.name !== ITEM_ITEM_NAME || !data?.core) && !!data?.current && ACL.canWrite(me, dataPermission)
@@ -87,9 +85,10 @@ function ViewPage({me, page, onItemView, onUpdate, onDelete}: Props) {
 
     async function handleFormFinish(values: any) {
         const parsedValues = await parseValues(item, data, values)
-        console.log(`Values: ${values}`)
-        console.log(`Parsed values: ${parsedValues}`)
-        filterValues(values)
+        console.log(`Values: ${JSON.stringify(values)}`)
+        filterValues(parsedValues)
+        console.log(`Parsed values: ${JSON.stringify(parsedValues)}`)
+        console.log(operation)
         switch (operation) {
             case Operation.CREATE:
                 await create(parsedValues)
@@ -289,11 +288,12 @@ function ViewPage({me, page, onItemView, onUpdate, onDelete}: Props) {
                 <ViewPageHeader
                     page={page}
                     form={form}
-                    operation={operation}
                     isNew={isNew}
                     canCreate={canCreate}
                     canEdit={canEdit}
                     canDelete={canDelete}
+                    operation={operation}
+                    setOperation={setOperation}
                     isLockedByMe={isLockedByMe}
                     setLockedByMe={setLockedByMe}
                     setLoading={setLoading}

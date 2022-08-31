@@ -25,11 +25,12 @@ import Promote from './Promote'
 interface Props {
     page: IPage
     form: FormInstance
-    operation: Operation
     isNew: boolean
     canCreate: boolean
     canEdit: boolean
     canDelete: boolean
+    operation: Operation
+    setOperation: (operation: Operation) => void
     isLockedByMe: boolean
     setLockedByMe: (isLockedByMe: boolean) => void
     setLoading: (loading: boolean) => void
@@ -42,7 +43,7 @@ const VERSIONS_MODAL_WIDTH = 800
 
 const {confirm} = Modal
 
-export default function ViewPageHeader({page, form, operation, isNew, canCreate, canEdit, canDelete, isLockedByMe, setLockedByMe, setLoading, onItemView, onUpdate, onDelete}: Props) {
+export default function ViewPageHeader({page, form, isNew, canCreate, canEdit, canDelete, operation, setOperation, isLockedByMe, setLockedByMe, setLoading, onItemView, onUpdate, onDelete}: Props) {
     const {item, data} = page
     const Icon = item.icon ? (icons as any)[item.icon] : null
     const {t} = useTranslation()
@@ -67,6 +68,7 @@ export default function ViewPageHeader({page, form, operation, isNew, canCreate,
                 message.warning(t('Cannot lock item'))
 
             setLockedByMe(locked.success)
+            setOperation(item.versioned ? Operation.CREATE_VERSION : Operation.UPDATE)
         } catch (e: any) {
             message.error(e.message)
         } finally {
@@ -87,6 +89,7 @@ export default function ViewPageHeader({page, form, operation, isNew, canCreate,
                 message.warning(t('Cannot unlock item'))
 
             setLockedByMe(!unlocked)
+            setOperation(Operation.VIEW)
         } catch (e: any) {
             message.error(e.message)
         } finally {
@@ -204,7 +207,7 @@ export default function ViewPageHeader({page, form, operation, isNew, canCreate,
             }
         } else {
             if (canEdit) {
-                if (isLockedByMe) {
+                if (isLockedByMe && operation !== Operation.VIEW) {
                     extra.push(<Button key="save" type="primary" onClick={handleSave}><SaveOutlined/> {t('Save')}</Button>)
                     extra.push(<Button key="cancel" icon={<LockOutlined/>} onClick={handleCancel}>{t('Cancel')}</Button>)
                 } else {
@@ -218,7 +221,7 @@ export default function ViewPageHeader({page, form, operation, isNew, canCreate,
                 )
             }
 
-            if (isLockedByMe && canEdit && data?.lifecycle.data) {
+            if (canEdit && isLockedByMe && operation !== Operation.VIEW && data?.lifecycle.data) {
                 extra.push(
                     <Button key="promote" type="primary" icon={<NodeExpandOutlined/>} onClick={() => setPromoteModalVisible(true)}>{t('Promote')}</Button>
                 )

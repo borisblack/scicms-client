@@ -97,7 +97,7 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, 
                 name={attrName}
                 label={attribute.displayName}
                 initialValue={value?.data ? value.data[targetItem.titleAttribute] : null}
-                rules={[{required: attribute.required, message: t('Required field')}]}
+                rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
             >
                 <Search
                     style={{maxWidth: attribute.fieldWidth ? attribute.fieldWidth + (currentId ? (SUFFIX_BUTTON_WIDTH * 2 + 4) : 0) : undefined}}

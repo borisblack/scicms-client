@@ -27,7 +27,7 @@ const CREATE_MUTATION = gql`
 `
 
 const UPDATE_MUTATION = gql`
-    mutation updateLocation($id: ID!, $data: LocationInput!) {
+    mutation updateLocation($id: UUID!, $data: LocationInput!) {
         updateLocation(
             id: $id
             data: $data

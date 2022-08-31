@@ -122,6 +122,7 @@ const slice = createSlice({
                         viewType: page.viewType,
                         data: itemData
                     }
+                    state.activeKey = newKey
                 } else {
                     newPages[key] = page
                 }

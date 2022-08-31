@@ -25,13 +25,17 @@ const StringAttributeField: FC<AttributeFieldProps> = ({item, attrName, attribut
         if (attribute.type === AttrType.sequence)
             return false
 
-        if (attrName === MAJOR_REV_ATTR_NAME && !item.manualVersioning)
+        if (attrName === MAJOR_REV_ATTR_NAME && !item.versioned && !item.manualVersioning)
             return false
 
         return attrName !== STATE_ATTR_NAME
     }
 
-    const rules: FormRule[] = [{required: attribute.required || (attrName === MAJOR_REV_ATTR_NAME && !!item.versioned && !!item.manualVersioning)}]
+    const rules: FormRule[] = [{
+        required: (attribute.required && !attribute.readOnly) || (attrName === MAJOR_REV_ATTR_NAME && !!item.versioned && !!item.manualVersioning),
+        message: t('Required field')
+    }]
+
     switch (attribute.type) {
         case AttrType.uuid:
             rules.push({type: 'regexp', pattern: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/})

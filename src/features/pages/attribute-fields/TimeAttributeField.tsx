@@ -23,7 +23,7 @@ const TimeAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, value
             name={attrName}
             label={attribute.displayName}
             initialValue={value ? moment(value) : null}
-            rules={[{required: attribute.required, message: t('Required field')}]}
+            rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
         >
             <TimePicker format={appConfig.dateTime.momentTimeFormatString} disabled={isDisabled}/>
         </FormItem>

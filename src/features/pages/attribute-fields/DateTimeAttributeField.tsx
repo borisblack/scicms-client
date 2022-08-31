@@ -23,7 +23,7 @@ const DateTimeAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, v
             name={attrName}
             label={attribute.displayName}
             initialValue={value ? moment(value) : null}
-            rules={[{required: attribute.required, message: t('Required field')}]}
+            rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
         >
             <DatePicker showTime format={appConfig.dateTime.momentDateTimeFormatString} disabled={isDisabled}/>
         </FormItem>

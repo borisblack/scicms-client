@@ -51,7 +51,7 @@ const UPLOAD_MULTIPLE_MUTATION = gql`
 `
 
 const UPDATE_MEDIA_MUTATION = gql`
-    mutation updateMedia($id: ID!, $data: MediaInput!) {
+    mutation updateMedia($id: UUID!, $data: MediaInput!) {
         updateMedia(
             id: $id
             data: $data
@@ -71,7 +71,7 @@ const UPDATE_MEDIA_MUTATION = gql`
 `
 
 const DELETE_MEDIA_MUTATION = gql`
-    mutation deleteMedia($id: ID!, $deletingStrategy: DeletingStrategy!) {
+    mutation deleteMedia($id: UUID!, $deletingStrategy: DeletingStrategy!) {
         deleteMedia(
             id: $id
             deletingStrategy: $deletingStrategy
