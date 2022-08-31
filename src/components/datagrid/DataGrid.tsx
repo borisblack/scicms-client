@@ -41,6 +41,9 @@ export interface RequestParams {
     sorting: SortingState,
     filters: ColumnFiltersState
     pagination: RequestPagination
+    majorRev?: string
+    locale?: string
+    state?: string
 }
 
 interface RequestPagination {

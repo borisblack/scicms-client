@@ -1,4 +1,4 @@
-import {DeletingStrategy, Item, ItemData, ResponseCollection} from '../types'
+import {DeletingStrategy, FlaggedResponse, Item, ItemData, ResponseCollection} from '../types'
 import _ from 'lodash'
 import ItemService from './item'
 import {gql} from '@apollo/client'
@@ -217,14 +217,14 @@ export default class MutationService {
         `
     }
 
-    async lock(item: Item, id: string): Promise<boolean> {
+    async lock(item: Item, id: string): Promise<FlaggedResponse> {
         const mutation = gql(this.buildLockMutation(item))
         const res = await apolloClient.mutate({mutation, variables: {id}})
         if (res.errors) {
             console.error(extractGraphQLErrorMessages(res.errors))
             throw new Error(i18n.t('An error occurred while executing the request'))
         }
-        return res.data[`lock${_.upperFirst(item.name)}`].success
+        return res.data[`lock${_.upperFirst(item.name)}`]
     }
 
     private buildLockMutation = (item: Item) => {
@@ -234,21 +234,21 @@ export default class MutationService {
                 lock${capitalizedItemName}(id: $id) {
                     success
                     data {
-                        id
+                        ${this.itemService.listNonCollectionAttributes(item).join('\n')}
                     }
                 }
             }
         `
     }
 
-    async unlock(item: Item, id: string): Promise<boolean> {
+    async unlock(item: Item, id: string): Promise<FlaggedResponse> {
         const mutation = gql(this.buildUnlockMutation(item))
         const res = await apolloClient.mutate({mutation, variables: {id}})
         if (res.errors) {
             console.error(extractGraphQLErrorMessages(res.errors))
             throw new Error(i18n.t('An error occurred while executing the request'))
         }
-        return res.data[`unlock${_.upperFirst(item.name)}`].success
+        return res.data[`unlock${_.upperFirst(item.name)}`]
     }
 
     private buildUnlockMutation = (item: Item) => {
@@ -258,7 +258,7 @@ export default class MutationService {
                 unlock${capitalizedItemName}(id: $id) {
                     success
                     data {
-                        id
+                        ${this.itemService.listNonCollectionAttributes(item).join('\n')}
                     }
                 }
             }

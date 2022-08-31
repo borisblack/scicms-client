@@ -3,14 +3,14 @@ import {FC, useMemo, useState} from 'react'
 
 import {AttrType, ItemData, Lifecycle, Permission, RelType} from '../../../types'
 import ItemService from '../../../services/item'
-import SearchDataGridWrapper from './SearchDataGridWrapper'
-import styles from './AttributeField.module.css'
+import SearchDataGridWrapper from '../SearchDataGridWrapper'
 import {useTranslation} from 'react-i18next'
 import {AttributeFieldProps} from '.'
 import {CloseCircleOutlined, FolderOpenOutlined} from '@ant-design/icons'
 import {DEFAULT_LIFECYCLE_ID} from '../../../services/lifecycle'
 import {DEFAULT_PERMISSION_ID} from '../../../services/permission'
 import {FiltersInput} from '../../../services/query'
+import styles from './AttributeField.module.css'
 
 const SUFFIX_BUTTON_WIDTH = 24
 const RELATION_MODAL_WIDTH = 800

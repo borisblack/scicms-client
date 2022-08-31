@@ -31,7 +31,7 @@ const StringAttributeField: FC<AttributeFieldProps> = ({item, attrName, attribut
         return attrName !== STATE_ATTR_NAME
     }
 
-    const rules: FormRule[] = [{required: attribute.required, message: t('Required field')}]
+    const rules: FormRule[] = [{required: attribute.required || (attrName === MAJOR_REV_ATTR_NAME && !!item.versioned && !!item.manualVersioning)}]
     switch (attribute.type) {
         case AttrType.uuid:
             rules.push({type: 'regexp', pattern: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/})

@@ -1,38 +1,13 @@
-import React, {MouseEvent, ReactNode, useEffect, useMemo, useRef, useState} from 'react'
-import {
-    Alert,
-    Button,
-    Col,
-    Dropdown,
-    Form,
-    Menu,
-    message,
-    Modal,
-    PageHeader,
-    Popconfirm,
-    Row,
-    Space,
-    Spin,
-    Tabs
-} from 'antd'
+import React, {useEffect, useMemo, useRef, useState} from 'react'
+import {Col, Form, message, Row, Spin, Tabs} from 'antd'
 
-import {Attribute, AttrType, Item, ItemData, RelType, UserInfo} from '../../types'
+import {Attribute, AttrType, Item, ItemData, Operation, RelType, UserInfo} from '../../types'
 import PermissionService from '../../services/permission'
-import * as icons from '@ant-design/icons'
-import {
-    DeleteOutlined,
-    DownOutlined,
-    ExclamationCircleOutlined,
-    LockOutlined,
-    SaveOutlined,
-    UnlockOutlined
-} from '@ant-design/icons'
 import {useTranslation} from 'react-i18next'
 import * as ACL from '../../util/acl'
-import {getLabel, IPage} from './pagesSlice'
+import {IPage} from './pagesSlice'
 import {hasPlugins, renderPlugins} from '../../plugins'
 import {hasComponents, renderComponents} from '../../custom-components'
-import styles from './Page.module.css'
 import ItemTemplateService from '../../services/item-template'
 import AttributeFieldWrapper from './AttributeFieldWrapper'
 import QueryService from '../../services/query'
@@ -41,6 +16,7 @@ import {filterValues, parseValues} from '../../util/form'
 import {usePrevious} from '../../util/hooks'
 import MutationService from '../../services/mutation'
 import appConfig from '../../config'
+import ViewPageHeader from './ViewPageHeader'
 
 interface Props {
     me: UserInfo
@@ -50,20 +26,12 @@ interface Props {
     onDelete: () => void
 }
 
-enum Operation {
-    CREATE = 'CREATE',
-    CREATE_VERSION = 'CREATE_VERSION',
-    CREATE_LOCALIZATION = 'CREATE_LOCALIZATION',
-    UPDATE = 'UPDATE',
-    VIEW = 'VIEW'
-}
-
+const ITEM_ITEM_NAME = 'item'
 const MAJOR_REV_ATTR_NAME = 'majorRev'
 const MINOR_REV_ATTR_NAME = 'minorRev'
 const LOCALE_ATTR_NAME = 'locale'
 
 const TabPane = Tabs.TabPane
-const {confirm} = Modal
 
 function ViewPage({me, page, onItemView, onUpdate, onDelete}: Props) {
     const {item, data} = page
@@ -89,15 +57,13 @@ function ViewPage({me, page, onItemView, onUpdate, onDelete}: Props) {
     const isNew = !data
     const dataPermissionId = data?.permission.data?.id
     const dataPermission = dataPermissionId ? permissionService.findById(dataPermissionId) : null
-    const canEdit = !!dataPermission && ACL.canWrite(me, dataPermission)
+    const canEdit = !!dataPermission && (item.name !== ITEM_ITEM_NAME || !data?.core) && !!data?.current && ACL.canWrite(me, dataPermission)
     const canDelete = !!dataPermission && ACL.canDelete(me, dataPermission)
 
     useEffect(() => {
-        if (prevId !== data?.id) {
-            console.log('Reset fields')
-            form.resetFields()
-        }
-    }, [form, prevId, data?.id])
+        console.log('Reset fields')
+        form.resetFields()
+    }, [form, data])
 
     useEffect(() => {
         const headerNode = headerRef.current
@@ -118,48 +84,6 @@ function ViewPage({me, page, onItemView, onUpdate, onDelete}: Props) {
             renderPlugins(`${item.name}.view.footer`, footerNode, {me, item, data})
         }
     }, [me, item, data])
-
-    async function handleLock(evt: MouseEvent) {
-        if (!data)
-            throw new Error('Illegal state. Data is undefined')
-
-        setLoading(true)
-        try {
-            const locked = await mutationService.lock(item, data.id)
-            if (!locked)
-                message.warning(t('Cannot lock item'))
-
-            setLockedByMe(locked)
-        } catch (e: any) {
-            message.error(e.message)
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    async function handleCancel(evt: MouseEvent) {
-        if (!data)
-            throw new Error('Illegal state. Data is undefined')
-
-        setLoading(true)
-        try {
-            const unlocked = await mutationService.unlock(item, data.id)
-            if (unlocked)
-                form.resetFields()
-            else
-                message.warning(t('Cannot unlock item'))
-
-            setLockedByMe(!unlocked)
-        } catch (e: any) {
-            message.error(e.message)
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    function handleSave(evt: MouseEvent) {
-       form.submit()
-    }
 
     async function handleFormFinish(values: any) {
         const parsedValues = await parseValues(item, data, values)
@@ -267,153 +191,6 @@ function ViewPage({me, page, onItemView, onUpdate, onDelete}: Props) {
         }
     }
 
-    async function handleDelete() {
-        if (!canDelete)
-            throw new Error('Cannot delete this item')
-
-        if (!data)
-            throw new Error('Illegal state. Data is undefined')
-
-        setLoading(true)
-        try {
-            const deleted = await mutationService.delete(item, data.id, appConfig.mutation.defaultDeletingStrategy)
-            await onUpdate(deleted)
-            await setLockedByMe(false)
-            onDelete()
-        } catch (e: any) {
-            message.error(e.message)
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    async function handlePurge() {
-        if (!canDelete)
-            throw new Error('Cannot purge this item')
-
-        if (!data)
-            throw new Error('Illegal state. Data is undefined')
-
-        setLoading(true)
-        try {
-            const purged = await mutationService.purge(item, data.id, appConfig.mutation.defaultDeletingStrategy)
-            const deleted = purged.data.find(it => it.id === data.id) as ItemData
-            await onUpdate(deleted)
-            await setLockedByMe(false)
-            onDelete()
-        } catch (e: any) {
-            message.error(e.message)
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    async function promote(state: string) {
-        if (!canEdit)
-            throw new Error('Cannot promote this item')
-
-        if (!data)
-            throw new Error('Illegal state. Data is undefined')
-
-        setLoading(true)
-        try {
-            const promoted = await mutationService.promote(item, data.id, state)
-            await onUpdate(promoted)
-            setLockedByMe(false)
-        } catch (e: any) {
-            message.error(e.message)
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    const showDeleteConfirm = () => {
-        confirm({
-            title: `${t('Delete Current Version')}?`,
-            icon: <ExclamationCircleOutlined />,
-            onOk: handleDelete
-        })
-    }
-
-    const showPurgeConfirm = () => {
-        confirm({
-            title: `${t('Delete All Versions')}?`,
-            icon: <ExclamationCircleOutlined />,
-            onOk: handlePurge
-        })
-    }
-
-    function renderPageHeader(): ReactNode {
-        const Icon = item.icon ? (icons as any)[item.icon] : null
-        const extra: ReactNode[] = []
-        if (isNew) {
-            if (canCreate) {
-                extra.push(<Button key="save" type="primary" onClick={handleSave}><SaveOutlined/> {t('Save')}</Button>)
-            }
-        } else {
-            if (canEdit) {
-                if (isLockedByMe) {
-                    extra.push(<Button key="save" type="primary" onClick={handleSave}><SaveOutlined/> {t('Save')}</Button>)
-                    extra.push(<Button key="cancel" icon={<LockOutlined/>} onClick={handleCancel}>{t('Cancel')}</Button>)
-                } else {
-                    extra.push(<Button key="lock" type="primary" icon={<UnlockOutlined/>} onClick={handleLock}>{t('Edit')}</Button>)
-                }
-            }
-            if (canDelete) {
-                if (item.versioned) {
-                    extra.push(
-                        <Dropdown
-                            key="purge"
-                            placement="bottomRight"
-                            overlay={
-                                <Menu
-                                    items={[{
-                                        key: 'delete',
-                                        label: t('Current Version'),
-                                        onClick: showDeleteConfirm
-                                    }, {
-                                        key: 'purge',
-                                        label: t('All Versions'),
-                                        onClick: showPurgeConfirm
-                                    }]}
-                                />
-                            }
-                        >
-                            <Button type="primary" danger>
-                                <Space>
-                                    {t('Delete')}
-                                    <DownOutlined />
-                                </Space>
-                            </Button>
-                        </Dropdown>
-                    )
-                } else {
-                    extra.push(
-                        <Popconfirm
-                            key="delete"
-                            placement="bottomRight"
-                            title={`${t('Delete Item')}?`}
-                            onConfirm={handleDelete}
-                        >
-                            <Button type="primary" danger icon={<DeleteOutlined/>}>{t('Delete')}</Button>
-                        </Popconfirm>
-                    )
-                }
-            }
-        }
-
-        return (
-            <>
-                {operation === Operation.CREATE_VERSION && <Alert type="warning" message={t('A new version will be created')}/>}
-                <PageHeader
-                    className={styles.pageHeader}
-                    title={<span>{Icon ? <Icon/> : null}&nbsp;&nbsp;{getLabel(page)}</span>}
-                    extra={extra}
-                />
-            </>
-        )
-    }
-
     const renderAttributes = (attributes: {[name: string]: Attribute}) => Object.keys(attributes)
         .filter(attrName => {
             const attr = attributes[attrName]
@@ -508,7 +285,23 @@ function ViewPage({me, page, onItemView, onUpdate, onDelete}: Props) {
             {hasComponents('view.header') && renderComponents('view.header', {me, item})}
             {hasComponents(`${item.name}.view.header`) && renderComponents(`${item.name}.view.header`, {me, item})}
             {hasPlugins('view.header', `${item.name}.view.header`) && <div ref={headerRef}/>}
-            {(!hasComponents('view.header', `${item.name}.view.header`) && !hasPlugins('view.header', `${item.name}.view.header`)) && renderPageHeader()}
+            {(!hasComponents('view.header', `${item.name}.view.header`) && !hasPlugins('view.header', `${item.name}.view.header`)) && (
+                <ViewPageHeader
+                    page={page}
+                    form={form}
+                    operation={operation}
+                    isNew={isNew}
+                    canCreate={canCreate}
+                    canEdit={canEdit}
+                    canDelete={canDelete}
+                    isLockedByMe={isLockedByMe}
+                    setLockedByMe={setLockedByMe}
+                    setLoading={setLoading}
+                    onItemView={onItemView}
+                    onUpdate={onUpdate}
+                    onDelete={onDelete}
+                />
+            )}
 
             {hasComponents('view.content') && renderComponents('view.content', {me, item})}
             {hasComponents(`${item.name}.view.content`) && renderComponents(`${item.name}.view.content`, {me, item})}

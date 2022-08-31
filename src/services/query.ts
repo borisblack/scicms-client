@@ -171,22 +171,21 @@ export default class QueryService {
 
     private itemService = ItemService.getInstance()
 
-    findById = (item: Item, id: string): Promise<Response> => {
+    findById = async (item: Item, id: string): Promise<Response> => {
         const query = gql(this.buildFindByIdQuery(item))
 
-        return apolloClient.query({query, variables: {id}})
-            .then(result => {
-                if (result.errors) {
-                    console.error(extractGraphQLErrorMessages(result.errors))
-                    throw new Error(i18n.t('An error occurred while executing the request'))
-                }
-                return result.data[item.name]
-            })
+        const res = await apolloClient.query({query, variables: {id}})
+        if (res.errors) {
+            console.error(extractGraphQLErrorMessages(res.errors))
+            throw new Error(i18n.t('An error occurred while executing the request'))
+        }
+
+        return res.data[item.name]
     }
 
     private buildFindByIdQuery = (item: Item) => `
-        query find${_.upperFirst(item.name)} ($id: ID!) {
-            ${item.name} (id: $id) {
+        query find${_.upperFirst(item.name)}($id: ID!) {
+            ${item.name}(id: $id) {
                 data {
                     ${this.itemService.listNonCollectionAttributes(item).join('\n')}
                 }
@@ -194,33 +193,48 @@ export default class QueryService {
         }
     `
 
-    findAll = (item: Item, {sorting, filters, pagination}: RequestParams, extraFiltersInput?: FiltersInput<unknown>): Promise<ResponseCollection<any>> => {
+    findAll = async (item: Item, {sorting, filters, pagination, majorRev, locale, state}: RequestParams, extraFiltersInput?: FiltersInput<unknown>): Promise<ResponseCollection<any>> => {
         const query = gql(this.buildFindAllQuery(item))
         const {page, pageSize} = pagination
+        const variables: any = {
+            sort: sorting.map(it => `${it.id}:${it.desc ? 'desc' : 'asc'}`),
+            filters: {...this.buildItemFiltersInput(item, filters), ...extraFiltersInput},
+            pagination: {page, pageSize},
+        }
+        if (item.versioned && majorRev)
+            variables.majorRev = majorRev
 
-        return apolloClient.query({
-            query,
-            variables: {
-                sort: sorting.map(it => `${it.id}:${it.desc ? 'desc' : 'asc'}`),
-                filters: {...this.buildItemFiltersInput(item, filters), ...extraFiltersInput},
-                pagination: {page, pageSize}
-            }
-        })
-            .then(result => {
-                if (result.errors) {
-                    console.error(extractGraphQLErrorMessages(result.errors))
-                    throw new Error(i18n.t('An error occurred while executing the request'))
-                }
-                return result.data[item.pluralName]
-            })
+        if (item.localized && locale)
+            variables.locale = locale
+
+        if (state)
+            variables.state = state
+
+        const res = await apolloClient.query({query, variables})
+        if (res.errors) {
+            console.error(extractGraphQLErrorMessages(res.errors))
+            throw new Error(i18n.t('An error occurred while executing the request'))
+        }
+
+        return res.data[item.pluralName]
     }
 
-    private buildFindAllQuery = (item: Item) => `
-        query findAll${_.upperFirst(item.pluralName)} ($sort: [String], $filters: ${_.upperFirst(item.name)}FiltersInput, $pagination: PaginationInput) {
-            ${item.pluralName} (
+    private buildFindAllQuery = (item: Item, state?: string) => `
+        query findAll${_.upperFirst(item.pluralName)}(
+            $sort: [String]
+            $filters: ${_.upperFirst(item.name)}FiltersInput
+            $pagination: PaginationInput
+            ${item.versioned ? '$majorRev: String' : ''}
+            ${item.localized ? '$locale: String' : ''}
+            ${state ? '$state: String' : ''}
+        ) {
+            ${item.pluralName}(
                 sort: $sort
                 filters: $filters
-                pagination: $pagination
+                pagination: $pagination,
+                ${item.versioned ? 'majorRev: $majorRev' : ''}
+                ${item.localized ? 'locale: $locale' : ''}
+                ${state ? 'state: $state' : ''}
             ) {
                 data {
                     ${this.itemService.listNonCollectionAttributes(item).join('\n')}

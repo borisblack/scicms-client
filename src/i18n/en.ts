@@ -42,6 +42,8 @@ const en = {
         'Open': 'Open',
         'Parts': 'Parts',
         'Password': 'Password',
+        'Promote': 'Promote',
+        'Promotion': 'Promotion',
         'Refresh': 'Refresh',
         'Remove': 'Remove',
         'Request error, data not changed by server': 'Request error, data not changed by server',
@@ -65,6 +67,7 @@ const en = {
         'Username': 'Username',
         'Users': 'Users',
         'Validation error occurred while creating an object': 'Validation error occurred while creating an object',
+        'Versions': 'Versions',
         'Welcome': 'Welcome',
         ...customEn
     }

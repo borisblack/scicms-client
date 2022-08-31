@@ -1,19 +1,23 @@
-import appConfig from '../../../config'
-import DataGrid, {RequestParams} from '../../../components/datagrid/DataGrid'
 import {useCallback, useMemo, useState} from 'react'
-import {findAll, getColumns, getHiddenColumns, getInitialData} from '../../../util/datagrid'
-import {Item, ItemData} from '../../../types'
 import {Row} from '@tanstack/react-table'
 import {message} from 'antd'
-import {FiltersInput} from '../../../services/query'
+
+import appConfig from '../../config'
+import DataGrid, {RequestParams} from '../../components/datagrid/DataGrid'
+import {findAll, getColumns, getHiddenColumns, getInitialData} from '../../util/datagrid'
+import {Item, ItemData} from '../../types'
+import {FiltersInput} from '../../services/query'
 
 interface Props {
     item: Item
     extraFiltersInput?: FiltersInput<unknown>
+    majorRev?: string
+    locale?: string
+    state?: string
     onSelect: (itemData: ItemData) => void
 }
 
-export default function SearchDataGridWrapper({item, extraFiltersInput, onSelect}: Props) {
+export default function SearchDataGridWrapper({item, extraFiltersInput, majorRev, locale, state, onSelect}: Props) {
     const [loading, setLoading] = useState<boolean>(false)
     const [data, setData] = useState(getInitialData())
 
@@ -21,9 +25,11 @@ export default function SearchDataGridWrapper({item, extraFiltersInput, onSelect
     const hiddenColumnsMemoized = useMemo(() => getHiddenColumns(item), [item])
 
     const handleRequest = useCallback(async (params: RequestParams) => {
+        const allParams: RequestParams = {...params, majorRev, locale, state}
+
         try {
             setLoading(true)
-            const dataWithPagination = await findAll(item, params, extraFiltersInput)
+            const dataWithPagination = await findAll(item, allParams, extraFiltersInput)
             setData(dataWithPagination)
         } catch (e: any) {
             message.error(e.message)

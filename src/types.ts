@@ -9,6 +9,7 @@ export interface DefaultItemTemplate {
     configId: string
     majorRev: string
     minorRev: string | null
+    current: boolean
     locale: string | null
     lifecycle: {data: Lifecycle | null}
     state: string | null
@@ -36,13 +37,21 @@ export interface Lifecycle extends DefaultItemTemplate {
 }
 
 interface LifecycleSpec {
-    states: {[name: string]: State}
+    states: StateMap
 }
 
-interface State {
+export interface StateMap {
+    [name: string]: State
+}
+
+export interface State {
     displayName: string
-    transitions: {[name: string]: Transition}
+    transitions: TransitionMap
     point: Point
+}
+
+export interface TransitionMap {
+    [name: string]: Transition
 }
 
 interface Transition {
@@ -267,4 +276,12 @@ interface Pagination {
     pageSize: number
     start?: number
     total: number
+}
+
+export enum Operation {
+    CREATE = 'CREATE',
+    CREATE_VERSION = 'CREATE_VERSION',
+    CREATE_LOCALIZATION = 'CREATE_LOCALIZATION',
+    UPDATE = 'UPDATE',
+    VIEW = 'VIEW'
 }

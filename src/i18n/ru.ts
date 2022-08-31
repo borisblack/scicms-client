@@ -42,6 +42,8 @@ const ru = {
         'Open': 'Открыть',
         'Parts': 'Составные части',
         'Password': 'Пароль',
+        'Promote': 'Переместить',
+        'Promotion': 'Перемещение',
         'Refresh': 'Обновить',
         'Remove': 'Удалить',
         'Request error, data not changed by server': 'Ошибка запроса, данные не изменены сервером',
@@ -65,6 +67,7 @@ const ru = {
         'Username': 'Имя пользователя',
         'Users': 'Пользователи',
         'Validation error occurred while creating an object': 'При создании объекта произошла ошибка валидации',
+        'Versions': 'Версии',
         'Welcome': 'Добро пожаловать',
         ...customRu
     }
