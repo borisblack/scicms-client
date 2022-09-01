@@ -2,9 +2,8 @@ import axios from 'axios'
 import {gql} from '@apollo/client'
 
 import i18n from '../i18n'
-import {apolloClient, extractGraphQLErrorMessages} from '.'
+import {apolloClient, extractAxiosErrorMessage, extractGraphQLErrorMessages} from '.'
 import {DeletingStrategy, Media, MediaInfo} from '../types'
-import appConfig from '../config'
 
 export interface UploadInput {
     file: File,
@@ -21,8 +20,8 @@ export interface MediaInput {
 }
 
 const UPLOAD_MUTATION = gql`
-    mutation upload($input: UploadInput!) {
-        upload(input: $input) {
+    mutation upload($file: Upload!) {
+        upload(file: $file) {
             id
             filename
             label
@@ -36,8 +35,8 @@ const UPLOAD_MUTATION = gql`
 `
 
 const UPLOAD_MULTIPLE_MUTATION = gql`
-    mutation uploadMultiple($input: [UploadInput!]!) {
-        uploadMultiple(input: $input) {
+    mutation uploadMultiple($files: [Upload!]!) {
+        uploadMultiple(files: $files) {
             id
             filename
             label
@@ -51,7 +50,7 @@ const UPLOAD_MULTIPLE_MUTATION = gql`
 `
 
 const UPDATE_MEDIA_MUTATION = gql`
-    mutation updateMedia($id: UUID!, $data: MediaInput!) {
+    mutation updateMedia($id: ID!, $data: MediaInput!) {
         updateMedia(
             id: $id
             data: $data
@@ -71,7 +70,7 @@ const UPDATE_MEDIA_MUTATION = gql`
 `
 
 const DELETE_MEDIA_MUTATION = gql`
-    mutation deleteMedia($id: UUID!, $deletingStrategy: DeletingStrategy!) {
+    mutation deleteMedia($id: ID!, $deletingStrategy: DeletingStrategy!) {
         deleteMedia(
             id: $id
             deletingStrategy: $deletingStrategy
@@ -102,13 +101,50 @@ export default class MediaService {
         return MediaService.instance
     }
 
-    async upload(input: UploadInput): Promise<MediaInfo> {
+    async uploadData(input: UploadInput): Promise<MediaInfo> {
+        const data = new FormData()
+        data.set('file', input.file)
+        if (input.label)
+            data.set('label', input.label)
+
+        if (input.description)
+            data.set('description', input.description)
+
+        if (input.permission)
+            data.set('permission', input.permission)
+
+        try {
+            const res = await axios.post('/api/media/upload', data)
+            return res.data
+        } catch (e: any) {
+            throw new Error(extractAxiosErrorMessage(e))
+        }
+    }
+
+    async uploadDataMultiple(input: UploadInput[]): Promise<MediaInfo> {
+        const data = new FormData()
+        input.forEach(it => {
+            data.append('files', it.file)
+            data.append('labels', it.label || '')
+            data.append('descriptions', it.description || '')
+            data.append('permission', it.permission || '')
+        })
+
+        try {
+            const res = await axios.post('/api/media/upload-multiple', data)
+            return res.data
+        } catch (e: any) {
+            throw new Error(extractAxiosErrorMessage(e))
+        }
+    }
+
+    async upload(file: File): Promise<MediaInfo> {
         const res = await apolloClient.mutate({
             mutation: UPLOAD_MUTATION,
             context: {
                 headers: {[APOLLO_REQUIRE_PREFLIGHT_HEADER]: true}
             },
-            variables: {input}
+            variables: {file}
         })
 
         if (res.errors) {
@@ -119,13 +155,13 @@ export default class MediaService {
         return res.data.upload
     }
 
-    async uploadMultiple(input: UploadInput[]): Promise<MediaInfo[]> {
+    async uploadMultiple(files: File[]): Promise<MediaInfo[]> {
         const res = await apolloClient.mutate({
             mutation: UPLOAD_MULTIPLE_MUTATION,
             context: {
                 headers: {[APOLLO_REQUIRE_PREFLIGHT_HEADER]: true}
             },
-            variables: {input}
+            variables: {files}
         })
 
         if (res.errors) {
@@ -171,5 +207,5 @@ export default class MediaService {
         URL.revokeObjectURL(url)
     }
 
-    getDownloadUrlById = (id: string): string => `${appConfig.coreUrl}/api/media/${id}/download`
+    getDownloadUrlById = (id: string): string => `/api/media/${id}/download`
 }

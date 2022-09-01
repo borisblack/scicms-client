@@ -2,7 +2,7 @@ import customRu from './custom/ru'
 
 const ru = {
     translation: {
-        'A new version will be created': '',
+        'A new version will be created': 'Будет создана новая версия',
         'Access is denied': 'Доступ запрещен',
         'Add': 'Добавить',
         'Administration': 'Администрирование',
@@ -25,6 +25,7 @@ const ru = {
         'Edit': 'Изменить',
         'Enter username': 'Введите имя пользователя',
         'Enter password': 'Введите пароль',
+        'Field %s is required': 'Поле %s обязательно',
         'Gateway error': 'Ошибка шлюза',
         'Groups': 'Группы',
         'Help': 'Справка',

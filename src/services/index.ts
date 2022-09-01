@@ -34,16 +34,19 @@ axios.interceptors.request.use((config: AxiosRequestConfig) => {
     return config
 })
 
-export const throwAxiosResponseError = (e: AxiosError) => {
-    let msg: string
+export function extractAxiosErrorMessage(e: AxiosError): string {
     const res = e.response
     if (res) {
         if (res.status === 401 && getJwt())
-            msg = 'User session expired'
-        else msg = codeMessage[res.status] || e.message
-    } else msg = e.message
+            return 'User session expired'
+        else
+            return codeMessage[res.status] || e.message
+    } else
+        return e.message
+}
 
-    throw new Error(msg)
+export const throwAxiosResponseError = (e: AxiosError) => {
+    throw new Error(extractAxiosErrorMessage(e))
 }
 
 // Setup ApolloClient

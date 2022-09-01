@@ -8,7 +8,6 @@ const mediaService = MediaService.getInstance()
 const locationService = LocationService.getInstance()
 
 interface FilteredItemData {
-    id?: string
     majorRev?: string
     locale?: string | null
     state?: string | null
@@ -48,23 +47,27 @@ async function parseValue(attrName: string, attribute: Attribute, data: ItemData
                 }
             } else {
                 const fileList = value as File[]
-                const mediaInfo = await mediaService.upload({file: fileList[0], permission: itemPermissionId})
-                return mediaInfo.id
+                if (fileList.length > 0) {
+                    const mediaInfo = await mediaService.uploadData({file: fileList[0], permission: itemPermissionId})
+                    return mediaInfo.id
+                }
             }
             return mediaId
         case AttrType.location:
-            const locationId = values[attrName]
-            const latitude = values[`${attrName}.latitude`]
-            const longitude = values[`${attrName}.longitude`]
-            const label = values[`${attrName}.label`]
-            if (locationId) {
-                const prevLocation = data ? data[attrName].data as Location : null
-                if (prevLocation) {
-                    if (prevLocation.latitude !== latitude || prevLocation.longitude !== longitude || prevLocation.label !== label || itemPermissionId !== prevItemPermissionId) {
-                        await locationService.update(locationId, {latitude, longitude, label, permission: itemPermissionId})
+            const locationData = data ? data[attrName].data as Location : null
+            const {latitude, longitude, label} = value
+            if (locationData) {
+                const isDeleted = !latitude && !longitude && !label
+                if (isDeleted) {
+                    await locationService.delete(locationData.id)
+                    return null
+                } else {
+                    const isChanged = latitude !== locationData.latitude || longitude !== locationData.longitude || label !== locationData.label || itemPermissionId !== prevItemPermissionId
+                    if (isChanged) {
+                        await locationService.update(locationData.id, {latitude, longitude, label, permission: itemPermissionId})
                     }
+                    return locationData.id
                 }
-                return locationId
             } else {
                 const input: LocationInput = {latitude, longitude, label, permission: itemPermissionId}
                 const location = await locationService.create(input)
@@ -78,7 +81,6 @@ async function parseValue(attrName: string, attribute: Attribute, data: ItemData
 }
 
 export function filterValues(values: FilteredItemData) {
-    delete values.id
     delete values.majorRev
     delete values.locale
     delete values.state

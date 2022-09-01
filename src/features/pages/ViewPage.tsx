@@ -84,10 +84,17 @@ function ViewPage({me, page, onItemView, onUpdate, onDelete}: Props) {
     }, [me, item, data])
 
     async function handleFormFinish(values: any) {
-        const parsedValues = await parseValues(item, data, values)
         console.log(`Values: ${JSON.stringify(values)}`)
-        filterValues(parsedValues)
-        console.log(`Parsed values: ${JSON.stringify(parsedValues)}`)
+        let parsedValues
+        try {
+            parsedValues = await parseValues(item, data, values)
+            filterValues(parsedValues)
+            console.log(`Parsed values: ${JSON.stringify(parsedValues)}`)
+        } catch (e: any) {
+            message.error(e)
+            throw e
+        }
+
         console.log(operation)
         switch (operation) {
             case Operation.CREATE:
@@ -311,7 +318,7 @@ function ViewPage({me, page, onItemView, onUpdate, onDelete}: Props) {
                     form={form}
                     size="small"
                     layout="vertical"
-                    disabled={(!canEdit || !isLockedByMe) && (!canCreate || !isNew)}
+                    disabled={(!canEdit || !isLockedByMe || operation === Operation.VIEW) && (!canCreate || !isNew)}
                     onFinish={handleFormFinish}
                 >
                     <Row gutter={16}>

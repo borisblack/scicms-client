@@ -23,10 +23,7 @@ const MediaAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, att
     const mediaService = useMemo(() => MediaService.getInstance(), [])
 
     const normFile = (e: any) => {
-        if (Array.isArray(e))
-            return e
-
-        return e?.fileList
+        return e.fileList.length === 0 ? [] : [e.file]
     }
 
     function getInitialUploadFileList(): UploadFile[] {
@@ -41,7 +38,7 @@ const MediaAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, att
         }]
     }
 
-    function beforeUpload(file: RcFile) {
+    function beforeUpload(file: RcFile, fileList: RcFile[]) {
         setFileList([file])
         return false
     }
@@ -62,8 +59,8 @@ const MediaAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, att
     async function handleRemove(file: UploadFile) {
         file.status = 'uploading'
         setFileList([file])
-        setLoading(true)
         if (mediaRef.current) {
+            setLoading(true)
             try {
                 await mediaService.deleteById(mediaRef.current.id)
                 mediaRef.current = null
@@ -92,7 +89,8 @@ const MediaAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, att
                 label={attribute.displayName}
                 valuePropName="fileList"
                 getValueFromEvent={normFile}
-                required={attribute.required}
+                required={attribute.required && !attribute.readOnly}
+                initialValue={[]}
                 dependencies={[`${attrName}.id`]}
                 rules={[
                     ({ getFieldValue }) => ({

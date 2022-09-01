@@ -7,7 +7,7 @@ import {apolloClient, extractGraphQLErrorMessages} from './index'
 export const DEFAULT_LIFECYCLE_ID = 'ad051120-65cf-440a-8fc3-7a24ac8301d3'
 
 const FIND_BY_ID_QUERY = gql`
-    query findLifecycle($id: UUID!) {
+    query findLifecycle($id: ID!) {
         lifecycle(id: $id) {
             data {
                 id

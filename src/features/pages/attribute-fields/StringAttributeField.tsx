@@ -25,8 +25,14 @@ const StringAttributeField: FC<AttributeFieldProps> = ({item, attrName, attribut
         if (attribute.type === AttrType.sequence)
             return false
 
-        if (attrName === MAJOR_REV_ATTR_NAME && !item.versioned && !item.manualVersioning)
-            return false
+        if (attrName === MAJOR_REV_ATTR_NAME) {
+            if (item.versioned) {
+                if (!item.manualVersioning)
+                    return false
+            } else {
+                return false
+            }
+        }
 
         return attrName !== STATE_ATTR_NAME
     }

@@ -192,6 +192,9 @@ export default function ViewPageHeader({page, form, isNew, canCreate, canEdit, c
             return {} as FiltersInput<unknown>
 
         return {
+            id: {
+                ne: data.id
+            },
             configId: {
                 eq: data.configId
             }
@@ -257,6 +260,11 @@ export default function ViewPageHeader({page, form, isNew, canCreate, canEdit, c
         return extra
     }
 
+    function handleVersionSelect(selectedItemData: ItemData) {
+        onItemView(item, selectedItemData.id)
+        setVersionsModalVisible(false)
+    }
+
     return (
         <>
             {operation === Operation.CREATE_VERSION && <Alert type="warning" message={t('A new version will be created')}/>}
@@ -277,7 +285,7 @@ export default function ViewPageHeader({page, form, isNew, canCreate, canEdit, c
                     item={item}
                     extraFiltersInput={getVersionsExtraFiltersInput()}
                     majorRev="all"
-                    onSelect={itemData => onItemView(item, itemData.id)}
+                    onSelect={handleVersionSelect}
                 />
             </Modal>
             {data?.lifecycle.data && (

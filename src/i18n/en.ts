@@ -2,7 +2,7 @@ import customEn from './custom/en'
 
 const en = {
     translation: {
-        'A new version will be created': 'Будет создана новая версия',
+        'A new version will be created': 'A new version will be created',
         'Access is denied': 'Access is denied',
         'Add': 'Add',
         'Administration': 'Administration',
@@ -25,6 +25,7 @@ const en = {
         'Edit': 'Edit',
         'Enter username': 'Enter username',
         'Enter password': 'Enter password',
+        'Field %s is required': 'Field %s is required',
         'Gateway error': 'Gateway error',
         'Groups': 'Groups',
         'Help': 'Help',

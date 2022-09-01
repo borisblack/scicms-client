@@ -36,7 +36,7 @@ export default function SearchDataGridWrapper({item, extraFiltersInput, majorRev
         } finally {
             setLoading(false)
         }
-    }, [item, extraFiltersInput])
+    }, [item, majorRev, locale, state, extraFiltersInput])
 
     const handleRowDoubleClick = (row: Row<ItemData>) => onSelect(row.original)
 

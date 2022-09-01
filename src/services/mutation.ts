@@ -80,7 +80,7 @@ export default class MutationService {
     private buildCreateVersionMutation = (item: Item) => {
         const capitalizedItemName = _.upperFirst(item.name)
         return `
-            mutation create${capitalizedItemName}Version($id: UUID!, $data: ${capitalizedItemName}Input!, $majorRev: String, $locale: String, $copyCollectionRelations: Boolean) {
+            mutation create${capitalizedItemName}Version($id: ID!, $data: ${capitalizedItemName}Input!, $majorRev: String, $locale: String, $copyCollectionRelations: Boolean) {
                 create${capitalizedItemName}Version(
                     id: $id
                     data: $data
@@ -115,7 +115,7 @@ export default class MutationService {
     private buildCreateLocalizationMutation = (item: Item) => {
         const capitalizedItemName = _.upperFirst(item.name)
         return `
-            mutation create${capitalizedItemName}Localization($id: UUID!, $data: ${capitalizedItemName}Input!, $locale: String!, $copyCollectionRelations: Boolean) {
+            mutation create${capitalizedItemName}Localization($id: ID!, $data: ${capitalizedItemName}Input!, $locale: String!, $copyCollectionRelations: Boolean) {
                 create${capitalizedItemName}Localization(
                     id: $id
                     data: $data
@@ -143,7 +143,7 @@ export default class MutationService {
     private buildUpdateMutation = (item: Item) => {
         const capitalizedItemName = _.upperFirst(item.name)
         return `
-            mutation update${capitalizedItemName}($id: UUID!, $data: ${capitalizedItemName}Input!) {
+            mutation update${capitalizedItemName}($id: ID!, $data: ${capitalizedItemName}Input!) {
                 update${capitalizedItemName}(
                     id: $id
                     data: $data
@@ -169,7 +169,7 @@ export default class MutationService {
     private buildDeleteMutation = (item: Item) => {
         const capitalizedItemName = _.upperFirst(item.name)
         return `
-            mutation delete${capitalizedItemName}($id: UUID!, $deletingStrategy: DeletingStrategy!) {
+            mutation delete${capitalizedItemName}($id: ID!, $deletingStrategy: DeletingStrategy!) {
                 delete${capitalizedItemName}(
                     id: $id
                     deletingStrategy: $deletingStrategy
@@ -196,7 +196,7 @@ export default class MutationService {
     private buildPurgeMutation = (item: Item) => {
         const capitalizedItemName = _.upperFirst(item.name)
         return `
-            mutation purge${capitalizedItemName} ($id: UUID!, $deletingStrategy: DeletingStrategy!) {
+            mutation purge${capitalizedItemName} ($id: ID!, $deletingStrategy: DeletingStrategy!) {
                 purge${capitalizedItemName} (
                     id: $id
                     deletingStrategy: $deletingStrategy
@@ -230,7 +230,7 @@ export default class MutationService {
     private buildLockMutation = (item: Item) => {
         const capitalizedItemName = _.upperFirst(item.name)
         return `
-            mutation lock${capitalizedItemName}($id: UUID!) {
+            mutation lock${capitalizedItemName}($id: ID!) {
                 lock${capitalizedItemName}(id: $id) {
                     success
                     data {
@@ -254,7 +254,7 @@ export default class MutationService {
     private buildUnlockMutation = (item: Item) => {
         const capitalizedItemName = _.upperFirst(item.name)
         return `
-            mutation unlock${capitalizedItemName}($id: UUID!) {
+            mutation unlock${capitalizedItemName}($id: ID!) {
                 unlock${capitalizedItemName}(id: $id) {
                     success
                     data {
@@ -278,7 +278,7 @@ export default class MutationService {
     private buildPromoteMutation = (item: Item) => {
         const capitalizedItemName = _.upperFirst(item.name)
         return `
-            mutation promote${capitalizedItemName}($id: UUID!, $state: String!) {
+            mutation promote${capitalizedItemName}($id: ID!, $state: String!) {
                 promote${capitalizedItemName}(
                     id: $id
                     state: $state
