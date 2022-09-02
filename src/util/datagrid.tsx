@@ -5,8 +5,8 @@ import {DateTime} from 'luxon'
 import {Attribute, AttrType, Item, Location, Media, RelType} from '../types'
 import appConfig from '../config'
 import ItemService from '../services/item'
-import {DataWithPagination, RequestParams} from '../components/datagrid/DataGrid'
-import QueryService, {FiltersInput} from '../services/query'
+import {DataWithPagination} from '../components/datagrid/DataGrid'
+import QueryService, {ExtRequestParams, FiltersInput} from '../services/query'
 import MediaService from '../services/media'
 
 const columnHelper = createColumnHelper<any>()
@@ -82,8 +82,8 @@ const renderCell = (attribute: Attribute, value: any): ReactElement | string | n
                 return null
 
             return (
-                <Button type="link" onClick={() => mediaService.download(mediaData.id, mediaData.filename)}>
-                    {media.titleAttribute}
+                <Button type="link" size="small" style={{margin: 0, padding: 0}} onClick={() => mediaService.download(mediaData.id, mediaData.filename)}>
+                    {(mediaData as any)[media.titleAttribute]}
                 </Button>
             )
         case AttrType.location:
@@ -118,7 +118,7 @@ export function getHiddenColumns(item: Item): string[] {
     return hiddenColumns
 }
 
-export async function findAll(item: Item, params: RequestParams, extraFiltersInput?: FiltersInput<unknown>): Promise<DataWithPagination<any>> {
+export async function findAll(item: Item, params: ExtRequestParams, extraFiltersInput?: FiltersInput<unknown>): Promise<DataWithPagination<any>> {
     const responseCollection = await queryService.findAll(item, params, extraFiltersInput)
     const {page, pageSize, total} = responseCollection.meta.pagination
     return {

@@ -7,6 +7,7 @@ import {AttributeFieldProps} from '.'
 import appConfig from '../../../config'
 import {AttrType} from '../../../types'
 import styles from './AttributeField.module.css'
+import {MOMENT_TIME_FORMAT_STRING} from '../../../config/constants'
 
 const FormItem = Form.Item
 
@@ -22,7 +23,7 @@ const TimeAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, value
             className={styles.formItem}
             name={attrName}
             label={attribute.displayName}
-            initialValue={value ? moment(value) : null}
+            initialValue={value ? moment(value.replace('Z', ''), MOMENT_TIME_FORMAT_STRING) : null}
             rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
         >
             <TimePicker format={appConfig.dateTime.momentTimeFormatString} disabled={isDisabled}/>

@@ -21,12 +21,19 @@ export default class MutationService {
 
     private itemService = ItemService.getInstance()
 
-    async create(item: Item, data: ItemInput, locale?: string): Promise<ItemData> {
+    async create(item: Item, data: ItemInput, majorRev?: string | null, locale?: string | null): Promise<ItemData> {
+        if (item.manualVersioning && !majorRev)
+            throw new Error('The majorRev attribute must be specified for manual versioning item')
+
+        if (!item.manualVersioning && majorRev)
+            throw new Error('The majorRev attribute must be specified for manual versioning item only')
+
         if (!item.localized && locale)
             throw new Error('The locale attribute can be specified for localized item only.')
 
-        const mutation = gql(this.buildCreateMutation(item))
+        const mutation = gql(this.buildCreateMutation(item, locale))
         const variables: any = {data}
+        if (majorRev) variables.majorRev = majorRev
         if (locale) variables.locale = locale
 
         const res = await apolloClient.mutate({mutation, variables})
@@ -37,11 +44,19 @@ export default class MutationService {
         return res.data[`create${_.upperFirst(item.name)}`].data
     }
 
-    private buildCreateMutation = (item: Item) => {
+    private buildCreateMutation = (item: Item, locale?: string | null) => {
         const capitalizedItemName = _.upperFirst(item.name)
         return `
-            mutation create${capitalizedItemName}($data: ${capitalizedItemName}Input!) {
-                create${capitalizedItemName}(data: $data) {
+            mutation create${capitalizedItemName}(
+                $data: ${capitalizedItemName}Input!
+                ${item.manualVersioning ? '$majorRev: String' : ''}
+                ${locale ? '$locale: String' : ''}
+            ) {
+                create${capitalizedItemName}(
+                    data: $data
+                    ${item.manualVersioning ? 'majorRev: $majorRev' : ''}
+                    ${locale ? 'locale: $locale' : ''}
+                ) {
                     data {
                         ${this.itemService.listNonCollectionAttributes(item).join('\n')}
                     }
@@ -50,24 +65,24 @@ export default class MutationService {
         `
     }
 
-    async createVersion(item: Item, id: string, data: ItemInput, majorRev?: string, locale?: string | null, copyCollectionRelations?: boolean): Promise<ItemData> {
+    async createVersion(item: Item, id: string, data: ItemInput, majorRev?: string | null, locale?: string | null, copyCollectionRelations?: boolean): Promise<ItemData> {
         if (!item.versioned)
             throw new Error('Item is not versioned')
 
         if (item.manualVersioning && !majorRev)
-            throw new Error('The majorRev attribute must be specified for manual versioning item.')
+            throw new Error('The majorRev attribute must be specified for manual versioning item')
 
         if (!item.manualVersioning && majorRev)
-            throw new Error('The majorRev attribute must be specified for manual versioning item only.')
+            throw new Error('The majorRev attribute must be specified for manual versioning item only')
 
         if (!item.localized && locale)
-            throw new Error('The locale attribute can be specified for localized item only.')
+            throw new Error('The locale attribute can be specified for localized item only')
 
-        const mutation = gql(this.buildCreateVersionMutation(item))
+        const mutation = gql(this.buildCreateVersionMutation(item, locale, copyCollectionRelations))
         const variables: any = {id, data}
         if (majorRev) variables.majorRev = majorRev
         if (locale) variables.locale = locale
-        if (copyCollectionRelations) variables.copyCollectionRelations = copyCollectionRelations
+        if (copyCollectionRelations != null) variables.copyCollectionRelations = copyCollectionRelations
 
         const res = await apolloClient.mutate({mutation, variables})
         if (res.errors) {
@@ -77,16 +92,22 @@ export default class MutationService {
         return res.data[`create${_.upperFirst(item.name)}Version`].data
     }
 
-    private buildCreateVersionMutation = (item: Item) => {
+    private buildCreateVersionMutation = (item: Item, locale?: string | null, copyCollectionRelations?: boolean) => {
         const capitalizedItemName = _.upperFirst(item.name)
         return `
-            mutation create${capitalizedItemName}Version($id: ID!, $data: ${capitalizedItemName}Input!, $majorRev: String, $locale: String, $copyCollectionRelations: Boolean) {
+            mutation create${capitalizedItemName}Version(
+                $id: ID!
+                $data: ${capitalizedItemName}Input!
+                ${item.manualVersioning ? '$majorRev: String' : ''}
+                ${locale ? '$locale: String' : ''}
+                ${copyCollectionRelations == null ? '' : '$copyCollectionRelations: Boolean'}
+            ) {
                 create${capitalizedItemName}Version(
                     id: $id
                     data: $data
-                    majorRev: $majorRev
-                    locale: $locale
-                    copyCollectionRelations: $copyCollectionRelations
+                    ${item.manualVersioning ? 'majorRev: $majorRev' : ''}
+                    ${locale ? 'locale: $locale' : ''}
+                    ${copyCollectionRelations == null ? '' : 'copyCollectionRelations: $copyCollectionRelations'}
                 ) {
                     data {
                         ${this.itemService.listNonCollectionAttributes(item).join('\n')}
@@ -100,7 +121,7 @@ export default class MutationService {
         if (!item.localized)
             throw new Error('Item is not localized')
 
-        const mutation = gql(this.buildCreateLocalizationMutation(item))
+        const mutation = gql(this.buildCreateLocalizationMutation(item, copyCollectionRelations))
         const variables: any = {id, data, locale}
         if (copyCollectionRelations) variables.copyCollectionRelations = copyCollectionRelations
 
@@ -112,15 +133,19 @@ export default class MutationService {
         return res.data[`create${_.upperFirst(item.name)}Localization`].data
     }
 
-    private buildCreateLocalizationMutation = (item: Item) => {
+    private buildCreateLocalizationMutation = (item: Item, copyCollectionRelations?: boolean) => {
         const capitalizedItemName = _.upperFirst(item.name)
         return `
-            mutation create${capitalizedItemName}Localization($id: ID!, $data: ${capitalizedItemName}Input!, $locale: String!, $copyCollectionRelations: Boolean) {
+            mutation create${capitalizedItemName}Localization(
+                $id: ID!, $data: ${capitalizedItemName}Input!
+                $locale: String!
+                ${copyCollectionRelations == null ? '' : '$copyCollectionRelations: Boolean'}
+            ) {
                 create${capitalizedItemName}Localization(
                     id: $id
                     data: $data
                     locale: $locale
-                    copyCollectionRelations: $copyCollectionRelations
+                    ${copyCollectionRelations == null ? '' : 'copyCollectionRelations: $copyCollectionRelations'}
                 ) {
                     data {
                         ${this.itemService.listNonCollectionAttributes(item).join('\n')}

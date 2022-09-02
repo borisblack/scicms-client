@@ -21,6 +21,7 @@ import SearchDataGridWrapper from './SearchDataGridWrapper'
 import styles from './Page.module.css'
 import {FiltersInput} from '../../services/query'
 import Promote from './Promote'
+import {LOCALE_ATTR_NAME, MAJOR_REV_ATTR_NAME, MINOR_REV_ATTR_NAME} from '../../config/constants'
 
 interface Props {
     page: IPage
@@ -210,7 +211,7 @@ export default function ViewPageHeader({page, form, isNew, canCreate, canEdit, c
             }
         } else {
             if (canEdit) {
-                if (isLockedByMe && operation !== Operation.VIEW) {
+                if (isLockedByMe /*&& operation !== Operation.VIEW*/) {
                     extra.push(<Button key="save" type="primary" onClick={handleSave}><SaveOutlined/> {t('Save')}</Button>)
                     extra.push(<Button key="cancel" icon={<LockOutlined/>} onClick={handleCancel}>{t('Cancel')}</Button>)
                 } else {
@@ -267,7 +268,7 @@ export default function ViewPageHeader({page, form, isNew, canCreate, canEdit, c
 
     return (
         <>
-            {operation === Operation.CREATE_VERSION && <Alert type="warning" message={t('A new version will be created')}/>}
+            {operation === Operation.CREATE_VERSION && <Alert type="warning" closable message={t('A new version will be created')}/>}
             <PageHeader
                 className={styles.pageHeader}
                 title={<span>{Icon ? <Icon/> : null}&nbsp;&nbsp;{getLabel(page)}</span>}
@@ -283,8 +284,10 @@ export default function ViewPageHeader({page, form, isNew, canCreate, canEdit, c
             >
                 <SearchDataGridWrapper
                     item={item}
+                    notHiddenColumns={[MAJOR_REV_ATTR_NAME, MINOR_REV_ATTR_NAME, LOCALE_ATTR_NAME]}
                     extraFiltersInput={getVersionsExtraFiltersInput()}
                     majorRev="all"
+                    locale={data?.locale}
                     onSelect={handleVersionSelect}
                 />
             </Modal>

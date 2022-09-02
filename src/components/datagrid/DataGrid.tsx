@@ -1,7 +1,7 @@
 import _ from 'lodash'
-import {MouseEvent, ReactElement, useCallback, useEffect, useMemo, useState} from 'react'
+import {MouseEvent, ReactElement, ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
 import {ColumnFiltersState, flexRender, getCoreRowModel, Row, SortingState, useReactTable} from '@tanstack/react-table'
-import {Dropdown, Pagination, Spin} from 'antd'
+import {Col, Dropdown, Pagination, Row as AntdRow, Spin} from 'antd'
 import {CaretDownFilled, CaretUpFilled} from '@ant-design/icons'
 
 import styles from './DataGrid.module.css'
@@ -19,6 +19,8 @@ interface Props {
         hiddenColumns: string[]
         pageSize: number
     }
+    version?: number
+    toolbar?: ReactNode
     getRowContextMenu?: (row: any) => ReactElement
     onRequest: (params: RequestParams) => void
     onRowDoubleClick: (row: Row<any>) => void
@@ -41,9 +43,6 @@ export interface RequestParams {
     sorting: SortingState,
     filters: ColumnFiltersState
     pagination: RequestPagination
-    majorRev?: string
-    locale?: string
-    state?: string
 }
 
 interface RequestPagination {
@@ -51,7 +50,7 @@ interface RequestPagination {
     pageSize: number
 }
 
-function DataGrid({loading, columns, data, initialState, getRowContextMenu, onRequest, onRowDoubleClick}: Props) {
+function DataGrid({loading, columns, data, initialState, version = 0, toolbar = null, getRowContextMenu, onRequest, onRowDoubleClick}: Props) {
     const initialColumnVisibilityMemoized = useMemo((): ColumnVisibility => {
         const initialColumnVisibility: ColumnVisibility = {}
         initialState.hiddenColumns.forEach(it => {
@@ -97,7 +96,7 @@ function DataGrid({loading, columns, data, initialState, getRowContextMenu, onRe
     useEffect(() => {
         const {page, pageSize} = data.pagination
         refresh({page, pageSize})
-    }, [sorting])
+    }, [version, sorting])
 
     useEffect(() => setRowSelection({}), [data])
 
@@ -147,13 +146,20 @@ function DataGrid({loading, columns, data, initialState, getRowContextMenu, onRe
 
     return (
         <Spin spinning={loading}>
-            <Toolbar
-                table={table}
-                onRefresh={() => {
-                    const {page, pageSize} = data.pagination
-                    refresh({page, pageSize})
-                }}
-            />
+            <AntdRow>
+                <Col span={12}>
+                    {toolbar}
+                </Col>
+                <Col span={12} style={{textAlign: 'right'}}>
+                    <Toolbar
+                        table={table}
+                        onRefresh={() => {
+                            const {page, pageSize} = data.pagination
+                            refresh({page, pageSize})
+                        }}
+                    />
+                </Col>
+            </AntdRow>
 
             <div className="ant-table-wrapper">
                 <div className="ant-table ant-table-small">

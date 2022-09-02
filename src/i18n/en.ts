@@ -6,6 +6,7 @@ const en = {
         'Access is denied': 'Access is denied',
         'Add': 'Add',
         'Administration': 'Administration',
+        'All Locales': 'All Locales',
         'All Versions': 'All Versions',
         'An error occurred while executing the request': 'An error occurred while executing the request',
         'Cannot lock item': 'Cannot lock item',

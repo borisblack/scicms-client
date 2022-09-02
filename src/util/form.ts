@@ -1,8 +1,8 @@
 import {Attribute, AttrType, Item, ItemData, Location} from '../types'
 import MediaService from '../services/media'
-import LocationService, {LocationInput} from '../services/location'
-
-const MINOR_REV_ATTR_NAME = 'minorRev'
+import LocationService from '../services/location'
+import {MINOR_REV_ATTR_NAME, MOMENT_ISO_DATE_FORMAT_STRING, MOMENT_ISO_TIME_FORMAT_STRING} from '../config/constants'
+import {Moment} from 'moment'
 
 const mediaService = MediaService.getInstance()
 const locationService = LocationService.getInstance()
@@ -25,20 +25,30 @@ export async function parseValues(item: Item, data: ItemData | undefined, values
             continue
 
         const attribute = attributes[key]
-        if (attribute.keyed || attribute.readOnly)
+        if (attribute.keyed || attribute.readOnly || attribute.type === AttrType.sequence)
             continue
 
-        parsedValues[key] = await parseValue(key, attribute, data, values)
+        parsedValues[key] = await parseValue(item, key, attribute, data, values)
     }
 
     return parsedValues as ItemData
 }
 
-async function parseValue(attrName: string, attribute: Attribute, data: ItemData | undefined, values: any): Promise<any> {
+async function parseValue(
+    item: Item,
+    attrName: string,
+    attribute: Attribute,
+    data: ItemData | undefined,
+    values: any
+): Promise<any> {
     const value = values[attrName]
     const prevItemPermissionId = data?.permission.data?.id
     const itemPermissionId = values['permission.id']
     switch (attribute.type) {
+        case AttrType.date:
+            return value ? (value as Moment).format(MOMENT_ISO_DATE_FORMAT_STRING) : null
+        case AttrType.time:
+            return value ? `${(value as Moment).format(MOMENT_ISO_TIME_FORMAT_STRING)}Z` : null
         case AttrType.media:
             const mediaId = values[`${attrName}.id`]
             if (mediaId) {
@@ -46,7 +56,7 @@ async function parseValue(attrName: string, attribute: Attribute, data: ItemData
                     await mediaService.update(mediaId, {permission: itemPermissionId})
                 }
             } else {
-                const fileList = value as File[]
+                const fileList = (value as File[] | undefined) ?? []
                 if (fileList.length > 0) {
                     const mediaInfo = await mediaService.uploadData({file: fileList[0], permission: itemPermissionId})
                     return mediaInfo.id
@@ -56,10 +66,13 @@ async function parseValue(attrName: string, attribute: Attribute, data: ItemData
         case AttrType.location:
             const locationData = data ? data[attrName].data as Location : null
             const {latitude, longitude, label} = value
+            const isEmpty = !latitude && !longitude && !label
             if (locationData) {
-                const isDeleted = !latitude && !longitude && !label
-                if (isDeleted) {
-                    await locationService.delete(locationData.id)
+                if (isEmpty) {
+                    // Can be used by another versions or localizations
+                    if (!item.versioned && !item.localized)
+                        await locationService.delete(locationData.id)
+
                     return null
                 } else {
                     const isChanged = latitude !== locationData.latitude || longitude !== locationData.longitude || label !== locationData.label || itemPermissionId !== prevItemPermissionId
@@ -69,9 +82,12 @@ async function parseValue(attrName: string, attribute: Attribute, data: ItemData
                     return locationData.id
                 }
             } else {
-                const input: LocationInput = {latitude, longitude, label, permission: itemPermissionId}
-                const location = await locationService.create(input)
-                return location.id
+                if (isEmpty) {
+                    return null
+                } else {
+                    const location = await locationService.create({latitude, longitude, label, permission: itemPermissionId})
+                    return location.id
+                }
             }
         case AttrType.relation:
             return values[`${attrName}.id`]
@@ -80,8 +96,12 @@ async function parseValue(attrName: string, attribute: Attribute, data: ItemData
     }
 }
 
-export function filterValues(values: FilteredItemData) {
-    delete values.majorRev
-    delete values.locale
-    delete values.state
+export function filterValues(values: FilteredItemData): ItemData {
+    const filteredValues = {...values}
+
+    delete filteredValues.majorRev
+    delete filteredValues.locale
+    delete filteredValues.state
+
+    return filteredValues as ItemData
 }

@@ -1,7 +1,7 @@
 import {MouseEvent, ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Row} from '@tanstack/react-table'
-import {Button, Menu, message, PageHeader} from 'antd'
+import {Button, Checkbox, Menu, message, PageHeader} from 'antd'
 
 import appConfig from '../../config'
 import {Item, ItemData, UserInfo} from '../../types'
@@ -15,6 +15,8 @@ import PermissionService from '../../services/permission'
 import * as ACL from '../../util/acl'
 import styles from './Page.module.css'
 import {findAll, getColumns, getHiddenColumns, getInitialData} from '../../util/datagrid'
+import {CheckboxChangeEvent} from 'antd/es/checkbox'
+import {ExtRequestParams} from '../../services/query'
 
 interface Props {
     me: UserInfo
@@ -28,6 +30,8 @@ function DefaultPage({me, page, onCreate, onItemView}: Props) {
     const {t} = useTranslation()
     const [loading, setLoading] = useState(false)
     const [data, setData] = useState(getInitialData())
+    const [version, setVersion] = useState<number>(0)
+    const showAllLocalesRef = useRef<boolean>(false)
     const headerRef = useRef<HTMLDivElement>(null)
     const contentRef = useRef<HTMLDivElement>(null)
     const footerRef = useRef<HTMLDivElement>(null)
@@ -59,9 +63,11 @@ function DefaultPage({me, page, onCreate, onItemView}: Props) {
     }, [me, item])
 
     const handleRequest = useCallback(async (params: RequestParams) => {
+        const allParams: ExtRequestParams = {...params, locale: showAllLocalesRef.current ? 'all' : null}
+
         try {
             setLoading(true)
-            const dataWithPagination = await findAll(item, params)
+            const dataWithPagination = await findAll(item, allParams)
             setData(dataWithPagination)
         } catch (e: any) {
             message.error(e.message)
@@ -92,7 +98,7 @@ function DefaultPage({me, page, onCreate, onItemView}: Props) {
         const Icon = item.icon ? (icons as any)[item.icon] : null
         const permissionId = item.permission.data?.id
         const permission = permissionId ? permissionService.findById(permissionId) : null
-        const canCreate = permission && ACL.canCreate(me, permission)
+        const canCreate = !!permission && ACL.canCreate(me, permission)
 
         return (
             <PageHeader
@@ -101,6 +107,11 @@ function DefaultPage({me, page, onCreate, onItemView}: Props) {
                 extra={canCreate && <Button type="primary" onClick={handleCreate}><PlusCircleOutlined /> {t('Create')}</Button>}
             />
         )
+    }
+
+    function handleLocalizationsCheckBoxChange(e: CheckboxChangeEvent) {
+        showAllLocalesRef.current = e.target.checked
+        setVersion(prevVersion => prevVersion + 1)
     }
 
     const dataMemoized = useMemo(() => data, [data])
@@ -124,6 +135,8 @@ function DefaultPage({me, page, onCreate, onItemView}: Props) {
                         hiddenColumns: hiddenColumnsMemoized,
                         pageSize: appConfig.query.findAll.defaultPageSize
                     }}
+                    version={version}
+                    toolbar={<Checkbox onChange={handleLocalizationsCheckBoxChange}>{t('All Locales')}</Checkbox>}
                     getRowContextMenu={getRowContextMenu}
                     onRequest={handleRequest}
                     onRowDoubleClick={handleRowDoubleClick}

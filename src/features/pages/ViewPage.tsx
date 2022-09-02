@@ -38,7 +38,7 @@ function ViewPage({me, page, onItemView, onUpdate, onDelete}: Props) {
     const {t} = useTranslation()
     const [loading, setLoading] = useState<boolean>(false)
     const [isLockedByMe, setLockedByMe] = useState<boolean>(data?.lockedBy?.data?.id === me.id)
-    const [operation, setOperation] = useState<Operation>(isNew ? Operation.CREATE : Operation.VIEW)
+    const [operation, setOperation] = useState<Operation>(isNew ? Operation.CREATE : (isLockedByMe ? (item.versioned ? Operation.CREATE_VERSION : Operation.UPDATE) : Operation.VIEW))
     const headerRef = useRef<HTMLDivElement>(null)
     const contentRef = useRef<HTMLDivElement>(null)
     const footerRef = useRef<HTMLDivElement>(null)
@@ -88,7 +88,6 @@ function ViewPage({me, page, onItemView, onUpdate, onDelete}: Props) {
         let parsedValues
         try {
             parsedValues = await parseValues(item, data, values)
-            filterValues(parsedValues)
             console.log(`Parsed values: ${JSON.stringify(parsedValues)}`)
         } catch (e: any) {
             message.error(e)
@@ -98,16 +97,22 @@ function ViewPage({me, page, onItemView, onUpdate, onDelete}: Props) {
         console.log(operation)
         switch (operation) {
             case Operation.CREATE:
-                await create(parsedValues)
+                await create(filterValues(parsedValues), item.manualVersioning ? parsedValues.majorRev : null, item.localized ? parsedValues.locale : null)
+                setOperation(Operation.VIEW)
                 break
             case Operation.CREATE_VERSION:
-                await createVersion(parsedValues)
+                await createVersion(filterValues(parsedValues), item.manualVersioning ? parsedValues.majorRev : null, item.localized ? parsedValues.locale : null)
+                setOperation(Operation.VIEW)
                 break
             case Operation.CREATE_LOCALIZATION:
-                await createLocalization(parsedValues)
+                if (!parsedValues.locale)
+                    throw new Error('Locale is required')
+
+                await createLocalization(filterValues(parsedValues), parsedValues.locale)
+                setOperation(Operation.VIEW)
                 break
             case Operation.UPDATE:
-                await update(parsedValues)
+                await update(filterValues(parsedValues))
                 break
             case Operation.VIEW:
             default:
@@ -115,13 +120,13 @@ function ViewPage({me, page, onItemView, onUpdate, onDelete}: Props) {
         }
     }
 
-    async function create(values: ItemData) {
+    async function create(values: ItemData, majorRev?: string | null, locale?: string | null) {
         if (!canCreate)
             throw new Error('Cannot create such item')
 
         setLoading(true)
         try {
-            const created = await mutationService.create(item, values)
+            const created = await mutationService.create(item, values, majorRev, locale)
             await onUpdate(created)
             setLockedByMe(false)
         } catch (e: any) {
@@ -131,7 +136,7 @@ function ViewPage({me, page, onItemView, onUpdate, onDelete}: Props) {
         }
     }
 
-    async function createVersion(values: ItemData) {
+    async function createVersion(values: ItemData, majorRev?: string | null, locale?: string | null) {
         if (!canCreate)
             throw new Error('Cannot edit this item')
 
@@ -143,7 +148,7 @@ function ViewPage({me, page, onItemView, onUpdate, onDelete}: Props) {
 
         setLoading(true)
         try {
-            const createdVersion = await mutationService.createVersion(item, data.id, values, values.majorRev, values.locale, appConfig.mutation.defaultCopyCollectionRelations)
+            const createdVersion = await mutationService.createVersion(item, data.id, values, majorRev, locale, appConfig.mutation.defaultCopyCollectionRelations)
             await onUpdate(createdVersion)
             setLockedByMe(false)
         } catch (e: any) {
@@ -153,7 +158,7 @@ function ViewPage({me, page, onItemView, onUpdate, onDelete}: Props) {
         }
     }
 
-    async function createLocalization(values: ItemData) {
+    async function createLocalization(values: ItemData, locale: string) {
         if (!canCreate)
             throw new Error('Cannot edit this item')
 
@@ -163,12 +168,9 @@ function ViewPage({me, page, onItemView, onUpdate, onDelete}: Props) {
         if (!data)
             throw new Error('Illegal state. Data is undefined')
 
-        if (!values.locale)
-            throw new Error('Illegal state. Locale is null or undefined')
-
         setLoading(true)
         try {
-            const createdLocalization = await mutationService.createLocalization(item, data.id, values, values.locale, appConfig.mutation.defaultCopyCollectionRelations)
+            const createdLocalization = await mutationService.createLocalization(item, data.id, values, locale, appConfig.mutation.defaultCopyCollectionRelations)
             await onUpdate(createdLocalization)
             setLockedByMe(false)
         } catch (e: any) {
@@ -230,7 +232,7 @@ function ViewPage({me, page, onItemView, onUpdate, onDelete}: Props) {
             if (!value)
                 return
 
-            if (operation !== Operation.UPDATE)
+            if (operation !== Operation.UPDATE && operation !== Operation.CREATE_VERSION)
                 return
 
             if (!data || (data.locale ?? coreConfigService.coreConfig.i18n.defaultLocale) === value)
@@ -239,11 +241,14 @@ function ViewPage({me, page, onItemView, onUpdate, onDelete}: Props) {
             setLoading(true)
             try {
                 const existingLocalization = await queryService.findLocalization(item, data.configId, data.majorRev, value)
-                if (!existingLocalization)
-                    return
+                if (existingLocalization) {
+                    if (operation === Operation.UPDATE)
+                        setOperation(Operation.CREATE_LOCALIZATION)
 
-                setOperation(Operation.CREATE_LOCALIZATION)
-                onUpdate(existingLocalization)
+                    onUpdate(existingLocalization)
+                } else {
+                    setOperation(Operation.CREATE_LOCALIZATION)
+                }
             } catch (e: any) {
                 message.error(e.message)
             } finally {
@@ -318,7 +323,7 @@ function ViewPage({me, page, onItemView, onUpdate, onDelete}: Props) {
                     form={form}
                     size="small"
                     layout="vertical"
-                    disabled={(!canEdit || !isLockedByMe || operation === Operation.VIEW) && (!canCreate || !isNew)}
+                    disabled={(!canEdit || !isLockedByMe /*|| operation === Operation.VIEW*/) && (!canCreate || !isNew)}
                     onFinish={handleFormFinish}
                 >
                     <Row gutter={16}>

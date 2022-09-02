@@ -21,6 +21,13 @@ import {
 } from '../config/constants'
 import ItemService from './item'
 import {RequestParams} from '../components/datagrid/DataGrid'
+import CoreConfigService from './core-config'
+
+export interface ExtRequestParams extends RequestParams {
+    majorRev?: string | null
+    locale?: string | null
+    state?: string | null
+}
 
 export type FiltersInput<FiltersType> = {
     and?: [FiltersType]
@@ -170,6 +177,7 @@ export default class QueryService {
     }
 
     private itemService = ItemService.getInstance()
+    private coreConfigService = CoreConfigService.getInstance()
 
     findById = async (item: Item, id: string): Promise<Response> => {
         const query = gql(this.buildFindByIdQuery(item))
@@ -193,7 +201,7 @@ export default class QueryService {
         }
     `
 
-    findAll = async (item: Item, {sorting, filters, pagination, majorRev, locale, state}: RequestParams, extraFiltersInput?: FiltersInput<unknown>): Promise<ResponseCollection<any>> => {
+    findAll = async (item: Item, {sorting, filters, pagination, majorRev, locale, state}: ExtRequestParams, extraFiltersInput?: FiltersInput<unknown>): Promise<ResponseCollection<any>> => {
         const query = gql(this.buildFindAllQuery(item))
         const {page, pageSize} = pagination
         const variables: any = {
@@ -206,6 +214,9 @@ export default class QueryService {
 
         if (item.localized && locale)
             variables.locale = locale
+
+        // if (item.localized)
+        //     variables.locale = locale || this.coreConfigService.coreConfig.i18n.defaultLocale
 
         if (state)
             variables.state = state
@@ -337,7 +348,7 @@ export default class QueryService {
     }
 
     private buildFindAllLocalizations = (item: Item) => `
-        query findAll${_.upperFirst(item.name)}Localizations ($configId: String!, majorRev: String!, $locale: String!) {
+        query findAll${_.upperFirst(item.name)}Localizations ($configId: String!, $majorRev: String!, $locale: String!) {
             ${item.pluralName} (
                 majorRev: $majorRev
                 locale: $locale
@@ -348,7 +359,7 @@ export default class QueryService {
                 }
             ) {
                 data {
-                    id
+                    ${this.itemService.listNonCollectionAttributes(item).join('\n')}
                 }
             }
         }

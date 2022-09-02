@@ -17,6 +17,8 @@ export const STD_DATE_HOURS_FORMAT_STRING: string = 'yyyy-LL-dd HH'
 export const MOMENT_DATE_FORMAT_STRING: string = 'DD.MM.YYYY'
 export const MOMENT_DATETIME_FORMAT_STRING: string = 'DD.MM.YYYY HH:mm:ss'
 export const MOMENT_TIME_FORMAT_STRING: string = 'HH:mm:ss'
+export const MOMENT_ISO_DATE_FORMAT_STRING: string = 'YYYY-MM-DD'
+export const MOMENT_ISO_TIME_FORMAT_STRING: string = "HH:mm:ss.SSS"
 
 export const DEFAULT_COLUMN_WIDTH = 130
 export const DEFAULT_PAGE_SIZE = 20
@@ -24,3 +26,8 @@ export const DEFAULT_PAGE_SIZE = 20
 export const ROLE_ADMIN: string = 'ROLE_ADMIN'
 export const ROLE_DESIGNER: string = 'ROLE_DESIGNER'
 export const ROLE_USER: string = 'ROLE_USER'
+
+export const MAJOR_REV_ATTR_NAME = 'majorRev'
+export const MINOR_REV_ATTR_NAME = 'minorRev'
+export const LOCALE_ATTR_NAME = 'locale'
+export const STATE_ATTR_NAME = 'state'

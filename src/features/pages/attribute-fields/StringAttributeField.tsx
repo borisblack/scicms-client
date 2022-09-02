@@ -5,9 +5,7 @@ import {Form, FormRule, Input} from 'antd'
 import {AttributeFieldProps} from '.'
 import {AttrType} from '../../../types'
 import styles from './AttributeField.module.css'
-
-const MAJOR_REV_ATTR_NAME = 'majorRev'
-const STATE_ATTR_NAME = 'state'
+import {MAJOR_REV_ATTR_NAME, STATE_ATTR_NAME} from '../../../config/constants'
 
 const FormItem = Form.Item
 

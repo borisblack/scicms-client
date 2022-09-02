@@ -17,10 +17,10 @@ const MediaAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, att
 
     const mediaData = value?.data as Media | null
     const {t} = useTranslation()
+    const mediaService = useMemo(() => MediaService.getInstance(), [])
     const [fileList, setFileList] = useState<UploadFile[]>(getInitialUploadFileList())
     const mediaRef = useRef<Media | MediaInfo | null>(mediaData)
     const isDisabled = attribute.keyed || attribute.readOnly
-    const mediaService = useMemo(() => MediaService.getInstance(), [])
 
     const normFile = (e: any) => {
         return e.fileList.length === 0 ? [] : [e.file]
@@ -31,7 +31,7 @@ const MediaAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, att
             return []
 
         return [{
-            uid: '-1',
+            uid: mediaData.id,
             name: mediaData.filename,
             status: 'done',
             url: mediaService.getDownloadUrlById(mediaData.id)
@@ -59,7 +59,9 @@ const MediaAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, att
     async function handleRemove(file: UploadFile) {
         file.status = 'uploading'
         setFileList([file])
-        if (mediaRef.current) {
+
+        // Can be used by another versions or localizations
+        if (mediaRef.current && !item.versioned && !item.localized) {
             setLoading(true)
             try {
                 await mediaService.deleteById(mediaRef.current.id)
@@ -90,7 +92,6 @@ const MediaAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, att
                 valuePropName="fileList"
                 getValueFromEvent={normFile}
                 required={attribute.required && !attribute.readOnly}
-                initialValue={[]}
                 dependencies={[`${attrName}.id`]}
                 rules={[
                     ({ getFieldValue }) => ({
@@ -104,12 +105,12 @@ const MediaAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, att
             >
                 <Upload
                     name="files"
-                    listType="picture"
                     maxCount={1}
                     disabled={isDisabled}
+                    defaultFileList={getInitialUploadFileList()}
                     fileList={fileList}
                     beforeUpload={beforeUpload}
-                    onDownload={handleDownload}
+                    onPreview={handleDownload}
                     onRemove={handleRemove}
                 >
                     {fileList.length === 0 && <Button size="middle" icon={<UploadOutlined />}>{t('Add')}</Button>}
