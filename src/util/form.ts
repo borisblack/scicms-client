@@ -1,9 +1,13 @@
+import {Moment} from 'moment'
+import {DateTime} from 'luxon'
+
 import {Attribute, AttrType, Item, ItemData, Location} from '../types'
 import MediaService from '../services/media'
 import LocationService from '../services/location'
-import {MINOR_REV_ATTR_NAME, MOMENT_ISO_DATE_FORMAT_STRING, MOMENT_ISO_TIME_FORMAT_STRING} from '../config/constants'
-import {Moment} from 'moment'
+import {MINOR_REV_ATTR_NAME, UTC} from '../config/constants'
+import appConfig from '../config'
 
+const {timeZone} = appConfig.dateTime
 const mediaService = MediaService.getInstance()
 const locationService = LocationService.getInstance()
 
@@ -34,65 +38,95 @@ export async function parseValues(item: Item, data: ItemData | undefined, values
     return parsedValues as ItemData
 }
 
-async function parseValue(
-    item: Item,
-    attrName: string,
-    attribute: Attribute,
-    data: ItemData | undefined,
-    values: any
-): Promise<any> {
+async function parseValue(item: Item, attrName: string, attribute: Attribute, data: ItemData | undefined, values: any): Promise<any> {
     const value = values[attrName]
-    const prevItemPermissionId = data?.permission.data?.id
-    const itemPermissionId = values['permission.id']
     switch (attribute.type) {
         case AttrType.date:
-            return value ? (value as Moment).format(MOMENT_ISO_DATE_FORMAT_STRING) : null
+            return value ? DateTime.fromISO((value as Moment).toISOString()).toISODate() : null
         case AttrType.time:
-            return value ? `${(value as Moment).format(MOMENT_ISO_TIME_FORMAT_STRING)}Z` : null
+            return parseTime(attrName, values)
+        case AttrType.datetime:
+            return parseDateTime(attrName, values)
         case AttrType.media:
-            const mediaId = values[`${attrName}.id`]
-            if (mediaId) {
-                if (itemPermissionId !== prevItemPermissionId) {
-                    await mediaService.update(mediaId, {permission: itemPermissionId})
-                }
-            } else {
-                const fileList = (value as File[] | undefined) ?? []
-                if (fileList.length > 0) {
-                    const mediaInfo = await mediaService.uploadData({file: fileList[0], permission: itemPermissionId})
-                    return mediaInfo.id
-                }
-            }
-            return mediaId
+            return await parseMedia(attrName, data, values)
         case AttrType.location:
-            const locationData = data ? data[attrName].data as Location : null
-            const {latitude, longitude, label} = value
-            const isEmpty = !latitude && !longitude && !label
-            if (locationData) {
-                if (isEmpty) {
-                    // Can be used by another versions or localizations
-                    if (!item.versioned && !item.localized)
-                        await locationService.delete(locationData.id)
-
-                    return null
-                } else {
-                    const isChanged = latitude !== locationData.latitude || longitude !== locationData.longitude || label !== locationData.label || itemPermissionId !== prevItemPermissionId
-                    if (isChanged) {
-                        await locationService.update(locationData.id, {latitude, longitude, label, permission: itemPermissionId})
-                    }
-                    return locationData.id
-                }
-            } else {
-                if (isEmpty) {
-                    return null
-                } else {
-                    const location = await locationService.create({latitude, longitude, label, permission: itemPermissionId})
-                    return location.id
-                }
-            }
+            return await parseLocation(item, attrName, data, values)
         case AttrType.relation:
             return values[`${attrName}.id`]
         default:
             return value
+    }
+}
+
+function parseTime(attrName: string, values: any): string | null {
+    const value = values[attrName]
+    if (!value)
+        return null
+
+    const isChanged = values[`${attrName}.changed`]
+    const iso = (value as Moment).toISOString()
+    const dt = isChanged ? DateTime.fromISO(iso) : DateTime.fromISO(iso, {zone: UTC})
+    return dt.toISOTime()
+}
+
+function parseDateTime(attrName: string, values: any): string | null {
+    const value = values[attrName]
+    if (!value)
+        return null
+
+    const isChanged = values[`${attrName}.changed`]
+    const iso = (value as Moment).toISOString()
+    const dt = isChanged ? DateTime.fromISO(iso) : DateTime.fromISO(iso, {zone: UTC})
+    return dt.setZone(timeZone, {keepLocalTime: true}).toISO()
+}
+
+async function parseMedia(attrName: string, data: ItemData | undefined, values: any): Promise<string | null> {
+    const value = values[attrName]
+    const prevItemPermissionId = data?.permission.data?.id
+    const itemPermissionId = values['permission.id']
+    const mediaId = values[`${attrName}.id`]
+    if (mediaId) {
+        if (itemPermissionId !== prevItemPermissionId) {
+            await mediaService.update(mediaId, {permission: itemPermissionId})
+        }
+    } else {
+        const fileList = (value as File[] | undefined) ?? []
+        if (fileList.length > 0) {
+            const mediaInfo = await mediaService.uploadData({file: fileList[0], permission: itemPermissionId})
+            return mediaInfo.id
+        }
+    }
+    return mediaId
+}
+
+async function parseLocation(item: Item, attrName: string, data: ItemData | undefined, values: any): Promise<string | null> {
+    const value = values[attrName]
+    const prevItemPermissionId = data?.permission.data?.id
+    const itemPermissionId = values['permission.id']
+    const locationData = data ? data[attrName].data as Location : null
+    const {latitude, longitude, label} = value
+    const isEmpty = !latitude && !longitude && !label
+    if (locationData) {
+        if (isEmpty) {
+            // Can be used by another versions or localizations
+            if (!item.versioned && !item.localized)
+                await locationService.delete(locationData.id)
+
+            return null
+        } else {
+            const isChanged = latitude !== locationData.latitude || longitude !== locationData.longitude || label !== locationData.label || itemPermissionId !== prevItemPermissionId
+            if (isChanged) {
+                await locationService.update(locationData.id, {latitude, longitude, label, permission: itemPermissionId})
+            }
+            return locationData.id
+        }
+    } else {
+        if (isEmpty) {
+            return null
+        } else {
+            const location = await locationService.create({latitude, longitude, label, permission: itemPermissionId})
+            return location.id
+        }
     }
 }
 

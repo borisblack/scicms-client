@@ -1,33 +1,27 @@
 import {Locale} from 'antd/lib/locale-provider'
 import ruRU from 'antd/lib/locale-provider/ru_RU'
-import {Settings as LuxonSettings} from 'luxon'
+// import {Settings as LuxonSettings} from 'luxon'
+// import moment from 'moment-timezone'
 import 'moment/locale/ru'
 
-import {
-    DATE_FORMAT_STRING,
-    DATETIME_FORMAT_STRING,
-    DEFAULT_COLUMN_WIDTH,
-    DEFAULT_DATETIME_ZONE,
-    DEFAULT_PAGE_SIZE,
-    MOMENT_DATE_FORMAT_STRING,
-    MOMENT_DATETIME_FORMAT_STRING,
-    MOMENT_TIME_FORMAT_STRING,
-    TIME_FORMAT_STRING
-} from './constants'
+import {LUXON_DATE_FORMAT_STRING, LUXON_DATETIME_FORMAT_STRING, LUXON_TIME_FORMAT_STRING} from './constants'
 import {DeletingStrategy} from '../types'
+
+// LuxonSettings.defaultZone = UTC
+// moment.tz.setDefault(UTC)
 
 interface AppConfig {
     coreUrl: string
     i18nLng: string
     antdLocale: Locale
     dateTime: {
-        defaultZone: string
-        dateFormatString: string
-        timeFormatString: string
-        dateTimeFormatString: string
-        momentDateFormatString: string
-        momentTimeFormatString: string
-        momentDateTimeFormatString: string
+        timeZone: string
+        luxonDisplayDateFormatString: string
+        luxonDisplayTimeFormatString: string
+        luxonDisplayDateTimeFormatString: string
+        momentDisplayDateFormatString: string
+        momentDisplayTimeFormatString: string
+        momentDisplayDateTimeFormatString: string
     }
     query: {
         findAll: {
@@ -35,12 +29,12 @@ interface AppConfig {
         }
     }
     mutation: {
-        defaultCopyCollectionRelations: boolean
-        defaultDeletingStrategy: DeletingStrategy
+        copyCollectionRelations: boolean
+        deletingStrategy: DeletingStrategy
     }
     ui: {
         dataGrid: {
-            defaultColWidth: number
+            colWidth: number
         }
     }
 }
@@ -50,30 +44,28 @@ const appConfig: AppConfig = {
     i18nLng: 'ru',
     antdLocale: ruRU,
     dateTime: {
-        defaultZone: DEFAULT_DATETIME_ZONE,
-        dateFormatString: DATE_FORMAT_STRING,
-        timeFormatString: TIME_FORMAT_STRING,
-        dateTimeFormatString: DATETIME_FORMAT_STRING,
-        momentDateFormatString: MOMENT_DATE_FORMAT_STRING,
-        momentTimeFormatString: MOMENT_TIME_FORMAT_STRING,
-        momentDateTimeFormatString: MOMENT_DATETIME_FORMAT_STRING
+        timeZone: 'Asia/Krasnoyarsk',
+        luxonDisplayDateFormatString: LUXON_DATE_FORMAT_STRING,
+        luxonDisplayTimeFormatString: LUXON_TIME_FORMAT_STRING,
+        luxonDisplayDateTimeFormatString: LUXON_DATETIME_FORMAT_STRING,
+        momentDisplayDateFormatString: 'DD.MM.YYYY',
+        momentDisplayTimeFormatString: 'HH:mm',
+        momentDisplayDateTimeFormatString: 'DD.MM.YYYY HH:mm'
     },
     query: {
         findAll: {
-            defaultPageSize: DEFAULT_PAGE_SIZE
+            defaultPageSize: 20
         }
     },
     mutation: {
-        defaultCopyCollectionRelations: true,
-        defaultDeletingStrategy: DeletingStrategy.CASCADE
+        copyCollectionRelations: true,
+        deletingStrategy: DeletingStrategy.CASCADE
     },
     ui: {
         dataGrid: {
-            defaultColWidth: DEFAULT_COLUMN_WIDTH
+            colWidth: 130
         }
     }
 }
-
-LuxonSettings.defaultZone = appConfig.dateTime.defaultZone
 
 export default appConfig

@@ -136,7 +136,7 @@ function DefaultPage({me, page, onCreate, onItemView}: Props) {
                         pageSize: appConfig.query.findAll.defaultPageSize
                     }}
                     version={version}
-                    toolbar={<Checkbox onChange={handleLocalizationsCheckBoxChange}>{t('All Locales')}</Checkbox>}
+                    toolbar={item.localized && <Checkbox onChange={handleLocalizationsCheckBoxChange}>{t('All Locales')}</Checkbox>}
                     getRowContextMenu={getRowContextMenu}
                     onRequest={handleRequest}
                     onRowDoubleClick={handleRowDoubleClick}

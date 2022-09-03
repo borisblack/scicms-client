@@ -7,17 +7,17 @@ import {apolloClient, extractGraphQLErrorMessages} from './index'
 import {Attribute, AttrType, Item, ItemData, RelType, Response, ResponseCollection} from '../types'
 import {DateTime} from 'luxon'
 import {
-    DATE_FORMAT_STRING,
-    DATE_HOURS_FORMAT_STRING,
-    DATETIME_FORMAT_STRING,
-    HOURS_FORMAT_STRING,
-    STD_DATE_FORMAT_STRING,
-    STD_DATE_HOURS_FORMAT_STRING,
-    STD_DATETIME_FORMAT_STRING,
-    STD_YEAR_MONTH_FORMAT_STRING,
-    TIME_FORMAT_STRING,
-    YEAR_FORMAT_STRING,
-    YEAR_MONTH_FORMAT_STRING
+    LUXON_DATE_FORMAT_STRING,
+    LUXON_DATE_HOURS_FORMAT_STRING,
+    LUXON_DATETIME_FORMAT_STRING,
+    LUXON_HOURS_FORMAT_STRING,
+    LUXON_STD_DATE_FORMAT_STRING,
+    LUXON_STD_DATE_HOURS_FORMAT_STRING,
+    LUXON_STD_DATETIME_FORMAT_STRING,
+    LUXON_STD_YEAR_MONTH_FORMAT_STRING,
+    LUXON_TIME_FORMAT_STRING,
+    LUXON_YEAR_FORMAT_STRING,
+    LUXON_YEAR_MONTH_FORMAT_STRING
 } from '../config/constants'
 import ItemService from './item'
 import {RequestParams} from '../components/datagrid/DataGrid'
@@ -59,31 +59,31 @@ type FilterInput<FilterType, ElementType> = {
 }
 
 function buildDateFilter(filterValue: string): FilterInput<unknown, string> {
-    let dt = DateTime.fromFormat(filterValue, DATE_FORMAT_STRING)
+    let dt = DateTime.fromFormat(filterValue, LUXON_DATE_FORMAT_STRING)
     if (dt.isValid) {
         const endDt = dt.endOf('day')
         return {gte: dt.toISODate(), lte: endDt.toISODate()}
     }
 
-    dt = DateTime.fromFormat(filterValue, STD_DATE_FORMAT_STRING)
+    dt = DateTime.fromFormat(filterValue, LUXON_STD_DATE_FORMAT_STRING)
     if (dt.isValid) {
         const endDt = dt.endOf('day')
         return {gte: dt.toISODate(), lte: endDt.toISODate()}
     }
 
-    dt = DateTime.fromFormat(filterValue, YEAR_MONTH_FORMAT_STRING)
+    dt = DateTime.fromFormat(filterValue, LUXON_YEAR_MONTH_FORMAT_STRING)
     if (dt.isValid) {
         const endDt = dt.endOf('month')
         return {gte: dt.toISODate(), lte: endDt.toISODate()}
     }
 
-    dt = DateTime.fromFormat(filterValue, STD_YEAR_MONTH_FORMAT_STRING)
+    dt = DateTime.fromFormat(filterValue, LUXON_STD_YEAR_MONTH_FORMAT_STRING)
     if (dt.isValid) {
         const endDt = dt.endOf('month')
         return {gte: dt.toISODate(), lte: endDt.toISODate()}
     }
 
-    dt = DateTime.fromFormat(filterValue, YEAR_FORMAT_STRING)
+    dt = DateTime.fromFormat(filterValue, LUXON_YEAR_FORMAT_STRING)
     if (dt.isValid) {
         const endDt = dt.endOf('year')
         return {gte: dt.toISODate(), lte: endDt.toISODate()}
@@ -93,13 +93,13 @@ function buildDateFilter(filterValue: string): FilterInput<unknown, string> {
 }
 
 function buildTimeFilter(filterValue: string): FilterInput<unknown, string> {
-    let dt = DateTime.fromFormat(filterValue, TIME_FORMAT_STRING)
+    let dt = DateTime.fromFormat(filterValue, LUXON_TIME_FORMAT_STRING)
     if (dt.isValid) {
         const endDt = dt.endOf('minute')
         return {gte: dt.toISOTime(), lte: endDt.toISOTime()}
     }
 
-    dt = DateTime.fromFormat(filterValue, HOURS_FORMAT_STRING)
+    dt = DateTime.fromFormat(filterValue, LUXON_HOURS_FORMAT_STRING)
     if (dt.isValid) {
         const endDt = dt.endOf('hour')
         return {gte: dt.toISOTime(), lte: endDt.toISOTime()}
@@ -109,55 +109,55 @@ function buildTimeFilter(filterValue: string): FilterInput<unknown, string> {
 }
 
 function buildDateTimeFilter(filterValue: string): FilterInput<unknown, string> {
-    let dt = DateTime.fromFormat(filterValue, DATETIME_FORMAT_STRING)
+    let dt = DateTime.fromFormat(filterValue, LUXON_DATETIME_FORMAT_STRING)
     if (dt.isValid) {
         const endDt = dt.endOf('minute')
         return {gte: dt.toISO(), lte: endDt.toISO()}
     }
 
-    dt = DateTime.fromFormat(filterValue, STD_DATETIME_FORMAT_STRING)
+    dt = DateTime.fromFormat(filterValue, LUXON_STD_DATETIME_FORMAT_STRING)
     if (dt.isValid) {
         const endDt = dt.endOf('minute')
         return {gte: dt.toISO(), lte: endDt.toISO()}
     }
 
-    dt = DateTime.fromFormat(filterValue, DATE_HOURS_FORMAT_STRING)
+    dt = DateTime.fromFormat(filterValue, LUXON_DATE_HOURS_FORMAT_STRING)
     if (dt.isValid) {
         const endDt = dt.endOf('hour')
         return {gte: dt.toISO(), lte: endDt.toISO()}
     }
 
-    dt = DateTime.fromFormat(filterValue, STD_DATE_HOURS_FORMAT_STRING)
+    dt = DateTime.fromFormat(filterValue, LUXON_STD_DATE_HOURS_FORMAT_STRING)
     if (dt.isValid) {
         const endDt = dt.endOf('hour')
         return {gte: dt.toISO(), lte: endDt.toISO()}
     }
 
-    dt = DateTime.fromFormat(filterValue, DATE_FORMAT_STRING)
+    dt = DateTime.fromFormat(filterValue, LUXON_DATE_FORMAT_STRING)
     if (dt.isValid) {
         const endDt = dt.endOf('day')
         return {gte: dt.toISO(), lte: endDt.toISO()}
     }
 
-    dt = DateTime.fromFormat(filterValue, STD_DATE_FORMAT_STRING)
+    dt = DateTime.fromFormat(filterValue, LUXON_STD_DATE_FORMAT_STRING)
     if (dt.isValid) {
         const endDt = dt.endOf('day')
         return {gte: dt.toISO(), lte: endDt.toISO()}
     }
 
-    dt = DateTime.fromFormat(filterValue, YEAR_MONTH_FORMAT_STRING)
+    dt = DateTime.fromFormat(filterValue, LUXON_YEAR_MONTH_FORMAT_STRING)
     if (dt.isValid) {
         const endDt = dt.endOf('month')
         return {gte: dt.toISO(), lte: endDt.toISO()}
     }
 
-    dt = DateTime.fromFormat(filterValue, STD_YEAR_MONTH_FORMAT_STRING)
+    dt = DateTime.fromFormat(filterValue, LUXON_STD_YEAR_MONTH_FORMAT_STRING)
     if (dt.isValid) {
         const endDt = dt.endOf('month')
         return {gte: dt.toISO(), lte: endDt.toISO()}
     }
 
-    dt = DateTime.fromFormat(filterValue, YEAR_FORMAT_STRING)
+    dt = DateTime.fromFormat(filterValue, LUXON_YEAR_FORMAT_STRING)
     if (dt.isValid) {
         const endDt = dt.endOf('year')
         return {gte: dt.toISO(), lte: endDt.toISO()}

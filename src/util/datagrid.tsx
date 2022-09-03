@@ -8,7 +8,9 @@ import ItemService from '../services/item'
 import {DataWithPagination} from '../components/datagrid/DataGrid'
 import QueryService, {ExtRequestParams, FiltersInput} from '../services/query'
 import MediaService from '../services/media'
+import {UTC} from '../config/constants'
 
+const {luxonDisplayDateFormatString, luxonDisplayTimeFormatString, luxonDisplayDateTimeFormatString} = appConfig.dateTime
 const columnHelper = createColumnHelper<any>()
 const itemService = ItemService.getInstance()
 const mediaService = MediaService.getInstance()
@@ -37,7 +39,7 @@ export function getColumns(item: Item): ColumnDef<any, any>[] {
         const column = columnHelper.accessor(attrName, {
             header: attr.displayName,
             cell: info => renderCell(attr, info.getValue()),
-            size: attr.colWidth ?? appConfig.ui.dataGrid.defaultColWidth,
+            size: attr.colWidth ?? appConfig.ui.dataGrid.colWidth,
             enableSorting: attr.type !== AttrType.text && attr.type !== AttrType.json && attr.type !== AttrType.array
                 && attr.type !== AttrType.media && attr.type !== AttrType.location && attr.type !== AttrType.relation
         })
@@ -69,12 +71,12 @@ const renderCell = (attribute: Attribute, value: any): ReactElement | string | n
         case AttrType.bool:
             return <Checkbox checked={value}/>
         case AttrType.date:
-            return value ? DateTime.fromISO(value).toFormat(appConfig.dateTime.dateFormatString) : null
+            return value ? DateTime.fromISO(value, {zone: UTC}).toFormat(luxonDisplayDateFormatString) : null
         case AttrType.time:
-            return value ? DateTime.fromISO(value).toFormat(appConfig.dateTime.timeFormatString) : null
+            return value ? DateTime.fromISO(value, {zone: UTC}).toFormat(luxonDisplayTimeFormatString) : null
         case AttrType.datetime:
         case AttrType.timestamp:
-            return value ? DateTime.fromISO(value,).toFormat(appConfig.dateTime.dateTimeFormatString) : null
+            return value ? DateTime.fromISO(value, {zone: UTC}).toFormat(luxonDisplayDateTimeFormatString) : null
         case AttrType.media:
             const media = itemService.getMedia()
             const mediaData: Media | null = value?.data

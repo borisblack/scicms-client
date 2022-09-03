@@ -107,7 +107,7 @@ export default function ViewPageHeader({page, form, isNew, canCreate, canEdit, c
 
         setLoading(true)
         try {
-            const deleted = await mutationService.delete(item, data.id, appConfig.mutation.defaultDeletingStrategy)
+            const deleted = await mutationService.delete(item, data.id, appConfig.mutation.deletingStrategy)
             await onUpdate(deleted)
             await setLockedByMe(false)
             onDelete()
@@ -127,7 +127,7 @@ export default function ViewPageHeader({page, form, isNew, canCreate, canEdit, c
 
         setLoading(true)
         try {
-            const purged = await mutationService.purge(item, data.id, appConfig.mutation.defaultDeletingStrategy)
+            const purged = await mutationService.purge(item, data.id, appConfig.mutation.deletingStrategy)
             const deleted = purged.data.find(it => it.id === data.id) as ItemData
             await onUpdate(deleted)
             await setLockedByMe(false)

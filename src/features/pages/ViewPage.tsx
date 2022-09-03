@@ -16,6 +16,7 @@ import {filterValues, parseValues} from '../../util/form'
 import MutationService from '../../services/mutation'
 import appConfig from '../../config'
 import ViewPageHeader from './ViewPageHeader'
+import {DEBUG} from '../../config/constants'
 
 interface Props {
     me: UserInfo
@@ -59,7 +60,9 @@ function ViewPage({me, page, onItemView, onUpdate, onDelete}: Props) {
     const canDelete = !!dataPermission && ACL.canDelete(me, dataPermission)
 
     useEffect(() => {
-        console.log('Reset fields')
+        if (DEBUG)
+            console.log('Fields reset')
+
         form.resetFields()
     }, [form, data])
 
@@ -84,32 +87,34 @@ function ViewPage({me, page, onItemView, onUpdate, onDelete}: Props) {
     }, [me, item, data])
 
     async function handleFormFinish(values: any) {
-        console.log(`Values: ${JSON.stringify(values)}`)
+        if (DEBUG)
+            console.log('Values', values)
+
         let parsedValues
         try {
             parsedValues = await parseValues(item, data, values)
-            console.log(`Parsed values: ${JSON.stringify(parsedValues)}`)
+            if (DEBUG)
+                console.log('Parsed values', parsedValues)
         } catch (e: any) {
             message.error(e)
-            throw e
+            return
         }
 
-        console.log(operation)
+        if (DEBUG)
+            console.log('Operation', operation)
+
         switch (operation) {
             case Operation.CREATE:
                 await create(filterValues(parsedValues), item.manualVersioning ? parsedValues.majorRev : null, item.localized ? parsedValues.locale : null)
-                setOperation(Operation.VIEW)
                 break
             case Operation.CREATE_VERSION:
                 await createVersion(filterValues(parsedValues), item.manualVersioning ? parsedValues.majorRev : null, item.localized ? parsedValues.locale : null)
-                setOperation(Operation.VIEW)
                 break
             case Operation.CREATE_LOCALIZATION:
                 if (!parsedValues.locale)
                     throw new Error('Locale is required')
 
                 await createLocalization(filterValues(parsedValues), parsedValues.locale)
-                setOperation(Operation.VIEW)
                 break
             case Operation.UPDATE:
                 await update(filterValues(parsedValues))
@@ -129,6 +134,7 @@ function ViewPage({me, page, onItemView, onUpdate, onDelete}: Props) {
             const created = await mutationService.create(item, values, majorRev, locale)
             await onUpdate(created)
             setLockedByMe(false)
+            setOperation(Operation.VIEW)
         } catch (e: any) {
             message.error(e.message)
         } finally {
@@ -148,9 +154,10 @@ function ViewPage({me, page, onItemView, onUpdate, onDelete}: Props) {
 
         setLoading(true)
         try {
-            const createdVersion = await mutationService.createVersion(item, data.id, values, majorRev, locale, appConfig.mutation.defaultCopyCollectionRelations)
+            const createdVersion = await mutationService.createVersion(item, data.id, values, majorRev, locale, appConfig.mutation.copyCollectionRelations)
             await onUpdate(createdVersion)
             setLockedByMe(false)
+            setOperation(Operation.VIEW)
         } catch (e: any) {
             message.error(e.message)
         } finally {
@@ -170,9 +177,10 @@ function ViewPage({me, page, onItemView, onUpdate, onDelete}: Props) {
 
         setLoading(true)
         try {
-            const createdLocalization = await mutationService.createLocalization(item, data.id, values, locale, appConfig.mutation.defaultCopyCollectionRelations)
+            const createdLocalization = await mutationService.createLocalization(item, data.id, values, locale, appConfig.mutation.copyCollectionRelations)
             await onUpdate(createdLocalization)
             setLockedByMe(false)
+            setOperation(Operation.VIEW)
         } catch (e: any) {
             message.error(e.message)
         } finally {
@@ -192,6 +200,7 @@ function ViewPage({me, page, onItemView, onUpdate, onDelete}: Props) {
             const updated = await mutationService.update(item, data.id, values)
             await onUpdate(updated)
             setLockedByMe(false)
+            setOperation(Operation.VIEW)
         } catch (e: any) {
             message.error(e.message)
         } finally {

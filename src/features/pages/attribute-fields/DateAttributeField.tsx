@@ -1,13 +1,16 @@
+import {FC} from 'react'
+import {useTranslation} from 'react-i18next'
+import moment from 'moment-timezone'
+import {DatePicker, Form} from 'antd'
+
+import appConfig from '../../../config'
+import {AttrType} from '../../../types'
 import {AttributeFieldProps} from '.'
 import styles from './AttributeField.module.css'
-import moment from 'moment/moment'
-import {DatePicker, Form} from 'antd'
-import appConfig from '../../../config'
-import {useTranslation} from 'react-i18next'
-import {AttrType} from '../../../types'
-import {FC} from 'react'
+import {UTC} from '../../../config/constants'
 
 const FormItem = Form.Item
+const {momentDisplayDateFormatString} = appConfig.dateTime
 
 const DateAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, value}) => {
     if (attribute.type !== AttrType.date)
@@ -21,10 +24,10 @@ const DateAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, value
             className={styles.formItem}
             name={attrName}
             label={attribute.displayName}
-            initialValue={value ? moment(value) : null}
+            initialValue={value ? moment.tz(value, UTC) : null}
             rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
         >
-            <DatePicker format={appConfig.dateTime.momentDateFormatString} disabled={isDisabled}/>
+            <DatePicker format={momentDisplayDateFormatString} disabled={isDisabled}/>
         </FormItem>
     )
 }
