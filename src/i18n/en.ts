@@ -13,6 +13,7 @@ const en = {
         'Cannot unlock item': 'Cannot unlock item',
         'Cancel': 'Cancel',
         'Clear': 'Clear',
+        'Clear filters': 'Clear filters',
         'Click or drag file to this area to upload': 'Click or drag file to this area to upload',
         'Create': 'Create',
         'Current Version': 'Current Version',

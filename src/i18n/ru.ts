@@ -13,6 +13,7 @@ const ru = {
         'Cannot unlock item': 'Не удалось разблокировать запись',
         'Cancel': 'Отмена',
         'Clear': 'Очистить',
+        'Clear filters': 'Очистить фильтры',
         'Click or drag file to this area to upload': 'Кликните или перетащите сюда файл для загрузки',
         'Create': 'Создать',
         'Current Version': 'Текущая версия',

@@ -19,6 +19,7 @@ interface Props {
         hiddenColumns: string[]
         pageSize: number
     }
+    hasFilters?: boolean
     version?: number
     toolbar?: ReactNode
     getRowContextMenu?: (row: any) => ReactElement
@@ -50,7 +51,7 @@ interface RequestPagination {
     pageSize: number
 }
 
-function DataGrid({loading, columns, data, initialState, version = 0, toolbar = null, getRowContextMenu, onRequest, onRowDoubleClick}: Props) {
+function DataGrid({loading, columns, data, initialState, hasFilters = true, version = 0, toolbar = null, getRowContextMenu, onRequest, onRowDoubleClick}: Props) {
     const initialColumnVisibilityMemoized = useMemo((): ColumnVisibility => {
         const initialColumnVisibility: ColumnVisibility = {}
         initialState.hiddenColumns.forEach(it => {
@@ -85,10 +86,13 @@ function DataGrid({loading, columns, data, initialState, version = 0, toolbar = 
         onRowSelectionChange: setRowSelection
     })
 
-    const refresh = useCallback((pagination: RequestPagination) => {
+    const refresh = useCallback((pagination: RequestPagination, clearFilters: boolean = false) => {
+        if (clearFilters)
+            setColumnFilters([])
+
         onRequest({
             sorting,
-            filters: columnFilters,
+            filters: clearFilters ? [] : columnFilters,
             pagination
         })
     }, [sorting, columnFilters, onRequest])
@@ -153,9 +157,14 @@ function DataGrid({loading, columns, data, initialState, version = 0, toolbar = 
                 <Col span={12} style={{textAlign: 'right'}}>
                     <Toolbar
                         table={table}
+                        hasFilters={hasFilters}
                         onRefresh={() => {
                             const {page, pageSize} = data.pagination
                             refresh({page, pageSize})
+                        }}
+                        onClearFilters={() => {
+                            const {page, pageSize} = data.pagination
+                            refresh({page, pageSize}, true)
                         }}
                     />
                 </Col>
@@ -172,7 +181,7 @@ function DataGrid({loading, columns, data, initialState, version = 0, toolbar = 
                                         {headerGroup.headers.map(header => (
                                             <th
                                                 key={header.id}
-                                                className={`ant-table-cell ${header.column.getCanSort() ? 'ant-table-column-has-sorters' : ''}`}
+                                                className={`ant-table-cell ${header.column.getCanSort() ? 'ant-table-column-has-sorters' : ''} ${hasFilters ? 'has-filter' : ''}`}
                                                 style={{width: header.getSize()}}
                                             >
                                                 <div>
@@ -189,7 +198,7 @@ function DataGrid({loading, columns, data, initialState, version = 0, toolbar = 
                                                             </span>
                                                         )}
                                                     </div>
-                                                    {header.column.getCanFilter() ? <ColumnFilter column={header.column} onSubmit={() => handleFilterSubmit(header.id)}/> : null}
+                                                    {hasFilters && header.column.getCanFilter() ? <ColumnFilter column={header.column} onSubmit={() => handleFilterSubmit(header.id)}/> : null}
                                                 </div>
                                                 <div
                                                     className={`${styles.resizer} ${header.column.getIsResizing() ? styles.isResizing : ''}`}

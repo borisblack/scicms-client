@@ -4,6 +4,11 @@
 
 .ant-table.ant-table-small .ant-table-thead > tr > th,
 .ant-table.ant-table-middle .ant-table-thead > tr > th {
+    border-bottom: 2px solid #cccccc
+}
+
+.ant-table.ant-table-small .ant-table-thead > tr > th.has-filter,
+.ant-table.ant-table-middle .ant-table-thead > tr > th.has-filter {
     padding-bottom: 0;
 }
 
