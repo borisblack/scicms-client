@@ -21,7 +21,7 @@ import {DEBUG} from '../../config/constants'
 interface Props {
     me: UserInfo
     page: IPage
-    onItemView: (item: Item, id: string) => void
+    onItemView: (item: Item, id: string, cb?: () => void, observerKey?: string) => void
     onUpdate: (data: ItemData) => void
     onDelete: () => void
 }

@@ -11,7 +11,7 @@ export interface AttributeFieldProps {
     value: any
     setLoading: (loading: boolean) => void
     onChange: (value: any) => void
-    onItemView: (item: Item, id: string) => void
+    onItemView: (item: Item, id: string, cb?: () => void, observerKey?: string) => void
 }
 
 export interface AttributeFields {

@@ -35,7 +35,7 @@ interface Props {
     isLockedByMe: boolean
     setLockedByMe: (isLockedByMe: boolean) => void
     setLoading: (loading: boolean) => void
-    onItemView: (item: Item, id: string) => void
+    onItemView: (item: Item, id: string, cb?: () => void, observerKey?: string) => void
     onUpdate: (data: ItemData) => void
     onDelete: () => void
 }
