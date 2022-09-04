@@ -36,6 +36,8 @@ const menuConfig: MenuConfig = {
                 itemName: 'permission'
             }]
         }, {
+            itemName: 'itemTemplate'
+        }, {
             itemName: 'item'
         }, {
             itemName: 'revisionPolicy'

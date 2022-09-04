@@ -21,8 +21,8 @@ import {ExtRequestParams} from '../../services/query'
 interface Props {
     me: UserInfo
     page: IPage
-    onItemView: (item: Item, id: string) => void
-    onCreate: () => void
+    onItemView: (item: Item, id: string, cb?: () => void, observerKey?: string) => void
+    onCreate: (cb?: () => void, observerKey?: string) => void
     onDelete: () => void
 }
 
@@ -78,9 +78,9 @@ function DefaultPage({me, page, onCreate, onItemView}: Props) {
 
     const handleView = useCallback(async (id: string) => {
         setLoading(true)
-        await onItemView(item, id)
+        await onItemView(item, id, () => setVersion(prevVersion => prevVersion + 1), page.key)
         setLoading(false)
-    }, [item, onItemView])
+    }, [item, page.key, onItemView])
 
     const handleRowDoubleClick = useCallback((row: Row<ItemData>) => handleView(row.original.id), [handleView])
 
@@ -92,7 +92,7 @@ function DefaultPage({me, page, onCreate, onItemView}: Props) {
         }]}/>
     ), [t, handleView])
 
-    const handleCreate = (evt: MouseEvent) => { onCreate() }
+    const handleCreate = (evt: MouseEvent) => { onCreate(() => setVersion(prevVersion => prevVersion + 1), page.key) }
 
     function renderPageHeader(): ReactNode {
         const Icon = item.icon ? (icons as any)[item.icon] : null

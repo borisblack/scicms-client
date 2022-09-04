@@ -7,6 +7,7 @@ import {SearchOutlined} from '@ant-design/icons'
 import {
     closeActivePage,
     closePage,
+    generateKey,
     getLabel,
     openPage,
     selectActiveKey,
@@ -20,12 +21,14 @@ import {Item, ItemData, UserInfo} from '../../types'
 import DefaultPage from './DefaultPage'
 import ViewPage from './ViewPage'
 import QueryService from '../../services/query'
+import Mediator from '../../services/mediator'
 
 interface Props {
     me: UserInfo,
 }
 
 const TabPane = Tabs.TabPane
+const mediator = Mediator.getInstance()
 
 function Pages({me}: Props) {
     const dispatch = useAppDispatch()
@@ -44,18 +47,27 @@ function Pages({me}: Props) {
             dispatch(closePage(e as string))
     }, [dispatch])
 
-    const handleCreate = (item: Item) => {
-        dispatch(openPage({item, viewType: ViewType.view}))
+    const handleCreate = (item: Item, cb?: () => void, observerKey?: string) => {
+        if (cb) {
+            // Add observer/observable here because callbacks aren't serializable
+            const key = generateKey(item.name, ViewType.view)
+            observerKey ? mediator.addObserver(observerKey, key, [cb]) : mediator.addObservable(key, [cb])
+            dispatch(openPage({key, item, viewType: ViewType.view}))
+        } else {
+            dispatch(openPage({item, viewType: ViewType.view}))
+        }
     }
 
-    const handleItemView = async (item: Item, id: string) => {
+    const handleItemView = async (item: Item, id: string, cb?: () => void, observerKey?: string) => {
         const refreshedData = await queryService.findById(item, id)
         if (refreshedData.data) {
-            dispatch(openPage({
-                item,
-                viewType: ViewType.view,
-                data: refreshedData.data,
-            }))
+            if (cb) {
+                // Add observer/observable here because callbacks aren't serializable
+                const key = generateKey(item.name, ViewType.view, refreshedData.data.id)
+                observerKey ? mediator.addObserver(observerKey, key, [cb]) : mediator.addObservable(key, [cb])
+            }
+
+            dispatch(openPage({item, viewType: ViewType.view, data: refreshedData.data}))
         } else {
             message.error(t('Item not found. It may have been removed'))
         }
@@ -92,7 +104,7 @@ function Pages({me}: Props) {
                                     me={me}
                                     page={page}
                                     onItemView={handleItemView}
-                                    onCreate={() => handleCreate(page.item)}
+                                    onCreate={(cb?: () => void, observerKey?: string) => handleCreate(page.item, cb, observerKey)}
                                     onDelete={() => {}}
                                 /> :
                                 <ViewPage

@@ -1,6 +1,7 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit'
 import {RootState} from '../../store'
 import {Item, ItemData} from '../../types'
+import Mediator from '../../services/mediator'
 
 export interface IPage {
     key: string
@@ -19,9 +20,17 @@ interface PagesState {
     activeKey?: string
 }
 
-const tempIds: {[itemName: string]: number} = {}
+interface OpenPagePayload {
+    key?: string
+    item: Item
+    viewType: ViewType
+    data?: ItemData
+}
 
-function generateKey(itemName: string, viewType: ViewType, id?: string) {
+const tempIds: {[itemName: string]: number} = {}
+const mediator = Mediator.getInstance()
+
+export function generateKey(itemName: string, viewType: ViewType, id?: string) {
     let key = `${itemName}#${viewType}`
     if (id !== undefined) {
         key += `#${id}`
@@ -67,14 +76,16 @@ const slice = createSlice({
             if (pages.hasOwnProperty(key))
                 state.activeKey = action.payload
         },
-        openPage: (state, action: PayloadAction<{item: Item, viewType: ViewType, data?: ItemData}>) => {
+        openPage: (state, action: PayloadAction<OpenPagePayload>) => {
             const {pages} = state
-            const {item, viewType, data} = action.payload
-            const key = generateKey(item.name, viewType, data?.id)
-            if (!pages.hasOwnProperty(key))
-                pages[key] = {key, item, viewType, data}
+            const {key, item, viewType, data} = action.payload
+            const k = key ?? generateKey(item.name, viewType, data?.id)
+            if (!pages.hasOwnProperty(k))
+                pages[k] = {key: k, item, viewType, data}
 
-            state.activeKey = key
+            state.activeKey = k
+
+            // Cannot add observer/observable here because callbacks aren't serializable
         },
         closePage: (state, action: PayloadAction<string>) => {
             const key = action.payload
@@ -87,6 +98,8 @@ const slice = createSlice({
                 state.activeKey = keys[keys.length - 1]
             else
                 state.activeKey = undefined
+
+            mediator.removeKey(key)
         },
         closeActivePage: (state) => {
             const {activeKey, pages} = state
@@ -101,6 +114,8 @@ const slice = createSlice({
                 state.activeKey = keys[keys.length - 1]
             else
                 state.activeKey = undefined
+
+            mediator.removeKey(activeKey)
         },
         updateActivePage: (state, action: PayloadAction<ItemData>) => {
             const itemData = action.payload
@@ -123,8 +138,11 @@ const slice = createSlice({
                         data: itemData
                     }
                     state.activeKey = newKey
+                    mediator.changeKey(activeKey, newKey)
+                    mediator.runObservableCallbacks(newKey)
                 } else {
                     newPages[key] = page
+                    mediator.runObservableCallbacks(key)
                 }
             }
 
