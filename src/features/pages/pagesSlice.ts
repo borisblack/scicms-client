@@ -1,13 +1,14 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit'
 import {RootState} from '../../store'
 import {Item, ItemData} from '../../types'
-import Mediator from '../../services/mediator'
+import i18n from '../../i18n'
+import Mediator, {CallbackOperation} from '../../services/mediator'
 
 export interface IPage {
     key: string
     item: Item
     viewType: ViewType
-    data?: ItemData
+    data?: ItemData | null
 }
 
 export enum ViewType {
@@ -24,7 +25,7 @@ interface OpenPagePayload {
     key?: string
     item: Item
     viewType: ViewType
-    data?: ItemData
+    data?: ItemData | null
 }
 
 const tempIds: {[itemName: string]: number} = {}
@@ -47,18 +48,18 @@ export function getLabel(page: IPage) {
     const {key, item, viewType, data} = page
     switch (viewType) {
         case ViewType.view:
-            if (data) {
-                let displayAttrValue: string = (data as ItemData)[item.titleAttribute]
+            if (data && data[item.titleAttribute]) {
+                let displayAttrValue: string = data[item.titleAttribute]
                 if (displayAttrValue === 'id')
                     displayAttrValue = displayAttrValue.substring(0, 8)
 
                 return displayAttrValue
             } else {
-                return `${item.displayName} ${key.substring(key.lastIndexOf('#') + 1)} *`
+                return `${i18n.t(item.displayName)} ${key.substring(key.lastIndexOf('#') + 1)} *`
             }
         case ViewType.default:
         default:
-            return item.displayPluralName
+            return i18n.t(item.displayPluralName)
     }
 }
 
@@ -84,38 +85,37 @@ const slice = createSlice({
                 pages[k] = {key: k, item, viewType, data}
 
             state.activeKey = k
-
-            // Cannot add observer/observable here because callbacks aren't serializable
         },
-        closePage: (state, action: PayloadAction<string>) => {
-            const key = action.payload
-            const {pages} = state
-            delete pages[key]
+        updatePage: (state, action: PayloadAction<{key: string, data: ItemData}>) => {
+            const {key, data} = action.payload
+            const {pages, activeKey} = state
 
-            // Set new active key
-            const keys = Object.keys(pages)
-            if (keys.length > 0)
-                state.activeKey = keys[keys.length - 1]
-            else
-                state.activeKey = undefined
+            const newPages: {[key: string]: IPage} = {}
+            for (const k in pages) {
+                if (!pages.hasOwnProperty(k))
+                    continue
 
-            mediator.removeKey(key)
-        },
-        closeActivePage: (state) => {
-            const {activeKey, pages} = state
-            if (!activeKey)
-                return
+                const page = pages[k]
+                if (page.key === key) {
+                    const newKey = generateKey(page.item.name, page.viewType, data.id)
+                    newPages[newKey] = {
+                        key: newKey,
+                        item: page.item,
+                        viewType: page.viewType,
+                        data
+                    }
 
-            delete pages[activeKey]
+                    if (page.key === activeKey)
+                        state.activeKey = newKey
 
-            // Set new active key
-            const keys = Object.keys(pages)
-            if (keys.length > 0)
-                state.activeKey = keys[keys.length - 1]
-            else
-                state.activeKey = undefined
+                    mediator.changeKey(key, newKey)
+                    mediator.runObservableCallbacks(newKey, CallbackOperation.UPDATE, data.id)
+                } else {
+                    newPages[k] = page
+                }
+            }
 
-            mediator.removeKey(activeKey)
+            state.pages = newPages
         },
         updateActivePage: (state, action: PayloadAction<ItemData>) => {
             const itemData = action.payload
@@ -138,15 +138,42 @@ const slice = createSlice({
                         data: itemData
                     }
                     state.activeKey = newKey
+
+                    // Call here because key is changed
                     mediator.changeKey(activeKey, newKey)
-                    mediator.runObservableCallbacks(newKey)
+                    mediator.runObservableCallbacks(newKey, CallbackOperation.UPDATE, itemData.id)
                 } else {
                     newPages[key] = page
-                    mediator.runObservableCallbacks(key)
                 }
             }
 
             state.pages = newPages
+        },
+        closePage: (state, action: PayloadAction<string>) => {
+            const key = action.payload
+            const {pages} = state
+            delete pages[key]
+
+            // Set new active key
+            const keys = Object.keys(pages)
+            if (keys.length > 0)
+                state.activeKey = keys[keys.length - 1]
+            else
+                state.activeKey = undefined
+        },
+        closeActivePage: (state) => {
+            const {activeKey, pages} = state
+            if (!activeKey)
+                return
+
+            delete pages[activeKey]
+
+            // Set new active key
+            const keys = Object.keys(pages)
+            if (keys.length > 0)
+                state.activeKey = keys[keys.length - 1]
+            else
+                state.activeKey = undefined
         },
         reset: () => initialState
     },
@@ -156,6 +183,6 @@ const slice = createSlice({
 export const selectPages = (state: RootState) => Object.values(state.pages.pages) as IPage[]
 export const selectActiveKey = (state: RootState) => state.pages.activeKey
 
-export const {setActiveKey, openPage, closePage, closeActivePage, updateActivePage, reset} = slice.actions
+export const {setActiveKey, openPage, closePage, closeActivePage, updatePage, updateActivePage, reset} = slice.actions
 
 export default slice.reducer

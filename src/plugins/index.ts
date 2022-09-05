@@ -41,7 +41,7 @@ export interface CustomPluginRenderProps {
 export interface CustomPluginRenderContext {
     me: UserInfo
     item: Item
-    data?: ItemData
+    data?: ItemData | null
 }
 
 const plugins: CustomPlugin[] = pluginConfig.plugins.sort((a, b) => a.priority - b.priority)

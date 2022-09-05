@@ -1,4 +1,3 @@
-import i18n from '../i18n'
 import {ROLE_ADMIN, ROLE_DESIGNER, ROLE_USER} from './constants'
 
 interface MenuConfig {
@@ -20,12 +19,12 @@ export interface MenuItem {
 const menuConfig: MenuConfig = {
     items: [{
         key: 'administration',
-        label: i18n.t("Administration"),
+        label: 'Administration',
         icon: 'CrownOutlined',
         roles: [ROLE_ADMIN],
         children: [{
             key: 'security',
-            label: i18n.t("Security"),
+            label: 'Security',
             icon: 'LockOutlined',
             roles: [ROLE_ADMIN],
             children: [{
@@ -54,7 +53,7 @@ const menuConfig: MenuConfig = {
         }]
     }, {
         key: 'design',
-        label: i18n.t("Design"),
+        label: 'Design',
         icon: 'RocketOutlined',
         roles: [ROLE_ADMIN, ROLE_DESIGNER, ROLE_USER], // TODO: Delete ROLE_USER in production
         children: [{

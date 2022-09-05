@@ -21,12 +21,12 @@ import {ExtRequestParams} from '../../services/query'
 interface Props {
     me: UserInfo
     page: IPage
+    onItemCreate: (item: Item, initialData?: ItemData | null, cb?: () => void, observerKey?: string) => void
     onItemView: (item: Item, id: string, cb?: () => void, observerKey?: string) => void
-    onCreate: (cb?: () => void, observerKey?: string) => void
-    onDelete: () => void
+    onItemDelete: (itemName: string, id: string) => void
 }
 
-function DefaultPage({me, page, onCreate, onItemView}: Props) {
+function DefaultPage({me, page, onItemCreate, onItemView}: Props) {
     const {t} = useTranslation()
     const [loading, setLoading] = useState(false)
     const [data, setData] = useState(getInitialData())
@@ -92,7 +92,7 @@ function DefaultPage({me, page, onCreate, onItemView}: Props) {
         }]}/>
     ), [t, handleView])
 
-    const handleCreate = (evt: MouseEvent) => { onCreate(() => setVersion(prevVersion => prevVersion + 1), page.key) }
+    const handleCreate = (evt: MouseEvent) => { onItemCreate(item, null,() => setVersion(prevVersion => prevVersion + 1), page.key) }
 
     function renderPageHeader(): ReactNode {
         const Icon = item.icon ? (icons as any)[item.icon] : null

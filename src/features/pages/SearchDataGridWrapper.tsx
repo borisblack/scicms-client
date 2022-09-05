@@ -29,7 +29,7 @@ export default function SearchDataGridWrapper({item, notHiddenColumns = [], extr
 
     const notHiddenColumnSet = useMemo(() => new Set(notHiddenColumns), [notHiddenColumns])
     const columnsMemoized = useMemo(() => getColumns(item), [item])
-    const hiddenColumnsMemoized = useMemo(() => getHiddenColumns(item).filter(it => !notHiddenColumnSet.has(it)), [item])
+    const hiddenColumnsMemoized = useMemo(() => getHiddenColumns(item).filter(it => !notHiddenColumnSet.has(it)), [item, notHiddenColumnSet])
 
     const handleRequest = useCallback(async (params: RequestParams) => {
         const allParams: ExtRequestParams = {...params, majorRev, locale: showAllLocalesRef.current ? 'all' : locale, state}

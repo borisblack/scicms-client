@@ -133,10 +133,11 @@ interface ItemSpec {
 export interface Attribute {
     type: AttrType
     columnName?: string
-    displayName?: string
+    displayName: string
     description?: string
     enumSet?: string[]
     seqName?: string
+    confirm?: boolean
     relType?: RelType
     target?: string
     intermediate?: string

@@ -17,15 +17,43 @@ const PasswordAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, v
     const isDisabled = attribute.keyed || attribute.readOnly
 
     return (
-        <FormItem
-            className={styles.formItem}
-            name={attrName}
-            label={attribute.displayName}
-            initialValue={value}
-            rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
-        >
-            <Password style={{maxWidth: attribute.fieldWidth}} maxLength={attribute.length} disabled={isDisabled}/>
-        </FormItem>
+        <>
+            <FormItem
+                className={styles.formItem}
+                name={attrName}
+                label={t(attribute.displayName)}
+                initialValue={value}
+                // hasFeedback
+                rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
+            >
+                <Password style={{maxWidth: attribute.fieldWidth}} maxLength={attribute.length} disabled={isDisabled}/>
+            </FormItem>
+            {attribute.confirm && (
+                <Form.Item
+                    name={`${attrName}.confirm`}
+                    label={t('Confirm')}
+                    initialValue={value}
+                    dependencies={[attrName]}
+                    // hasFeedback
+                    rules={[
+                        {
+                            required: true,
+                            message: t('Please confirm password'),
+                        },
+                        ({ getFieldValue }) => ({
+                            validator(_, value) {
+                                if (!value || getFieldValue(attrName) === value) {
+                                    return Promise.resolve();
+                                }
+                                return Promise.reject(new Error(t('Passwords do not match')))
+                            },
+                        }),
+                    ]}
+                >
+                    <Password style={{maxWidth: attribute.fieldWidth}} maxLength={attribute.length} disabled={isDisabled}/>
+                </Form.Item>
+            )}
+        </>
     )
 }
 

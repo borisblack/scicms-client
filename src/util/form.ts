@@ -17,7 +17,7 @@ interface FilteredItemData {
     state?: string | null
 }
 
-export async function parseValues(item: Item, data: ItemData | undefined, values: any): Promise<ItemData> {
+export async function parseValues(item: Item, data: ItemData | null | undefined, values: any): Promise<ItemData> {
     const parsedValues: {[name: string]: any} = {}
     const {attributes} = item.spec
 
@@ -38,7 +38,7 @@ export async function parseValues(item: Item, data: ItemData | undefined, values
     return parsedValues as ItemData
 }
 
-async function parseValue(item: Item, attrName: string, attribute: Attribute, data: ItemData | undefined, values: any): Promise<any> {
+async function parseValue(item: Item, attrName: string, attribute: Attribute, data: ItemData | null | undefined, values: any): Promise<any> {
     const value = values[attrName]
     switch (attribute.type) {
         case AttrType.date:
@@ -80,7 +80,7 @@ function parseDateTime(attrName: string, values: any): string | null {
     return dt.setZone(timeZone, {keepLocalTime: true}).toISO()
 }
 
-async function parseMedia(attrName: string, data: ItemData | undefined, values: any): Promise<string | null> {
+async function parseMedia(attrName: string, data: ItemData | null | undefined, values: any): Promise<string | null> {
     const value = values[attrName]
     const prevItemPermissionId = data?.permission.data?.id
     const itemPermissionId = values['permission.id']
@@ -99,7 +99,7 @@ async function parseMedia(attrName: string, data: ItemData | undefined, values: 
     return mediaId
 }
 
-async function parseLocation(item: Item, attrName: string, data: ItemData | undefined, values: any): Promise<string | null> {
+async function parseLocation(item: Item, attrName: string, data: ItemData | null | undefined, values: any): Promise<string | null> {
     const value = values[attrName]
     const prevItemPermissionId = data?.permission.data?.id
     const itemPermissionId = values['permission.id']

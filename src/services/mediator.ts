@@ -1,3 +1,10 @@
+export enum CallbackOperation {
+    UPDATE = 'UPDATE',
+    DELETE = 'DELETE'
+}
+
+export type Callback = (operation: CallbackOperation, id: string) => void
+
 export default class Mediator {
     private static instance: Mediator | null = null
 
@@ -9,26 +16,26 @@ export default class Mediator {
     }
 
     private observers: {[key: string]: Set<string>} = {}
-    private observables: {[key: string]: Set<() => void>} = {}
+    private observables: {[key: string]: Set<Callback>} = {}
 
-    addObserver(observerKey: string, observableKey: string, callbacks: (() => void)[]) {
+    addObserver(observerKey: string, observableKey: string, callbacks: Callback[]) {
         const prevObservables: Set<string> = this.observers[observerKey] ?? new Set()
         this.observers[observerKey] = prevObservables.add(observableKey)
 
         this.addObservable(observableKey, callbacks)
     }
 
-    addObservable(key: string, callbacks: (() => void)[]) {
-        const cbs: Set<() => void> = this.observables[key] ?? new Set()
+    addObservable(key: string, callbacks: Callback[]) {
+        const cbs: Set<Callback> = this.observables[key] ?? new Set()
         callbacks.forEach(cb => cbs.add(cb))
 
         this.observables[key] = cbs
     }
 
-    runObservableCallbacks(key: string) {
+    runObservableCallbacks(key: string, operation: CallbackOperation, id: string) {
         const callbacks = this.observables[key]
         callbacks?.forEach(it => {
-            it()
+            it(operation, id)
         })
     }
 

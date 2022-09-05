@@ -1,5 +1,6 @@
 import React, {useEffect, useMemo, useRef, useState} from 'react'
 import {Col, Form, message, Row, Spin, Tabs} from 'antd'
+import * as icons from '@ant-design/icons'
 
 import {Attribute, AttrType, Item, ItemData, Operation, RelType, UserInfo} from '../../types'
 import PermissionService from '../../services/permission'
@@ -17,13 +18,17 @@ import MutationService from '../../services/mutation'
 import appConfig from '../../config'
 import ViewPageHeader from './ViewPageHeader'
 import {DEBUG} from '../../config/constants'
+import ItemService from '../../services/item'
+import RelationsDataGridWrapper from './RelationsDataGridWrapper'
+import {Callback} from '../../services/mediator'
 
 interface Props {
     me: UserInfo
     page: IPage
-    onItemView: (item: Item, id: string, cb?: () => void, observerKey?: string) => void
+    onItemCreate: (item: Item, initialData?: ItemData | null, cb?: Callback, observerKey?: string) => void
+    onItemView: (item: Item, id: string, cb?: Callback, observerKey?: string) => void
+    onItemDelete: (itemName: string, id: string) => void
     onUpdate: (data: ItemData) => void
-    onDelete: () => void
 }
 
 const ITEM_ITEM_NAME = 'item'
@@ -33,9 +38,9 @@ const LOCALE_ATTR_NAME = 'locale'
 
 const TabPane = Tabs.TabPane
 
-function ViewPage({me, page, onItemView, onUpdate, onDelete}: Props) {
+function ViewPage({me, page, onItemView, onItemCreate, onItemDelete, onUpdate}: Props) {
     const {item, data} = page
-    const isNew = !data
+    const isNew = !data?.id
     const {t} = useTranslation()
     const [loading, setLoading] = useState<boolean>(false)
     const [isLockedByMe, setLockedByMe] = useState<boolean>(data?.lockedBy?.data?.id === me.id)
@@ -47,6 +52,7 @@ function ViewPage({me, page, onItemView, onUpdate, onDelete}: Props) {
 
     const coreConfigService = useMemo(() => CoreConfigService.getInstance(), [])
     const itemTemplateService = useMemo(() => ItemTemplateService.getInstance(), [])
+    const itemService = useMemo(() => ItemService.getInstance(), [])
     const permissionService = useMemo(() => PermissionService.getInstance(), [])
     const queryService = useMemo(() => QueryService.getInstance(), [])
     const mutationService = useMemo(() => MutationService.getInstance(), [])
@@ -54,7 +60,7 @@ function ViewPage({me, page, onItemView, onUpdate, onDelete}: Props) {
     const itemPermissionId = item.permission.data?.id
     const itemPermission = itemPermissionId ? permissionService.findById(itemPermissionId) : null
     const canCreate = !!itemPermission && ACL.canCreate(me, itemPermission)
-    const dataPermissionId = data?.permission.data?.id
+    const dataPermissionId = data?.permission?.data?.id
     const dataPermission = dataPermissionId ? permissionService.findById(dataPermissionId) : null
     const canEdit = !!dataPermission && (item.name !== ITEM_ITEM_NAME || !data?.core) && !!data?.current && ACL.canWrite(me, dataPermission)
     const canDelete = !!dataPermission && ACL.canDelete(me, dataPermission)
@@ -149,8 +155,8 @@ function ViewPage({me, page, onItemView, onUpdate, onDelete}: Props) {
         if (!item.versioned)
             throw new Error('Item is not versioned')
 
-        if (!data)
-            throw new Error('Illegal state. Data is undefined')
+        if (isNew)
+            throw new Error('Cannot create version for new item')
 
         setLoading(true)
         try {
@@ -172,8 +178,8 @@ function ViewPage({me, page, onItemView, onUpdate, onDelete}: Props) {
         if (!item.localized)
             throw new Error('Item is not localized')
 
-        if (!data)
-            throw new Error('Illegal state. Data is undefined')
+        if (isNew)
+            throw new Error('Cannot create localization for new item')
 
         setLoading(true)
         try {
@@ -192,8 +198,8 @@ function ViewPage({me, page, onItemView, onUpdate, onDelete}: Props) {
         if (!canCreate)
             throw new Error('Cannot edit this item')
 
-        if (!data)
-            throw new Error('Illegal state. Data is undefined')
+        if (isNew)
+            throw new Error('New item cannot be updated')
 
         setLoading(true)
         try {
@@ -244,7 +250,7 @@ function ViewPage({me, page, onItemView, onUpdate, onDelete}: Props) {
             if (operation !== Operation.UPDATE && operation !== Operation.CREATE_VERSION)
                 return
 
-            if (!data || (data.locale ?? coreConfigService.coreConfig.i18n.defaultLocale) === value)
+            if (isNew || (data.locale ?? coreConfigService.coreConfig.i18n.defaultLocale) === value)
                 return
 
             setLoading(true)
@@ -279,23 +285,43 @@ function ViewPage({me, page, onItemView, onUpdate, onDelete}: Props) {
         return ownAttributes
     }
 
-    function renderRelationships() {
+    function renderCollectionRelations() {
+        if (isNew)
+            return null
+
+        const collectionAttrNames =
+            Object.keys(item.spec.attributes).filter(key => {
+                const attribute = item.spec.attributes[key]
+                return attribute.type === AttrType.relation && (attribute.relType === RelType.oneToMany || attribute.relType === RelType.manyToMany)
+            })
+
+        if (collectionAttrNames.length === 0)
+            return null
+
         return (
             <Tabs>
-                {Object.keys(item.spec.attributes)
-                    .filter(key => {
-                        const attr = item.spec.attributes[key]
-                        return attr.type === AttrType.relation && (attr.relType === RelType.oneToMany || attr.relType === RelType.manyToMany)
-                    })
-                    .map(key => {
-                        const attr = item.spec.attributes[key]
-                        // TODO: Get item and build query
-                        return (
-                            <TabPane key={key} tab={attr.displayName}>
-                                {/*<DataGrid initialQueryItem={initialQueryItem} isRelationship />*/}
-                            </TabPane>
-                        )
-                    })}
+                {collectionAttrNames.map(key => {
+                    const attribute = item.spec.attributes[key]
+                    if (!attribute.target)
+                        throw new Error('Illegal attribute target')
+
+                    const target = itemService.getByName(attribute.target)
+                    const TargetIcon = target.icon && (icons as any)[target.icon]
+                    const title = t(attribute.displayName)
+                    return (
+                        <TabPane key={key} tab={TargetIcon ? <span><TargetIcon/>&nbsp;{title}</span> : title}>
+                            <RelationsDataGridWrapper
+                                item={item}
+                                itemData={data}
+                                relAttrName={key}
+                                relAttribute={attribute}
+                                pageKey={page.key}
+                                onItemCreate={onItemCreate}
+                                onItemView={onItemView}
+                            />
+                        </TabPane>
+                    )
+                })}
             </Tabs>
         )
     }
@@ -319,8 +345,8 @@ function ViewPage({me, page, onItemView, onUpdate, onDelete}: Props) {
                     setLockedByMe={setLockedByMe}
                     setLoading={setLoading}
                     onItemView={onItemView}
+                    onItemDelete={onItemDelete}
                     onUpdate={onUpdate}
-                    onDelete={onDelete}
                 />
             )}
 
@@ -345,6 +371,8 @@ function ViewPage({me, page, onItemView, onUpdate, onDelete}: Props) {
             {hasComponents('view.footer') && renderComponents('view.footer', {me, item})}
             {hasComponents(`${item.name}.view.footer`) && renderComponents(`${item.name}.view.footer`, {me, item})}
             {hasPlugins('view.footer', `${item.name}.view.footer`) && <div ref={footerRef}/>}
+
+            {renderCollectionRelations()}
         </Spin>
     )
 }

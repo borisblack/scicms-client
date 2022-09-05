@@ -88,7 +88,7 @@ const MediaAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, att
             <FormItem
                 className={styles.formItem}
                 name={attrName}
-                label={attribute.displayName}
+                label={t(attribute.displayName)}
                 valuePropName="fileList"
                 getValueFromEvent={normFile}
                 required={attribute.required && !attribute.readOnly}

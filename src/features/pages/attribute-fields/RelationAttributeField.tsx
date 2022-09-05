@@ -95,7 +95,7 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, 
             <FormItem
                 className={styles.formItem}
                 name={attrName}
-                label={attribute.displayName}
+                label={t(attribute.displayName)}
                 initialValue={value?.data ? value.data[targetItem.titleAttribute] : null}
                 rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
             >

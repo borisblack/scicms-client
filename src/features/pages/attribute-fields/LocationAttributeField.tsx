@@ -51,7 +51,7 @@ const LocationAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, 
             <FormItem
                 className={styles.formItem}
                 name={attrName}
-                label={attribute.displayName}
+                label={t(attribute.displayName)}
                 rules={[{required: attribute.required && !attribute.readOnly}]}
             >
                 <InputGroup compact>

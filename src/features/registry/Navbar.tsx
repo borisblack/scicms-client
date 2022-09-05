@@ -46,7 +46,7 @@ const Navbar = ({collapsed, me}: Props) => {
                 const Icon = it.icon ? (icons as any)[it.icon] : null
                 return {
                     key: it.key,
-                    label: it.label,
+                    label: t(it.label),
                     icon: Icon ? <Icon/> : null,
                     children: toAntdMenuItems(it.children)
                 }
@@ -55,12 +55,12 @@ const Navbar = ({collapsed, me}: Props) => {
                 const Icon = item.icon ? (icons as any)[item.icon] : null
                 return {
                     key: item.id,
-                    label: item.displayPluralName,
+                    label: t(item.displayPluralName),
                     icon: Icon ? <Icon/> : null,
                     onClick: () => handleItemClick(item)
                 }
             }
-        }), [me.roles, itemService, handleItemClick])
+        }), [me.roles, itemService, t, handleItemClick])
 
     return (
         <Sider className="Navbar" trigger={null} collapsible collapsed={collapsed} width={250}>

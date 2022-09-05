@@ -37,14 +37,14 @@ interface Props {
     setLoading: (loading: boolean) => void
     onItemView: (item: Item, id: string, cb?: () => void, observerKey?: string) => void
     onUpdate: (data: ItemData) => void
-    onDelete: () => void
+    onItemDelete: (itemName: string, id: string) => void
 }
 
 const VERSIONS_MODAL_WIDTH = 800
 
 const {confirm} = Modal
 
-export default function ViewPageHeader({page, form, isNew, canCreate, canEdit, canDelete, operation, setOperation, isLockedByMe, setLockedByMe, setLoading, onItemView, onUpdate, onDelete}: Props) {
+export default function ViewPageHeader({page, form, isNew, canCreate, canEdit, canDelete, operation, setOperation, isLockedByMe, setLockedByMe, setLoading, onItemView, onUpdate, onItemDelete}: Props) {
     const {item, data} = page
     const Icon = item.icon ? (icons as any)[item.icon] : null
     const {t} = useTranslation()
@@ -57,16 +57,16 @@ export default function ViewPageHeader({page, form, isNew, canCreate, canEdit, c
     }
 
     async function handleLock(evt: MouseEvent) {
-        if (!data)
-            throw new Error('Illegal state. Data is undefined')
+        if (isNew)
+            throw new Error('New item cannot be locked')
 
         setLoading(true)
         try {
-            const locked = await mutationService.lock(item, data.id)
+            const locked = await mutationService.lock(item, data?.id as string)
             if (locked.success)
                 await onUpdate(locked.data)
             else
-                message.warning(t('Cannot lock item'))
+                message.warning(t('New item cannot be locked'))
 
             setLockedByMe(locked.success)
             setOperation(item.versioned ? Operation.CREATE_VERSION : Operation.UPDATE)
@@ -78,16 +78,16 @@ export default function ViewPageHeader({page, form, isNew, canCreate, canEdit, c
     }
 
     async function handleCancel(evt: MouseEvent) {
-        if (!data)
-            throw new Error('Illegal state. Data is undefined')
+        if (isNew)
+            throw new Error('New item cannot be unlocked')
 
         setLoading(true)
         try {
-            const unlocked = await mutationService.unlock(item, data.id)
+            const unlocked = await mutationService.unlock(item, data?.id as string)
             if (unlocked.success)
                 await onUpdate(unlocked.data)
             else
-                message.warning(t('Cannot unlock item'))
+                message.warning(t('New item cannot be unlocked'))
 
             setLockedByMe(!unlocked)
             setOperation(Operation.VIEW)
@@ -102,15 +102,15 @@ export default function ViewPageHeader({page, form, isNew, canCreate, canEdit, c
         if (!canDelete)
             throw new Error('Cannot delete this item')
 
-        if (!data)
-            throw new Error('Illegal state. Data is undefined')
+        if (isNew)
+            throw new Error('New item cannot be deleted')
 
         setLoading(true)
         try {
-            const deleted = await mutationService.delete(item, data.id, appConfig.mutation.deletingStrategy)
+            const deleted = await mutationService.delete(item, data?.id as string, appConfig.mutation.deletingStrategy)
             await onUpdate(deleted)
             await setLockedByMe(false)
-            onDelete()
+            onItemDelete(item.name, data?.id as string)
         } catch (e: any) {
             message.error(e.message)
         } finally {
@@ -122,16 +122,16 @@ export default function ViewPageHeader({page, form, isNew, canCreate, canEdit, c
         if (!canDelete)
             throw new Error('Cannot purge this item')
 
-        if (!data)
-            throw new Error('Illegal state. Data is undefined')
+        if (isNew)
+            throw new Error('New item cannot be purged')
 
         setLoading(true)
         try {
-            const purged = await mutationService.purge(item, data.id, appConfig.mutation.deletingStrategy)
-            const deleted = purged.data.find(it => it.id === data.id) as ItemData
+            const purged = await mutationService.purge(item, data?.id as string, appConfig.mutation.deletingStrategy)
+            const deleted = purged.data.find(it => it.id === data?.id as string) as ItemData
             await onUpdate(deleted)
             await setLockedByMe(false)
-            onDelete()
+            onItemDelete(item.name, data?.id as string)
         } catch (e: any) {
             message.error(e.message)
         } finally {
@@ -143,12 +143,12 @@ export default function ViewPageHeader({page, form, isNew, canCreate, canEdit, c
         if (!canEdit)
             throw new Error('Cannot promote this item')
 
-        if (!data)
-            throw new Error('Illegal state. Data is undefined')
+        if (isNew)
+            throw new Error('New item cannot be promoted')
 
         setLoading(true)
         try {
-            const promoted = await mutationService.promote(item, data.id, state)
+            const promoted = await mutationService.promote(item, data?.id as string, state)
             await onUpdate(promoted)
             setPromoteModalVisible(false)
         } catch (e: any) {
@@ -189,15 +189,15 @@ export default function ViewPageHeader({page, form, isNew, canCreate, canEdit, c
     )
 
     const getVersionsExtraFiltersInput = (): FiltersInput<unknown> => {
-        if (!data)
+        if (isNew)
             return {} as FiltersInput<unknown>
 
         return {
             id: {
-                ne: data.id
+                ne: data?.id as string
             },
             configId: {
-                eq: data.configId
+                eq: data?.configId as string
             }
         }
     }
@@ -266,12 +266,13 @@ export default function ViewPageHeader({page, form, isNew, canCreate, canEdit, c
         setVersionsModalVisible(false)
     }
 
+    const title = getLabel(page)
     return (
         <>
             {operation === Operation.CREATE_VERSION && <Alert type="warning" closable message={t('A new version will be created')}/>}
             <PageHeader
                 className={styles.pageHeader}
-                title={<span>{Icon ? <Icon/> : null}&nbsp;&nbsp;{getLabel(page)}</span>}
+                title={Icon ? <span><Icon/>&nbsp;&nbsp;{title}</span> : title}
                 extra={getExtra()}
             />
             <Modal
@@ -291,7 +292,7 @@ export default function ViewPageHeader({page, form, isNew, canCreate, canEdit, c
                     onSelect={handleVersionSelect}
                 />
             </Modal>
-            {data?.lifecycle.data && (
+            {data?.lifecycle?.data && (
                 <Modal
                     title={t('Promotion')}
                     visible={isPromoteModalVisible}

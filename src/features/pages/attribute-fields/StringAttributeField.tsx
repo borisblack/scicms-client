@@ -55,7 +55,7 @@ const StringAttributeField: FC<AttributeFieldProps> = ({item, attrName, attribut
         <FormItem
             className={styles.formItem}
             name={attrName}
-            label={attribute.displayName}
+            label={t(attribute.displayName)}
             initialValue={value}
             rules={rules}
         >

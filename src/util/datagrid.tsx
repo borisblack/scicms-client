@@ -2,6 +2,7 @@ import {ReactElement} from 'react'
 import {ColumnDef, createColumnHelper} from '@tanstack/react-table'
 import {Button, Checkbox} from 'antd'
 import {DateTime} from 'luxon'
+
 import {Attribute, AttrType, Item, Location, Media, RelType} from '../types'
 import appConfig from '../config'
 import ItemService from '../services/item'
@@ -9,6 +10,7 @@ import {DataWithPagination} from '../components/datagrid/DataGrid'
 import QueryService, {ExtRequestParams, FiltersInput} from '../services/query'
 import MediaService from '../services/media'
 import {UTC} from '../config/constants'
+import i18n from '../i18n'
 
 const {luxonDisplayDateFormatString, luxonDisplayTimeFormatString, luxonDisplayDateTimeFormatString} = appConfig.dateTime
 const columnHelper = createColumnHelper<any>()
@@ -37,7 +39,7 @@ export function getColumns(item: Item): ColumnDef<any, any>[] {
             continue
 
         const column = columnHelper.accessor(attrName, {
-            header: attr.displayName,
+            header: i18n.t(attr.displayName) as string,
             cell: info => renderCell(attr, info.getValue()),
             size: attr.colWidth ?? appConfig.ui.dataGrid.colWidth,
             enableSorting: attr.type !== AttrType.text && attr.type !== AttrType.json && attr.type !== AttrType.array
@@ -120,8 +122,28 @@ export function getHiddenColumns(item: Item): string[] {
     return hiddenColumns
 }
 
-export async function findAll(item: Item, params: ExtRequestParams, extraFiltersInput?: FiltersInput<unknown>): Promise<DataWithPagination<any>> {
+export async function findAll(
+    item: Item,
+    params: ExtRequestParams,
+    extraFiltersInput?: FiltersInput<unknown>
+): Promise<DataWithPagination<any>> {
     const responseCollection = await queryService.findAll(item, params, extraFiltersInput)
+    const {page, pageSize, total} = responseCollection.meta.pagination
+    return {
+        data: responseCollection.data,
+        pagination: {page, pageSize, total}
+    }
+}
+
+export async function findAllRelated(
+    itemName: string,
+    itemId: string,
+    relAttrName: string,
+    target: Item,
+    params: ExtRequestParams,
+    extraFiltersInput?: FiltersInput<unknown>
+): Promise<DataWithPagination<any>> {
+    const responseCollection = await queryService.findAllRelated(itemName, itemId, relAttrName, target, params, extraFiltersInput)
     const {page, pageSize, total} = responseCollection.meta.pagination
     return {
         data: responseCollection.data,

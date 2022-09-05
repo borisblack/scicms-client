@@ -262,6 +262,63 @@ export default class QueryService {
         }
     `
 
+    async findAllRelated(
+        itemName: string,
+        itemId: string,
+        relAttrName: string,
+        target: Item,
+        {sorting, filters, pagination}: ExtRequestParams,
+        extraFiltersInput?: FiltersInput<unknown>
+    ): Promise<ResponseCollection<any>> {
+        const query = gql(this.buildFindAllRelatedQuery(itemName, relAttrName, target))
+        const {page, pageSize} = pagination
+        const variables = {
+            id: itemId,
+            sort: sorting.map(it => `${it.id}:${it.desc ? 'desc' : 'asc'}`),
+            filters: {...this.buildItemFiltersInput(target, filters), ...extraFiltersInput},
+            pagination: {page, pageSize},
+        }
+
+        const res = await apolloClient.query({query, variables})
+        if (res.errors) {
+            console.error(extractGraphQLErrorMessages(res.errors))
+            throw new Error(i18n.t('An error occurred while executing the request'))
+        }
+
+        return res.data[itemName].data[relAttrName]
+    }
+
+    private buildFindAllRelatedQuery = (itemName: string, relationAttrName: string, target: Item) => `
+        query find${_.upperFirst(itemName)}(
+            $id: ID!
+            $sort: [String]
+            $filters: ${_.upperFirst(target.name)}FiltersInput
+            $pagination: PaginationInput
+        ) {
+            ${itemName}(id: $id) {
+                data {
+                    ${relationAttrName}(
+                        sort: $sort
+                        filters: $filters
+                        pagination: $pagination
+                    ) {
+                        data {
+                            ${this.itemService.listNonCollectionAttributes(target).join('\n')}
+                        }
+                        meta {
+                            pagination {
+                                page
+                                pageCount
+                                pageSize
+                                total
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    `
+
     private buildItemFiltersInput = (item: Item, filters: ColumnFiltersState): FiltersInput<unknown> => {
         const {attributes} = item.spec
         const filtersInput: FiltersInput<unknown> = {}
