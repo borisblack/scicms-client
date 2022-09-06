@@ -29,13 +29,13 @@ export interface ExtRequestParams extends RequestParams {
     state?: string | null
 }
 
-export type FiltersInput<FiltersType> = {
+export type FiltersInput<FiltersType extends ItemData> = {
     and?: [FiltersType]
     or?: [FiltersType]
     not?: FiltersType
-} & {[name: string]: FiltersInput<unknown> | FilterInput<unknown, unknown>}
+} & {[name: string]: FiltersInput<FiltersType> | FilterInput<FiltersType, string | boolean | number>}
 
-type FilterInput<FilterType, ElementType> = {
+type FilterInput<FilterType extends ItemData, ElementType extends string | boolean | number> = {
     and?: [FilterType]
     or?: [FilterType]
     not?: FilterType
@@ -58,7 +58,7 @@ type FilterInput<FilterType, ElementType> = {
     notNull?: boolean
 }
 
-function buildDateFilter(filterValue: string): FilterInput<unknown, string> {
+function buildDateFilter(filterValue: string): FilterInput<ItemData, string> {
     let dt = DateTime.fromFormat(filterValue, LUXON_DATE_FORMAT_STRING)
     if (dt.isValid) {
         const endDt = dt.endOf('day')
@@ -92,7 +92,7 @@ function buildDateFilter(filterValue: string): FilterInput<unknown, string> {
     throw new Error(i18n.t('Invalid filter format'))
 }
 
-function buildTimeFilter(filterValue: string): FilterInput<unknown, string> {
+function buildTimeFilter(filterValue: string): FilterInput<ItemData, string> {
     let dt = DateTime.fromFormat(filterValue, LUXON_TIME_FORMAT_STRING)
     if (dt.isValid) {
         const endDt = dt.endOf('minute')
@@ -108,7 +108,7 @@ function buildTimeFilter(filterValue: string): FilterInput<unknown, string> {
     throw new Error(i18n.t('Invalid filter format'))
 }
 
-function buildDateTimeFilter(filterValue: string): FilterInput<unknown, string> {
+function buildDateTimeFilter(filterValue: string): FilterInput<ItemData, string> {
     let dt = DateTime.fromFormat(filterValue, LUXON_DATETIME_FORMAT_STRING)
     if (dt.isValid) {
         const endDt = dt.endOf('minute')
@@ -201,7 +201,7 @@ export default class QueryService {
         }
     `
 
-    findAll = async (item: Item, {sorting, filters, pagination, majorRev, locale, state}: ExtRequestParams, extraFiltersInput?: FiltersInput<unknown>): Promise<ResponseCollection<any>> => {
+    findAll = async (item: Item, {sorting, filters, pagination, majorRev, locale, state}: ExtRequestParams, extraFiltersInput?: FiltersInput<ItemData>): Promise<ResponseCollection<any>> => {
         const query = gql(this.buildFindAllQuery(item))
         const {page, pageSize} = pagination
         const variables: any = {
@@ -268,7 +268,7 @@ export default class QueryService {
         relAttrName: string,
         target: Item,
         {sorting, filters, pagination}: ExtRequestParams,
-        extraFiltersInput?: FiltersInput<unknown>
+        extraFiltersInput?: FiltersInput<ItemData>
     ): Promise<ResponseCollection<any>> {
         const query = gql(this.buildFindAllRelatedQuery(itemName, relAttrName, target))
         const {page, pageSize} = pagination
@@ -289,7 +289,7 @@ export default class QueryService {
     }
 
     private buildFindAllRelatedQuery = (itemName: string, relationAttrName: string, target: Item) => `
-        query find${_.upperFirst(itemName)}(
+        query find${_.upperFirst(itemName)}${_.upperFirst(relationAttrName)}(
             $id: ID!
             $sort: [String]
             $filters: ${_.upperFirst(target.name)}FiltersInput
@@ -319,9 +319,9 @@ export default class QueryService {
         }
     `
 
-    private buildItemFiltersInput = (item: Item, filters: ColumnFiltersState): FiltersInput<unknown> => {
+    private buildItemFiltersInput = (item: Item, filters: ColumnFiltersState): FiltersInput<ItemData> => {
         const {attributes} = item.spec
-        const filtersInput: FiltersInput<unknown> = {}
+        const filtersInput: FiltersInput<ItemData> = {}
         for (const filter of filters) {
             const attr = attributes[filter.id]
             if (attr.private || (attr.type === AttrType.relation && (attr.relType === RelType.oneToMany || attr.relType === RelType.manyToMany)))
@@ -333,7 +333,7 @@ export default class QueryService {
         return filtersInput
     }
 
-    private buildAttributeFiltersInput(attr: Attribute, filterValue: any): FiltersInput<unknown> | FilterInput<unknown, unknown> {
+    private buildAttributeFiltersInput(attr: Attribute, filterValue: any): FiltersInput<ItemData> | FilterInput<ItemData, any> {
         if (attr.private || (attr.type === AttrType.relation && (attr.relType === RelType.oneToMany || attr.relType === RelType.manyToMany)))
             throw Error('Illegal attribute')
 
@@ -405,7 +405,7 @@ export default class QueryService {
     }
 
     private buildFindAllLocalizations = (item: Item) => `
-        query findAll${_.upperFirst(item.name)}Localizations ($configId: String!, $majorRev: String!, $locale: String!) {
+        query findAll${_.upperFirst(item.name)}Localizations($configId: String!, $majorRev: String!, $locale: String!) {
             ${item.pluralName} (
                 majorRev: $majorRev
                 locale: $locale
@@ -414,6 +414,29 @@ export default class QueryService {
                         eq: $configId
                     }
                 }
+            ) {
+                data {
+                    ${this.itemService.listNonCollectionAttributes(item).join('\n')}
+                }
+            }
+        }
+    `
+
+    findAllBy = async (item: Item, filtersInput: FiltersInput<ItemData>): Promise<ItemData[]> => {
+        const query = gql(this.buildFindAllBy(item))
+        const res = await apolloClient.query({query, variables: {filters: filtersInput}})
+        if (res.errors) {
+            console.error(extractGraphQLErrorMessages(res.errors))
+            throw new Error(i18n.t('An error occurred while executing the request'))
+        }
+
+        return res.data[item.pluralName].data
+    }
+
+    private buildFindAllBy = (item: Item) => `
+        query findAll${_.upperFirst(item.pluralName)}By($filters: ${_.upperFirst(item.name)}FiltersInput!) {
+            ${item.pluralName} (
+                filters: $filters
             ) {
                 data {
                     ${this.itemService.listNonCollectionAttributes(item).join('\n')}

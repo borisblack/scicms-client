@@ -4,7 +4,7 @@ const COMPONENT_ID = 'hiComponent'
 
 export const hiComponent: CustomComponent = {
     id: COMPONENT_ID,
-    mountPoint: 'item.view.footer',
+    mountPoint: 'group.tabs.end',
     priority: 10,
     title: 'Hi',
     icon: 'MehOutlined',

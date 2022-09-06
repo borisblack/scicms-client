@@ -11,6 +11,7 @@ import {DEFAULT_LIFECYCLE_ID} from '../../../services/lifecycle'
 import {DEFAULT_PERMISSION_ID} from '../../../services/permission'
 import {FiltersInput} from '../../../services/query'
 import styles from './AttributeField.module.css'
+import {extractTitleAttrValue} from '../../../util/item'
 
 const SUFFIX_BUTTON_WIDTH = 24
 const RELATION_MODAL_WIDTH = 800
@@ -37,7 +38,7 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, 
     const itemService = useMemo(() => ItemService.getInstance(), [])
     const targetItem = itemService.getByName(target)
 
-    const extraFiltersInput: FiltersInput<unknown> = useMemo(() => {
+    const extraFiltersInput: FiltersInput<ItemData> = useMemo(() => {
         if (attrName === LIFECYCLE_ATTR_NAME) {
             const allowedLifecycleIds = [...item.allowedLifecycles.data.map(it => it.id), DEFAULT_LIFECYCLE_ID]
             return {
@@ -56,7 +57,7 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, 
             } as FiltersInput<Permission>
         }
 
-        return {} as FiltersInput<unknown>
+        return {} as FiltersInput<ItemData>
     }, [item, attrName])
 
     function handleRelationSelect(itemData: ItemData) {
@@ -96,7 +97,7 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, 
                 className={styles.formItem}
                 name={attrName}
                 label={t(attribute.displayName)}
-                initialValue={value?.data ? value.data[targetItem.titleAttribute] : null}
+                initialValue={value?.data ? extractTitleAttrValue(targetItem, value.data) : null}
                 rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
             >
                 <Search

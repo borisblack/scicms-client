@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useRef, useState} from 'react'
+import React, {ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {Col, Form, message, Row, Spin, Tabs} from 'antd'
 import * as icons from '@ant-design/icons'
 
@@ -8,7 +8,7 @@ import {useTranslation} from 'react-i18next'
 import * as ACL from '../../util/acl'
 import {IPage} from './pagesSlice'
 import {hasPlugins, renderPlugins} from '../../plugins'
-import {hasComponents, renderComponents} from '../../custom-components'
+import {getComponents, hasComponents, renderComponents} from '../../custom-components'
 import ItemTemplateService from '../../services/item-template'
 import AttributeFieldWrapper from './AttributeFieldWrapper'
 import QueryService from '../../services/query'
@@ -25,6 +25,7 @@ import {Callback} from '../../services/mediator'
 interface Props {
     me: UserInfo
     page: IPage
+    closePage: () => void
     onItemCreate: (item: Item, initialData?: ItemData | null, cb?: Callback, observerKey?: string) => void
     onItemView: (item: Item, id: string, cb?: Callback, observerKey?: string) => void
     onItemDelete: (itemName: string, id: string) => void
@@ -38,7 +39,7 @@ const LOCALE_ATTR_NAME = 'locale'
 
 const TabPane = Tabs.TabPane
 
-function ViewPage({me, page, onItemView, onItemCreate, onItemDelete, onUpdate}: Props) {
+function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, onUpdate}: Props) {
     const {item, data} = page
     const isNew = !data?.id
     const {t} = useTranslation()
@@ -47,6 +48,8 @@ function ViewPage({me, page, onItemView, onItemCreate, onItemDelete, onUpdate}: 
     const [operation, setOperation] = useState<Operation>(isNew ? Operation.CREATE : (isLockedByMe ? (item.versioned ? Operation.CREATE_VERSION : Operation.UPDATE) : Operation.VIEW))
     const headerRef = useRef<HTMLDivElement>(null)
     const contentRef = useRef<HTMLDivElement>(null)
+    const contentFormRef = useRef<HTMLDivElement>(null)
+    const tabsContentRef = useRef<HTMLDivElement>(null)
     const footerRef = useRef<HTMLDivElement>(null)
     const [form] = Form.useForm()
 
@@ -85,10 +88,22 @@ function ViewPage({me, page, onItemView, onItemCreate, onItemDelete, onUpdate}: 
             renderPlugins(`${item.name}.view.content`, contentNode, {me, item, data})
         }
 
+        const contentFormNode = contentFormRef.current
+        if (contentFormNode) {
+            renderPlugins('view.content.form', contentFormNode, {me, item, data})
+            renderPlugins(`${item.name}.view.content,form`, contentFormNode, {me, item, data})
+        }
+
         const footerNode = footerRef.current
         if (footerNode) {
             renderPlugins('view.footer', footerNode, {me, item, data})
             renderPlugins(`${item.name}.view.footer`, footerNode, {me, item, data})
+        }
+
+        const tabsContentNode = tabsContentRef.current
+        if (tabsContentNode) {
+            renderPlugins('tabs.content', tabsContentNode, {me, item, data})
+            renderPlugins(`${item.name}.tabs.content`, tabsContentNode, {me, item, data})
         }
     }, [me, item, data])
 
@@ -272,9 +287,9 @@ function ViewPage({me, page, onItemView, onItemCreate, onItemDelete, onUpdate}: 
         }
     }
 
-    const getDefaultTemplateAttributes = () => itemTemplateService.getDefault().spec.attributes
+    const getDefaultTemplateAttributes = useCallback(() => itemTemplateService.getDefault().spec.attributes, [itemTemplateService])
 
-    function getOwnAttributes() {
+    const getOwnAttributes = useCallback(() => {
         const allAttributes = item.spec.attributes
         const defaultTemplateAttributes = getDefaultTemplateAttributes()
         const ownAttributes: {[name: string]: Attribute} = {}
@@ -283,10 +298,26 @@ function ViewPage({me, page, onItemView, onItemCreate, onItemDelete, onUpdate}: 
                 ownAttributes[attrName] = allAttributes[attrName]
         }
         return ownAttributes
-    }
+    }, [getDefaultTemplateAttributes, item.spec.attributes])
+    
+    const renderTabComponents = useCallback((mountPoint: string): ReactNode[] =>
+        getComponents(mountPoint).map(it => {
+            const Icon = it.icon ? (icons as any)[it.icon] : null
+            return (
+                <TabPane key={it.id} tab={Icon ? <span><Icon/>&nbsp;{it.title}</span> : it.title}>
+                    {it.render({context: {me, item}})}
+                </TabPane>
+            )
+        }), [item, me])
 
-    function renderCollectionRelations() {
-        if (isNew)
+    const renderCollectionRelations = useCallback(() => {
+        const hasTabContentPluginsOrComponents =
+            hasPlugins('tabs.content', `${item.name}.tabs.content`) || hasComponents('tabs.content', `${item.name}.tabs.content`)
+
+        const hasTabsPluginsOrComponents =
+            hasTabContentPluginsOrComponents || hasComponents('tabs.begin', `${item.name}.tabs.begin`, 'tabs.end', `${item.name}.tabs.end`)
+
+        if (isNew && !hasTabsPluginsOrComponents)
             return null
 
         const collectionAttrNames =
@@ -295,42 +326,56 @@ function ViewPage({me, page, onItemView, onItemCreate, onItemDelete, onUpdate}: 
                 return attribute.type === AttrType.relation && (attribute.relType === RelType.oneToMany || attribute.relType === RelType.manyToMany)
             })
 
-        if (collectionAttrNames.length === 0)
-            return null
-
         return (
-            <Tabs>
-                {collectionAttrNames.map(key => {
-                    const attribute = item.spec.attributes[key]
-                    if (!attribute.target)
-                        throw new Error('Illegal attribute target')
+            <>
+                {hasPlugins('tabs.content', `${item.name}.tabs.content`) && <div ref={tabsContentRef}/>}
+                {hasComponents('tabs.content') && renderComponents('tabs.content', {me, item})}
+                {hasComponents(`${item.name}.tabs.content`) && renderComponents(`${item.name}.tabs.content`, {me, item})}
 
-                    const target = itemService.getByName(attribute.target)
-                    const TargetIcon = target.icon && (icons as any)[target.icon]
-                    const title = t(attribute.displayName)
-                    return (
-                        <TabPane key={key} tab={TargetIcon ? <span><TargetIcon/>&nbsp;{title}</span> : title}>
-                            <RelationsDataGridWrapper
-                                item={item}
-                                itemData={data}
-                                relAttrName={key}
-                                relAttribute={attribute}
-                                pageKey={page.key}
-                                onItemCreate={onItemCreate}
-                                onItemView={onItemView}
-                            />
-                        </TabPane>
-                    )
-                })}
-            </Tabs>
+                {!hasTabContentPluginsOrComponents && (
+                    <Tabs>
+                        {hasComponents('tabs.begin') && renderTabComponents('tabs.begin')}
+                        {hasComponents(`${item.name}.tabs.begin`) && renderTabComponents(`${item.name}.tabs.begin`)}
+
+                        {!isNew && collectionAttrNames.map(key => {
+                            const attribute = item.spec.attributes[key]
+                            if (!attribute.target)
+                                throw new Error('Illegal attribute target')
+
+                            const target = itemService.getByName(attribute.target)
+                            const TargetIcon = target.icon && (icons as any)[target.icon]
+                            const title = t(attribute.displayName)
+                            return (
+                                <TabPane key={key} tab={TargetIcon ? <span><TargetIcon/>&nbsp;{title}</span> : title}>
+                                    <RelationsDataGridWrapper
+                                        me={me}
+                                        item={item}
+                                        itemData={data}
+                                        relAttrName={key}
+                                        relAttribute={attribute}
+                                        pageKey={page.key}
+                                        onItemCreate={onItemCreate}
+                                        onItemView={onItemView}
+                                        onItemDelete={onItemDelete}
+                                    />
+                                </TabPane>
+                            )
+                        })}
+
+                        {hasComponents('tabs.end') && renderTabComponents('tabs.end')}
+                        {hasComponents(`${item.name}.tabs.end`) && renderTabComponents(`${item.name}.tabs.end`)}
+                    </Tabs>
+                )}
+            </>
         )
-    }
+    }, [data, isNew, item, itemService, me, onItemCreate, onItemDelete, onItemView, page.key, renderTabComponents, t])
 
     return (
         <Spin spinning={loading}>
             {hasComponents('view.header') && renderComponents('view.header', {me, item})}
             {hasComponents(`${item.name}.view.header`) && renderComponents(`${item.name}.view.header`, {me, item})}
             {hasPlugins('view.header', `${item.name}.view.header`) && <div ref={headerRef}/>}
+
             {(!hasComponents('view.header', `${item.name}.view.header`) && !hasPlugins('view.header', `${item.name}.view.header`)) && (
                 <ViewPageHeader
                     page={page}
@@ -344,6 +389,7 @@ function ViewPage({me, page, onItemView, onItemCreate, onItemDelete, onUpdate}: 
                     isLockedByMe={isLockedByMe}
                     setLockedByMe={setLockedByMe}
                     setLoading={setLoading}
+                    closePage={closePage}
                     onItemView={onItemView}
                     onItemDelete={onItemDelete}
                     onUpdate={onUpdate}
@@ -365,6 +411,8 @@ function ViewPage({me, page, onItemView, onItemCreate, onItemDelete, onUpdate}: 
                         <Col span={12}>{renderAttributes(getOwnAttributes())}</Col>
                         <Col span={12}>{renderAttributes(getDefaultTemplateAttributes())}</Col>
                     </Row>
+                    {hasPlugins('view.content.form', `${item.name}.view.content.form`) && <div ref={contentFormRef}/>}
+                    {hasComponents(`${item.name}.view.content.form`) && renderComponents(`${item.name}.view.content.form`, {me, item})}
                 </Form>
             }
 

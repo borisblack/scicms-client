@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import {ReactElement} from 'react'
+import {ReactElement, ReactNode} from 'react'
 
 import {Item, ItemData, UserInfo} from '../types'
 import customComponentConfig from '../config/custom-component'
@@ -14,24 +14,26 @@ default.content
 view.header
 view.footer
 view.content
+view.content.form
 <itemName>.view.header
 <itemName>.view.footer
 <itemName>.view.content
+<itemName>.view.content.form
 tabs.content
-tabs.start
+tabs.begin
 tabs.end
 <itemName>.tabs.content
-<itemName>.tabs.start
+<itemName>.tabs.begin
 <itemName>.tabs.end
  */
 
 export interface CustomComponent {
-    id: string,
-    mountPoint: string | 'default.header' | 'default.content' | 'default.footer' | 'view.header' | 'view.footer' | 'view.content' | 'tabs.content' | 'tabs.start' | 'tabs.end',
-    priority: number,
+    id: string
+    mountPoint: string | 'default.header' | 'default.content' | 'default.footer' | 'view.header' | 'view.footer' | 'view.content' | 'tabs.content' | 'tabs.start' | 'tabs.end'
+    priority: number
     title?: string // for tabs rendering
     icon?: string // for tabs rendering
-    render: ({context}: CustomComponentRenderProps) => void
+    render: ({context}: CustomComponentRenderProps) => ReactNode
 }
 
 export interface CustomComponentRenderProps {
@@ -55,6 +57,8 @@ export function hasComponents(...mountPoints: string[]): boolean {
     }
     return false
 }
+
+export const getComponents = (mountPoint: string): CustomComponent[] => componentsByMountPoint[mountPoint] ?? []
 
 export function renderComponents(mountPoint: string, context: CustomComponentRenderContext): ReactElement | null {
     const components = componentsByMountPoint[mountPoint]

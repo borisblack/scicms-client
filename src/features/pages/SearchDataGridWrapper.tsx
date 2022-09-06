@@ -13,7 +13,7 @@ import {useTranslation} from 'react-i18next'
 interface Props {
     item: Item
     notHiddenColumns?: string[]
-    extraFiltersInput?: FiltersInput<unknown>
+    extraFiltersInput?: FiltersInput<ItemData>
     majorRev?: string | null
     locale?: string | null
     state?: string | null

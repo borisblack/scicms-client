@@ -41,10 +41,15 @@ function Pages({me}: Props) {
         dispatch(setActiveKey(activeKey))
     }, [dispatch])
 
+    const closeTab = useCallback((key: string) => {
+        mediator.removeKey(key)
+        dispatch(closePage(key))
+    }, [dispatch])
+
     const handleTabsEdit = useCallback((e: React.MouseEvent | React.KeyboardEvent | string, action: 'add' | 'remove') => {
         if (action === 'remove')
-            dispatch(closePage(e as string))
-    }, [dispatch])
+            closeTab(e as string)
+    }, [closeTab])
 
     const handleItemCreate = (item: Item, initialData?: ItemData | null, cb?: Callback, observerKey?: string) => {
         if (cb) {
@@ -73,8 +78,7 @@ function Pages({me}: Props) {
     const handleItemDelete = (itemName: string, id: string) => {
         const key = generateKey(itemName, ViewType.view, id)
         mediator.runObservableCallbacks(key, CallbackOperation.DELETE, id)
-        mediator.removeKey(key)
-        dispatch(closePage(key))
+        closeTab(key)
     }
 
     const handleUpdate = (data: ItemData) => dispatch(updateActivePage(data))
@@ -113,6 +117,7 @@ function Pages({me}: Props) {
                                 <ViewPage
                                     me={me}
                                     page={page}
+                                    closePage={() => closeTab(page.key)}
                                     onItemCreate={handleItemCreate}
                                     onItemView={handleItemView}
                                     onItemDelete={handleItemDelete}

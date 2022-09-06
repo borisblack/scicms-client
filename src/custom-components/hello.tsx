@@ -4,7 +4,7 @@ const COMPONENT_ID = 'helloComponent'
 
 export const helloComponent: CustomComponent = {
     id: COMPONENT_ID,
-    mountPoint: 'item.view.footer',
+    mountPoint: 'group.tabs.begin',
     priority: 10,
     title: 'Hello',
     icon: 'SmileOutlined',

@@ -3,7 +3,7 @@ import {ColumnDef, createColumnHelper} from '@tanstack/react-table'
 import {Button, Checkbox} from 'antd'
 import {DateTime} from 'luxon'
 
-import {Attribute, AttrType, Item, Location, Media, RelType} from '../types'
+import {Attribute, AttrType, Item, ItemData, Location, Media, RelType} from '../types'
 import appConfig from '../config'
 import ItemService from '../services/item'
 import {DataWithPagination} from '../components/datagrid/DataGrid'
@@ -11,6 +11,7 @@ import QueryService, {ExtRequestParams, FiltersInput} from '../services/query'
 import MediaService from '../services/media'
 import {UTC} from '../config/constants'
 import i18n from '../i18n'
+import {extractTitleAttrValue} from './item'
 
 const {luxonDisplayDateFormatString, luxonDisplayTimeFormatString, luxonDisplayDateTimeFormatString} = appConfig.dateTime
 const columnHelper = createColumnHelper<any>()
@@ -87,7 +88,7 @@ const renderCell = (attribute: Attribute, value: any): ReactElement | string | n
 
             return (
                 <Button type="link" size="small" style={{margin: 0, padding: 0}} onClick={() => mediaService.download(mediaData.id, mediaData.filename)}>
-                    {(mediaData as any)[media.titleAttribute]}
+                    {extractTitleAttrValue(media, mediaData)}
                 </Button>
             )
         case AttrType.location:
@@ -101,7 +102,7 @@ const renderCell = (attribute: Attribute, value: any): ReactElement | string | n
                 throw new Error('Illegal state')
 
             const subItem = itemService.getByName(attribute.target)
-            return (value && value.data) ? value.data[subItem.titleAttribute] : null
+            return (value && value.data) ? extractTitleAttrValue(subItem, value.data) : null
         default:
             throw new Error('Illegal attribute')
     }
@@ -125,7 +126,7 @@ export function getHiddenColumns(item: Item): string[] {
 export async function findAll(
     item: Item,
     params: ExtRequestParams,
-    extraFiltersInput?: FiltersInput<unknown>
+    extraFiltersInput?: FiltersInput<ItemData>
 ): Promise<DataWithPagination<any>> {
     const responseCollection = await queryService.findAll(item, params, extraFiltersInput)
     const {page, pageSize, total} = responseCollection.meta.pagination
@@ -141,7 +142,7 @@ export async function findAllRelated(
     relAttrName: string,
     target: Item,
     params: ExtRequestParams,
-    extraFiltersInput?: FiltersInput<unknown>
+    extraFiltersInput?: FiltersInput<ItemData>
 ): Promise<DataWithPagination<any>> {
     const responseCollection = await queryService.findAllRelated(itemName, itemId, relAttrName, target, params, extraFiltersInput)
     const {page, pageSize, total} = responseCollection.meta.pagination

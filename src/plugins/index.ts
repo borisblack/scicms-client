@@ -12,24 +12,20 @@ default.footer
 <itemName>.default.footer
 view.header
 view.content
+view.content.form
 view.footer
 <itemName>.view.header
 <itemName>.view.content
+<itemName>.view.content.form
 <itemName>.view.footer
-tabs.start
 tabs.content
-tabs.end
-<itemName>.tabs.start
 <itemName>.tabs.content
-<itemName>.tabs.end
  */
 
 export interface CustomPlugin {
-    id: string,
-    pluginPoint: string | 'default.header' | 'default.content' | 'default.footer' | 'view.header' | 'view.footer' | 'view.content' | 'tabs.content' | 'tabs.start' | 'tabs.end',
-    priority: number,
-    title?: string // for tabs rendering
-    icon?: string // for tabs rendering
+    id: string
+    pluginPoint: string | 'default.header' | 'default.content' | 'default.footer' | 'view.header' | 'view.footer' | 'view.content' | 'tabs.content'
+    priority: number
     render: ({node, context}: CustomPluginRenderProps) => void
 }
 

@@ -2,6 +2,7 @@ import React, {MouseEvent, ReactNode, useMemo, useState} from 'react'
 import {Alert, Button, Dropdown, FormInstance, Menu, message, Modal, PageHeader, Popconfirm, Space} from 'antd'
 import * as icons from '@ant-design/icons'
 import {
+    CloseCircleOutlined,
     DeleteOutlined,
     DiffOutlined,
     DownOutlined,
@@ -35,6 +36,7 @@ interface Props {
     isLockedByMe: boolean
     setLockedByMe: (isLockedByMe: boolean) => void
     setLoading: (loading: boolean) => void
+    closePage: () => void
     onItemView: (item: Item, id: string, cb?: () => void, observerKey?: string) => void
     onUpdate: (data: ItemData) => void
     onItemDelete: (itemName: string, id: string) => void
@@ -44,7 +46,7 @@ const VERSIONS_MODAL_WIDTH = 800
 
 const {confirm} = Modal
 
-export default function ViewPageHeader({page, form, isNew, canCreate, canEdit, canDelete, operation, setOperation, isLockedByMe, setLockedByMe, setLoading, onItemView, onUpdate, onItemDelete}: Props) {
+export default function ViewPageHeader({page, form, isNew, canCreate, canEdit, canDelete, operation, setOperation, isLockedByMe, setLockedByMe, setLoading, closePage, onItemView, onUpdate, onItemDelete}: Props) {
     const {item, data} = page
     const Icon = item.icon ? (icons as any)[item.icon] : null
     const {t} = useTranslation()
@@ -188,9 +190,9 @@ export default function ViewPageHeader({page, form, isNew, canCreate, canEdit, c
         />
     )
 
-    const getVersionsExtraFiltersInput = (): FiltersInput<unknown> => {
+    const getVersionsExtraFiltersInput = (): FiltersInput<ItemData> => {
         if (isNew)
-            return {} as FiltersInput<unknown>
+            return {} as FiltersInput<ItemData>
 
         return {
             id: {
@@ -208,6 +210,7 @@ export default function ViewPageHeader({page, form, isNew, canCreate, canEdit, c
         if (isNew) {
             if (canCreate) {
                 extra.push(<Button key="save" type="primary" onClick={handleSave}><SaveOutlined/> {t('Save')}</Button>)
+                extra.push(<Button key="cancel" icon={<CloseCircleOutlined/>} onClick={closePage}>{t('Cancel')}</Button>)
             }
         } else {
             if (canEdit) {

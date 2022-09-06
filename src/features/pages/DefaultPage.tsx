@@ -10,13 +10,15 @@ import {getLabel, IPage} from './pagesSlice'
 import {hasPlugins, renderPlugins} from '../../plugins'
 import {hasComponents, renderComponents} from '../../custom-components'
 import * as icons from '@ant-design/icons'
-import {PlusCircleOutlined} from '@ant-design/icons'
+import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design/icons'
 import PermissionService from '../../services/permission'
 import * as ACL from '../../util/acl'
 import styles from './Page.module.css'
 import {findAll, getColumns, getHiddenColumns, getInitialData} from '../../util/datagrid'
 import {CheckboxChangeEvent} from 'antd/es/checkbox'
 import {ExtRequestParams} from '../../services/query'
+import {ItemType} from 'antd/es/menu/hooks/useItems'
+import MutationService from '../../services/mutation'
 
 interface Props {
     me: UserInfo
@@ -26,7 +28,7 @@ interface Props {
     onItemDelete: (itemName: string, id: string) => void
 }
 
-function DefaultPage({me, page, onItemCreate, onItemView}: Props) {
+function DefaultPage({me, page, onItemCreate, onItemView, onItemDelete}: Props) {
     const {t} = useTranslation()
     const [loading, setLoading] = useState(false)
     const [data, setData] = useState(getInitialData())
@@ -38,7 +40,7 @@ function DefaultPage({me, page, onItemCreate, onItemView}: Props) {
     const {item} = page
 
     const permissionService = useMemo(() => PermissionService.getInstance(), [])
-
+    const mutationService = useMemo(() => MutationService.getInstance(), [])
     const columnsMemoized = useMemo(() => getColumns(item), [item])
     const hiddenColumnsMemoized = useMemo(() => getHiddenColumns(item), [item])
 
@@ -62,6 +64,8 @@ function DefaultPage({me, page, onItemCreate, onItemView}: Props) {
         }
     }, [me, item])
 
+    const refresh = () => setVersion(prevVersion => prevVersion + 1)
+
     const handleRequest = useCallback(async (params: RequestParams) => {
         const allParams: ExtRequestParams = {...params, locale: showAllLocalesRef.current ? 'all' : null}
 
@@ -78,21 +82,69 @@ function DefaultPage({me, page, onItemCreate, onItemView}: Props) {
 
     const handleView = useCallback(async (id: string) => {
         setLoading(true)
-        await onItemView(item, id, () => setVersion(prevVersion => prevVersion + 1), page.key)
+        await onItemView(item, id, refresh, page.key)
         setLoading(false)
     }, [item, page.key, onItemView])
 
     const handleRowDoubleClick = useCallback((row: Row<ItemData>) => handleView(row.original.id), [handleView])
 
-    const getRowContextMenu = useCallback((row: Row<ItemData>) => (
-        <Menu items={[{
+    const handleDelete = useCallback(async (id: string, purge: boolean = false) => {
+        setLoading(true)
+        try {
+            if (purge)
+                await mutationService.purge(item, id, appConfig.mutation.deletingStrategy)
+            else
+                await mutationService.delete(item, id, appConfig.mutation.deletingStrategy)
+            await onItemDelete(item.name, id)
+            await refresh()
+        } catch (e: any) {
+            message.error(e.message)
+        } finally {
+            setLoading(false)
+        }
+    }, [mutationService, item, onItemDelete])
+
+    const getRowContextMenu = useCallback((row: Row<ItemData>) => {
+        const items: ItemType[] = [{
             key: 'open',
             label: t('Open'),
+            icon: <FolderOpenOutlined/>,
             onClick: () => handleView(row.original.id)
-        }]}/>
-    ), [t, handleView])
+        }]
 
-    const handleCreate = (evt: MouseEvent) => { onItemCreate(item, null,() => setVersion(prevVersion => prevVersion + 1), page.key) }
+        const rowPermissionId = row.original.permission?.data?.id
+        const rowPermission = rowPermissionId ? permissionService.findById(rowPermissionId) : null
+        const canDelete = !!rowPermission && ACL.canDelete(me, rowPermission)
+        if (canDelete) {
+            if (item.versioned) {
+                items.push({
+                    key: 'delete',
+                    label: t('Delete'),
+                    icon: <DeleteTwoTone twoToneColor="#eb2f96"/>,
+                    children: [{
+                        key: 'delete',
+                        label: t('Current Version'),
+                        onClick: () => handleDelete(row.original.id)
+                    }, {
+                        key: 'purge',
+                        label: t('All Versions'),
+                        onClick: () => handleDelete(row.original.id, true)
+                    }]
+                })
+            } else {
+                items.push({
+                    key: 'delete',
+                    label: t('Delete'),
+                    icon: <DeleteTwoTone twoToneColor="#eb2f96"/>,
+                    onClick: () => handleDelete(row.original.id)
+                })
+            }
+        }
+
+        return <Menu items={items}/>
+    }, [t, permissionService, me, handleView, item.versioned, handleDelete])
+
+    const handleCreate = (evt: MouseEvent) => { onItemCreate(item, null,refresh, page.key) }
 
     function renderPageHeader(): ReactNode {
         const Icon = item.icon ? (icons as any)[item.icon] : null
