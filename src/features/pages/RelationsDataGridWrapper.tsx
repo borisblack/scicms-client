@@ -226,6 +226,21 @@ export default function RelationsDataGridWrapper({me, item, itemData, relAttrNam
 
         return <Menu items={items}/>
     }, [t, permissionService, me, openTarget, target.versioned, deleteTarget])
+    
+    const renderToolbar = useCallback(() => {
+        const targetPermissionId = target.permission.data?.id
+        const targetPermission = targetPermissionId ? permissionService.findById(targetPermissionId) : null
+        const canCreate = !!targetPermission && ACL.canCreate(me, targetPermission)
+        if (!canCreate)
+            return null
+        
+        return (
+            <Space>
+                {!isOneToMany && <Button size="small" icon={<SelectOutlined/>} onClick={() => setSelectionModalVisible(true)}>{t('Select')}</Button>}
+                <Button type="primary" size="small" icon={<PlusCircleOutlined/>} onClick={handleCreate}>{t('Create')}</Button>
+            </Space>
+        )
+    }, [handleCreate, isOneToMany, me, permissionService, t, target.permission.data?.id])
 
     return (
         <>
@@ -236,14 +251,9 @@ export default function RelationsDataGridWrapper({me, item, itemData, relAttrNam
                 version={version}
                 initialState={{
                     hiddenColumns: hiddenColumnsMemoized,
-                    pageSize: appConfig.query.findAll.defaultPageSize
+                    pageSize: appConfig.query.defaultPageSize
                 }}
-                toolbar={(
-                    <Space style={{marginBottom: 16}}>
-                        {!isOneToMany && <Button size="small" icon={<SelectOutlined/>} onClick={() => setSelectionModalVisible(true)}>{t('Select')}</Button>}
-                        <Button type="primary" size="small" icon={<PlusCircleOutlined/>} onClick={handleCreate}>{t('Create')}</Button>
-                    </Space>
-                )}
+                toolbar={renderToolbar()}
                 getRowContextMenu={getRowContextMenu}
                 onRequest={handleRequest}
                 onRowDoubleClick={row => openTarget(row.original.id)}

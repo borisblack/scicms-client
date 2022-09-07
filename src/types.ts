@@ -125,7 +125,7 @@ interface RevisionPolicy extends DefaultItemTemplate {
     revisions: string | null
 }
 
-interface ItemSpec {
+export interface ItemSpec {
     attributes: {[name: string]: Attribute}
     indexes: {[name: string]: Index}
 }

@@ -1,4 +1,4 @@
-import {MouseEvent, ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Row} from '@tanstack/react-table'
 import {Button, Checkbox, Menu, message, PageHeader} from 'antd'
@@ -43,26 +43,28 @@ function DefaultPage({me, page, onItemCreate, onItemView, onItemDelete}: Props) 
     const mutationService = useMemo(() => MutationService.getInstance(), [])
     const columnsMemoized = useMemo(() => getColumns(item), [item])
     const hiddenColumnsMemoized = useMemo(() => getHiddenColumns(item), [item])
+    const pluginContext = useMemo(() => ({me, item}), [item, me])
+    const customComponentContext = useMemo(() => ({me, item}), [item, me])
 
     useEffect(() => {
         const headerNode = headerRef.current
         if (headerNode) {
-            renderPlugins('default.header', headerNode, {me, item})
-            renderPlugins(`${item.name}.default.header`, headerNode, {me, item})
+            renderPlugins('default.header', headerNode, pluginContext)
+            renderPlugins(`${item.name}.default.header`, headerNode, pluginContext)
         }
 
         const contentNode = contentRef.current
         if (contentNode) {
-            renderPlugins('default.content', contentNode, {me, item})
-            renderPlugins(`${item.name}.default.content`, contentNode, {me, item})
+            renderPlugins('default.content', contentNode, pluginContext)
+            renderPlugins(`${item.name}.default.content`, contentNode, pluginContext)
         }
 
         const footerNode = footerRef.current
         if (footerNode) {
-            renderPlugins('default.footer', footerNode, {me, item})
-            renderPlugins(`${item.name}.default.footer`, footerNode, {me, item})
+            renderPlugins('default.footer', footerNode, pluginContext)
+            renderPlugins(`${item.name}.default.footer`, footerNode, pluginContext)
         }
-    }, [me, item])
+    }, [item.name, pluginContext])
 
     const refresh = () => setVersion(prevVersion => prevVersion + 1)
 
@@ -144,9 +146,11 @@ function DefaultPage({me, page, onItemCreate, onItemView, onItemDelete}: Props) 
         return <Menu items={items}/>
     }, [t, permissionService, me, handleView, item.versioned, handleDelete])
 
-    const handleCreate = (evt: MouseEvent) => { onItemCreate(item, null,refresh, page.key) }
+    const handleCreate = useCallback(() => {
+        onItemCreate(item, null,refresh, page.key)
+    }, [item, onItemCreate, page.key])
 
-    function renderPageHeader(): ReactNode {
+    const renderPageHeader = useCallback((): ReactNode => {
         const Icon = item.icon ? (icons as any)[item.icon] : null
         const permissionId = item.permission.data?.id
         const permission = permissionId ? permissionService.findById(permissionId) : null
@@ -159,25 +163,27 @@ function DefaultPage({me, page, onItemCreate, onItemView, onItemDelete}: Props) 
                 extra={canCreate && <Button type="primary" onClick={handleCreate}><PlusCircleOutlined /> {t('Create')}</Button>}
             />
         )
-    }
+    }, [handleCreate, item, me, page, permissionService, t])
 
-    function handleLocalizationsCheckBoxChange(e: CheckboxChangeEvent) {
+    const handleLocalizationsCheckBoxChange = useCallback((e: CheckboxChangeEvent) => {
         showAllLocalesRef.current = e.target.checked
         setVersion(prevVersion => prevVersion + 1)
-    }
+    }, [])
 
     const dataMemoized = useMemo(() => data, [data])
 
     return (
         <>
-            {hasComponents('default.header') && renderComponents('default.header', {me, item})}
-            {hasComponents(`${item.name}.default.header`) && renderComponents(`${item.name}.default.header`, {me, item})}
+            {hasComponents('default.header') && renderComponents('default.header', customComponentContext)}
+            {hasComponents(`${item.name}.default.header`) && renderComponents(`${item.name}.default.header`, customComponentContext)}
             {hasPlugins('default.header', `${item.name}.default.header`) && <div ref={headerRef}/>}
+
             {(!hasComponents('default.header', `${item.name}.default.header`) && !hasPlugins('default.header', `${item.name}.default.header`)) && renderPageHeader()}
 
-            {hasComponents('default.content') && renderComponents('default.content', {me, item})}
-            {hasComponents(`${item.name}.default.content`) && renderComponents(`${item.name}.default.content`, {me, item})}
+            {hasComponents('default.content') && renderComponents('default.content', customComponentContext)}
+            {hasComponents(`${item.name}.default.content`) && renderComponents(`${item.name}.default.content`, customComponentContext)}
             {hasPlugins('default.content', `${item.name}.default.content`) && <div ref={contentRef}/>}
+
             {(!hasComponents('default.content', `${item.name}.default.content`) && !hasPlugins('default.content', `${item.name}.default.content`)) &&
                 <DataGrid
                     loading={loading}
@@ -185,7 +191,7 @@ function DefaultPage({me, page, onItemCreate, onItemView, onItemDelete}: Props) 
                     data={dataMemoized}
                     initialState={{
                         hiddenColumns: hiddenColumnsMemoized,
-                        pageSize: appConfig.query.findAll.defaultPageSize
+                        pageSize: appConfig.query.defaultPageSize
                     }}
                     hasFilters={true}
                     version={version}
@@ -196,8 +202,8 @@ function DefaultPage({me, page, onItemCreate, onItemView, onItemDelete}: Props) 
                 />
             }
 
-            {hasComponents('default.footer') && renderComponents('default.footer', {me, item})}
-            {hasComponents(`${item.name}.default.footer`) && renderComponents(`${item.name}.default.footer`, {me, item})}
+            {hasComponents('default.footer') && renderComponents('default.footer', customComponentContext)}
+            {hasComponents(`${item.name}.default.footer`) && renderComponents(`${item.name}.default.footer`, customComponentContext)}
             {hasPlugins('default.footer', `${item.name}.default.footer`) && <div ref={footerRef}/>}
         </>
     )

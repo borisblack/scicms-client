@@ -22,6 +22,7 @@ const NumberAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, val
             className={styles.formItem}
             name={attrName}
             label={t(attribute.displayName)}
+            hidden={attribute.fieldHidden}
             initialValue={value}
             rules={[
                 { type: 'number', min: attribute.minRange, max: attribute.maxRange },

@@ -35,6 +35,16 @@ const menuConfig: MenuConfig = {
                 itemName: 'permission'
             }]
         }, {
+            key: 'storage',
+            label: 'Storage',
+            icon: 'DatabaseOutlined',
+            roles: [ROLE_ADMIN],
+            children: [{
+                itemName: 'media'
+            }, {
+                itemName: 'location'
+            }]
+        }, {
             itemName: 'itemTemplate'
         }, {
             itemName: 'item'
@@ -46,10 +56,6 @@ const menuConfig: MenuConfig = {
             itemName: 'locale'
         }, {
             itemName: 'lifecycle'
-        }, {
-            itemName: 'media'
-        }, {
-            itemName: 'location'
         }]
     }, {
         key: 'design',

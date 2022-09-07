@@ -22,6 +22,7 @@ const PasswordAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, v
                 className={styles.formItem}
                 name={attrName}
                 label={t(attribute.displayName)}
+                hidden={attribute.fieldHidden}
                 initialValue={value}
                 // hasFeedback
                 rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
@@ -32,6 +33,7 @@ const PasswordAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, v
                 <Form.Item
                     name={`${attrName}.confirm`}
                     label={t('Confirm')}
+                    hidden={attribute.fieldHidden}
                     initialValue={value}
                     dependencies={[attrName]}
                     // hasFeedback

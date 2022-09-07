@@ -19,7 +19,11 @@ export const MOMENT_ISO_TIME_FORMAT_STRING: string = "HH:mm:ssZ"
 export const ROLE_ADMIN: string = 'ROLE_ADMIN'
 export const ROLE_DESIGNER: string = 'ROLE_DESIGNER'
 export const ROLE_USER: string = 'ROLE_USER'
+export const PASSWORD_PLACEHOLDER = "********"
 
+export const DEFAULT_ITEM_TEMPLATE_NAME = 'defaultItemTemplate'
+export const ITEM_TEMPLATE_ITEM_NAME = 'itemTemplate'
+export const ITEM_ITEM_NAME = 'item'
 export const ID_ATTR_NAME = 'id'
 export const MAJOR_REV_ATTR_NAME = 'majorRev'
 export const MINOR_REV_ATTR_NAME = 'minorRev'

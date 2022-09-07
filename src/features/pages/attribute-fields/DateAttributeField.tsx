@@ -24,6 +24,7 @@ const DateAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, value
             className={styles.formItem}
             name={attrName}
             label={t(attribute.displayName)}
+            hidden={attribute.fieldHidden}
             initialValue={value ? moment.tz(value, UTC) : null}
             rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
         >

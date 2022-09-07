@@ -1,4 +1,4 @@
-import {FC} from 'react'
+import {FC, useCallback} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Form, FormRule, Input} from 'antd'
 
@@ -35,29 +35,39 @@ const StringAttributeField: FC<AttributeFieldProps> = ({item, attrName, attribut
         return attrName !== STATE_ATTR_NAME
     }
 
-    const rules: FormRule[] = [{
-        required: (attribute.required && !attribute.readOnly) || (attrName === MAJOR_REV_ATTR_NAME && !!item.versioned && !!item.manualVersioning),
-        message: t('Required field')
-    }]
+    const getRules = useCallback(() => {
+        const rules: FormRule[] = [{
+            required: (attribute.required && !attribute.readOnly) || (attrName === MAJOR_REV_ATTR_NAME && !!item.versioned && !!item.manualVersioning),
+            message: t('Required field')
+        }]
 
-    switch (attribute.type) {
-        case AttrType.uuid:
-            rules.push({type: 'regexp', pattern: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/})
-            break
-        case AttrType.email:
-            rules.push({type: 'email'})
-            break
-        default:
-            break
-    }
+        switch (attribute.type) {
+            case AttrType.uuid:
+                rules.push({type: 'regexp', pattern: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/})
+                break
+            case AttrType.email:
+                rules.push({type: 'email'})
+                break
+            case AttrType.string:
+                if (attribute.pattern) {
+                    rules.push({type: 'regexp', pattern: new RegExp(attribute.pattern)})
+                }
+                break
+            default:
+                break
+        }
+        
+        return rules
+    }, [attrName, attribute, item, t])
 
     return (
         <FormItem
             className={styles.formItem}
             name={attrName}
             label={t(attribute.displayName)}
+            hidden={attribute.fieldHidden}
             initialValue={value}
-            rules={rules}
+            rules={getRules()}
         >
             <Input style={{maxWidth: attribute.fieldWidth}} maxLength={attribute.length} disabled={!isEnabled()}/>
         </FormItem>

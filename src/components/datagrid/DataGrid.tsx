@@ -9,10 +9,9 @@ import './DataGrid.css'
 import ColumnFilter from './ColumnFilter'
 import Toolbar from './Toolbar'
 import {useTranslation} from 'react-i18next'
-import {ItemData} from '../../types'
 
 interface Props {
-    loading: boolean
+    loading?: boolean
     columns: any[]
     data: DataWithPagination<any>
     initialState: {
@@ -27,7 +26,7 @@ interface Props {
     onRowDoubleClick: (row: Row<any>) => void
 }
 
-export interface DataWithPagination<T extends ItemData> {
+export interface DataWithPagination<T> {
     data: T[],
     pagination: {
         page: number,
@@ -51,7 +50,7 @@ interface RequestPagination {
     pageSize: number
 }
 
-function DataGrid({loading, columns, data, initialState, hasFilters = true, version = 0, toolbar = null, getRowContextMenu, onRequest, onRowDoubleClick}: Props) {
+function DataGrid({loading = false, columns, data, initialState, hasFilters = true, version = 0, toolbar = null, getRowContextMenu, onRequest, onRowDoubleClick}: Props) {
     const initialColumnVisibilityMemoized = useMemo((): ColumnVisibility => {
         const initialColumnVisibility: ColumnVisibility = {}
         initialState.hiddenColumns.forEach(it => {

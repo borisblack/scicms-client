@@ -2,6 +2,7 @@ import {Lifecycle} from '../../types'
 import {useEffect, useState} from 'react'
 import LifecycleService from '../../services/lifecycle'
 import {Button, List, message, Spin} from 'antd'
+import {RightOutlined} from '@ant-design/icons'
 
 interface Props {
     lifecycleId: string
@@ -78,7 +79,7 @@ export default function Promote({lifecycleId, currentState: currentStateName, on
                     renderItem={it => (
                         <ListItem>
                             <ListItem.Meta
-                                title={<Button type="link" style={{paddingLeft: 0, paddingRight: 0}} onClick={() => onSelect(it.title)}>{it.title}</Button>}
+                                title={<Button type="link" icon={<RightOutlined/>} style={{paddingLeft: 0, paddingRight: 0}} onClick={() => onSelect(it.title)}>{it.title}</Button>}
                                 description={it.description}
                             />
                         </ListItem>

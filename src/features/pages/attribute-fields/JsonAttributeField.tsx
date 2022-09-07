@@ -20,6 +20,7 @@ const JsonAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, value
             className={styles.formItem}
             name={attrName}
             label={t(attribute.displayName)}
+            hidden={attribute.fieldHidden}
             initialValue={value ? JSON.stringify(value) : null}
             rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
         >

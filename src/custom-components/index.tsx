@@ -40,10 +40,10 @@ export interface CustomComponentRenderProps {
     context: CustomComponentRenderContext
 }
 
-interface CustomComponentRenderContext {
+export interface CustomComponentRenderContext {
     me: UserInfo
     item: Item
-    data?: ItemData
+    data?: ItemData | null
 }
 
 const customComponents: CustomComponent[] = customComponentConfig.components.sort((a, b) => a.priority - b.priority)

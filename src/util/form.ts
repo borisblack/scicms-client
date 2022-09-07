@@ -4,7 +4,7 @@ import {DateTime} from 'luxon'
 import {Attribute, AttrType, Item, ItemData, Location} from '../types'
 import MediaService from '../services/media'
 import LocationService from '../services/location'
-import {MINOR_REV_ATTR_NAME, UTC} from '../config/constants'
+import {MINOR_REV_ATTR_NAME, PASSWORD_PLACEHOLDER, UTC} from '../config/constants'
 import appConfig from '../config'
 
 const {timeZone} = appConfig.dateTime
@@ -30,6 +30,10 @@ export async function parseValues(item: Item, data: ItemData | null | undefined,
 
         const attribute = attributes[key]
         if (attribute.keyed || attribute.readOnly || attribute.type === AttrType.sequence)
+            continue
+
+        const value = values[key]
+        if (attribute.type === AttrType.password && value === PASSWORD_PLACEHOLDER)
             continue
 
         parsedValues[key] = await parseValue(item, key, attribute, data, values)

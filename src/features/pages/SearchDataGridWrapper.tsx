@@ -45,28 +45,26 @@ export default function SearchDataGridWrapper({item, notHiddenColumns = [], extr
         }
     }, [item, majorRev, locale, state, extraFiltersInput])
 
-    function handleLocalizationsCheckBoxChange(e: CheckboxChangeEvent) {
+    const handleLocalizationsCheckBoxChange = useCallback((e: CheckboxChangeEvent) => {
         showAllLocalesRef.current = e.target.checked
         setVersion(prevVersion => prevVersion + 1)
-    }
+    }, [])
 
-    const handleRowDoubleClick = (row: Row<ItemData>) => onSelect(row.original)
+    const handleRowDoubleClick = useCallback((row: Row<ItemData>) => onSelect(row.original), [onSelect])
 
     return (
-        <>
-            <DataGrid
-                loading={loading}
-                columns={columnsMemoized}
-                data={data}
-                version={version}
-                initialState={{
-                    hiddenColumns: hiddenColumnsMemoized,
-                    pageSize: appConfig.query.findAll.defaultPageSize
-                }}
-                toolbar={item.localized && <Checkbox onChange={handleLocalizationsCheckBoxChange}>{t('All Locales')}</Checkbox>}
-                onRequest={handleRequest}
-                onRowDoubleClick={handleRowDoubleClick}
-            />
-        </>
+        <DataGrid
+            loading={loading}
+            columns={columnsMemoized}
+            data={data}
+            version={version}
+            initialState={{
+                hiddenColumns: hiddenColumnsMemoized,
+                pageSize: appConfig.query.defaultPageSize
+            }}
+            toolbar={item.localized && <Checkbox onChange={handleLocalizationsCheckBoxChange}>{t('All Locales')}</Checkbox>}
+            onRequest={handleRequest}
+            onRowDoubleClick={handleRowDoubleClick}
+        />
     )
 }

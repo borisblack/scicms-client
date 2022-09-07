@@ -19,6 +19,7 @@ const BoolAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, value
         <FormItem
             className={styles.formItem}
             name={attrName}
+            hidden={attribute.fieldHidden}
             valuePropName="checked"
             initialValue={value}
         >

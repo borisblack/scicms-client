@@ -1,17 +1,22 @@
+import _ from 'lodash'
 import {ReactElement} from 'react'
-import {ColumnDef, createColumnHelper} from '@tanstack/react-table'
+import {ColumnDef, ColumnFiltersState, createColumnHelper, SortingState} from '@tanstack/react-table'
 import {Button, Checkbox} from 'antd'
 import {DateTime} from 'luxon'
 
 import {Attribute, AttrType, Item, ItemData, Location, Media, RelType} from '../types'
 import appConfig from '../config'
 import ItemService from '../services/item'
-import {DataWithPagination} from '../components/datagrid/DataGrid'
+import {DataWithPagination, RequestParams} from '../components/datagrid/DataGrid'
 import QueryService, {ExtRequestParams, FiltersInput} from '../services/query'
 import MediaService from '../services/media'
 import {UTC} from '../config/constants'
 import i18n from '../i18n'
 import {extractTitleAttrValue} from './item'
+
+export interface NamedAttribute extends Attribute {
+    name: string
+}
 
 const {luxonDisplayDateFormatString, luxonDisplayTimeFormatString, luxonDisplayDateTimeFormatString} = appConfig.dateTime
 const columnHelper = createColumnHelper<any>()
@@ -23,7 +28,7 @@ export const getInitialData = (): DataWithPagination<any> => ({
     data: [],
     pagination: {
         page: 1,
-        pageSize: appConfig.query.findAll.defaultPageSize,
+        pageSize: appConfig.query.defaultPageSize,
         total: 0
     }
 })
@@ -149,5 +154,298 @@ export async function findAllRelated(
     return {
         data: responseCollection.data,
         pagination: {page, pageSize, total}
+    }
+}
+
+export const getAttributeColumns = (): ColumnDef<NamedAttribute, any>[] =>
+    [
+        columnHelper.accessor('name', {
+            header: i18n.t('Name'),
+            cell: info => info.getValue(),
+            size: appConfig.ui.dataGrid.colWidth,
+            enableSorting: true
+        }) as ColumnDef<NamedAttribute, string>,
+        columnHelper.accessor('type', {
+            header: i18n.t('Type'),
+            cell: info => info.getValue(),
+            size: appConfig.ui.dataGrid.colWidth,
+            enableSorting: true
+        }) as ColumnDef<NamedAttribute, AttrType>,
+        columnHelper.accessor('columnName', {
+            header: i18n.t('Column Name'),
+            cell: info => info.getValue(),
+            size: appConfig.ui.dataGrid.colWidth,
+            enableSorting: true
+        }) as ColumnDef<NamedAttribute, string>,
+        columnHelper.accessor('displayName', {
+            header: i18n.t('Display Name'),
+            cell: info => info.getValue(),
+            size: 200,
+            enableSorting: true
+        }) as ColumnDef<NamedAttribute, string>,
+        columnHelper.accessor('description', {
+            header: i18n.t('Description'),
+            cell: info => info.getValue(),
+            size: 200,
+            enableSorting: true
+        }) as ColumnDef<NamedAttribute, string>,
+        columnHelper.accessor('enumSet', {
+            header: i18n.t('Enum Set'),
+            cell: info => info.getValue() ? info.getValue().join(',') : null,
+            size: 200,
+            enableSorting: true
+        }) as ColumnDef<NamedAttribute, string[]>,
+        columnHelper.accessor('seqName', {
+            header: i18n.t('Sequence Name'),
+            cell: info => info.getValue(),
+            size: 160,
+            enableSorting: true
+        }) as ColumnDef<NamedAttribute, string>,
+        columnHelper.accessor('confirm', {
+            header: i18n.t('Confirm'),
+            cell: info => <Checkbox checked={info.getValue()}/>,
+            size: 150,
+            enableSorting: true
+        }) as ColumnDef<NamedAttribute, boolean>,
+        columnHelper.accessor('relType', {
+            header: i18n.t('Relation Type'),
+            cell: info => info.getValue(),
+            size: appConfig.ui.dataGrid.colWidth,
+            enableSorting: true
+        }) as ColumnDef<NamedAttribute, RelType>,
+        columnHelper.accessor('target', {
+            header: i18n.t('Target Item'),
+            cell: info => info.getValue(),
+            size: appConfig.ui.dataGrid.colWidth,
+            enableSorting: true
+        }) as ColumnDef<NamedAttribute, string>,
+        columnHelper.accessor('intermediate', {
+            header: i18n.t('Intermediate Item'),
+            cell: info => info.getValue(),
+            size: 160,
+            enableSorting: true
+        }) as ColumnDef<NamedAttribute, string>,
+        columnHelper.accessor('mappedBy', {
+            header: i18n.t('Mapped By'),
+            cell: info => info.getValue(),
+            size: appConfig.ui.dataGrid.colWidth,
+            enableSorting: true
+        }) as ColumnDef<NamedAttribute, string>,
+        columnHelper.accessor('inversedBy', {
+            header: i18n.t('Inversed By'),
+            cell: info => info.getValue(),
+            size: appConfig.ui.dataGrid.colWidth,
+            enableSorting: true
+        }) as ColumnDef<NamedAttribute, string>,
+        columnHelper.accessor('required', {
+            header: i18n.t('Required'),
+            cell: info => <Checkbox checked={info.getValue()}/>,
+            size: appConfig.ui.dataGrid.colWidth,
+            enableSorting: true
+        }) as ColumnDef<NamedAttribute, boolean>,
+        columnHelper.accessor('defaultValue', {
+            header: i18n.t('Default Value'),
+            cell: info => info.getValue(),
+            size: appConfig.ui.dataGrid.colWidth,
+            enableSorting: true
+        }) as ColumnDef<NamedAttribute, string>,
+        columnHelper.accessor('keyed', {
+            header: i18n.t('Keyed'),
+            cell: info => <Checkbox checked={info.getValue()}/>,
+            size: appConfig.ui.dataGrid.colWidth,
+            enableSorting: true
+        }) as ColumnDef<NamedAttribute, boolean>,
+        columnHelper.accessor('unique', {
+            header: i18n.t('Unique'),
+            cell: info => <Checkbox checked={info.getValue()}/>,
+            size: appConfig.ui.dataGrid.colWidth,
+            enableSorting: true
+        }) as ColumnDef<NamedAttribute, boolean>,
+        columnHelper.accessor('indexed', {
+            header: i18n.t('Indexed'),
+            cell: info => <Checkbox checked={info.getValue()}/>,
+            size: appConfig.ui.dataGrid.colWidth,
+            enableSorting: true
+        }) as ColumnDef<NamedAttribute, boolean>,
+        columnHelper.accessor('private', {
+            header: i18n.t('Private'),
+            cell: info => <Checkbox checked={info.getValue()}/>,
+            size: appConfig.ui.dataGrid.colWidth,
+            enableSorting: true
+        }) as ColumnDef<NamedAttribute, boolean>,
+        columnHelper.accessor('readOnly', {
+            header: i18n.t('Read Only'),
+            cell: info => <Checkbox checked={info.getValue()}/>,
+            size: appConfig.ui.dataGrid.colWidth,
+            enableSorting: true
+        }) as ColumnDef<NamedAttribute, boolean>,
+        columnHelper.accessor('pattern', {
+            header: i18n.t('Pattern'),
+            cell: info => info.getValue(),
+            size: appConfig.ui.dataGrid.colWidth,
+            enableSorting: true
+        }) as ColumnDef<NamedAttribute, string>,
+        columnHelper.accessor('length', {
+            header: i18n.t('Length'),
+            cell: info => info.getValue(),
+            size: appConfig.ui.dataGrid.colWidth,
+            enableSorting: true
+        }) as ColumnDef<NamedAttribute, number>,
+        columnHelper.accessor('precision', {
+            header: i18n.t('Precision'),
+            cell: info => info.getValue(),
+            size: appConfig.ui.dataGrid.colWidth,
+            enableSorting: true
+        }) as ColumnDef<NamedAttribute, number>,
+        columnHelper.accessor('scale', {
+            header: i18n.t('Scale'),
+            cell: info => info.getValue(),
+            size: appConfig.ui.dataGrid.colWidth,
+            enableSorting: true
+        }) as ColumnDef<NamedAttribute, number>,
+        columnHelper.accessor('minRange', {
+            header: i18n.t('Min Range'),
+            cell: info => info.getValue(),
+            size: appConfig.ui.dataGrid.colWidth,
+            enableSorting: true
+        }) as ColumnDef<NamedAttribute, number>,
+        columnHelper.accessor('maxRange', {
+            header: i18n.t('Max Range'),
+            cell: info => info.getValue(),
+            size: appConfig.ui.dataGrid.colWidth,
+            enableSorting: true
+        }) as ColumnDef<NamedAttribute, number>,
+        columnHelper.accessor('colHidden', {
+            header: i18n.t('Column Hidden'),
+            cell: info => <Checkbox checked={info.getValue()}/>,
+            size: 140,
+            enableSorting: true
+        }) as ColumnDef<NamedAttribute, boolean>,
+        columnHelper.accessor('colWidth', {
+            header: i18n.t('Column Width'),
+            cell: info => info.getValue(),
+            size: appConfig.ui.dataGrid.colWidth,
+            enableSorting: true
+        }) as ColumnDef<NamedAttribute, number>,
+        columnHelper.accessor('fieldHidden', {
+            header: i18n.t('Field Hidden'),
+            cell: info => <Checkbox checked={info.getValue()}/>,
+            size: 140,
+            enableSorting: true
+        }) as ColumnDef<NamedAttribute, boolean>,
+        columnHelper.accessor('fieldWidth', {
+            header: i18n.t('Field Width'),
+            cell: info => info.getValue(),
+            size: appConfig.ui.dataGrid.colWidth,
+            enableSorting: true
+        }) as ColumnDef<NamedAttribute, number>
+    ]
+
+export const getHiddenAttributeColumns = () => ['confirm', 'keyed']
+
+export function processLocal(data: any[], params: RequestParams): DataWithPagination<any> {
+    const {sorting, filters, pagination} = params
+    const {page, pageSize} = pagination
+    const filtered = filterLocal(data, filters)
+    const sorted = sortLocal(filtered, sorting)
+
+    return paginateLocal(sorted, page, pageSize)
+}
+
+function filterLocal(data: any[], filters: ColumnFiltersState): any[] {
+    if (filters.length === 0) {
+        return data
+    } else {
+        const filterMap = filters.reduce((obj,f) => {
+            obj[f.id] = f.value
+            return obj
+        }, {} as any)
+
+        return data.filter(it => {
+            let matched = 0
+            for (const key in it) {
+                const filterVal = filterMap[key]
+                if (filterVal == null)
+                    continue
+
+                let dataVal = it[key]
+                if (dataVal == null)
+                    return false
+
+                if (_.isBoolean(dataVal)) {
+                    const lowerFilterVal = filterVal.toLowerCase()
+                    if (!((dataVal && (lowerFilterVal === '1' || lowerFilterVal === 'true' || lowerFilterVal === 'yes' || lowerFilterVal === 'y'))
+                        || (!dataVal && (lowerFilterVal === '0' || lowerFilterVal === 'false' || lowerFilterVal === 'no' || lowerFilterVal === 'n')))) {
+                        return false
+                    }
+                } else {
+                    if (_.isArray(dataVal))
+                        dataVal = dataVal.join(', ')
+
+                    if (!_.isString(dataVal))
+                        dataVal = _.toString(dataVal)
+
+                    if (dataVal.match(new RegExp(filterVal, 'i')) == null)
+                        return false
+                }
+                matched++
+            }
+
+            return matched === filters.length
+        })
+    }
+}
+
+function sortLocal(data: any[], sorting: SortingState): any[] {
+    if (sorting.length === 0) {
+        return data
+    } else {
+        const sortingState = sorting[0]
+        return data.sort((a, b) => {
+            const {id, desc} = sortingState
+            let aVal = a[id] ?? ''
+            if (Array.isArray(aVal))
+                aVal = aVal.join(', ')
+
+            let bVal = b[id] ?? ''
+            if (Array.isArray(bVal))
+                bVal = bVal.join(', ')
+
+            if (desc) {
+                if (aVal < bVal)
+                    return 1
+                else if (aVal > bVal)
+                    return -1
+                else
+                    return 0
+            } else {
+                if (aVal < bVal)
+                    return -1
+                else if (aVal > bVal)
+                    return 1
+                else
+                    return 0
+            }
+        })
+    }
+}
+
+function paginateLocal(data: any[], page: number, pageSize: number): DataWithPagination<any> {
+    if (page < 1 && (pageSize < appConfig.query.minPageSize || pageSize > appConfig.query.maxPageSize))
+        throw new Error('Illegal attribute')
+
+    const total = data.length
+    let pageNumber = page
+    let offset = (page - 1) * pageSize
+    if (offset >= total) {
+        pageNumber = 1
+        offset = 0
+    }
+
+    const paginated = data.slice(offset, offset + pageSize)
+
+    return {
+        data: paginated,
+        pagination: {page: pageNumber, pageSize, total}
     }
 }

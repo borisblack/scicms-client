@@ -356,9 +356,9 @@ export default class QueryService {
                 return {eq: filterValue}
             case AttrType.bool:
                 const lowerStrValue = (filterValue as string).toLowerCase()
-                if (lowerStrValue === '1' || lowerStrValue === 'true' || lowerStrValue === 'yes' || lowerStrValue === 'y' || lowerStrValue === 'on')
+                if (lowerStrValue === '1' || lowerStrValue === 'true' || lowerStrValue === 'yes' || lowerStrValue === 'y')
                     return  {eq: true}
-                else if (lowerStrValue === '0' || lowerStrValue === 'false' || lowerStrValue === 'no' || lowerStrValue === 'n' || lowerStrValue === 'off')
+                else if (lowerStrValue === '0' || lowerStrValue === 'false' || lowerStrValue === 'no' || lowerStrValue === 'n')
                     return {eq: false}
                 else
                     break

@@ -8,8 +8,7 @@ import {
     DownOutlined,
     ExclamationCircleOutlined,
     LockOutlined,
-    NodeExpandOutlined,
-    SaveOutlined,
+    SaveOutlined, SubnodeOutlined,
     UnlockOutlined
 } from '@ant-design/icons'
 
@@ -230,7 +229,7 @@ export default function ViewPageHeader({page, form, isNew, canCreate, canEdit, c
 
             if (canEdit && isLockedByMe && operation !== Operation.VIEW && data?.lifecycle.data) {
                 extra.push(
-                    <Button key="promote" type="primary" icon={<NodeExpandOutlined/>} onClick={() => setPromoteModalVisible(true)}>{t('Promote')}</Button>
+                    <Button key="promote" type="primary" icon={<SubnodeOutlined/>} onClick={() => setPromoteModalVisible(true)}>{t('Promote')}</Button>
                 )
             }
 

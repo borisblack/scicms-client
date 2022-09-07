@@ -17,7 +17,14 @@ import {filterValues, parseValues} from '../../util/form'
 import MutationService from '../../services/mutation'
 import appConfig from '../../config'
 import ViewPageHeader from './ViewPageHeader'
-import {DEBUG} from '../../config/constants'
+import {
+    DEBUG,
+    ITEM_ITEM_NAME,
+    ITEM_TEMPLATE_ITEM_NAME,
+    LOCALE_ATTR_NAME,
+    MAJOR_REV_ATTR_NAME,
+    MINOR_REV_ATTR_NAME
+} from '../../config/constants'
 import ItemService from '../../services/item'
 import RelationsDataGridWrapper from './RelationsDataGridWrapper'
 import {Callback} from '../../services/mediator'
@@ -31,11 +38,6 @@ interface Props {
     onItemDelete: (itemName: string, id: string) => void
     onUpdate: (data: ItemData) => void
 }
-
-const ITEM_ITEM_NAME = 'item'
-const MAJOR_REV_ATTR_NAME = 'majorRev'
-const MINOR_REV_ATTR_NAME = 'minorRev'
-const LOCALE_ATTR_NAME = 'locale'
 
 const TabPane = Tabs.TabPane
 
@@ -59,14 +61,21 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
     const permissionService = useMemo(() => PermissionService.getInstance(), [])
     const queryService = useMemo(() => QueryService.getInstance(), [])
     const mutationService = useMemo(() => MutationService.getInstance(), [])
-
-    const itemPermissionId = item.permission.data?.id
-    const itemPermission = itemPermissionId ? permissionService.findById(itemPermissionId) : null
-    const canCreate = !!itemPermission && ACL.canCreate(me, itemPermission)
-    const dataPermissionId = data?.permission?.data?.id
-    const dataPermission = dataPermissionId ? permissionService.findById(dataPermissionId) : null
-    const canEdit = !!dataPermission && (item.name !== ITEM_ITEM_NAME || !data?.core) && !!data?.current && ACL.canWrite(me, dataPermission)
-    const canDelete = !!dataPermission && ACL.canDelete(me, dataPermission)
+    
+    const permissions = useMemo(() => {
+        const itemPermissionId = item.permission.data?.id
+        const itemPermission = itemPermissionId ? permissionService.findById(itemPermissionId) : null
+        const canCreate = !!itemPermission && ACL.canCreate(me, itemPermission)
+        const dataPermissionId = data?.permission?.data?.id
+        const dataPermission = dataPermissionId ? permissionService.findById(dataPermissionId) : null
+        const canEdit = !!dataPermission && item.name !== ITEM_TEMPLATE_ITEM_NAME && (item.name !== ITEM_ITEM_NAME || !data?.core) && !!data?.current && ACL.canWrite(me, dataPermission)
+        const canDelete = !!dataPermission && item.name !== ITEM_TEMPLATE_ITEM_NAME && (item.name !== ITEM_ITEM_NAME || !data?.core) && ACL.canDelete(me, dataPermission)
+        return [canCreate, canEdit, canDelete]
+    }, [data, item.name, item.permission.data?.id, me, permissionService])
+    const [canCreate, canEdit, canDelete] = permissions
+    
+    const pluginContext = useMemo(() => ({me, item, data}), [data, item, me])
+    const customComponentContext = useMemo(() => ({me, item, data}), [data, item, me])
 
     useEffect(() => {
         if (DEBUG)
@@ -78,34 +87,34 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
     useEffect(() => {
         const headerNode = headerRef.current
         if (headerNode) {
-            renderPlugins('view.header', headerNode, {me, item, data})
-            renderPlugins(`${item.name}.view.header`, headerNode, {me, item, data})
+            renderPlugins('view.header', headerNode, pluginContext)
+            renderPlugins(`${item.name}.view.header`, headerNode, pluginContext)
         }
 
         const contentNode = contentRef.current
         if (contentNode) {
-            renderPlugins('view.content', contentNode, {me, item, data})
-            renderPlugins(`${item.name}.view.content`, contentNode, {me, item, data})
+            renderPlugins('view.content', contentNode, pluginContext)
+            renderPlugins(`${item.name}.view.content`, contentNode, pluginContext)
         }
 
         const contentFormNode = contentFormRef.current
         if (contentFormNode) {
-            renderPlugins('view.content.form', contentFormNode, {me, item, data})
-            renderPlugins(`${item.name}.view.content,form`, contentFormNode, {me, item, data})
+            renderPlugins('view.content.form', contentFormNode, pluginContext)
+            renderPlugins(`${item.name}.view.content,form`, contentFormNode, pluginContext)
         }
 
         const footerNode = footerRef.current
         if (footerNode) {
-            renderPlugins('view.footer', footerNode, {me, item, data})
-            renderPlugins(`${item.name}.view.footer`, footerNode, {me, item, data})
+            renderPlugins('view.footer', footerNode, pluginContext)
+            renderPlugins(`${item.name}.view.footer`, footerNode, pluginContext)
         }
 
         const tabsContentNode = tabsContentRef.current
         if (tabsContentNode) {
-            renderPlugins('tabs.content', tabsContentNode, {me, item, data})
-            renderPlugins(`${item.name}.tabs.content`, tabsContentNode, {me, item, data})
+            renderPlugins('tabs.content', tabsContentNode, pluginContext)
+            renderPlugins(`${item.name}.tabs.content`, tabsContentNode, pluginContext)
         }
-    }, [me, item, data])
+    }, [item.name, pluginContext])
 
     async function handleFormFinish(values: any) {
         if (DEBUG)
@@ -232,7 +241,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
     const renderAttributes = (attributes: {[name: string]: Attribute}) => Object.keys(attributes)
         .filter(attrName => {
             const attr = attributes[attrName]
-            return !attr.private && !attr.fieldHidden
+            return !attr.private /*&& !attr.fieldHidden*/
                 && (attr.type !== AttrType.relation || (attr.relType !== RelType.oneToMany && attr.relType !== RelType.manyToMany))
                 && (item.versioned || (attrName !== MAJOR_REV_ATTR_NAME && attrName !== MINOR_REV_ATTR_NAME))
                 && (item.localized || attrName !== LOCALE_ATTR_NAME)
@@ -303,12 +312,13 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
     const renderTabComponents = useCallback((mountPoint: string): ReactNode[] =>
         getComponents(mountPoint).map(it => {
             const Icon = it.icon ? (icons as any)[it.icon] : null
+            const title = t(it.title ?? 'Untitled')
             return (
-                <TabPane key={it.id} tab={Icon ? <span><Icon/>&nbsp;{it.title}</span> : it.title}>
-                    {it.render({context: {me, item}})}
+                <TabPane key={it.id} tab={Icon ? <span><Icon/>&nbsp;{title}</span> : title}>
+                    {it.render({context: customComponentContext})}
                 </TabPane>
             )
-        }), [item, me])
+        }), [customComponentContext, t])
 
     const renderCollectionRelations = useCallback(() => {
         const hasTabContentPluginsOrComponents =
@@ -328,9 +338,9 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
 
         return (
             <>
+                {hasComponents('tabs.content') && renderComponents('tabs.content', customComponentContext)}
+                {hasComponents(`${item.name}.tabs.content`) && renderComponents(`${item.name}.tabs.content`, customComponentContext)}
                 {hasPlugins('tabs.content', `${item.name}.tabs.content`) && <div ref={tabsContentRef}/>}
-                {hasComponents('tabs.content') && renderComponents('tabs.content', {me, item})}
-                {hasComponents(`${item.name}.tabs.content`) && renderComponents(`${item.name}.tabs.content`, {me, item})}
 
                 {!hasTabContentPluginsOrComponents && (
                     <Tabs>
@@ -368,12 +378,12 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
                 )}
             </>
         )
-    }, [data, isNew, item, itemService, me, onItemCreate, onItemDelete, onItemView, page.key, renderTabComponents, t])
+    }, [customComponentContext, data, isNew, item, itemService, me, onItemCreate, onItemDelete, onItemView, page.key, renderTabComponents, t])
 
     return (
         <Spin spinning={loading}>
-            {hasComponents('view.header') && renderComponents('view.header', {me, item})}
-            {hasComponents(`${item.name}.view.header`) && renderComponents(`${item.name}.view.header`, {me, item})}
+            {hasComponents('view.header') && renderComponents('view.header', customComponentContext)}
+            {hasComponents(`${item.name}.view.header`) && renderComponents(`${item.name}.view.header`, customComponentContext)}
             {hasPlugins('view.header', `${item.name}.view.header`) && <div ref={headerRef}/>}
 
             {(!hasComponents('view.header', `${item.name}.view.header`) && !hasPlugins('view.header', `${item.name}.view.header`)) && (
@@ -396,9 +406,10 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
                 />
             )}
 
-            {hasComponents('view.content') && renderComponents('view.content', {me, item})}
-            {hasComponents(`${item.name}.view.content`) && renderComponents(`${item.name}.view.content`, {me, item})}
+            {hasComponents('view.content') && renderComponents('view.content', customComponentContext)}
+            {hasComponents(`${item.name}.view.content`) && renderComponents(`${item.name}.view.content`, customComponentContext)}
             {hasPlugins('view.content', `${item.name}.view.content`) && <div ref={contentRef}/>}
+
             {(!hasComponents('view.content', `${item.name}.view.content`) && !hasPlugins('view.content', `${item.name}.view.content`)) &&
                 <Form
                     form={form}
@@ -412,12 +423,13 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
                         <Col span={12}>{renderAttributes(getDefaultTemplateAttributes())}</Col>
                     </Row>
                     {hasPlugins('view.content.form', `${item.name}.view.content.form`) && <div ref={contentFormRef}/>}
-                    {hasComponents(`${item.name}.view.content.form`) && renderComponents(`${item.name}.view.content.form`, {me, item})}
+                    {hasComponents('view.content.form') && renderComponents('view.content.form', customComponentContext)}
+                    {hasComponents(`${item.name}.view.content.form`) && renderComponents(`${item.name}.view.content.form`, customComponentContext)}
                 </Form>
             }
 
-            {hasComponents('view.footer') && renderComponents('view.footer', {me, item})}
-            {hasComponents(`${item.name}.view.footer`) && renderComponents(`${item.name}.view.footer`, {me, item})}
+            {hasComponents('view.footer') && renderComponents('view.footer', customComponentContext)}
+            {hasComponents(`${item.name}.view.footer`) && renderComponents(`${item.name}.view.footer`, customComponentContext)}
             {hasPlugins('view.footer', `${item.name}.view.footer`) && <div ref={footerRef}/>}
 
             {renderCollectionRelations()}

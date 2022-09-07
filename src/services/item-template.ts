@@ -3,12 +3,11 @@ import {gql} from '@apollo/client'
 import i18n from '../i18n'
 import {apolloClient, extractGraphQLErrorMessages} from '.'
 import {ItemTemplate} from '../types'
+import {DEFAULT_ITEM_TEMPLATE_NAME} from '../config/constants'
 
 interface ItemTemplateCache {
     [name: string]: ItemTemplate
 }
-
-const DEFAULT_ITEM_TEMPLATE_NAME = 'defaultItemTemplate'
 
 const FIND_ALL_QUERY = gql`
     query {

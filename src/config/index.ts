@@ -24,9 +24,9 @@ interface AppConfig {
         momentDisplayDateTimeFormatString: string
     }
     query: {
-        findAll: {
-            defaultPageSize: number
-        }
+        minPageSize: number
+        defaultPageSize: number
+        maxPageSize: number
     }
     mutation: {
         copyCollectionRelations: boolean
@@ -53,9 +53,9 @@ const appConfig: AppConfig = {
         momentDisplayDateTimeFormatString: 'DD.MM.YYYY HH:mm'
     },
     query: {
-        findAll: {
-            defaultPageSize: 20
-        }
+        minPageSize: 5,
+        defaultPageSize: 20,
+        maxPageSize: 50
     },
     mutation: {
         copyCollectionRelations: true,
