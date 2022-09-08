@@ -5,7 +5,6 @@ import * as icons from '@ant-design/icons'
 import {Attribute, AttrType, Item, ItemData, Operation, RelType, UserInfo} from '../../types'
 import PermissionService from '../../services/permission'
 import {useTranslation} from 'react-i18next'
-import * as ACL from '../../util/acl'
 import {IPage} from './pagesSlice'
 import {hasPlugins, renderPlugins} from '../../plugins'
 import {getComponents, hasComponents, renderComponents} from '../../custom-components'
@@ -63,15 +62,11 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
     const mutationService = useMemo(() => MutationService.getInstance(), [])
     
     const permissions = useMemo(() => {
-        const itemPermissionId = item.permission.data?.id
-        const itemPermission = itemPermissionId ? permissionService.findById(itemPermissionId) : null
-        const canCreate = !!itemPermission && ACL.canCreate(me, itemPermission)
-        const dataPermissionId = data?.permission?.data?.id
-        const dataPermission = dataPermissionId ? permissionService.findById(dataPermissionId) : null
-        const canEdit = !!dataPermission && item.name !== ITEM_TEMPLATE_ITEM_NAME && (item.name !== ITEM_ITEM_NAME || !data?.core) && !!data?.current && ACL.canWrite(me, dataPermission)
-        const canDelete = !!dataPermission && item.name !== ITEM_TEMPLATE_ITEM_NAME && (item.name !== ITEM_ITEM_NAME || !data?.core) && ACL.canDelete(me, dataPermission)
-        return [canCreate, canEdit, canDelete]
-    }, [data, item.name, item.permission.data?.id, me, permissionService])
+        const acl = permissionService.getAcl(me, item, data)
+        const canEdit = ((item.name !== ITEM_TEMPLATE_ITEM_NAME && item.name !== ITEM_ITEM_NAME) || !data?.core) && acl.canWrite
+        const canDelete = ((item.name !== ITEM_TEMPLATE_ITEM_NAME && item.name !== ITEM_ITEM_NAME) || !data?.core) && acl.canDelete
+        return [acl.canCreate, canEdit, canDelete]
+    }, [data, item, me, permissionService])
     const [canCreate, canEdit, canDelete] = permissions
     
     const pluginContext = useMemo(() => ({me, item, data}), [data, item, me])
@@ -241,7 +236,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
     const renderAttributes = (attributes: {[name: string]: Attribute}) => Object.keys(attributes)
         .filter(attrName => {
             const attr = attributes[attrName]
-            return !attr.private /*&& !attr.fieldHidden*/
+            return !attr.private && !attr.fieldHidden
                 && (attr.type !== AttrType.relation || (attr.relType !== RelType.oneToMany && attr.relType !== RelType.manyToMany))
                 && (item.versioned || (attrName !== MAJOR_REV_ATTR_NAME && attrName !== MINOR_REV_ATTR_NAME))
                 && (item.localized || attrName !== LOCALE_ATTR_NAME)
@@ -333,7 +328,9 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
         const collectionAttrNames =
             Object.keys(item.spec.attributes).filter(key => {
                 const attribute = item.spec.attributes[key]
-                return attribute.type === AttrType.relation && (attribute.relType === RelType.oneToMany || attribute.relType === RelType.manyToMany)
+                return attribute.type === AttrType.relation
+                    && (attribute.relType === RelType.oneToMany || attribute.relType === RelType.manyToMany)
+                    && !attribute.fieldHidden
             })
 
         return (

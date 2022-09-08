@@ -24,6 +24,7 @@ const FIND_ALL_QUERY = gql`
                 dataSource
                 tableName
                 titleAttribute
+                includeTemplates
                 description
                 icon
                 core

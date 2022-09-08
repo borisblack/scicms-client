@@ -2,10 +2,19 @@ import {gql} from '@apollo/client'
 
 import i18n from '../i18n'
 import {apolloClient, extractGraphQLErrorMessages} from '.'
-import {Permission, UserInfo} from '../types'
+import {Item, ItemData, Permission, UserInfo} from '../types'
+import * as ACL from '../util/acl'
 
-export interface PermissionCache {
+interface PermissionCache {
     [id: string]: Permission
+}
+
+interface Acl {
+    canRead: boolean
+    canWrite: boolean
+    canCreate: boolean
+    canDelete: boolean
+    canAdmin: boolean
 }
 
 export const DEFAULT_PERMISSION_ID = '6fd701bf-87e0-4aca-bbfd-fe1e9f85fc71'
@@ -126,4 +135,19 @@ export default class PermissionService {
             })
 
     findById = (id: string): Permission | null => this.permissions[id] ?? null
+
+    getAcl(me: UserInfo, item: Item, data?: ItemData | null): Acl {
+        const itemPermissionId = item.permission.data?.id
+        const itemPermission = itemPermissionId ? this.findById(itemPermissionId) : null
+        const canCreate = !!itemPermission && ACL.canCreate(me, itemPermission)
+
+        const dataPermissionId = data?.permission?.data?.id
+        const dataPermission = dataPermissionId ? this.findById(dataPermissionId) : null
+        const canRead = !!dataPermission && ACL.canRead(me, dataPermission)
+        const canWrite = !!dataPermission && ACL.canWrite(me, dataPermission)
+        const canDelete = !!dataPermission && ACL.canDelete(me, dataPermission)
+        const canAdmin = !!dataPermission && ACL.canAdmin(me, dataPermission)
+
+        return {canCreate, canRead, canWrite, canDelete, canAdmin}
+    }
 }

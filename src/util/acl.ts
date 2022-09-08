@@ -12,11 +12,8 @@ function hasAccess(user: UserInfo, permission: Permission, mask: Set<number>): b
     const roleSet = new Set(user.roles)
     for (const access of permission.access.data) {
         const identity = access.target.data
-        if (mask.has(access.mask)
-            && ((identity.principal && identity.name === user.username) || (!identity.principal && roleSet.has(identity.name)))
-        ) {
+        if (mask.has(access.mask) && ((identity.principal && identity.name === user.username) || (!identity.principal && roleSet.has(identity.name))))
             return true
-        }
     }
     return false
 }
@@ -29,4 +26,4 @@ export const canCreate = (user: UserInfo, permission: Permission) => hasAccess(u
 
 export const canDelete = (user: UserInfo, permission: Permission) => hasAccess(user, permission, mask.DELETE)
 
-export const canAdministration = (user: UserInfo, permission: Permission) => hasAccess(user, permission, mask.ADMINISTRATION)
+export const canAdmin = (user: UserInfo, permission: Permission) => hasAccess(user, permission, mask.ADMINISTRATION)

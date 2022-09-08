@@ -15,6 +15,7 @@ const FIND_ALL_QUERY = gql`
             data {
                 id
                 name
+                core
                 spec
                 majorRev
                 minorRev

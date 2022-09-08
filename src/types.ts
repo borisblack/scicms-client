@@ -92,6 +92,7 @@ interface User extends DefaultItemTemplate {
 
 export interface ItemTemplate extends DefaultItemTemplate {
     name: string
+    core: boolean | null
     spec: ItemSpec
 }
 
@@ -103,6 +104,7 @@ export interface Item extends DefaultItemTemplate {
     dataSource: string
     tableName: string
     titleAttribute: string
+    includeTemplates: string[]
     description: string | null
     icon: string | null
     core: boolean | null

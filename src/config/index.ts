@@ -63,7 +63,7 @@ const appConfig: AppConfig = {
     },
     ui: {
         dataGrid: {
-            colWidth: 130
+            colWidth: 140
         }
     }
 }
