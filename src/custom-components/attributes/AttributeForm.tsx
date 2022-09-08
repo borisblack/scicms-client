@@ -1,8 +1,11 @@
+import {useState} from 'react'
 import {Col, Form, FormInstance, Input, Row, Select} from 'antd'
-import styles from './Attributes.module.css'
+
 import {useTranslation} from 'react-i18next'
 import {NamedAttribute} from '../../util/datagrid'
 import {AttrType} from '../../types'
+import Tags from '../../components/tags/Tags'
+import styles from './Attributes.module.css'
 
 interface Props {
     form: FormInstance
@@ -15,6 +18,7 @@ const {Option: SelectOption} = Select
 
 export default function AttributeForm({form, attribute}: Props) {
     const {t} = useTranslation()
+    const [attrType, setAttrType] = useState<AttrType | undefined>(attribute?.type)
 
     return (
         <Form form={form} size="small" layout="vertical">
@@ -37,7 +41,7 @@ export default function AttributeForm({form, attribute}: Props) {
                         initialValue={attribute?.type}
                         rules={[{required: true, message: t('Required field')}]}
                     >
-                        <Select style={{maxWidth: 200}}>
+                        <Select style={{maxWidth: 200}} onSelect={(val: AttrType) => setAttrType(val)}>
                             {Object.keys(AttrType).map(it => <SelectOption key={it} value={it}>{it}</SelectOption>)}
                         </Select>
                     </FormItem>
@@ -69,6 +73,9 @@ export default function AttributeForm({form, attribute}: Props) {
                     >
                         <Input maxLength={250}/>
                     </FormItem>
+                </Col>
+                <Col span={12}>
+                    {attrType === AttrType.enum && <Tags initialTags={attribute?.enumSet}/>}
                 </Col>
             </Row>
         </Form>
