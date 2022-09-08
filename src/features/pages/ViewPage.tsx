@@ -291,18 +291,24 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
         }
     }
 
-    const getDefaultTemplateAttributes = useCallback(() => itemTemplateService.getDefault().spec.attributes, [itemTemplateService])
+    const templateAttributes = useMemo(() => {
+        let templateAttributes: {[name: string]: Attribute} = {}
+        for (const itemTemplateName of item.includeTemplates) {
+            const itemTemplate = itemTemplateService.getByName(itemTemplateName)
+            templateAttributes = {...templateAttributes, ...itemTemplate.spec.attributes}
+        }
+        return templateAttributes
+    }, [item.includeTemplates, itemTemplateService])
 
-    const getOwnAttributes = useCallback(() => {
+    const ownAttributes = useMemo(() => {
         const allAttributes = item.spec.attributes
-        const defaultTemplateAttributes = getDefaultTemplateAttributes()
         const ownAttributes: {[name: string]: Attribute} = {}
         for (const attrName in allAttributes) {
-            if (!(attrName in defaultTemplateAttributes))
+            if (!(attrName in templateAttributes))
                 ownAttributes[attrName] = allAttributes[attrName]
         }
         return ownAttributes
-    }, [getDefaultTemplateAttributes, item.spec.attributes])
+    }, [item.spec.attributes, templateAttributes])
     
     const renderTabComponents = useCallback((mountPoint: string): ReactNode[] =>
         getComponents(mountPoint).map(it => {
@@ -416,8 +422,8 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
                     onFinish={handleFormFinish}
                 >
                     <Row gutter={16}>
-                        <Col span={12}>{renderAttributes(getOwnAttributes())}</Col>
-                        <Col span={12}>{renderAttributes(getDefaultTemplateAttributes())}</Col>
+                        <Col span={12}>{renderAttributes(ownAttributes)}</Col>
+                        <Col span={12}>{renderAttributes(templateAttributes)}</Col>
                     </Row>
                     {hasPlugins('view.content.form', `${item.name}.view.content.form`) && <div ref={contentFormRef}/>}
                     {hasComponents('view.content.form') && renderComponents('view.content.form', customComponentContext)}

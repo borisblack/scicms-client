@@ -10,7 +10,7 @@ import styles from './AttributeField.module.css'
 const {Item: FormItem} = Form
 const {Group: InputGroup} = Input
 
-const LocationAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, attribute, value, onItemView}) => {
+const LocationAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, attribute, value}) => {
     if (attribute.type !== AttrType.location)
         throw new Error('Illegal attribute')
 

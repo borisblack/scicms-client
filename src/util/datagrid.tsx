@@ -341,7 +341,7 @@ export const getAttributeColumns = (): ColumnDef<NamedAttribute, any>[] =>
         }) as ColumnDef<NamedAttribute, number>
     ]
 
-export const getHiddenAttributeColumns = () => ['confirm', 'keyed']
+export const getHiddenAttributeColumns = () => ['enumSet', 'seqName', 'confirm', 'relType', 'target', 'intermediate', 'mappedBy', 'inversedBy', 'keyed']
 
 export function processLocal(data: any[], params: RequestParams): DataWithPagination<any> {
     const {sorting, filters, pagination} = params
