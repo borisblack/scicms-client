@@ -25,6 +25,7 @@ export default function Attributes({me, item, data}: CustomComponentRenderContex
     if (item.name !== ITEM_TEMPLATE_ITEM_NAME && item.name !== ITEM_ITEM_NAME)
         throw new Error('Illegal attribute')
 
+    const isNew = !data?.id
     const {t} = useTranslation()
     const itemTemplateService = useMemo(() => ItemTemplateService.getInstance(), [])
     const permissionService = useMemo(() => PermissionService.getInstance(), [])
@@ -33,13 +34,12 @@ export default function Attributes({me, item, data}: CustomComponentRenderContex
         const canEdit = !data?.core && !!data?.current && acl.canWrite
         return [canEdit]
     }, [data, item, me, permissionService])
-    const [canEdit] = permissions
 
+    const [canEdit] = permissions
     const columns = useMemo(() => getAttributeColumns(), [])
     const hiddenColumns = useMemo(() => getHiddenAttributeColumns(), [])
-    const isNew = !data?.id
 
-    const getInitialNamedAttributes = useCallback((): NamedAttribute[] => {
+    const initialNamedAttributes = useMemo((): NamedAttribute[] => {
         const spec: ItemSpec = data?.spec ?? {}
         const attributes = spec.attributes ?? {}
         let namedAttributes = Object.keys(spec.attributes ?? {})
@@ -58,7 +58,7 @@ export default function Attributes({me, item, data}: CustomComponentRenderContex
         return namedAttributes
 
     }, [data, isNew, item.name, itemTemplateService])
-    const [namedAttributes, setNamedAttributes] = useState<NamedAttribute[]>(getInitialNamedAttributes())
+    const [namedAttributes, setNamedAttributes] = useState<NamedAttribute[]>(initialNamedAttributes)
     const [filteredData, setFilteredData] = useState<DataWithPagination<NamedAttribute>>(getInitialData())
     const [selectedAttribute, setSelectedAttribute] = useState<NamedAttribute | null>(null)
     const [isEditModalVisible, setEditModalVisible] = useState<boolean>(false)
@@ -68,14 +68,10 @@ export default function Attributes({me, item, data}: CustomComponentRenderContex
         setFilteredData(processLocal(namedAttributes, params))
     }, [namedAttributes])
 
-    const handleRowDoubleClick = useCallback(async (row: Row<NamedAttribute>) => {
-        if (!canEdit)
-            return
-        
-        await setSelectedAttribute(row.original)
-        attributeForm.resetFields()
+    const handleRowDoubleClick = useCallback(async (row: Row<NamedAttribute>) => {        
+        setSelectedAttribute(row.original)
         setEditModalVisible(true)
-    }, [attributeForm, canEdit])
+    }, [])
 
     const handleAttributeFormFinish = useCallback((values: any) => {
 
@@ -102,7 +98,7 @@ export default function Attributes({me, item, data}: CustomComponentRenderContex
                 onOk={() => {}}
                 onCancel={() => setEditModalVisible(false)}
             >
-                <AttributeForm form={attributeForm} attribute={selectedAttribute} onFormFinish={handleAttributeFormFinish}/>
+                <AttributeForm form={attributeForm} attribute={selectedAttribute} canEdit={canEdit} onFormFinish={handleAttributeFormFinish}/>
             </Modal>
         </>
     )

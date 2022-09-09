@@ -197,7 +197,7 @@ export default function RelationsDataGridWrapper({me, item, itemData, relAttrNam
 
         const rowPermissionId = row.original.permission?.data?.id
         const rowPermission = rowPermissionId ? permissionService.findById(rowPermissionId) : null
-        const canDelete = !!rowPermission && ACL.canDelete(me, rowPermission)
+        const canDelete = !!rowPermission && ACL.canDelete(me, rowPermission) && !relAttribute.readOnly
         if (canDelete) {
             if (target.versioned) {
                 items.push({
@@ -225,22 +225,23 @@ export default function RelationsDataGridWrapper({me, item, itemData, relAttrNam
         }
 
         return <Menu items={items}/>
-    }, [t, permissionService, me, openTarget, target.versioned, deleteTarget])
+    }, [t, permissionService, me, relAttribute.readOnly, openTarget, target.versioned, deleteTarget])
     
     const renderToolbar = useCallback(() => {
+        if (relAttribute.readOnly)
+            return null
+        
         const targetPermissionId = target.permission.data?.id
         const targetPermission = targetPermissionId ? permissionService.findById(targetPermissionId) : null
         const canCreate = !!targetPermission && ACL.canCreate(me, targetPermission)
-        if (!canCreate)
-            return null
         
         return (
             <Space>
                 {!isOneToMany && <Button size="small" icon={<SelectOutlined/>} onClick={() => setSelectionModalVisible(true)}>{t('Select')}</Button>}
-                <Button type="primary" size="small" icon={<PlusCircleOutlined/>} onClick={handleCreate}>{t('Create')}</Button>
+                {canCreate && <Button type="primary" size="small" icon={<PlusCircleOutlined/>} onClick={handleCreate}>{t('Create')}</Button>}
             </Space>
         )
-    }, [handleCreate, isOneToMany, me, permissionService, t, target.permission.data?.id])
+    }, [handleCreate, isOneToMany, me, permissionService, relAttribute.readOnly, t, target.permission.data?.id])
 
     return (
         <>

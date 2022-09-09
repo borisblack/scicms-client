@@ -6,12 +6,14 @@ import {ChangeEvent, useEffect, useRef, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 
 interface Props {
-    initialTags?: string[]
+    tags: string[]
+    editable?: boolean
+    newTagText?: string
+    onChange: (tags: string[]) => void
 }
 
-export default function Tags({initialTags}: Props) {
+export default function Tags({tags, editable, newTagText, onChange}: Props) {
     const {t} = useTranslation()
-    const [tags, setTags] = useState<string[]>(initialTags ?? [])
     const [inputVisible, setInputVisible] = useState<boolean>(false)
     const [inputValue, setInputValue] = useState('')
     const inputRef = useRef<InputRef>(null)
@@ -31,7 +33,7 @@ export default function Tags({initialTags}: Props) {
 
     const handleClose = (removedTag: string) => {
         const newTags = tags.filter(tag => tag !== removedTag)
-        setTags(newTags)
+        onChange(newTags)
     }
 
     const showInput = () => {
@@ -44,7 +46,7 @@ export default function Tags({initialTags}: Props) {
 
     const handleInputConfirm = () => {
         if (inputValue && tags.indexOf(inputValue) === -1) {
-            setTags([...tags, inputValue])
+            onChange([...tags, inputValue])
         }
         setInputVisible(false)
         setInputValue('')
@@ -57,7 +59,7 @@ export default function Tags({initialTags}: Props) {
     const handleEditInputConfirm = () => {
         const newTags = [...tags]
         newTags[editInputIndex] = editInputValue
-        setTags(newTags)
+        onChange(newTags)
         setEditInputIndex(-1)
         setInputValue('')
     }
@@ -65,7 +67,7 @@ export default function Tags({initialTags}: Props) {
     return (
         <>
             {tags.map((tag, index) => {
-                if (editInputIndex === index) {
+                if (editable && editInputIndex === index) {
                     return (
                         <Input
                             ref={editInputRef}
@@ -77,7 +79,7 @@ export default function Tags({initialTags}: Props) {
                             onBlur={handleEditInputConfirm}
                             onPressEnter={handleEditInputConfirm}
                         />
-                    );
+                    )
                 }
 
                 const isLongTag = tag.length > 20
@@ -108,6 +110,7 @@ export default function Tags({initialTags}: Props) {
                     tagElem
                 )
             })}
+
             {inputVisible && (
                 <Input
                     ref={inputRef}
@@ -120,9 +123,10 @@ export default function Tags({initialTags}: Props) {
                     onPressEnter={handleInputConfirm}
                 />
             )}
+
             {!inputVisible && (
                 <Tag className="site-tag-plus" onClick={showInput}>
-                    <PlusOutlined /> {t('New entry')}
+                    <PlusOutlined /> {t(newTagText ?? 'New Tag')}
                 </Tag>
             )}
         </>

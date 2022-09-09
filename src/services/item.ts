@@ -110,6 +110,8 @@ export default class ItemService {
 
     getLocation = (): Item => this.getByName(LOCATION_ITEM_NAME)
 
+    getNames = (): string[] => Object.keys(this.items)
+
     listNonCollectionAttributes = (item: Item): string[] => {
         const result: string[] = []
         const {attributes} = item.spec

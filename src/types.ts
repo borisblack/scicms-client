@@ -121,6 +121,18 @@ export interface Item extends DefaultItemTemplate {
     allowedPermissions: {data: AllowedPermission[]}
 }
 
+export interface Sequence extends DefaultItemTemplate {
+    name: string
+    displayName: string
+    prefix: string | null
+    suffix: string | null
+    initialValue: number
+    currentValue: number | null
+    step: number
+    padWith: string | null
+    padTo: number | null
+}
+
 interface RevisionPolicy extends DefaultItemTemplate {
     name: string
     displayName: string | null

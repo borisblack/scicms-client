@@ -17,6 +17,8 @@ import MutationService from '../../services/mutation'
 import appConfig from '../../config'
 import ViewPageHeader from './ViewPageHeader'
 import {
+    CONFIG_ID_ATTR_NAME,
+    CURRENT_ATTR_NAME,
     DEBUG,
     ITEM_ITEM_NAME,
     ITEM_TEMPLATE_ITEM_NAME,
@@ -238,7 +240,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
             const attr = attributes[attrName]
             return !attr.private && !attr.fieldHidden
                 && (attr.type !== AttrType.relation || (attr.relType !== RelType.oneToMany && attr.relType !== RelType.manyToMany))
-                && (item.versioned || (attrName !== MAJOR_REV_ATTR_NAME && attrName !== MINOR_REV_ATTR_NAME))
+                && (item.versioned || (attrName !== CONFIG_ID_ATTR_NAME && attrName !== MAJOR_REV_ATTR_NAME && attrName !== MINOR_REV_ATTR_NAME && attrName !== CURRENT_ATTR_NAME))
                 && (item.localized || attrName !== LOCALE_ATTR_NAME)
         })
         .map(attrName => {
@@ -336,7 +338,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
                 const attribute = item.spec.attributes[key]
                 return attribute.type === AttrType.relation
                     && (attribute.relType === RelType.oneToMany || attribute.relType === RelType.manyToMany)
-                    && !attribute.fieldHidden
+                    && !attribute.private && !attribute.fieldHidden
             })
 
         return (

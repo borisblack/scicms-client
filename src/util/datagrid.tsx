@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import {ReactElement} from 'react'
 import {ColumnDef, ColumnFiltersState, createColumnHelper, SortingState} from '@tanstack/react-table'
-import {Button, Checkbox} from 'antd'
+import {Button, Checkbox, Tag} from 'antd'
 import {DateTime} from 'luxon'
 
 import {Attribute, AttrType, Item, ItemData, Location, Media, RelType} from '../types'
@@ -167,7 +167,7 @@ export const getAttributeColumns = (): ColumnDef<NamedAttribute, any>[] =>
         }) as ColumnDef<NamedAttribute, string>,
         columnHelper.accessor('type', {
             header: i18n.t('Type'),
-            cell: info => info.getValue(),
+            cell: info => <Tag color="processing">{info.getValue()}</Tag>,
             size: appConfig.ui.dataGrid.colWidth,
             enableSorting: true
         }) as ColumnDef<NamedAttribute, AttrType>,
@@ -198,7 +198,7 @@ export const getAttributeColumns = (): ColumnDef<NamedAttribute, any>[] =>
         columnHelper.accessor('seqName', {
             header: i18n.t('Sequence Name'),
             cell: info => info.getValue(),
-            size: 160,
+            size: 210,
             enableSorting: true
         }) as ColumnDef<NamedAttribute, string>,
         columnHelper.accessor('confirm', {
@@ -209,20 +209,20 @@ export const getAttributeColumns = (): ColumnDef<NamedAttribute, any>[] =>
         }) as ColumnDef<NamedAttribute, boolean>,
         columnHelper.accessor('relType', {
             header: i18n.t('Relation Type'),
-            cell: info => info.getValue(),
+            cell: info => info.getValue() ? <Tag>{info.getValue()}</Tag> : null,
             size: appConfig.ui.dataGrid.colWidth,
             enableSorting: true
         }) as ColumnDef<NamedAttribute, RelType>,
         columnHelper.accessor('target', {
             header: i18n.t('Target Item'),
             cell: info => info.getValue(),
-            size: appConfig.ui.dataGrid.colWidth,
+            size: 160,
             enableSorting: true
         }) as ColumnDef<NamedAttribute, string>,
         columnHelper.accessor('intermediate', {
             header: i18n.t('Intermediate Item'),
             cell: info => info.getValue(),
-            size: 160,
+            size: 210,
             enableSorting: true
         }) as ColumnDef<NamedAttribute, string>,
         columnHelper.accessor('mappedBy', {
@@ -246,7 +246,7 @@ export const getAttributeColumns = (): ColumnDef<NamedAttribute, any>[] =>
         columnHelper.accessor('defaultValue', {
             header: i18n.t('Default Value'),
             cell: info => info.getValue(),
-            size: appConfig.ui.dataGrid.colWidth,
+            size: 180,
             enableSorting: true
         }) as ColumnDef<NamedAttribute, string>,
         columnHelper.accessor('keyed', {
@@ -264,7 +264,7 @@ export const getAttributeColumns = (): ColumnDef<NamedAttribute, any>[] =>
         columnHelper.accessor('indexed', {
             header: i18n.t('Indexed'),
             cell: info => <Checkbox checked={info.getValue()}/>,
-            size: appConfig.ui.dataGrid.colWidth,
+            size: 160,
             enableSorting: true
         }) as ColumnDef<NamedAttribute, boolean>,
         columnHelper.accessor('private', {
@@ -276,7 +276,7 @@ export const getAttributeColumns = (): ColumnDef<NamedAttribute, any>[] =>
         columnHelper.accessor('readOnly', {
             header: i18n.t('Read Only'),
             cell: info => <Checkbox checked={info.getValue()}/>,
-            size: appConfig.ui.dataGrid.colWidth,
+            size: 160,
             enableSorting: true
         }) as ColumnDef<NamedAttribute, boolean>,
         columnHelper.accessor('pattern', {
@@ -318,13 +318,13 @@ export const getAttributeColumns = (): ColumnDef<NamedAttribute, any>[] =>
         columnHelper.accessor('colHidden', {
             header: i18n.t('Column Hidden'),
             cell: info => <Checkbox checked={info.getValue()}/>,
-            size: 140,
+            size: 150,
             enableSorting: true
         }) as ColumnDef<NamedAttribute, boolean>,
         columnHelper.accessor('colWidth', {
             header: i18n.t('Column Width'),
             cell: info => info.getValue(),
-            size: appConfig.ui.dataGrid.colWidth,
+            size: 150,
             enableSorting: true
         }) as ColumnDef<NamedAttribute, number>,
         columnHelper.accessor('fieldHidden', {
@@ -401,7 +401,7 @@ function sortLocal(data: any[], sorting: SortingState): any[] {
         return data
     } else {
         const sortingState = sorting[0]
-        return data.sort((a, b) => {
+        return [...data].sort((a, b) => {
             const {id, desc} = sortingState
             let aVal = a[id] ?? ''
             if (Array.isArray(aVal))
