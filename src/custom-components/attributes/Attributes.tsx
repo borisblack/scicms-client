@@ -1,4 +1,8 @@
-import {useCallback, useMemo, useState} from 'react'
+import _ from 'lodash'
+import {useCallback, useEffect, useMemo, useState} from 'react'
+import {Row} from '@tanstack/react-table'
+import {Button, Form, Menu, Modal, Space} from 'antd'
+import {useTranslation} from 'react-i18next'
 
 import {CustomComponentRenderContext} from '../index'
 import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME} from '../../config/constants'
@@ -14,10 +18,9 @@ import {
     NamedAttribute,
     processLocal
 } from '../../util/datagrid'
-import {Row} from '@tanstack/react-table'
-import {Form, Modal} from 'antd'
-import {useTranslation} from 'react-i18next'
 import AttributeForm from './AttributeForm'
+import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design/icons'
+import {ItemType} from 'antd/es/menu/hooks/useItems'
 
 const EDIT_MODAL_WIDTH = 800
 
@@ -27,6 +30,7 @@ export default function Attributes({me, item, data}: CustomComponentRenderContex
 
     const isNew = !data?.id
     const {t} = useTranslation()
+    const [version, setVersion] = useState<number>(0)
     const itemTemplateService = useMemo(() => ItemTemplateService.getInstance(), [])
     const permissionService = useMemo(() => PermissionService.getInstance(), [])
     const permissions = useMemo(() => {
@@ -64,18 +68,94 @@ export default function Attributes({me, item, data}: CustomComponentRenderContex
     const [isEditModalVisible, setEditModalVisible] = useState<boolean>(false)
     const [attributeForm] = Form.useForm()
 
+    useEffect(() => {
+        // TODO: Save somewhere
+    }, [namedAttributes])
+
     const handleRequest = useCallback(async (params: RequestParams) => {
         setFilteredData(processLocal(namedAttributes, params))
     }, [namedAttributes])
-
-    const handleRowDoubleClick = useCallback(async (row: Row<NamedAttribute>) => {        
+    
+    const openRow = useCallback((row: Row<NamedAttribute>) => {
         setSelectedAttribute(row.original)
         setEditModalVisible(true)
     }, [])
 
-    const handleAttributeFormFinish = useCallback((values: any) => {
+    const handleRowDoubleClick = useCallback(async (row: Row<NamedAttribute>) => {
+        openRow(row)
+    }, [openRow])
 
+    const parseValues = useCallback((values: NamedAttribute): NamedAttribute => {
+        const parsedValues: any = {}
+        _.forOwn(values, (value, key) => {
+            if (value == null)
+                return
+
+            if (key === 'enumSet') {
+                parsedValues[key] = (value as string).split('\n')
+                return
+            }
+
+            parsedValues[key] = value
+        })
+
+        return parsedValues
     }, [])
+
+    const refresh = () => setVersion(prevVersion => prevVersion + 1)
+
+    const handleAttributeFormFinish = useCallback((values: NamedAttribute) => {
+        const parsedValues = parseValues(values)
+        const {name} = parsedValues
+        if (!name)
+            throw new Error('Illegal attribute')
+
+        if (name in (data?.spec?.attributes ?? {}))
+            setNamedAttributes(prevNamedAttributes => prevNamedAttributes.map(it => it.name === name ? {...parsedValues} : it))
+        else
+            setNamedAttributes([...namedAttributes, {...parsedValues}])
+
+        refresh()
+        setEditModalVisible(false)
+    }, [data?.spec?.attributes, namedAttributes, parseValues])
+
+    const handleCreate = useCallback(() => {
+        setSelectedAttribute(null)
+        setEditModalVisible(true)
+    }, [])
+
+    const renderToolbar = useCallback(() => {
+        return (
+            <Space>
+                {canEdit && <Button type="primary" size="small" icon={<PlusCircleOutlined/>} onClick={handleCreate}>{t('Add')}</Button>}
+            </Space>
+        )
+    }, [canEdit, handleCreate, t])
+
+    const deleteRow = useCallback((row: Row<NamedAttribute>) => {
+        setNamedAttributes(prevNamedAttributes => prevNamedAttributes.filter(it => it.name !== row.original.name))
+        refresh()
+    }, [])
+
+    const getRowContextMenu = useCallback((row: Row<NamedAttribute>) => {
+        const items: ItemType[] = [{
+            key: 'open',
+            label: t('Open'),
+            icon: <FolderOpenOutlined/>,
+            onClick: () => openRow(row)
+        }]
+
+        if (canEdit) {
+            items.push({
+                key: 'delete',
+                label: t('Delete'),
+                icon: <DeleteTwoTone twoToneColor="#eb2f96"/>,
+                onClick: () => deleteRow(row)
+            })
+        }
+
+        return <Menu items={items}/>
+    }, [t, canEdit, openRow])
     
     return (
         <>
@@ -86,7 +166,9 @@ export default function Attributes({me, item, data}: CustomComponentRenderContex
                     hiddenColumns: hiddenColumns,
                     pageSize: appConfig.query.defaultPageSize
                 }}
-                // toolbar={item.localized && <Checkbox onChange={handleLocalizationsCheckBoxChange}>{t('All Locales')}</Checkbox>}
+                toolbar={renderToolbar()}
+                version={version}
+                getRowContextMenu={getRowContextMenu}
                 onRequest={handleRequest}
                 onRowDoubleClick={handleRowDoubleClick}
             />
@@ -95,7 +177,7 @@ export default function Attributes({me, item, data}: CustomComponentRenderContex
                 visible={isEditModalVisible}
                 destroyOnClose
                 width={EDIT_MODAL_WIDTH}
-                onOk={() => {}}
+                onOk={() => attributeForm.submit()}
                 onCancel={() => setEditModalVisible(false)}
             >
                 <AttributeForm form={attributeForm} attribute={selectedAttribute} canEdit={canEdit} onFormFinish={handleAttributeFormFinish}/>

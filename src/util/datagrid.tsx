@@ -191,7 +191,7 @@ export const getAttributeColumns = (): ColumnDef<NamedAttribute, any>[] =>
         }) as ColumnDef<NamedAttribute, string>,
         columnHelper.accessor('enumSet', {
             header: i18n.t('Enum Set'),
-            cell: info => info.getValue() ? info.getValue().join(',') : null,
+            cell: info => info.getValue() ? info.getValue().join(', ') : null,
             size: 200,
             enableSorting: true
         }) as ColumnDef<NamedAttribute, string[]>,

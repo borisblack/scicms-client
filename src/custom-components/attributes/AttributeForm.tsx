@@ -28,7 +28,7 @@ const {Item: FormItem} = Form
 const {Option: SelectOption} = Select
 const {TextArea} = Input
 
-export default function AttributeForm({form, attribute, canEdit}: Props) {
+export default function AttributeForm({form, attribute, canEdit, onFormFinish}: Props) {
     const {t} = useTranslation()
     const [attrType, setAttrType] = useState<AttrType | undefined>(attribute?.type)
     const [relType, setRelType] = useState<RelType | undefined>(attribute?.relType)
@@ -121,7 +121,7 @@ export default function AttributeForm({form, attribute, canEdit}: Props) {
     }, DEBOUNCE_WAIT_INTERVAL)
 
     return (
-        <Form form={form} size="small" layout="vertical" disabled={!canEdit}>
+        <Form form={form} size="small" layout="vertical" disabled={!canEdit} onFinish={onFormFinish}>
             <Row gutter={16}>
                 <Col span={12}>
                     <FormItem
