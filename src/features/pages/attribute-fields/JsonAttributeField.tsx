@@ -4,6 +4,7 @@ import {Form, Input} from 'antd'
 import {useTranslation} from 'react-i18next'
 import {AttrType} from '../../../types'
 import {FC} from 'react'
+import appConfig from '../../../config'
 
 const FormItem = Form.Item
 const {TextArea} = Input
@@ -24,7 +25,7 @@ const JsonAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, value
             initialValue={value ? JSON.stringify(value) : null}
             rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
         >
-            <TextArea style={{maxWidth: attribute.fieldWidth}} disabled={isDisabled} rows={4}/>
+            <TextArea style={{maxWidth: attribute.fieldWidth}} disabled={isDisabled} rows={appConfig.ui.textArea.rows}/>
         </FormItem>
     )
 }

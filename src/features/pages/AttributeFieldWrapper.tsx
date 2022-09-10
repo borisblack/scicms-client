@@ -15,6 +15,7 @@ import MediaAttributeField from './attribute-fields/MediaAttributeField'
 import LocationAttributeField from './attribute-fields/LocationAttributeField'
 import EnumAttributeField from './attribute-fields/EnumAttributeField'
 import './attribute-fields/AttributeField.css'
+import ArrayAttributeField from './attribute-fields/ArrayAttributeField'
 
 const LOCALE_ATTR_NAME = 'locale'
 
@@ -28,7 +29,7 @@ const attributeFields: AttributeFields = {
     [AttrType.bool]: BoolAttributeField,
     [AttrType.text]: TextAttributeField,
     [AttrType.json]: JsonAttributeField,
-    [AttrType.array]: JsonAttributeField,
+    [AttrType.array]: ArrayAttributeField,
     [AttrType.int]: NumberAttributeField,
     [AttrType.long]: NumberAttributeField,
     [AttrType.float]: NumberAttributeField,

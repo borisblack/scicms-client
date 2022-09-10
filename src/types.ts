@@ -96,8 +96,14 @@ export interface ItemTemplate extends DefaultItemTemplate {
     spec: ItemSpec
 }
 
-export interface Item extends DefaultItemTemplate {
+export interface ItemTemplate extends DefaultItemTemplate {
     name: string
+    core: boolean | null
+    spec: ItemSpec
+    checksum: string | null
+}
+
+export interface Item extends ItemTemplate {
     displayName: string
     pluralName: string
     displayPluralName: string
@@ -107,7 +113,6 @@ export interface Item extends DefaultItemTemplate {
     includeTemplates: string[]
     description: string | null
     icon: string | null
-    core: boolean | null
     performDdl: boolean | null
     versioned: boolean | null
     manualVersioning: boolean | null
@@ -115,8 +120,6 @@ export interface Item extends DefaultItemTemplate {
     notLockable: boolean | null
     localized: boolean | null
     implementation: string | null
-    spec: ItemSpec
-    checksum: string | null
     allowedLifecycles: {data: AllowedLifecycle[]}
     allowedPermissions: {data: AllowedPermission[]}
 }
@@ -293,10 +296,15 @@ interface Pagination {
     total: number
 }
 
-export enum Operation {
+export enum ViewState {
     CREATE = 'CREATE',
     CREATE_VERSION = 'CREATE_VERSION',
     CREATE_LOCALIZATION = 'CREATE_LOCALIZATION',
     UPDATE = 'UPDATE',
     VIEW = 'VIEW'
+}
+
+export interface IBuffer {
+    form: {[key: string]: any}
+    [key: string]: any
 }

@@ -8,6 +8,7 @@ import {AttrType, RelType} from '../../types'
 import styles from './Attributes.module.css'
 import SequenceService from '../../services/sequence'
 import ItemService from '../../services/item'
+import appConfig from '../../config'
 
 interface Props {
     form: FormInstance
@@ -270,7 +271,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
                             initialValue={attribute?.enumSet?.join('\n')}
                             rules={[{required: true, message: t('Required field')}]}
                         >
-                            <TextArea style={{maxWidth: 180}} rows={4}/>
+                            <TextArea style={{maxWidth: 180}} rows={appConfig.ui.textArea.rows}/>
                         </FormItem>
                     )}
 

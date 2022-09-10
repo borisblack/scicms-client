@@ -1,11 +1,13 @@
+import _ from 'lodash'
 import {Moment} from 'moment'
 import {DateTime} from 'luxon'
 
 import {Attribute, AttrType, Item, ItemData, Location} from '../types'
 import MediaService from '../services/media'
 import LocationService from '../services/location'
-import {MINOR_REV_ATTR_NAME, PASSWORD_PLACEHOLDER, UTC} from '../config/constants'
+import {MINOR_REV_ATTR_NAME, PASSWORD_PLACEHOLDER, STATE_ATTR_NAME, UTC} from '../config/constants'
 import appConfig from '../config'
+import {tryParseJson} from './index'
 
 const {timeZone} = appConfig.dateTime
 const mediaService = MediaService.getInstance()
@@ -36,6 +38,12 @@ export async function parseValues(item: Item, data: ItemData | null | undefined,
         if (attribute.type === AttrType.password && value === PASSWORD_PLACEHOLDER)
             continue
 
+        if (attribute.type === AttrType.string && key === STATE_ATTR_NAME)
+            continue
+
+        if (value === undefined && attribute.type !== AttrType.media && attribute.type !== AttrType.location)
+            continue
+
         parsedValues[key] = await parseValue(item, key, attribute, data, values)
     }
 
@@ -55,6 +63,10 @@ async function parseValue(item: Item, attrName: string, attribute: Attribute, da
             return await parseMedia(attrName, data, values)
         case AttrType.location:
             return await parseLocation(item, attrName, data, values)
+        case AttrType.array:
+            return _.isString(value) ? value.split('\n').map(it => tryParseJson(it)) : value
+        case AttrType.json:
+            return _.isString(value) ? JSON.parse(value) : value
         case AttrType.relation:
             return values[`${attrName}.id`]
         default:
@@ -86,28 +98,29 @@ function parseDateTime(attrName: string, values: any): string | null {
 
 async function parseMedia(attrName: string, data: ItemData | null | undefined, values: any): Promise<string | null> {
     const value = values[attrName]
-    const prevItemPermissionId = data?.permission.data?.id
+    const prevItemPermissionId = data?.permission?.data?.id
     const itemPermissionId = values['permission.id']
     const mediaId = values[`${attrName}.id`]
     if (mediaId) {
         if (itemPermissionId !== prevItemPermissionId) {
             await mediaService.update(mediaId, {permission: itemPermissionId})
         }
+        return mediaId
     } else {
         const fileList = (value as File[] | undefined) ?? []
         if (fileList.length > 0) {
             const mediaInfo = await mediaService.uploadData({file: fileList[0], permission: itemPermissionId})
             return mediaInfo.id
         }
+        return null
     }
-    return mediaId
 }
 
 async function parseLocation(item: Item, attrName: string, data: ItemData | null | undefined, values: any): Promise<string | null> {
     const value = values[attrName]
-    const prevItemPermissionId = data?.permission.data?.id
+    const prevItemPermissionId = data?.permission?.data?.id
     const itemPermissionId = values['permission.id']
-    const locationData = data ? data[attrName].data as Location : null
+    const locationData = data ? data[attrName]?.data as Location : null
     const {latitude, longitude, label} = value
     const isEmpty = !latitude && !longitude && !label
     if (locationData) {
@@ -139,7 +152,6 @@ export function filterValues(values: FilteredItemData): ItemData {
 
     delete filteredValues.majorRev
     delete filteredValues.locale
-    delete filteredValues.state
 
     return filteredValues as ItemData
 }

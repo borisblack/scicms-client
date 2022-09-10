@@ -4,7 +4,7 @@ import {Row} from '@tanstack/react-table'
 import {Button, Checkbox, Menu, message, PageHeader} from 'antd'
 
 import appConfig from '../../config'
-import {Item, ItemData, UserInfo} from '../../types'
+import {IBuffer, Item, ItemData, UserInfo} from '../../types'
 import DataGrid, {RequestParams} from '../../components/datagrid/DataGrid'
 import {getLabel, IPage} from './pagesSlice'
 import {hasPlugins, renderPlugins} from '../../plugins'
@@ -37,14 +37,15 @@ function DefaultPage({me, page, onItemCreate, onItemView, onItemDelete}: Props) 
     const headerRef = useRef<HTMLDivElement>(null)
     const contentRef = useRef<HTMLDivElement>(null)
     const footerRef = useRef<HTMLDivElement>(null)
+    const bufferRef = useRef<IBuffer>({form: {}})
     const {item} = page
 
     const permissionService = useMemo(() => PermissionService.getInstance(), [])
     const mutationService = useMemo(() => MutationService.getInstance(), [])
     const columnsMemoized = useMemo(() => getColumns(item), [item])
     const hiddenColumnsMemoized = useMemo(() => getHiddenColumns(item), [item])
-    const pluginContext = useMemo(() => ({me, item}), [item, me])
-    const customComponentContext = useMemo(() => ({me, item}), [item, me])
+    const pluginContext = useMemo(() => ({me, item, buffer: bufferRef.current}), [item, me])
+    const customComponentContext = useMemo(() => ({me, item, buffer: bufferRef.current}), [item, me])
 
     useEffect(() => {
         const headerNode = headerRef.current

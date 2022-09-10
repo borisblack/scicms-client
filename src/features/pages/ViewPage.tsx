@@ -2,7 +2,7 @@ import React, {ReactNode, useCallback, useEffect, useMemo, useRef, useState} fro
 import {Col, Form, message, Row, Spin, Tabs} from 'antd'
 import * as icons from '@ant-design/icons'
 
-import {Attribute, AttrType, Item, ItemData, Operation, RelType, UserInfo} from '../../types'
+import {Attribute, AttrType, IBuffer, Item, ItemData, ViewState, RelType, UserInfo} from '../../types'
 import PermissionService from '../../services/permission'
 import {useTranslation} from 'react-i18next'
 import {IPage} from './pagesSlice'
@@ -48,12 +48,13 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
     const {t} = useTranslation()
     const [loading, setLoading] = useState<boolean>(false)
     const [isLockedByMe, setLockedByMe] = useState<boolean>(data?.lockedBy?.data?.id === me.id)
-    const [operation, setOperation] = useState<Operation>(isNew ? Operation.CREATE : (isLockedByMe ? (item.versioned ? Operation.CREATE_VERSION : Operation.UPDATE) : Operation.VIEW))
+    const [viewState, setViewState] = useState<ViewState>(isNew ? ViewState.CREATE : (isLockedByMe ? (item.versioned ? ViewState.CREATE_VERSION : ViewState.UPDATE) : ViewState.VIEW))
     const headerRef = useRef<HTMLDivElement>(null)
     const contentRef = useRef<HTMLDivElement>(null)
     const contentFormRef = useRef<HTMLDivElement>(null)
     const tabsContentRef = useRef<HTMLDivElement>(null)
     const footerRef = useRef<HTMLDivElement>(null)
+    const bufferRef = useRef<IBuffer>({form: {}})
     const [form] = Form.useForm()
 
     const coreConfigService = useMemo(() => CoreConfigService.getInstance(), [])
@@ -65,14 +66,14 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
     
     const permissions = useMemo(() => {
         const acl = permissionService.getAcl(me, item, data)
-        const canEdit = ((item.name !== ITEM_TEMPLATE_ITEM_NAME && item.name !== ITEM_ITEM_NAME) || !data?.core) && acl.canWrite
+        const canEdit = ((item.name !== ITEM_TEMPLATE_ITEM_NAME && item.name !== ITEM_ITEM_NAME) || !data?.core) && (!item.versioned || !!data?.current) && acl.canWrite
         const canDelete = ((item.name !== ITEM_TEMPLATE_ITEM_NAME && item.name !== ITEM_ITEM_NAME) || !data?.core) && acl.canDelete
         return [acl.canCreate, canEdit, canDelete]
     }, [data, item, me, permissionService])
     const [canCreate, canEdit, canDelete] = permissions
     
-    const pluginContext = useMemo(() => ({me, item, data}), [data, item, me])
-    const customComponentContext = useMemo(() => ({me, item, data}), [data, item, me])
+    const pluginContext = useMemo(() => ({me, item, data, buffer: bufferRef.current}), [data, item, me])
+    const customComponentContext = useMemo(() => ({me, item, data, buffer: bufferRef.current}), [data, item, me])
 
     useEffect(() => {
         if (DEBUG)
@@ -114,12 +115,14 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
     }, [item.name, pluginContext])
 
     async function handleFormFinish(values: any) {
-        if (DEBUG)
+        if (DEBUG) {
             console.log('Values', values)
+            console.log('Buffer', bufferRef.current)
+        }
 
         let parsedValues
         try {
-            parsedValues = await parseValues(item, data, values)
+            parsedValues = await parseValues(item, data, {...values, ...bufferRef.current.form})
             if (DEBUG)
                 console.log('Parsed values', parsedValues)
         } catch (e: any) {
@@ -128,25 +131,25 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
         }
 
         if (DEBUG)
-            console.log('Operation', operation)
+            console.log('ViewState', viewState)
 
-        switch (operation) {
-            case Operation.CREATE:
+        switch (viewState) {
+            case ViewState.CREATE:
                 await create(filterValues(parsedValues), item.manualVersioning ? parsedValues.majorRev : null, item.localized ? parsedValues.locale : null)
                 break
-            case Operation.CREATE_VERSION:
+            case ViewState.CREATE_VERSION:
                 await createVersion(filterValues(parsedValues), item.manualVersioning ? parsedValues.majorRev : null, item.localized ? parsedValues.locale : null)
                 break
-            case Operation.CREATE_LOCALIZATION:
+            case ViewState.CREATE_LOCALIZATION:
                 if (!parsedValues.locale)
                     throw new Error('Locale is required')
 
                 await createLocalization(filterValues(parsedValues), parsedValues.locale)
                 break
-            case Operation.UPDATE:
+            case ViewState.UPDATE:
                 await update(filterValues(parsedValues))
                 break
-            case Operation.VIEW:
+            case ViewState.VIEW:
             default:
                 break
         }
@@ -161,7 +164,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
             const created = await mutationService.create(item, values, majorRev, locale)
             await onUpdate(created)
             setLockedByMe(false)
-            setOperation(Operation.VIEW)
+            setViewState(ViewState.VIEW)
         } catch (e: any) {
             message.error(e.message)
         } finally {
@@ -184,7 +187,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
             const createdVersion = await mutationService.createVersion(item, data.id, values, majorRev, locale, appConfig.mutation.copyCollectionRelations)
             await onUpdate(createdVersion)
             setLockedByMe(false)
-            setOperation(Operation.VIEW)
+            setViewState(ViewState.VIEW)
         } catch (e: any) {
             message.error(e.message)
         } finally {
@@ -207,7 +210,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
             const createdLocalization = await mutationService.createLocalization(item, data.id, values, locale, appConfig.mutation.copyCollectionRelations)
             await onUpdate(createdLocalization)
             setLockedByMe(false)
-            setOperation(Operation.VIEW)
+            setViewState(ViewState.VIEW)
         } catch (e: any) {
             message.error(e.message)
         } finally {
@@ -227,7 +230,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
             const updated = await mutationService.update(item, data.id, values)
             await onUpdate(updated)
             setLockedByMe(false)
-            setOperation(Operation.VIEW)
+            setViewState(ViewState.VIEW)
         } catch (e: any) {
             message.error(e.message)
         } finally {
@@ -268,7 +271,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
             if (!value)
                 return
 
-            if (operation !== Operation.UPDATE && operation !== Operation.CREATE_VERSION)
+            if (viewState !== ViewState.UPDATE && viewState !== ViewState.CREATE_VERSION)
                 return
 
             if (isNew || (data.locale ?? coreConfigService.coreConfig.i18n.defaultLocale) === value)
@@ -278,12 +281,12 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
             try {
                 const existingLocalization = await queryService.findLocalization(item, data.configId, data.majorRev, value)
                 if (existingLocalization) {
-                    if (operation === Operation.UPDATE)
-                        setOperation(Operation.CREATE_LOCALIZATION)
+                    if (viewState === ViewState.UPDATE)
+                        setViewState(ViewState.CREATE_LOCALIZATION)
 
                     onUpdate(existingLocalization)
                 } else {
-                    setOperation(Operation.CREATE_LOCALIZATION)
+                    setViewState(ViewState.CREATE_LOCALIZATION)
                 }
             } catch (e: any) {
                 message.error(e.message)
@@ -399,8 +402,8 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
                     canCreate={canCreate}
                     canEdit={canEdit}
                     canDelete={canDelete}
-                    operation={operation}
-                    setOperation={setOperation}
+                    viewState={viewState}
+                    setViewState={setViewState}
                     isLockedByMe={isLockedByMe}
                     setLockedByMe={setLockedByMe}
                     setLoading={setLoading}
@@ -420,7 +423,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
                     form={form}
                     size="small"
                     layout="vertical"
-                    disabled={(!canEdit || !isLockedByMe /*|| operation === Operation.VIEW*/) && (!canCreate || !isNew)}
+                    disabled={(!canEdit || !isLockedByMe /*|| viewState === ViewState.VIEW*/) && (!canCreate || !isNew)}
                     onFinish={handleFormFinish}
                 >
                     <Row gutter={16}>

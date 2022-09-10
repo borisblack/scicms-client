@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import {ReactElement, ReactNode} from 'react'
 
-import {Item, ItemData, UserInfo} from '../types'
+import {IBuffer, Item, ItemData, UserInfo} from '../types'
 import customComponentConfig from '../config/custom-component'
 
 /* Mount points:
@@ -43,6 +43,7 @@ export interface CustomComponentRenderProps {
 export interface CustomComponentRenderContext {
     me: UserInfo
     item: Item
+    buffer: IBuffer
     data?: ItemData | null
 }
 

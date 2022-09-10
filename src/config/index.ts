@@ -36,6 +36,9 @@ interface AppConfig {
         dataGrid: {
             colWidth: number
         }
+        textArea: {
+            rows: number
+        }
     }
 }
 
@@ -64,6 +67,9 @@ const appConfig: AppConfig = {
     ui: {
         dataGrid: {
             colWidth: 140
+        },
+        textArea: {
+            rows: 4
         }
     }
 }

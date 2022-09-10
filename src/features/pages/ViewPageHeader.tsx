@@ -12,7 +12,7 @@ import {
     UnlockOutlined
 } from '@ant-design/icons'
 
-import {Item, ItemData, Operation} from '../../types'
+import {Item, ItemData, ViewState} from '../../types'
 import {getLabel, IPage} from './pagesSlice'
 import appConfig from '../../config'
 import {useTranslation} from 'react-i18next'
@@ -30,8 +30,8 @@ interface Props {
     canCreate: boolean
     canEdit: boolean
     canDelete: boolean
-    operation: Operation
-    setOperation: (operation: Operation) => void
+    viewState: ViewState
+    setViewState: (viewState: ViewState) => void
     isLockedByMe: boolean
     setLockedByMe: (isLockedByMe: boolean) => void
     setLoading: (loading: boolean) => void
@@ -45,7 +45,7 @@ const VERSIONS_MODAL_WIDTH = 800
 
 const {confirm} = Modal
 
-export default function ViewPageHeader({page, form, isNew, canCreate, canEdit, canDelete, operation, setOperation, isLockedByMe, setLockedByMe, setLoading, closePage, onItemView, onUpdate, onItemDelete}: Props) {
+export default function ViewPageHeader({page, form, isNew, canCreate, canEdit, canDelete, viewState, setViewState, isLockedByMe, setLockedByMe, setLoading, closePage, onItemView, onUpdate, onItemDelete}: Props) {
     const {item, data} = page
     const Icon = item.icon ? (icons as any)[item.icon] : null
     const {t} = useTranslation()
@@ -70,7 +70,7 @@ export default function ViewPageHeader({page, form, isNew, canCreate, canEdit, c
                 message.warning(t('New item cannot be locked'))
 
             setLockedByMe(locked.success)
-            setOperation(item.versioned ? Operation.CREATE_VERSION : Operation.UPDATE)
+            setViewState(item.versioned ? ViewState.CREATE_VERSION : ViewState.UPDATE)
         } catch (e: any) {
             message.error(e.message)
         } finally {
@@ -91,7 +91,7 @@ export default function ViewPageHeader({page, form, isNew, canCreate, canEdit, c
                 message.warning(t('New item cannot be unlocked'))
 
             setLockedByMe(!unlocked)
-            setOperation(Operation.VIEW)
+            setViewState(ViewState.VIEW)
         } catch (e: any) {
             message.error(e.message)
         } finally {
@@ -213,7 +213,7 @@ export default function ViewPageHeader({page, form, isNew, canCreate, canEdit, c
             }
         } else {
             if (canEdit) {
-                if (isLockedByMe /*&& operation !== Operation.VIEW*/) {
+                if (isLockedByMe /*&& viewState !== ViewState.VIEW*/) {
                     extra.push(<Button key="save" type="primary" onClick={handleSave}><SaveOutlined/> {t('Save')}</Button>)
                     extra.push(<Button key="cancel" icon={<LockOutlined/>} onClick={handleCancel}>{t('Cancel')}</Button>)
                 } else {
@@ -227,7 +227,7 @@ export default function ViewPageHeader({page, form, isNew, canCreate, canEdit, c
                 )
             }
 
-            if (canEdit && isLockedByMe && operation !== Operation.VIEW && data?.lifecycle.data) {
+            if (canEdit && isLockedByMe /*&& viewState !== ViewState.VIEW*/ && data?.lifecycle.data) {
                 extra.push(
                     <Button key="promote" type="primary" icon={<SubnodeOutlined/>} onClick={() => setPromoteModalVisible(true)}>{t('Promote')}</Button>
                 )
@@ -271,7 +271,7 @@ export default function ViewPageHeader({page, form, isNew, canCreate, canEdit, c
     const title = getLabel(page)
     return (
         <>
-            {operation === Operation.CREATE_VERSION && <Alert type="warning" closable message={t('A new version will be created')}/>}
+            {viewState === ViewState.CREATE_VERSION && <Alert type="warning" closable message={t('A new version will be created')}/>}
             <PageHeader
                 className={styles.pageHeader}
                 title={Icon ? <span><Icon/>&nbsp;&nbsp;{title}</span> : title}

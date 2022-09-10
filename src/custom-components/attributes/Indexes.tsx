@@ -24,7 +24,7 @@ import {ItemType} from 'antd/es/menu/hooks/useItems'
 
 const EDIT_MODAL_WIDTH = 800
 
-export default function Attributes({me, item, buffer, data}: CustomComponentRenderContext) {
+export default function Indexes({me, item, buffer, data}: CustomComponentRenderContext) {
     if (item.name !== ITEM_TEMPLATE_ITEM_NAME && item.name !== ITEM_ITEM_NAME)
         throw new Error('Illegal attribute')
 
