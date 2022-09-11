@@ -4,7 +4,7 @@ import {ColumnDef, ColumnFiltersState, createColumnHelper, SortingState} from '@
 import {Button, Checkbox, Tag} from 'antd'
 import {DateTime} from 'luxon'
 
-import {Attribute, AttrType, Item, ItemData, Location, Media, RelType} from '../types'
+import {Attribute, AttrType, Item, ItemData, Location, Media, NamedAttribute, NamedIndex, RelType} from '../types'
 import appConfig from '../config'
 import ItemService from '../services/item'
 import {DataWithPagination, RequestParams} from '../components/datagrid/DataGrid'
@@ -13,10 +13,6 @@ import MediaService from '../services/media'
 import {UTC} from '../config/constants'
 import i18n from '../i18n'
 import {extractTitleAttrValue} from './item'
-
-export interface NamedAttribute extends Attribute {
-    name: string
-}
 
 const {luxonDisplayDateFormatString, luxonDisplayTimeFormatString, luxonDisplayDateTimeFormatString} = appConfig.dateTime
 const columnHelper = createColumnHelper<any>()
@@ -342,6 +338,30 @@ export const getAttributeColumns = (): ColumnDef<NamedAttribute, any>[] =>
     ]
 
 export const getHiddenAttributeColumns = () => ['enumSet', 'seqName', 'confirm', 'relType', 'target', 'intermediate', 'mappedBy', 'inversedBy', 'keyed']
+
+export const getIndexColumns = (): ColumnDef<NamedIndex, any>[] =>
+    [
+        columnHelper.accessor('name', {
+            header: i18n.t('Name'),
+            cell: info => info.getValue(),
+            size: 250,
+            enableSorting: true
+        }) as ColumnDef<NamedIndex, string>,
+        columnHelper.accessor('columns', {
+            header: i18n.t('Columns'),
+            cell: info => info.getValue() ? info.getValue().join(', ') : null,
+            size: 250,
+            enableSorting: true
+        }) as ColumnDef<NamedIndex, string[]>,
+        columnHelper.accessor('unique', {
+            header: i18n.t('Unique'),
+            cell: info => <Checkbox checked={info.getValue()}/>,
+            size: appConfig.ui.dataGrid.colWidth,
+            enableSorting: true
+        }) as ColumnDef<NamedIndex, boolean>
+    ]
+
+export const getHiddenIndexColumns = () => []
 
 export function processLocal(data: any[], params: RequestParams): DataWithPagination<any> {
     const {sorting, filters, pagination} = params

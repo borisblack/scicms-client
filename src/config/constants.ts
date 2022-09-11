@@ -2,6 +2,7 @@
 
 export const DEBUG: boolean = process.env.NODE_ENV !== 'production'
 
+export const CORE_VERSION = 'v1'
 export const UTC = 'UTC'
 export const LUXON_DATE_FORMAT_STRING: string = 'dd.LL.yyyy'
 export const LUXON_STD_DATE_FORMAT_STRING: string = 'yyyy-LL-dd'

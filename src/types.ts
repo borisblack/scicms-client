@@ -101,6 +101,19 @@ export interface ItemTemplate extends DefaultItemTemplate {
     core: boolean | null
     spec: ItemSpec
     checksum: string | null
+    hash: string | null
+}
+
+export interface ItemTemplateModel {
+    coreVersion: string
+    metadata: ItemTemplateMetadata
+    spec: ItemSpec
+    checksum?: string | null
+}
+
+interface ItemTemplateMetadata {
+    name: string
+    core: boolean | null
 }
 
 export interface Item extends ItemTemplate {
@@ -122,6 +135,31 @@ export interface Item extends ItemTemplate {
     implementation: string | null
     allowedLifecycles: {data: AllowedLifecycle[]}
     allowedPermissions: {data: AllowedPermission[]}
+}
+
+export interface ItemModel extends ItemTemplateModel {
+    includeTemplates: string[]
+    metadata: ItemMetadata
+}
+
+interface ItemMetadata extends ItemTemplateMetadata{
+    displayName: string
+    pluralName: string
+    displayPluralName: string
+    dataSource: string,
+    tableName: string
+    titleAttribute: string
+    description: string | null
+    icon: string | null
+    performDdl: boolean | null
+    versioned: boolean | null
+    manualVersioning: boolean | null
+    localized: boolean | null
+    revisionPolicy?: string | null
+    lifecycle?: string | null
+    permission?: string | null
+    implementation: string | null
+    notLockable: boolean |null
 }
 
 export interface Sequence extends DefaultItemTemplate {
@@ -179,6 +217,10 @@ export interface Attribute {
     fieldWidth?: number
 }
 
+export interface NamedAttribute extends Attribute {
+    name: string
+}
+
 export enum AttrType {
     uuid = 'uuid',
     string = 'string',
@@ -211,9 +253,13 @@ export enum RelType {
     manyToMany = 'manyToMany'
 }
 
-interface Index {
+export interface Index {
     columns: string[]
     unique: boolean
+}
+
+export interface NamedIndex extends Index {
+    name: string
 }
 
 interface AllowedLifecycle extends DefaultItemTemplate, IntermediateItemTemplate {

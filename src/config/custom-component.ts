@@ -1,6 +1,8 @@
 import {CustomComponent} from '../custom-components'
 import {itemAttributes} from '../custom-components/attributes/item-attributes'
 import {itemTemplateAttributes} from '../custom-components/attributes/item-template-attributes'
+import {itemIndexes} from '../custom-components/indexes/item-indexes'
+import {itemTemplateIndexes} from '../custom-components/indexes/item-template-indexes'
 
 interface CustomComponentConfig {
     components: CustomComponent[]
@@ -10,7 +12,9 @@ interface CustomComponentConfig {
 const customComponentConfig: CustomComponentConfig = {
     components: [
         itemAttributes,
-        itemTemplateAttributes
+        itemTemplateAttributes,
+        itemIndexes,
+        itemTemplateIndexes
     ]
 }
 

@@ -2,12 +2,12 @@ import React, {ReactNode, useCallback, useEffect, useMemo, useRef, useState} fro
 import {Col, Form, message, Row, Spin, Tabs} from 'antd'
 import * as icons from '@ant-design/icons'
 
-import {Attribute, AttrType, IBuffer, Item, ItemData, ViewState, RelType, UserInfo} from '../../types'
+import {Attribute, AttrType, IBuffer, Item, ItemData, RelType, UserInfo, ViewState} from '../../types'
 import PermissionService from '../../services/permission'
 import {useTranslation} from 'react-i18next'
 import {IPage} from './pagesSlice'
-import {hasPlugins, renderPlugins} from '../../plugins'
-import {getComponents, hasComponents, renderComponents} from '../../custom-components'
+import {CustomPluginRenderContext, hasPlugins, renderPlugins} from '../../plugins'
+import {CustomComponentRenderContext, getComponents, hasComponents, renderComponents} from '../../custom-components'
 import ItemTemplateService from '../../services/item-template'
 import AttributeFieldWrapper from './AttributeFieldWrapper'
 import QueryService from '../../services/query'
@@ -29,6 +29,7 @@ import {
 import ItemService from '../../services/item'
 import RelationsDataGridWrapper from './RelationsDataGridWrapper'
 import {Callback} from '../../services/mediator'
+import {ApiMiddlewareContext, ApiOperation, handleApiMiddleware, hasApiMiddleware} from '../../api-middleware'
 
 interface Props {
     me: UserInfo
@@ -72,8 +73,8 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
     }, [data, item, me, permissionService])
     const [canCreate, canEdit, canDelete] = permissions
     
-    const pluginContext = useMemo(() => ({me, item, data, buffer: bufferRef.current}), [data, item, me])
-    const customComponentContext = useMemo(() => ({me, item, data, buffer: bufferRef.current}), [data, item, me])
+    const pluginContext: CustomPluginRenderContext = useMemo(() => ({me, item, data, buffer: bufferRef.current}), [data, item, me])
+    const customComponentContext: CustomComponentRenderContext = useMemo(() => ({me, item, data, buffer: bufferRef.current}), [data, item, me])
 
     useEffect(() => {
         if (DEBUG)
@@ -120,25 +121,26 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
             console.log('Buffer', bufferRef.current)
         }
 
-        let parsedValues
+        let parsedValues: ItemData
         try {
             parsedValues = await parseValues(item, data, {...values, ...bufferRef.current.form})
             if (DEBUG)
                 console.log('Parsed values', parsedValues)
         } catch (e: any) {
-            message.error(e)
+            message.error(e.message)
             return
         }
 
         if (DEBUG)
             console.log('ViewState', viewState)
 
+        const filteredValues = filterValues(parsedValues)
         switch (viewState) {
             case ViewState.CREATE:
-                await create(filterValues(parsedValues), item.manualVersioning ? parsedValues.majorRev : null, item.localized ? parsedValues.locale : null)
+                await create(filteredValues, item.manualVersioning ? parsedValues.majorRev : null, item.localized ? parsedValues.locale : null)
                 break
             case ViewState.CREATE_VERSION:
-                await createVersion(filterValues(parsedValues), item.manualVersioning ? parsedValues.majorRev : null, item.localized ? parsedValues.locale : null)
+                await createVersion(filteredValues, item.manualVersioning ? parsedValues.majorRev : null, item.localized ? parsedValues.locale : null)
                 break
             case ViewState.CREATE_LOCALIZATION:
                 if (!parsedValues.locale)
@@ -161,7 +163,14 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
 
         setLoading(true)
         try {
-            const created = await mutationService.create(item, values, majorRev, locale)
+            const doCreate = async () => await mutationService.create(item, values, majorRev, locale)
+            let created: ItemData
+            if (hasApiMiddleware(item.name)) {
+                const apiMiddlewareContext: ApiMiddlewareContext = {me, item, buffer: bufferRef.current, values}
+                created = await handleApiMiddleware(item.name, ApiOperation.CREATE, apiMiddlewareContext, doCreate)
+            } else {
+                created = await doCreate()
+            }
             await onUpdate(created)
             setLockedByMe(false)
             setViewState(ViewState.VIEW)
@@ -184,7 +193,14 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
 
         setLoading(true)
         try {
-            const createdVersion = await mutationService.createVersion(item, data.id, values, majorRev, locale, appConfig.mutation.copyCollectionRelations)
+            const doCreateVersion = async () => await mutationService.createVersion(item, data.id, values, majorRev, locale, appConfig.mutation.copyCollectionRelations)
+            let createdVersion: ItemData
+            if (hasApiMiddleware(item.name)) {
+                const apiMiddlewareContext: ApiMiddlewareContext = {me, item, buffer: bufferRef.current, values}
+                createdVersion = await handleApiMiddleware(item.name, ApiOperation.CREATE_VERSION, apiMiddlewareContext, doCreateVersion)
+            } else {
+                createdVersion = await doCreateVersion()
+            }
             await onUpdate(createdVersion)
             setLockedByMe(false)
             setViewState(ViewState.VIEW)
@@ -207,7 +223,14 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
 
         setLoading(true)
         try {
-            const createdLocalization = await mutationService.createLocalization(item, data.id, values, locale, appConfig.mutation.copyCollectionRelations)
+            const doCreateLocalization = async () => await mutationService.createLocalization(item, data.id, values, locale, appConfig.mutation.copyCollectionRelations)
+            let createdLocalization: ItemData
+            if (hasApiMiddleware(item.name)) {
+                const apiMiddlewareContext: ApiMiddlewareContext = {me, item, buffer: bufferRef.current, values}
+                createdLocalization = await handleApiMiddleware(item.name, ApiOperation.CREATE_LOCALIZATION, apiMiddlewareContext, doCreateLocalization)
+            } else {
+                createdLocalization = await doCreateLocalization()
+            }
             await onUpdate(createdLocalization)
             setLockedByMe(false)
             setViewState(ViewState.VIEW)
@@ -227,7 +250,14 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
 
         setLoading(true)
         try {
-            const updated = await mutationService.update(item, data.id, values)
+            const doUpdate = async () => await mutationService.update(item, data.id, values)
+            let updated: ItemData
+            if (hasApiMiddleware(item.name)) {
+                const apiMiddlewareContext: ApiMiddlewareContext = {me, item, buffer: bufferRef.current, values}
+                updated = await handleApiMiddleware(item.name, ApiOperation.UPDATE, apiMiddlewareContext, doUpdate)
+            } else {
+                updated = await doUpdate()
+            }
             await onUpdate(updated)
             setLockedByMe(false)
             setViewState(ViewState.VIEW)
@@ -396,9 +426,10 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
 
             {(!hasComponents('view.header', `${item.name}.view.header`) && !hasPlugins('view.header', `${item.name}.view.header`)) && (
                 <ViewPageHeader
+                    me={me}
                     page={page}
                     form={form}
-                    isNew={isNew}
+                    buffer={bufferRef.current}
                     canCreate={canCreate}
                     canEdit={canEdit}
                     canDelete={canDelete}

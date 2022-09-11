@@ -36,8 +36,8 @@ const apiMiddlewareByItemName: {[itemName: string]: ApiMiddleware[]} = _.groupBy
 
 export const hasApiMiddleware = (itemName: string): boolean => itemName in apiMiddlewareByItemName
 
-export async function handleApiMiddleware(operation: ApiOperation, context: ApiMiddlewareContext, next: () => any): Promise<any> {
-    const apiMiddlewareList = apiMiddlewareByItemName[context.item.name]
+export async function handleApiMiddleware(itemName: string, operation: ApiOperation, context: ApiMiddlewareContext, next: () => any): Promise<any> {
+    const apiMiddlewareList = apiMiddlewareByItemName[itemName]
     if (!apiMiddlewareList)
         return await next()
 

@@ -8,11 +8,12 @@ import {
     DownOutlined,
     ExclamationCircleOutlined,
     LockOutlined,
-    SaveOutlined, SubnodeOutlined,
+    SaveOutlined,
+    SubnodeOutlined,
     UnlockOutlined
 } from '@ant-design/icons'
 
-import {Item, ItemData, ViewState} from '../../types'
+import {FlaggedResponse, IBuffer, Item, ItemData, ResponseCollection, UserInfo, ViewState} from '../../types'
 import {getLabel, IPage} from './pagesSlice'
 import appConfig from '../../config'
 import {useTranslation} from 'react-i18next'
@@ -21,12 +22,20 @@ import SearchDataGridWrapper from './SearchDataGridWrapper'
 import styles from './Page.module.css'
 import {FiltersInput} from '../../services/query'
 import Promote from './Promote'
-import {LOCALE_ATTR_NAME, MAJOR_REV_ATTR_NAME, MINOR_REV_ATTR_NAME} from '../../config/constants'
+import {
+    ITEM_ITEM_NAME,
+    ITEM_TEMPLATE_ITEM_NAME,
+    LOCALE_ATTR_NAME,
+    MAJOR_REV_ATTR_NAME,
+    MINOR_REV_ATTR_NAME
+} from '../../config/constants'
+import {ApiMiddlewareContext, ApiOperation, handleApiMiddleware, hasApiMiddleware} from '../../api-middleware'
 
 interface Props {
+    me: UserInfo
     page: IPage
     form: FormInstance
-    isNew: boolean
+    buffer: IBuffer
     canCreate: boolean
     canEdit: boolean
     canDelete: boolean
@@ -45,8 +54,11 @@ const VERSIONS_MODAL_WIDTH = 800
 
 const {confirm} = Modal
 
-export default function ViewPageHeader({page, form, isNew, canCreate, canEdit, canDelete, viewState, setViewState, isLockedByMe, setLockedByMe, setLoading, closePage, onItemView, onUpdate, onItemDelete}: Props) {
+export default function ViewPageHeader(
+    {me, page, form, buffer, canCreate, canEdit, canDelete, viewState, setViewState, isLockedByMe, setLockedByMe, setLoading, closePage, onItemView, onUpdate, onItemDelete
+}: Props) {
     const {item, data} = page
+    const isNew = !data?.id
     const Icon = item.icon ? (icons as any)[item.icon] : null
     const {t} = useTranslation()
     const [isVersionsModalVisible, setVersionsModalVisible] = useState(false)
@@ -63,7 +75,15 @@ export default function ViewPageHeader({page, form, isNew, canCreate, canEdit, c
 
         setLoading(true)
         try {
-            const locked = await mutationService.lock(item, data?.id as string)
+            const id = data?.id as string
+            const doLock = async () => await mutationService.lock(item, id)
+            let locked: FlaggedResponse
+            if (hasApiMiddleware(item.name)) {
+                const apiMiddlewareContext: ApiMiddlewareContext = {me, item, buffer, values: {id}}
+                locked = await handleApiMiddleware(item.name, ApiOperation.LOCK, apiMiddlewareContext, doLock)
+            } else {
+                locked = await doLock()
+            }
             if (locked.success)
                 await onUpdate(locked.data)
             else
@@ -84,7 +104,15 @@ export default function ViewPageHeader({page, form, isNew, canCreate, canEdit, c
 
         setLoading(true)
         try {
-            const unlocked = await mutationService.unlock(item, data?.id as string)
+            const id = data?.id as string
+            const doUnlock = async () => await mutationService.unlock(item, id)
+            let unlocked
+            if (hasApiMiddleware(item.name)) {
+                const apiMiddlewareContext: ApiMiddlewareContext = {me, item, buffer, values: {id}}
+                unlocked = await handleApiMiddleware(item.name, ApiOperation.UNLOCK, apiMiddlewareContext, doUnlock)
+            } else {
+                unlocked = await doUnlock()
+            }
             if (unlocked.success)
                 await onUpdate(unlocked.data)
             else
@@ -108,7 +136,15 @@ export default function ViewPageHeader({page, form, isNew, canCreate, canEdit, c
 
         setLoading(true)
         try {
-            const deleted = await mutationService.delete(item, data?.id as string, appConfig.mutation.deletingStrategy)
+            const id = data?.id as string
+            const doDelete = async () => await mutationService.delete(item, id, appConfig.mutation.deletingStrategy)
+            let deleted: ItemData
+            if (hasApiMiddleware(item.name)) {
+                const apiMiddlewareContext: ApiMiddlewareContext = {me, item, buffer, values: {id}}
+                deleted = await handleApiMiddleware(item.name, ApiOperation.DELETE, apiMiddlewareContext, doDelete)
+            } else {
+                deleted = await doDelete()
+            }
             await onUpdate(deleted)
             await setLockedByMe(false)
             onItemDelete(item.name, data?.id as string)
@@ -128,8 +164,16 @@ export default function ViewPageHeader({page, form, isNew, canCreate, canEdit, c
 
         setLoading(true)
         try {
-            const purged = await mutationService.purge(item, data?.id as string, appConfig.mutation.deletingStrategy)
-            const deleted = purged.data.find(it => it.id === data?.id as string) as ItemData
+            const id = data?.id as string
+            const doPurge = async () => await mutationService.purge(item, id, appConfig.mutation.deletingStrategy)
+            let purged: ResponseCollection<ItemData>
+            if (hasApiMiddleware(item.name)) {
+                const apiMiddlewareContext: ApiMiddlewareContext = {me, item, buffer, values: {id}}
+                purged = await handleApiMiddleware(item.name, ApiOperation.PURGE, apiMiddlewareContext, doPurge)
+            } else {
+                purged = await doPurge()
+            }
+            const deleted = purged.data.find(it => it.id === id) as ItemData
             await onUpdate(deleted)
             await setLockedByMe(false)
             onItemDelete(item.name, data?.id as string)
@@ -149,7 +193,15 @@ export default function ViewPageHeader({page, form, isNew, canCreate, canEdit, c
 
         setLoading(true)
         try {
-            const promoted = await mutationService.promote(item, data?.id as string, state)
+            const id = data?.id as string
+            const doPromote = async () => await mutationService.promote(item, id, state)
+            let promoted: ItemData
+            if (hasApiMiddleware(item.name)) {
+                const apiMiddlewareContext: ApiMiddlewareContext = {me, item, buffer, values: {id}}
+                promoted = await handleApiMiddleware(item.name, ApiOperation.PROMOTE, apiMiddlewareContext, doPromote)
+            } else {
+                promoted = await doPromote()
+            }
             await onUpdate(promoted)
             setPromoteModalVisible(false)
         } catch (e: any) {
@@ -227,7 +279,7 @@ export default function ViewPageHeader({page, form, isNew, canCreate, canEdit, c
                 )
             }
 
-            if (canEdit && isLockedByMe /*&& viewState !== ViewState.VIEW*/ && data?.lifecycle.data) {
+            if (canEdit && isLockedByMe /*&& viewState !== ViewState.VIEW*/ && data?.lifecycle.data && item.name !== ITEM_ITEM_NAME && item.name !== ITEM_TEMPLATE_ITEM_NAME) {
                 extra.push(
                     <Button key="promote" type="primary" icon={<SubnodeOutlined/>} onClick={() => setPromoteModalVisible(true)}>{t('Promote')}</Button>
                 )

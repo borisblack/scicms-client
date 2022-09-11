@@ -1,4 +1,6 @@
 import {ApiMiddleware} from '../api-middleware'
+import {itemMiddleware} from '../api-middleware/item'
+import {itemTemplateMiddleware} from '../api-middleware/item-template'
 
 interface ApiMiddlewareConfig {
     apiMiddleware: ApiMiddleware[]
@@ -6,7 +8,10 @@ interface ApiMiddlewareConfig {
 
 // Add middleware here
 const apiMiddlewareConfig: ApiMiddlewareConfig = {
-    apiMiddleware: []
+    apiMiddleware: [
+        itemMiddleware,
+        itemTemplateMiddleware
+    ]
 }
 
 export default apiMiddlewareConfig

@@ -7,17 +7,11 @@ import {useTranslation} from 'react-i18next'
 import {CustomComponentRenderContext} from '../index'
 import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME} from '../../config/constants'
 import ItemTemplateService from '../../services/item-template'
-import {Attribute, ItemSpec} from '../../types'
+import {Attribute, ItemSpec, NamedAttribute} from '../../types'
 import PermissionService from '../../services/permission'
 import DataGrid, {DataWithPagination, RequestParams} from '../../components/datagrid/DataGrid'
 import appConfig from '../../config'
-import {
-    getAttributeColumns,
-    getHiddenAttributeColumns,
-    getInitialData,
-    NamedAttribute,
-    processLocal
-} from '../../util/datagrid'
+import {getAttributeColumns, getHiddenAttributeColumns, getInitialData, processLocal} from '../../util/datagrid'
 import AttributeForm from './AttributeForm'
 import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design/icons'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
@@ -46,7 +40,7 @@ export default function Attributes({me, item, buffer, data}: CustomComponentRend
     
     const initialNamedAttributes = useMemo((): NamedAttribute[] => {
         const attributes = spec.attributes ?? {}
-        let namedAttributes = Object.keys(spec.attributes ?? {})
+        let namedAttributes = Object.keys(attributes)
             .map(attrName => ({name: attrName, ...attributes[attrName]}))
         
         if (item.name !== ITEM_TEMPLATE_ITEM_NAME && namedAttributes.length > 0 && !isNew) {
@@ -71,8 +65,9 @@ export default function Attributes({me, item, buffer, data}: CustomComponentRend
     useEffect(() => {
         const newAttributes: {[name: string]: Attribute} = {}
         namedAttributes.forEach(it => {
-            newAttributes[it.name] = it
-            delete (it as any).name
+            const newAttribute: any = {...it}
+            newAttributes[it.name] = newAttribute
+            delete newAttribute.name
         })
         spec.attributes = newAttributes
         buffer.form.spec = spec
