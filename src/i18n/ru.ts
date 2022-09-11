@@ -144,6 +144,8 @@ const ru = {
         'Settings': 'Настройки',
         'Sort Order': 'Порядок сортировки',
         'Source Item': 'Исходная сущность',
+        'Spec': 'Спецификация',
+        'Specification': 'Спецификация',
         'Storage': 'Хранилище',
         'Support for single upload only': 'Только один файл может быть загружен',
         'Table Name': 'Имя таблицы',

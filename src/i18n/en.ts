@@ -144,6 +144,8 @@ const en = {
         'Settings': 'Settings',
         'Sort Order': 'Sort Order',
         'Source Item': 'Source Item',
+        'Spec': 'Spec',
+        'Specification': 'Specification',
         'Storage': 'Storage',
         'Support for single upload only': 'Support for single upload only',
         'Table Name': 'Table Name',
