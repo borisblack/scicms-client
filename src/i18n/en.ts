@@ -147,6 +147,9 @@ const en = {
         'Spec': 'Spec',
         'Specification': 'Specification',
         'Storage': 'Storage',
+        'String does not match pattern %s': 'String does not match pattern %s',
+        'String must contain UUID': 'String must contain UUID',
+        'String must start with a lowercase letter and contain no whitespaces': 'String must start with a lowercase letter and contain no whitespaces',
         'Support for single upload only': 'Support for single upload only',
         'Table Name': 'Table Name',
         'Target Item': 'Target Item',
@@ -168,6 +171,7 @@ const en = {
         'Versioned': 'Versioned',
         'Versions': 'Versions',
         'Welcome': 'Welcome',
+        'You must sign in again to apply the changes': 'You must sign in again to apply the changes',
         ...customEn
     }
 }

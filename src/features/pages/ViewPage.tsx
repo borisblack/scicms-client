@@ -1,6 +1,7 @@
 import React, {ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {Col, Form, message, Row, Spin, Tabs} from 'antd'
+import {Col, Form, message, Modal, Row, Spin, Tabs} from 'antd'
 import * as icons from '@ant-design/icons'
+import {ExclamationCircleOutlined} from '@ant-design/icons'
 
 import {Attribute, AttrType, IBuffer, Item, ItemData, RelType, UserInfo, ViewState} from '../../types'
 import PermissionService from '../../services/permission'
@@ -39,13 +40,16 @@ interface Props {
     onItemView: (item: Item, id: string, cb?: Callback, observerKey?: string) => void
     onItemDelete: (itemName: string, id: string) => void
     onUpdate: (data: ItemData) => void
+    onLogout: () => void
 }
 
 const TabPane = Tabs.TabPane
+const {info} = Modal
 
-function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, onUpdate}: Props) {
+function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, onUpdate, onLogout}: Props) {
     const {item, data} = page
     const isNew = !data?.id
+    const isSystemItem = item.name === ITEM_TEMPLATE_ITEM_NAME || item.name === ITEM_ITEM_NAME
     const {t} = useTranslation()
     const [loading, setLoading] = useState<boolean>(false)
     const [isLockedByMe, setLockedByMe] = useState<boolean>(data?.lockedBy?.data?.id === me.id)
@@ -67,8 +71,8 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
     
     const permissions = useMemo(() => {
         const acl = permissionService.getAcl(me, item, data)
-        const canEdit = ((item.name !== ITEM_TEMPLATE_ITEM_NAME && item.name !== ITEM_ITEM_NAME) || !data?.core) && (!item.versioned || !!data?.current) && acl.canWrite
-        const canDelete = ((item.name !== ITEM_TEMPLATE_ITEM_NAME && item.name !== ITEM_ITEM_NAME) || !data?.core) && acl.canDelete
+        const canEdit = (!isSystemItem || !data?.core) && (!item.versioned || !!data?.current) && acl.canWrite
+        const canDelete = (!isSystemItem || !data?.core) && acl.canDelete
         return [acl.canCreate, canEdit, canDelete]
     }, [data, item, me, permissionService])
     const [canCreate, canEdit, canDelete] = permissions
@@ -114,6 +118,16 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
             renderPlugins(`${item.name}.tabs.content`, tabsContentNode, pluginContext)
         }
     }, [item.name, pluginContext])
+    
+    const logoutIfNeed = useCallback(() => {
+        if (!isSystemItem)
+            return
+        
+        info({
+            title: `${t('You must sign in again to apply the changes')}`,
+            onOk: onLogout
+        })
+    }, [isSystemItem, onLogout, t])
 
     async function handleFormFinish(values: any) {
         if (DEBUG) {
@@ -174,6 +188,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
             await onUpdate(created)
             setLockedByMe(false)
             setViewState(ViewState.VIEW)
+            logoutIfNeed()
         } catch (e: any) {
             message.error(e.message)
         } finally {
@@ -261,6 +276,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
             await onUpdate(updated)
             setLockedByMe(false)
             setViewState(ViewState.VIEW)
+            logoutIfNeed()
         } catch (e: any) {
             message.error(e.message)
         } finally {
@@ -442,6 +458,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
                     onItemView={onItemView}
                     onItemDelete={onItemDelete}
                     onUpdate={onUpdate}
+                    logoutIfNeed={logoutIfNeed}
                 />
             )}
 

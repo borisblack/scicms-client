@@ -4,6 +4,8 @@ export const DEBUG: boolean = process.env.NODE_ENV !== 'production'
 
 export const CORE_VERSION = 'v1'
 export const UTC = 'UTC'
+export const LOWERCASE_NO_WHITESPACE_PATTERN = /^[a-z]\w*$/
+export const LOWERCASE_NO_WHITESPACE_MESSAGE = 'String must start with a lowercase letter and contain no whitespaces'
 export const LUXON_DATE_FORMAT_STRING: string = 'dd.LL.yyyy'
 export const LUXON_STD_DATE_FORMAT_STRING: string = 'yyyy-LL-dd'
 export const LUXON_YEAR_MONTH_FORMAT_STRING: string = 'LL.yyyy'
@@ -22,6 +24,8 @@ export const ROLE_DESIGNER: string = 'ROLE_DESIGNER'
 export const ROLE_USER: string = 'ROLE_USER'
 export const PASSWORD_PLACEHOLDER = "********"
 
+export const ITEM_TEMPLATE_MODEL_KIND = 'ItemTemplate'
+export const ITEM_MODEL_KIND = 'Item'
 export const DEFAULT_ITEM_TEMPLATE_NAME = 'default'
 export const ITEM_TEMPLATE_ITEM_NAME = 'itemTemplate'
 export const ITEM_ITEM_NAME = 'item'

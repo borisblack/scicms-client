@@ -1,4 +1,4 @@
-import {FC} from 'react'
+import {FC, useCallback} from 'react'
 import {useTranslation} from 'react-i18next'
 import moment from 'moment-timezone'
 import {DatePicker, Form} from 'antd'
@@ -19,13 +19,15 @@ const DateAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, value
     const {t} = useTranslation()
     const isDisabled = attribute.keyed || attribute.readOnly
 
+    const parseValue = useCallback((val: string | null | undefined) => val == null ? null : moment.tz(val, UTC), [])
+
     return (
         <FormItem
             className={styles.formItem}
             name={attrName}
             label={t(attribute.displayName)}
             hidden={attribute.fieldHidden}
-            initialValue={value ? moment.tz(value, UTC) : null}
+            initialValue={parseValue(value) ?? parseValue(attribute.defaultValue)}
             rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
         >
             <DatePicker format={momentDisplayDateFormatString} disabled={isDisabled}/>

@@ -23,15 +23,16 @@ export default function Attributes({me, item, buffer, data}: CustomComponentRend
         throw new Error('Illegal attribute')
 
     const isNew = !data?.id
+    const isLockedByMe = data?.lockedBy?.data?.id === me.id
     const {t} = useTranslation()
     const [version, setVersion] = useState<number>(0)
     const itemTemplateService = useMemo(() => ItemTemplateService.getInstance(), [])
     const permissionService = useMemo(() => PermissionService.getInstance(), [])
     const permissions = useMemo(() => {
         const acl = permissionService.getAcl(me, item, data)
-        const canEdit = !data?.core && acl.canWrite
+        const canEdit = (isNew && acl.canCreate) || (!data?.core && isLockedByMe && acl.canWrite)
         return [canEdit]
-    }, [data, item, me, permissionService])
+    }, [data, isLockedByMe, isNew, item, me, permissionService])
 
     const [canEdit] = permissions
     const columns = useMemo(() => getAttributeColumns(), [])
@@ -106,6 +107,9 @@ export default function Attributes({me, item, buffer, data}: CustomComponentRend
     const refresh = () => setVersion(prevVersion => prevVersion + 1)
 
     const handleAttributeFormFinish = useCallback((values: NamedAttribute) => {
+        if (!canEdit)
+            return
+
         const parsedValues = parseValues(values)
         const {name} = parsedValues
         if (!name)
@@ -118,7 +122,7 @@ export default function Attributes({me, item, buffer, data}: CustomComponentRend
 
         refresh()
         setEditModalVisible(false)
-    }, [namedAttributes, parseValues, setNamedAttributes, spec.attributes])
+    }, [canEdit, namedAttributes, parseValues, spec.attributes])
 
     const handleCreate = useCallback(() => {
         setSelectedAttribute(null)

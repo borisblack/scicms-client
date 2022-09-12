@@ -1,4 +1,4 @@
-import {FC} from 'react'
+import {FC, useCallback} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Checkbox, Form, TimePicker} from 'antd'
 import moment, {Moment} from 'moment-timezone'
@@ -24,6 +24,8 @@ const TimeAttributeField: FC<AttributeFieldProps> = ({form, attrName, attribute,
         return evt
     }
 
+    const parseValue = useCallback((val: string | null | undefined) => val == null ? null : moment.tz(val, MOMENT_ISO_TIME_FORMAT_STRING, UTC), [])
+
     return (
         <>
             <FormItem
@@ -31,7 +33,7 @@ const TimeAttributeField: FC<AttributeFieldProps> = ({form, attrName, attribute,
                 name={attrName}
                 label={t(attribute.displayName)}
                 hidden={attribute.fieldHidden}
-                initialValue={value ? moment.tz(value, MOMENT_ISO_TIME_FORMAT_STRING, UTC) : null}
+                initialValue={parseValue(value) ?? parseValue(attribute.defaultValue)}
                 rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
                 getValueFromEvent={getValueFromEvent}
             >

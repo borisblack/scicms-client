@@ -1,5 +1,5 @@
 import {ApiMiddleware, ApiMiddlewareContext, ApiOperation} from './index'
-import {CORE_VERSION, ITEM_TEMPLATE_ITEM_NAME} from '../config/constants'
+import {CORE_VERSION, ITEM_TEMPLATE_ITEM_NAME, ITEM_TEMPLATE_MODEL_KIND} from '../config/constants'
 import {FlaggedResponse, ItemData, ItemTemplate, ItemTemplateModel} from '../types'
 import axios from 'axios'
 import {extractAxiosErrorMessage} from '../services'
@@ -53,6 +53,7 @@ async function apply({item, values}: ApiMiddlewareContext): Promise<ItemData> {
 
 const mapItemTemplate = (item: ItemTemplate): ItemTemplateModel => ({
     coreVersion: CORE_VERSION,
+    kind: ITEM_TEMPLATE_MODEL_KIND,
     metadata: {
         name: item.name,
         core: item.core
@@ -62,13 +63,12 @@ const mapItemTemplate = (item: ItemTemplate): ItemTemplateModel => ({
 
 async function remove({item, values}: ApiMiddlewareContext): Promise<ItemData> {
     const {id} = values
+    const data = await queryService.findById(item, id)
     try {
         await axios.post(`/api/model/delete/itemTemplate/${id}`)
     } catch (e: any) {
         throw new Error(extractAxiosErrorMessage(e))
     }
-
-    const data = await queryService.findById(item, id)
 
     return data.data
 }

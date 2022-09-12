@@ -1,7 +1,7 @@
 import {ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Row} from '@tanstack/react-table'
-import {Button, Checkbox, Menu, message, PageHeader} from 'antd'
+import {Button, Checkbox, Menu, message, Modal, PageHeader} from 'antd'
 
 import appConfig from '../../config'
 import {IBuffer, Item, ItemData, UserInfo} from '../../types'
@@ -19,6 +19,8 @@ import {CheckboxChangeEvent} from 'antd/es/checkbox'
 import {ExtRequestParams} from '../../services/query'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
 import MutationService from '../../services/mutation'
+import {ApiMiddlewareContext, ApiOperation, handleApiMiddleware, hasApiMiddleware} from '../../api-middleware'
+import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME} from '../../config/constants'
 
 interface Props {
     me: UserInfo
@@ -26,9 +28,12 @@ interface Props {
     onItemCreate: (item: Item, initialData?: ItemData | null, cb?: () => void, observerKey?: string) => void
     onItemView: (item: Item, id: string, cb?: () => void, observerKey?: string) => void
     onItemDelete: (itemName: string, id: string) => void
+    onLogout: () => void
 }
 
-function DefaultPage({me, page, onItemCreate, onItemView, onItemDelete}: Props) {
+const {info} = Modal
+
+function DefaultPage({me, page, onItemCreate, onItemView, onItemDelete, onLogout}: Props) {
     const {t} = useTranslation()
     const [loading, setLoading] = useState(false)
     const [data, setData] = useState(getInitialData())
@@ -39,6 +44,7 @@ function DefaultPage({me, page, onItemCreate, onItemView, onItemDelete}: Props) 
     const footerRef = useRef<HTMLDivElement>(null)
     const bufferRef = useRef<IBuffer>({form: {}})
     const {item} = page
+    const isSystemItem = item.name === ITEM_TEMPLATE_ITEM_NAME || item.name === ITEM_ITEM_NAME
 
     const permissionService = useMemo(() => PermissionService.getInstance(), [])
     const mutationService = useMemo(() => MutationService.getInstance(), [])
@@ -91,21 +97,39 @@ function DefaultPage({me, page, onItemCreate, onItemView, onItemDelete}: Props) 
 
     const handleRowDoubleClick = useCallback((row: Row<ItemData>) => handleView(row.original.id), [handleView])
 
+    const logoutIfNeed = useCallback(() => {
+        if (!isSystemItem)
+            return
+
+        info({
+            title: `${t('You must sign in again to apply the changes')}`,
+            onOk: onLogout
+        })
+    }, [isSystemItem, onLogout, t])
+
     const handleDelete = useCallback(async (id: string, purge: boolean = false) => {
         setLoading(true)
         try {
-            if (purge)
+            if (purge) {
                 await mutationService.purge(item, id, appConfig.mutation.deletingStrategy)
-            else
-                await mutationService.delete(item, id, appConfig.mutation.deletingStrategy)
+            } else {
+                const doDelete = async () => await mutationService.delete(item, id, appConfig.mutation.deletingStrategy)
+                if (hasApiMiddleware(item.name)) {
+                    const apiMiddlewareContext: ApiMiddlewareContext = {me, item, buffer: bufferRef.current, values: {id}}
+                    await handleApiMiddleware(item.name, ApiOperation.DELETE, apiMiddlewareContext, doDelete)
+                } else {
+                    await doDelete()
+                }
+            }
             await onItemDelete(item.name, id)
             await refresh()
+            logoutIfNeed()
         } catch (e: any) {
             message.error(e.message)
         } finally {
             setLoading(false)
         }
-    }, [mutationService, item, onItemDelete])
+    }, [onItemDelete, item, logoutIfNeed, mutationService, me])
 
     const getRowContextMenu = useCallback((row: Row<ItemData>) => {
         const items: ItemType[] = [{

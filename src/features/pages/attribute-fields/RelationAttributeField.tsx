@@ -37,6 +37,7 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, 
     const [currentId, setCurrentId] = useState(value?.data?.id)
     const itemService = useMemo(() => ItemService.getInstance(), [])
     const targetItem = itemService.getByName(target)
+    const initialData = useMemo(() => value?.data ?? attribute.defaultValue, [attribute.defaultValue, value?.data])
 
     const extraFiltersInput: FiltersInput<ItemData> = useMemo(() => {
         if (attrName === LIFECYCLE_ATTR_NAME) {
@@ -98,7 +99,7 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, 
                 name={attrName}
                 label={t(attribute.displayName)}
                 hidden={attribute.fieldHidden}
-                initialValue={value?.data ? extractTitleAttrValue(targetItem, value.data) : null}
+                initialValue={initialData ? extractTitleAttrValue(targetItem, initialData) : null}
                 rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
             >
                 <Search

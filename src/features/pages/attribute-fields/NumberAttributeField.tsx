@@ -23,7 +23,7 @@ const NumberAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, val
             name={attrName}
             label={t(attribute.displayName)}
             hidden={attribute.fieldHidden}
-            initialValue={value}
+            initialValue={value ?? (attribute.defaultValue ? parseFloat(attribute.defaultValue) : null)}
             rules={[
                 { type: 'number', min: attribute.minRange, max: attribute.maxRange },
                 {required: attribute.required && !attribute.readOnly, message: t('Required field')}

@@ -24,12 +24,13 @@ import Mediator, {Callback, CallbackOperation} from '../../services/mediator'
 
 interface Props {
     me: UserInfo,
+    onLogout: () => void
 }
 
 const TabPane = Tabs.TabPane
 const mediator = Mediator.getInstance()
 
-function Pages({me}: Props) {
+function Pages({me, onLogout}: Props) {
     const dispatch = useAppDispatch()
     const {t} = useTranslation()
     const pages = useAppSelector(selectPages)
@@ -113,6 +114,7 @@ function Pages({me}: Props) {
                                     onItemCreate={handleItemCreate}
                                     onItemView={handleItemView}
                                     onItemDelete={handleItemDelete}
+                                    onLogout={onLogout}
                                 /> :
                                 <ViewPage
                                     me={me}
@@ -122,6 +124,7 @@ function Pages({me}: Props) {
                                     onItemView={handleItemView}
                                     onItemDelete={handleItemDelete}
                                     onUpdate={handleUpdate}
+                                    onLogout={onLogout}
                                 />
                             }
                         </div>

@@ -104,15 +104,24 @@ export interface ItemTemplate extends DefaultItemTemplate {
     hash: string | null
 }
 
-export interface ItemTemplateModel {
+interface AbstractModel {
     coreVersion: string
-    metadata: ItemTemplateMetadata
-    spec: ItemSpec
+    kind: 'ItemTemplate' | 'Item'
+    metadata: BaseMetadata
     checksum?: string | null
 }
 
-interface ItemTemplateMetadata {
+interface BaseMetadata {
     name: string
+}
+
+export interface ItemTemplateModel extends AbstractModel{
+    kind: 'ItemTemplate'
+    metadata: ItemTemplateMetadata
+    spec: ItemSpec
+}
+
+interface ItemTemplateMetadata extends BaseMetadata{
     core: boolean | null
 }
 
@@ -137,9 +146,11 @@ export interface Item extends ItemTemplate {
     allowedPermissions: {data: AllowedPermission[]}
 }
 
-export interface ItemModel extends ItemTemplateModel {
+export interface ItemModel extends AbstractModel {
+    kind: 'Item'
     includeTemplates: string[]
     metadata: ItemMetadata
+    spec: ItemSpec
 }
 
 interface ItemMetadata extends ItemTemplateMetadata{

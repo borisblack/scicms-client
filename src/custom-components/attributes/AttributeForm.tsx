@@ -8,6 +8,8 @@ import styles from './Attributes.module.css'
 import SequenceService from '../../services/sequence'
 import ItemService from '../../services/item'
 import appConfig from '../../config'
+import {regExpRule} from '../../util/form'
+import {LOWERCASE_NO_WHITESPACE_PATTERN} from '../../config/constants'
 
 interface Props {
     form: FormInstance
@@ -129,9 +131,12 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
                         name="name"
                         label={t('Name')}
                         initialValue={attribute?.name}
-                        rules={[{required: true, message: t('Required field')}]}
+                        rules={[
+                            {required: true, message: t('Required field')},
+                            regExpRule(LOWERCASE_NO_WHITESPACE_PATTERN)
+                        ]}
                     >
-                        <Input style={{maxWidth: 300}} maxLength={50}/>
+                        <Input style={{maxWidth: 300}} maxLength={50} disabled={attribute?.name != null}/>
                     </FormItem>
 
                     <FormItem
@@ -376,21 +381,24 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
                         <>
                             <FormItem
                                 className={styles.formItem}
+                                name="length"
+                                label={t('Length')}
+                                initialValue={attribute?.length}
+                                rules={[
+                                    {required: true, message: t('Required field')},
+                                    {type: 'number', min: 0}
+                                ]}
+                            >
+                                <InputNumber style={{width: 150}} min={0}/>
+                            </FormItem>
+
+                            <FormItem
+                                className={styles.formItem}
                                 name="pattern"
                                 label={t('Pattern')}
                                 initialValue={attribute?.pattern}
                             >
                                 <Input style={{maxWidth: 300}} maxLength={50}/>
-                            </FormItem>
-
-                            <FormItem
-                                className={styles.formItem}
-                                name="length"
-                                label={t('Length')}
-                                initialValue={attribute?.length}
-                                rules={[{type: 'number', min: 0}]}
-                            >
-                                <InputNumber style={{width: 150}} min={0}/>
                             </FormItem>
                         </>
                     )}

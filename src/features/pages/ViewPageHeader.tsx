@@ -48,14 +48,15 @@ interface Props {
     onItemView: (item: Item, id: string, cb?: () => void, observerKey?: string) => void
     onUpdate: (data: ItemData) => void
     onItemDelete: (itemName: string, id: string) => void
+    logoutIfNeed: () => void
 }
 
 const VERSIONS_MODAL_WIDTH = 800
 
 const {confirm} = Modal
 
-export default function ViewPageHeader(
-    {me, page, form, buffer, canCreate, canEdit, canDelete, viewState, setViewState, isLockedByMe, setLockedByMe, setLoading, closePage, onItemView, onUpdate, onItemDelete
+export default function ViewPageHeader({
+    me, page, form, buffer, canCreate, canEdit, canDelete, viewState, setViewState, isLockedByMe, setLockedByMe, setLoading, closePage, onItemView, onUpdate, onItemDelete, logoutIfNeed
 }: Props) {
     const {item, data} = page
     const isNew = !data?.id
@@ -148,6 +149,7 @@ export default function ViewPageHeader(
             await onUpdate(deleted)
             await setLockedByMe(false)
             onItemDelete(item.name, data?.id as string)
+            logoutIfNeed()
         } catch (e: any) {
             message.error(e.message)
         } finally {

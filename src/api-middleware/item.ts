@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 import {ApiMiddleware, ApiMiddlewareContext, ApiOperation} from './index'
-import {CORE_VERSION, ITEM_ITEM_NAME} from '../config/constants'
+import {CORE_VERSION, ITEM_ITEM_NAME, ITEM_MODEL_KIND} from '../config/constants'
 import QueryService from '../services/query'
 import {extractAxiosErrorMessage} from '../services'
 import {FlaggedResponse, Item, ItemData, ItemModel} from '../types'
@@ -54,6 +54,7 @@ async function apply({item, values}: ApiMiddlewareContext): Promise<ItemData> {
 
 const mapItem = (item: Item): ItemModel => ({
     coreVersion: CORE_VERSION,
+    kind: ITEM_MODEL_KIND,
     includeTemplates: item.includeTemplates,
     metadata: {
         name: item.name,
@@ -70,9 +71,9 @@ const mapItem = (item: Item): ItemModel => ({
         versioned: item.versioned,
         manualVersioning: item.manualVersioning,
         localized: item.localized,
-        revisionPolicy: item.revisionPolicy.data?.id,
-        lifecycle: item.lifecycle.data?.id,
-        permission: item.permission.data?.id,
+        revisionPolicy: item.revisionPolicy?.data?.id,
+        lifecycle: item.lifecycle?.data?.id,
+        permission: item.permission?.data?.id,
         implementation: item.implementation,
         notLockable: item.notLockable
     },
@@ -81,13 +82,12 @@ const mapItem = (item: Item): ItemModel => ({
 
 async function remove({item, values}: ApiMiddlewareContext): Promise<ItemData> {
     const {id} = values
+    const data = await queryService.findById(item, id)
     try {
         await axios.post(`/api/model/delete/item/${id}`)
     } catch (e: any) {
         throw new Error(extractAxiosErrorMessage(e))
     }
-
-    const data = await queryService.findById(item, id)
 
     return data.data
 }

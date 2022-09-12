@@ -79,7 +79,7 @@ function App() {
                         </Header>
                         <Content className="App-content-wrapper">
                             <div className="App-content">
-                                <Pages me={me}/>
+                                <Pages me={me} onLogout={handleLogout}/>
                             </div>
                         </Content>
                         <Footer className="App-footer">

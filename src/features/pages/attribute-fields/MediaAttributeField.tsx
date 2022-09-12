@@ -15,11 +15,11 @@ const MediaAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, att
     if (attribute.type !== AttrType.media)
         throw new Error('Illegal attribute')
 
-    const mediaData = value?.data as Media | null
+    const mediaData = (value?.data ?? attribute.defaultValue) as Media | null | undefined
     const {t} = useTranslation()
     const mediaService = useMemo(() => MediaService.getInstance(), [])
     const [fileList, setFileList] = useState<UploadFile[]>(getInitialUploadFileList())
-    const mediaRef = useRef<Media | MediaInfo | null>(mediaData)
+    const mediaRef = useRef<Media | MediaInfo | null | undefined>(mediaData)
     const isDisabled = attribute.keyed || attribute.readOnly
 
     const normFile = (e: any) => {
@@ -94,15 +94,7 @@ const MediaAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, att
                 getValueFromEvent={normFile}
                 required={attribute.required && !attribute.readOnly}
                 dependencies={[`${attrName}.id`]}
-                rules={[
-                    ({ getFieldValue }) => ({
-                    validator(_, value) {
-                        if (!attribute.required || attribute.readOnly || getFieldValue(`${attrName}.id`))
-                            return Promise.resolve()
-
-                        return Promise.reject(new Error(t('Required field')))
-                    }})
-                ]}
+                rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
             >
                 <Upload
                     name="files"

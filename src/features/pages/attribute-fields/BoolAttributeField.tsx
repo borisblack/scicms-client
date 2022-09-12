@@ -1,4 +1,4 @@
-import {FC} from 'react'
+import {FC, useCallback} from 'react'
 import {Checkbox, Form} from 'antd'
 
 import {AttributeFieldProps} from '.'
@@ -15,13 +15,23 @@ const BoolAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, value
     const {t} = useTranslation()
     const isDisabled = attribute.keyed || attribute.readOnly
 
+    const parseValue = useCallback((val: boolean | string | number | null | undefined) => {
+        if (val === 1 || val === '1' || val === 'true')
+            return true
+
+        if (val === 0 ||  val === '0' || val === 'false')
+            return false
+
+        return val
+    }, [])
+
     return (
         <FormItem
             className={styles.formItem}
             name={attrName}
             hidden={attribute.fieldHidden}
             valuePropName="checked"
-            initialValue={value}
+            initialValue={parseValue(value) ?? parseValue(attribute.defaultValue)}
         >
             <Checkbox disabled={isDisabled}>{t(attribute.displayName)}</Checkbox>
         </FormItem>

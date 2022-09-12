@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import {FC, useMemo} from 'react'
+import {FC, useCallback} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Form, Input} from 'antd'
 
@@ -18,14 +18,14 @@ const ArrayAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, valu
     const {t} = useTranslation()
     const isDisabled = attribute.keyed || attribute.readOnly
     
-    const initialValue = useMemo(() => {
-        if (!value)
+    const parseValue = useCallback((val: any) => {
+        if (val == null)
             return null
         
-        if (!_.isArray(value))
+        if (!_.isArray(val))
             throw new Error('Illegal attribute')
         
-        const arr = value.map(it => {
+        const arr = val.map(it => {
             if (_.isObject(it))
                 return JSON.stringify(it)
             
@@ -33,7 +33,7 @@ const ArrayAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, valu
         })
         
         return arr.join('\n')
-    }, [value])
+    }, [])
 
     return (
         <FormItem
@@ -41,7 +41,7 @@ const ArrayAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, valu
             name={attrName}
             label={t(attribute.displayName)}
             hidden={attribute.fieldHidden}
-            initialValue={initialValue}
+            initialValue={parseValue(value) ?? (attribute.defaultValue ? parseValue(JSON.parse(attribute.defaultValue)) : null)}
             rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
         >
             <TextArea style={{maxWidth: attribute.fieldWidth}} disabled={isDisabled} rows={appConfig.ui.textArea.rows}/>

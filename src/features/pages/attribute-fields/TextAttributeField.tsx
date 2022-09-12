@@ -21,7 +21,7 @@ const TextAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, value
             name={attrName}
             label={t(attribute.displayName)}
             hidden={attribute.fieldHidden}
-            initialValue={value}
+            initialValue={value ?? attribute.defaultValue}
             rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
         >
             <TextArea style={{maxWidth: attribute.fieldWidth}} disabled={isDisabled} rows={4}/>

@@ -22,7 +22,7 @@ const EnumAttributeField: FC<AttributeFieldProps> = ({item, attrName, attribute,
             name={attrName}
             label={t(attribute.displayName)}
             hidden={attribute.fieldHidden}
-            initialValue={value}
+            initialValue={value ?? attribute.defaultValue}
             rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
         >
             <Select style={{maxWidth: attribute.fieldWidth}} disabled={isDisabled}>

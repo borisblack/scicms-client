@@ -5,9 +5,19 @@ import {DateTime} from 'luxon'
 import {Attribute, AttrType, Item, ItemData, Location} from '../types'
 import MediaService from '../services/media'
 import LocationService from '../services/location'
-import {MINOR_REV_ATTR_NAME, PASSWORD_PLACEHOLDER, STATE_ATTR_NAME, UTC} from '../config/constants'
+import {
+    LOWERCASE_NO_WHITESPACE_MESSAGE,
+    LOWERCASE_NO_WHITESPACE_PATTERN,
+    MINOR_REV_ATTR_NAME,
+    PASSWORD_PLACEHOLDER,
+    STATE_ATTR_NAME,
+    UTC
+} from '../config/constants'
 import appConfig from '../config'
 import {tryParseJson} from './index'
+import {FormRule} from 'antd'
+import util from 'util'
+import i18n from '../i18n'
 
 const {timeZone} = appConfig.dateTime
 const mediaService = MediaService.getInstance()
@@ -155,3 +165,12 @@ export function filterValues(values: FilteredItemData): ItemData {
 
     return filteredValues as ItemData
 }
+
+export const regExpRule = (regExp: RegExp, message?: string): FormRule => () => ({
+    validator(_, value) {
+        if (value == null || value.match(regExp))
+            return Promise.resolve()
+
+        const msg = message ? message : (regExp.toString() === LOWERCASE_NO_WHITESPACE_PATTERN.toString() ? LOWERCASE_NO_WHITESPACE_MESSAGE : null)
+        return Promise.reject(new Error(msg ? i18n.t(msg) : util.format(i18n.t('String does not match pattern %s'), regExp)))
+    }})

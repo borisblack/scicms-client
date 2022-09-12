@@ -15,7 +15,7 @@ const LocationAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, 
         throw new Error('Illegal attribute')
 
     const {t} = useTranslation()
-    const locationData = value?.data as Location
+    const locationData = (value?.data ?? attribute.defaultValue) as Location | null | undefined
 
     const latitudeRule = ({ getFieldValue }: FormInstance): FormRule => ({
         validator(_, value) {

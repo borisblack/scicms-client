@@ -21,15 +21,16 @@ export default function Indexes({me, item, buffer, data}: CustomComponentRenderC
         throw new Error('Illegal attribute')
 
     const isNew = !data?.id
+    const isLockedByMe = data?.lockedBy?.data?.id === me.id
     const {t} = useTranslation()
     const [version, setVersion] = useState<number>(0)
     const itemTemplateService = useMemo(() => ItemTemplateService.getInstance(), [])
     const permissionService = useMemo(() => PermissionService.getInstance(), [])
     const permissions = useMemo(() => {
         const acl = permissionService.getAcl(me, item, data)
-        const canEdit = !data?.core && acl.canWrite
+        const canEdit = (isNew && acl.canCreate) || (!data?.core && isLockedByMe && acl.canWrite)
         return [canEdit]
-    }, [data, item, me, permissionService])
+    }, [data, isLockedByMe, isNew, item, me, permissionService])
 
     const [canEdit] = permissions
     const columns = useMemo(() => getIndexColumns(), [])
@@ -104,6 +105,9 @@ export default function Indexes({me, item, buffer, data}: CustomComponentRenderC
     const refresh = () => setVersion(prevVersion => prevVersion + 1)
 
     const handleIndexFormFinish = useCallback((values: NamedIndex) => {
+        if (!canEdit)
+            return
+
         const parsedValues = parseValues(values)
         const {name} = parsedValues
         if (!name)
@@ -116,7 +120,7 @@ export default function Indexes({me, item, buffer, data}: CustomComponentRenderC
 
         refresh()
         setEditModalVisible(false)
-    }, [namedIndexes, parseValues, spec.indexes])
+    }, [canEdit, namedIndexes, parseValues, spec.indexes])
 
     const handleCreate = useCallback(() => {
         setSelectedIndex(null)

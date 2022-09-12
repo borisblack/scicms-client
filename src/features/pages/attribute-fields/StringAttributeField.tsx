@@ -6,6 +6,7 @@ import {AttributeFieldProps} from '.'
 import {AttrType} from '../../../types'
 import styles from './AttributeField.module.css'
 import {MAJOR_REV_ATTR_NAME, STATE_ATTR_NAME} from '../../../config/constants'
+import {regExpRule} from '../../../util/form'
 
 const FormItem = Form.Item
 
@@ -43,14 +44,14 @@ const StringAttributeField: FC<AttributeFieldProps> = ({item, attrName, attribut
 
         switch (attribute.type) {
             case AttrType.uuid:
-                rules.push({type: 'regexp', pattern: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/})
+                rules.push(regExpRule(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/, 'String must contain UUID'))
                 break
             case AttrType.email:
                 rules.push({type: 'email'})
                 break
             case AttrType.string:
                 if (attribute.pattern) {
-                    rules.push({type: 'regexp', pattern: new RegExp(attribute.pattern)})
+                    rules.push(regExpRule(new RegExp(attribute.pattern)))
                 }
                 break
             default:
@@ -66,7 +67,7 @@ const StringAttributeField: FC<AttributeFieldProps> = ({item, attrName, attribut
             name={attrName}
             label={t(attribute.displayName)}
             hidden={attribute.fieldHidden}
-            initialValue={value}
+            initialValue={value ?? attribute.defaultValue}
             rules={getRules()}
         >
             <Input style={{maxWidth: attribute.fieldWidth}} maxLength={attribute.length} disabled={!isEnabled()}/>
