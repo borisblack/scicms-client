@@ -93,6 +93,7 @@ export default function ViewPageHeader({
             setLockedByMe(locked.success)
             setViewState(item.versioned ? ViewState.CREATE_VERSION : ViewState.UPDATE)
         } catch (e: any) {
+            console.error(e.message)
             message.error(e.message)
         } finally {
             setLoading(false)
@@ -122,6 +123,7 @@ export default function ViewPageHeader({
             setLockedByMe(!unlocked)
             setViewState(ViewState.VIEW)
         } catch (e: any) {
+            console.error(e.message)
             message.error(e.message)
         } finally {
             setLoading(false)
@@ -151,6 +153,7 @@ export default function ViewPageHeader({
             onItemDelete(item.name, data?.id as string)
             logoutIfNeed()
         } catch (e: any) {
+            console.error(e.message)
             message.error(e.message)
         } finally {
             setLoading(false)
@@ -180,6 +183,7 @@ export default function ViewPageHeader({
             await setLockedByMe(false)
             onItemDelete(item.name, data?.id as string)
         } catch (e: any) {
+            console.error(e.message)
             message.error(e.message)
         } finally {
             setLoading(false)
@@ -207,6 +211,7 @@ export default function ViewPageHeader({
             await onUpdate(promoted)
             setPromoteModalVisible(false)
         } catch (e: any) {
+            console.error(e.message)
             message.error(e.message)
         } finally {
             setLoading(false)

@@ -18,7 +18,7 @@ export enum ApiOperation {
 
 export interface ApiMiddleware {
     id: string
-    itemName: string
+    itemName: string | '*'
     priority: number
     handle: (operation: ApiOperation, context: ApiMiddlewareContext, next: () => any) => any
 }
@@ -34,11 +34,11 @@ const apiMiddleware: ApiMiddleware[] = apiMiddlewareConfig.apiMiddleware.sort((a
 
 const apiMiddlewareByItemName: {[itemName: string]: ApiMiddleware[]} = _.groupBy(apiMiddleware, it => it.itemName)
 
-export const hasApiMiddleware = (itemName: string): boolean => itemName in apiMiddlewareByItemName
+export const hasApiMiddleware = (itemName: string): boolean => itemName in apiMiddlewareByItemName || '*' in apiMiddlewareByItemName
 
 export async function handleApiMiddleware(itemName: string, operation: ApiOperation, context: ApiMiddlewareContext, next: () => any): Promise<any> {
-    const apiMiddlewareList = apiMiddlewareByItemName[itemName]
-    if (!apiMiddlewareList)
+    const apiMiddlewareList = [...(apiMiddlewareByItemName[itemName] ?? []), ...(apiMiddlewareByItemName['*'] ?? [])]
+    if (apiMiddlewareList.length === 0)
         return await next()
 
     return await handleApiMiddlewareList(apiMiddlewareList, operation, context, next)

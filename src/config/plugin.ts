@@ -9,8 +9,8 @@ interface PluginConfig {
 // Add plugins here
 const pluginConfig: PluginConfig = {
     plugins: [
-        helloPlugin,
-        hiPlugin
+        // helloPlugin,
+        // hiPlugin
     ]
 }
 

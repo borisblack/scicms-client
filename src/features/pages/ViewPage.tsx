@@ -1,7 +1,5 @@
 import React, {ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {Col, Form, message, Modal, Row, Spin, Tabs} from 'antd'
-import * as icons from '@ant-design/icons'
-import {ExclamationCircleOutlined} from '@ant-design/icons'
 
 import {Attribute, AttrType, IBuffer, Item, ItemData, RelType, UserInfo, ViewState} from '../../types'
 import PermissionService from '../../services/permission'
@@ -31,6 +29,7 @@ import ItemService from '../../services/item'
 import RelationsDataGridWrapper from './RelationsDataGridWrapper'
 import {Callback} from '../../services/mediator'
 import {ApiMiddlewareContext, ApiOperation, handleApiMiddleware, hasApiMiddleware} from '../../api-middleware'
+import {allIcons} from '../../util/icons'
 
 interface Props {
     me: UserInfo
@@ -74,11 +73,11 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
         const canEdit = (!isSystemItem || !data?.core) && (!item.versioned || !!data?.current) && acl.canWrite
         const canDelete = (!isSystemItem || !data?.core) && acl.canDelete
         return [acl.canCreate, canEdit, canDelete]
-    }, [data, item, me, permissionService])
+    }, [data, isSystemItem, item, me, permissionService])
     const [canCreate, canEdit, canDelete] = permissions
     
-    const pluginContext: CustomPluginRenderContext = useMemo(() => ({me, item, data, buffer: bufferRef.current}), [data, item, me])
-    const customComponentContext: CustomComponentRenderContext = useMemo(() => ({me, item, data, buffer: bufferRef.current}), [data, item, me])
+    const pluginContext: CustomPluginRenderContext = useMemo(() => ({me, item, buffer: bufferRef.current, data}), [data, item, me])
+    const customComponentContext: CustomComponentRenderContext = useMemo(() => ({me, item, buffer: bufferRef.current, data, form}), [data, form, item, me])
 
     useEffect(() => {
         if (DEBUG)
@@ -141,6 +140,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
             if (DEBUG)
                 console.log('Parsed values', parsedValues)
         } catch (e: any) {
+            console.error(e.message)
             message.error(e.message)
             return
         }
@@ -190,6 +190,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
             setViewState(ViewState.VIEW)
             logoutIfNeed()
         } catch (e: any) {
+            console.error(e.message)
             message.error(e.message)
         } finally {
             setLoading(false)
@@ -220,6 +221,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
             setLockedByMe(false)
             setViewState(ViewState.VIEW)
         } catch (e: any) {
+            console.error(e.message)
             message.error(e.message)
         } finally {
             setLoading(false)
@@ -250,6 +252,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
             setLockedByMe(false)
             setViewState(ViewState.VIEW)
         } catch (e: any) {
+            console.error(e.message)
             message.error(e.message)
         } finally {
             setLoading(false)
@@ -278,6 +281,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
             setViewState(ViewState.VIEW)
             logoutIfNeed()
         } catch (e: any) {
+            console.error(e.message)
             message.error(e.message)
         } finally {
             setLoading(false)
@@ -335,6 +339,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
                     setViewState(ViewState.CREATE_LOCALIZATION)
                 }
             } catch (e: any) {
+                console.error(e.message)
                 message.error(e.message)
             } finally {
                 setLoading(false)
@@ -363,7 +368,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
     
     const renderTabComponents = useCallback((mountPoint: string): ReactNode[] =>
         getComponents(mountPoint).map(it => {
-            const Icon = it.icon ? (icons as any)[it.icon] : null
+            const Icon = it.icon ? allIcons[it.icon] : null
             const title = t(it.title ?? 'Untitled')
             return (
                 <TabPane key={it.id} tab={Icon ? <span><Icon/>&nbsp;{title}</span> : title}>
@@ -407,7 +412,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
                                 throw new Error('Illegal attribute target')
 
                             const target = itemService.getByName(attribute.target)
-                            const TargetIcon = target.icon && (icons as any)[target.icon]
+                            const TargetIcon = target.icon && allIcons[target.icon]
                             const title = t(attribute.displayName)
                             return (
                                 <TabPane key={key} tab={TargetIcon ? <span><TargetIcon/>&nbsp;{title}</span> : title}>

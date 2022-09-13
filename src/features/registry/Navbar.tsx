@@ -4,7 +4,6 @@ import {useTranslation} from 'react-i18next'
 import {Layout, Menu, Spin} from 'antd'
 // import {gql, useQuery} from '@apollo/client'
 import {ItemType} from 'antd/lib/menu/hooks/useItems'
-import * as icons from '@ant-design/icons'
 
 import './Navbar.css'
 import logo from '../../logo.svg'
@@ -14,6 +13,7 @@ import {Item, UserInfo} from '../../types'
 import {initializeIfNeeded, selectIsInitialized, selectLoading} from './registrySlice'
 import {openPage, ViewType} from '../pages/pagesSlice'
 import ItemService from '../../services/item'
+import {allIcons} from '../../util/icons'
 
 type Props = {
     collapsed: boolean,
@@ -43,7 +43,7 @@ const Navbar = ({collapsed, me}: Props) => {
         .filter(it => !('itemName' in it) || itemService.findByName(it.itemName))
         .map(it => {
             if ('children' in it) {
-                const Icon = it.icon ? (icons as any)[it.icon] : null
+                const Icon = it.icon ? allIcons[it.icon] : null
                 return {
                     key: it.key,
                     label: t(it.label),
@@ -52,7 +52,7 @@ const Navbar = ({collapsed, me}: Props) => {
                 }
             } else {
                 const item = itemService.getByName(it.itemName)
-                const Icon = item.icon ? (icons as any)[item.icon] : null
+                const Icon = item.icon ? allIcons[item.icon] : null
                 return {
                     key: item.id,
                     label: t(item.displayPluralName),

@@ -1,7 +1,6 @@
 import React, {useCallback, useMemo} from 'react'
 import {useTranslation} from 'react-i18next'
 import {message, Tabs} from 'antd'
-import * as icons from '@ant-design/icons'
 import {SearchOutlined} from '@ant-design/icons'
 
 import {
@@ -21,6 +20,7 @@ import DefaultPage from './DefaultPage'
 import ViewPage from './ViewPage'
 import QueryService from '../../services/query'
 import Mediator, {Callback, CallbackOperation} from '../../services/mediator'
+import {allIcons} from '../../util/icons'
 
 interface Props {
     me: UserInfo,
@@ -98,7 +98,7 @@ function Pages({me, onLogout}: Props) {
         >
             {pages.map(page => {
                 const {item, viewType} = page
-                const Icon = (viewType === ViewType.default) ? SearchOutlined : (item.icon ? (icons as any)[item.icon] : null)
+                const Icon = (viewType === ViewType.default) ? SearchOutlined : (item.icon ? allIcons[item.icon] : null)
                 const title = getLabel(page)
                 return (
                     <TabPane

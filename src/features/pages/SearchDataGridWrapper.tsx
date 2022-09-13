@@ -39,6 +39,7 @@ export default function SearchDataGridWrapper({item, notHiddenColumns = [], extr
             const dataWithPagination = await findAll(item, allParams, extraFiltersInput)
             setData(dataWithPagination)
         } catch (e: any) {
+            console.error(e.message)
             message.error(e.message)
         } finally {
             setLoading(false)

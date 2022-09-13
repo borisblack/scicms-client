@@ -3,6 +3,7 @@ import {ReactElement, ReactNode} from 'react'
 
 import {IBuffer, Item, ItemData, UserInfo} from '../types'
 import customComponentConfig from '../config/custom-component'
+import {FormInstance} from 'antd'
 
 /* Mount points:
 default.header
@@ -45,6 +46,7 @@ export interface CustomComponentRenderContext {
     item: Item
     buffer: IBuffer
     data?: ItemData | null
+    form?: FormInstance | null
 }
 
 const customComponents: CustomComponent[] = customComponentConfig.components.sort((a, b) => a.priority - b.priority)

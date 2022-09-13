@@ -70,6 +70,7 @@ export default function RelationsDataGridWrapper({me, item, itemData, relAttrNam
             const dataWithPagination = await findAllRelated(item.name, itemData.id, relAttrName, target, params)
             setData(dataWithPagination)
         } catch (e: any) {
+            console.error(e.message)
             message.error(e.message)
         } finally {
             setLoading(false)
@@ -106,6 +107,7 @@ export default function RelationsDataGridWrapper({me, item, itemData, relAttrNam
                 createdIds.current.delete(id)
                 refresh()
             } catch (e: any) {
+                console.error(e.message)
                 message.error(e.message)
             } finally {
                 setLoading(false)
@@ -126,6 +128,7 @@ export default function RelationsDataGridWrapper({me, item, itemData, relAttrNam
                 createdIds.current.add(id)
                 refresh()
             } catch (e: any) {
+                console.error(e.message)
                 message.error(e.message)
             } finally {
                 setLoading(false)
@@ -181,6 +184,7 @@ export default function RelationsDataGridWrapper({me, item, itemData, relAttrNam
             await onItemDelete(target.name, id)
             await refresh()
         } catch (e: any) {
+            console.error(e.message)
             message.error(e.message)
         } finally {
             setLoading(false)
