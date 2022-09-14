@@ -12,7 +12,7 @@ import {UTC} from '../../../config/constants'
 const FormItem = Form.Item
 const {momentDisplayDateTimeFormatString} = appConfig.dateTime
 
-const DateTimeAttributeField: FC<AttributeFieldProps> = ({form, attrName, attribute, value}) => {
+const DateTimeAttributeField: FC<AttributeFieldProps> = ({pageKey, form, attrName, attribute, value}) => {
     if (attribute.type !== AttrType.datetime && attribute.type !== AttrType.timestamp)
         throw new Error('Illegal attribute')
 
@@ -37,10 +37,10 @@ const DateTimeAttributeField: FC<AttributeFieldProps> = ({form, attrName, attrib
                 getValueFromEvent={getValueFromEvent}
                 rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
             >
-                <DatePicker showTime showSecond={false} format={momentDisplayDateTimeFormatString} disabled={isDisabled}/>
+                <DatePicker id={`${pageKey}#${attrName}`} showTime showSecond={false} format={momentDisplayDateTimeFormatString} disabled={isDisabled}/>
             </FormItem>
             <FormItem name={`${attrName}.changed`} valuePropName="checked" hidden>
-                <Checkbox/>
+                <Checkbox id={`${pageKey}#${attrName}.changed`}/>
             </FormItem>
         </>
     )

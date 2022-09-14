@@ -12,7 +12,7 @@ import {MOMENT_ISO_TIME_FORMAT_STRING, UTC} from '../../../config/constants'
 const FormItem = Form.Item
 const {momentDisplayTimeFormatString} = appConfig.dateTime
 
-const TimeAttributeField: FC<AttributeFieldProps> = ({form, attrName, attribute, value}) => {
+const TimeAttributeField: FC<AttributeFieldProps> = ({pageKey, form, attrName, attribute, value}) => {
     if (attribute.type !== AttrType.time)
         throw new Error('Illegal attribute')
 
@@ -37,10 +37,10 @@ const TimeAttributeField: FC<AttributeFieldProps> = ({form, attrName, attribute,
                 rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
                 getValueFromEvent={getValueFromEvent}
             >
-                <TimePicker format={momentDisplayTimeFormatString} showSecond={false} disabled={isDisabled}/>
+                <TimePicker id={`${pageKey}#${attrName}`} format={momentDisplayTimeFormatString} showSecond={false} disabled={isDisabled}/>
             </FormItem>
             <FormItem name={`${attrName}.changed`} valuePropName="checked" hidden>
-                <Checkbox/>
+                <Checkbox id={`${pageKey}#${attrName}.changed`}/>
             </FormItem>
         </>
     )

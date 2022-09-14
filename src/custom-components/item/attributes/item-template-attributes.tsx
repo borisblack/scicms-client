@@ -1,11 +1,11 @@
-import {CustomComponent} from '../index'
+import {CustomComponent} from '../../index'
 import Attributes from './Attributes'
 
-const COMPONENT_ID = 'itemAttributes'
+const COMPONENT_ID = 'itemTemplateAttributes'
 
-export const itemAttributes: CustomComponent = {
+export const itemTemplateAttributes: CustomComponent = {
     id: COMPONENT_ID,
-    mountPoint: 'item.tabs.begin',
+    mountPoint: 'itemTemplate.tabs.begin',
     priority: 10,
     title: 'Attributes',
     icon: 'BarsOutlined',

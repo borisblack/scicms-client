@@ -5,6 +5,7 @@ const ru = {
         'A new version will be created': 'Будет создана новая версия',
         'Access': 'Доступ',
         'Access is denied': 'Доступ запрещен',
+        'Accesses': 'Доступы',
         'Add': 'Добавить',
         'Administration': 'Администрирование',
         'All Locales': 'Все языки',

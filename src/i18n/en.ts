@@ -5,6 +5,7 @@ const en = {
         'A new version will be created': 'A new version will be created',
         'Access': 'Access',
         'Access is denied': 'Access is denied',
+        'Accesses': 'Accesses',
         'Add': 'Add',
         'Administration': 'Administration',
         'All Locales': 'All Locales',

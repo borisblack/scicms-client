@@ -3,7 +3,7 @@ import {gql} from '@apollo/client'
 import i18n from '../i18n'
 import {apolloClient, extractGraphQLErrorMessages} from '.'
 import {AttrType, Item, RelType} from '../types'
-import {toQueryPath} from '../util/item'
+import {FILENAME_ATTR_NAME, ID_ATTR_NAME} from '../config/constants'
 
 interface ItemCache {
     [name: string]: Item
@@ -147,7 +147,7 @@ export default class ItemService {
                     break
                 case AttrType.media:
                     const media = this.getMedia()
-                    result.push(`${attrName} { data { id ${media.titleAttribute === 'id' ? '' : toQueryPath(media.titleAttribute)} ${media.titleAttribute === 'filename' ? '' : 'filename'} } }`)
+                    result.push(`${attrName} { data { id ${media.titleAttribute === ID_ATTR_NAME ? '' : media.titleAttribute} ${media.titleAttribute === FILENAME_ATTR_NAME ? '' : FILENAME_ATTR_NAME} } }`)
                     break
                 case AttrType.location:
                     result.push(`${attrName} { data { id latitude longitude label } }`)
@@ -157,7 +157,7 @@ export default class ItemService {
                         throw new Error('Illegal attribute')
 
                     const subItem = this.getByName(attr.target)
-                    result.push(`${attrName} { data { id ${subItem.titleAttribute === 'id' ? '' : toQueryPath(subItem.titleAttribute)} } }`)
+                    result.push(`${attrName} { data { id ${subItem.titleAttribute === ID_ATTR_NAME ? '' : subItem.titleAttribute} } }`)
                     break
                 default:
                     throw Error('Illegal attribute')

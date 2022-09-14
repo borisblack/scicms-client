@@ -8,7 +8,7 @@ import {AttrType} from '../../../types'
 
 const FormItem = Form.Item
 
-const NumberAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, value}) => {
+const NumberAttributeField: FC<AttributeFieldProps> = ({pageKey, attrName, attribute, value}) => {
     if (attribute.type !== AttrType.int && attribute.type !== AttrType.long
         && attribute.type !== AttrType.float && attribute.type !== AttrType.double
         && attribute.type !== AttrType.decimal)
@@ -30,6 +30,7 @@ const NumberAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, val
             ]}
         >
             <InputNumber
+                id={`${pageKey}#${attrName}`}
                 style={{width: attribute.fieldWidth}}
                 min={attribute.minRange}
                 max={attribute.maxRange}

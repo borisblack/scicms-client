@@ -4,19 +4,21 @@ import {Row} from '@tanstack/react-table'
 import {Button, Form, Menu, Modal, Space} from 'antd'
 import {useTranslation} from 'react-i18next'
 
-import {CustomComponentRenderContext} from '../index'
-import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME} from '../../config/constants'
-import ItemTemplateService from '../../services/item-template'
-import {Index, ItemSpec, NamedIndex} from '../../types'
-import PermissionService from '../../services/permission'
-import DataGrid, {DataWithPagination, RequestParams} from '../../components/datagrid/DataGrid'
-import appConfig from '../../config'
-import {getHiddenIndexColumns, getIndexColumns, getInitialData, processLocal} from '../../util/datagrid'
+import {CustomComponentRenderContext} from '../../index'
+import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME} from '../../../config/constants'
+import ItemTemplateService from '../../../services/item-template'
+import {Attribute, ItemSpec, NamedAttribute} from '../../../types'
+import PermissionService from '../../../services/permission'
+import DataGrid, {DataWithPagination, RequestParams} from '../../../components/datagrid/DataGrid'
+import appConfig from '../../../config'
+import {getAttributeColumns, getHiddenAttributeColumns, getInitialData, processLocal} from '../../../util/datagrid'
+import AttributeForm from './AttributeForm'
 import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design/icons'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
-import IndexForm from './IndexForm'
 
-export default function Indexes({me, item, buffer, data}: CustomComponentRenderContext) {
+const EDIT_MODAL_WIDTH = 800
+
+export default function Attributes({me, item, buffer, data}: CustomComponentRenderContext) {
     if (item.name !== ITEM_TEMPLATE_ITEM_NAME && item.name !== ITEM_ITEM_NAME)
         throw new Error('Illegal attribute')
 
@@ -33,65 +35,65 @@ export default function Indexes({me, item, buffer, data}: CustomComponentRenderC
     }, [data, isLockedByMe, isNew, item, me, permissionService])
 
     const [canEdit] = permissions
-    const columns = useMemo(() => getIndexColumns(), [])
-    const hiddenColumns = useMemo(() => getHiddenIndexColumns(), [])
+    const columns = useMemo(() => getAttributeColumns(), [])
+    const hiddenColumns = useMemo(() => getHiddenAttributeColumns(), [])
     const spec: ItemSpec = useMemo(() => buffer.form.spec ?? {...(data?.spec ?? {})}, [buffer.form.spec, data?.spec])
     
-    const initialNamedIndexes = useMemo((): NamedIndex[] => {
-        const indexes = spec.indexes ?? {}
-        let namedIndexes = Object.keys(indexes)
-            .map(indexName => ({name: indexName, ...indexes[indexName]}))
-        console.log(indexes)
-        if (item.name !== ITEM_TEMPLATE_ITEM_NAME && namedIndexes.length > 0 && !isNew) {
-            const excludedIndexNameSet = new Set()
+    const initialNamedAttributes = useMemo((): NamedAttribute[] => {
+        const attributes = spec.attributes ?? {}
+        let namedAttributes = Object.keys(attributes)
+            .map(attrName => ({name: attrName, ...attributes[attrName]}))
+        
+        if (item.name !== ITEM_TEMPLATE_ITEM_NAME && namedAttributes.length > 0 && !isNew) {
+            const excludedAttrNameSet = new Set()
             for (const itemTemplateName of data.includeTemplates) {
                 const itemTemplate = itemTemplateService.getByName(itemTemplateName)
-                for (const excludedIndexName in itemTemplate.spec.indexes)
-                    excludedIndexNameSet.add(excludedIndexName)
+                for (const excludedAttrName in itemTemplate.spec.attributes)
+                    excludedAttrNameSet.add(excludedAttrName)
             }
-            namedIndexes = namedIndexes.filter(it => !excludedIndexNameSet.has(it.name))
+            namedAttributes = namedAttributes.filter(it => !excludedAttrNameSet.has(it.name))
         }
         
-        return namedIndexes
+        return namedAttributes
 
-    }, [data?.includeTemplates, isNew, item.name, itemTemplateService, spec.indexes])
-    const [namedIndexes, setNamedIndexes] = useState<NamedIndex[]>(initialNamedIndexes)
-    const [filteredData, setFilteredData] = useState<DataWithPagination<NamedIndex>>(getInitialData())
-    const [selectedIndex, setSelectedIndex] = useState<NamedIndex | null>(null)
+    }, [data?.includeTemplates, isNew, item.name, itemTemplateService, spec.attributes])
+    const [namedAttributes, setNamedAttributes] = useState<NamedAttribute[]>(initialNamedAttributes)
+    const [filteredData, setFilteredData] = useState<DataWithPagination<NamedAttribute>>(getInitialData())
+    const [selectedAttribute, setSelectedAttribute] = useState<NamedAttribute | null>(null)
     const [isEditModalVisible, setEditModalVisible] = useState<boolean>(false)
-    const [indexForm] = Form.useForm()
+    const [attributeForm] = Form.useForm()
 
     useEffect(() => {
-        const newIndexes: {[name: string]: Index} = {}
-        namedIndexes.forEach(it => {
-            const newIndex: any = {...it}
-            newIndexes[it.name] = newIndex
-            delete newIndex.name
+        const newAttributes: {[name: string]: Attribute} = {}
+        namedAttributes.forEach(it => {
+            const newAttribute: any = {...it}
+            newAttributes[it.name] = newAttribute
+            delete newAttribute.name
         })
-        spec.indexes = newIndexes
+        spec.attributes = newAttributes
         buffer.form.spec = spec
-    }, [buffer.form, namedIndexes, spec])
+    }, [buffer.form, namedAttributes, spec])
 
     const handleRequest = useCallback(async (params: RequestParams) => {
-        setFilteredData(processLocal(namedIndexes, params))
-    }, [namedIndexes])
+        setFilteredData(processLocal(namedAttributes, params))
+    }, [namedAttributes])
     
-    const openRow = useCallback((row: Row<NamedIndex>) => {
-        setSelectedIndex(row.original)
+    const openRow = useCallback((row: Row<NamedAttribute>) => {
+        setSelectedAttribute(row.original)
         setEditModalVisible(true)
     }, [])
 
-    const handleRowDoubleClick = useCallback(async (row: Row<NamedIndex>) => {
+    const handleRowDoubleClick = useCallback(async (row: Row<NamedAttribute>) => {
         openRow(row)
     }, [openRow])
 
-    const parseValues = useCallback((values: NamedIndex): NamedIndex => {
+    const parseValues = useCallback((values: NamedAttribute): NamedAttribute => {
         const parsedValues: any = {}
         _.forOwn(values, (value, key) => {
             if (value == null)
                 return
 
-            if (key === 'columns') {
+            if (key === 'enumSet') {
                 parsedValues[key] = (value as string).split('\n')
                 return
             }
@@ -104,7 +106,7 @@ export default function Indexes({me, item, buffer, data}: CustomComponentRenderC
 
     const refresh = () => setVersion(prevVersion => prevVersion + 1)
 
-    const handleIndexFormFinish = useCallback((values: NamedIndex) => {
+    const handleAttributeFormFinish = useCallback((values: NamedAttribute) => {
         if (!canEdit)
             return
 
@@ -113,17 +115,17 @@ export default function Indexes({me, item, buffer, data}: CustomComponentRenderC
         if (!name)
             throw new Error('Illegal attribute')
 
-        if (name in (spec.indexes ?? {}))
-            setNamedIndexes(prevNamedIndexes => prevNamedIndexes.map(it => it.name === name ? {...parsedValues} : it))
+        if (name in (spec.attributes ?? {}))
+            setNamedAttributes(prevNamedAttributes => prevNamedAttributes.map(it => it.name === name ? {...parsedValues} : it))
         else
-            setNamedIndexes([...namedIndexes, {...parsedValues}])
+            setNamedAttributes([...namedAttributes, {...parsedValues}])
 
         refresh()
         setEditModalVisible(false)
-    }, [canEdit, namedIndexes, parseValues, spec.indexes])
+    }, [canEdit, namedAttributes, parseValues, spec.attributes])
 
     const handleCreate = useCallback(() => {
-        setSelectedIndex(null)
+        setSelectedAttribute(null)
         setEditModalVisible(true)
     }, [])
 
@@ -135,12 +137,12 @@ export default function Indexes({me, item, buffer, data}: CustomComponentRenderC
         )
     }, [canEdit, handleCreate, t])
 
-    const deleteRow = useCallback((row: Row<NamedIndex>) => {
-        setNamedIndexes(prevNamedIndexes => prevNamedIndexes.filter(it => it.name !== row.original.name))
+    const deleteRow = useCallback((row: Row<NamedAttribute>) => {
+        setNamedAttributes(prevNamedAttributes => prevNamedAttributes.filter(it => it.name !== row.original.name))
         refresh()
     }, [])
 
-    const getRowContextMenu = useCallback((row: Row<NamedIndex>) => {
+    const getRowContextMenu = useCallback((row: Row<NamedAttribute>) => {
         const items: ItemType[] = [{
             key: 'open',
             label: t('Open'),
@@ -176,13 +178,14 @@ export default function Indexes({me, item, buffer, data}: CustomComponentRenderC
                 onRowDoubleClick={handleRowDoubleClick}
             />
             <Modal
-                title={t('Index')}
+                title={t('Attribute')}
                 visible={isEditModalVisible}
                 destroyOnClose
-                onOk={() => indexForm.submit()}
+                width={EDIT_MODAL_WIDTH}
+                onOk={() => attributeForm.submit()}
                 onCancel={() => setEditModalVisible(false)}
             >
-                <IndexForm form={indexForm} index={selectedIndex} canEdit={canEdit} onFormFinish={handleIndexFormFinish}/>
+                <AttributeForm form={attributeForm} attribute={selectedAttribute} canEdit={canEdit} onFormFinish={handleAttributeFormFinish}/>
             </Modal>
         </>
     )

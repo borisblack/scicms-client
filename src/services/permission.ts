@@ -25,7 +25,7 @@ const FIND_ALL_QUERY = gql`
             data {
                 id
                 name
-                access {
+                accesses {
                     data {
                         id
                         label
@@ -51,7 +51,7 @@ const FIND_ALL_BY_IDENTITY_NAMES_QUERY = gql`
             data {
                 id
                 name
-                access(
+                accesses(
                     filters: {
                         target: {
                             name: {

@@ -11,18 +11,15 @@ import {DEFAULT_LIFECYCLE_ID} from '../../../services/lifecycle'
 import {DEFAULT_PERMISSION_ID} from '../../../services/permission'
 import {FiltersInput} from '../../../services/query'
 import styles from './AttributeField.module.css'
-import {extractTitleAttrValue} from '../../../util/item'
+import {LIFECYCLE_ATTR_NAME, PERMISSION_ATTR_NAME, STATE_ATTR_NAME} from '../../../config/constants'
 
 const SUFFIX_BUTTON_WIDTH = 24
 const RELATION_MODAL_WIDTH = 800
-const STATE_ATTR_NAME = 'state'
-const LIFECYCLE_ATTR_NAME = 'lifecycle'
-const PERMISSION_ATTR_NAME = 'permission'
 
 const {Item: FormItem} = Form
 const {Search} = Input
 
-const RelationAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, attribute, value, onItemView}) => {
+const RelationAttributeField: FC<AttributeFieldProps> = ({pageKey, form, item, attrName, attribute, value, onItemView}) => {
     if (attribute.type !== AttrType.relation || attribute.relType === RelType.oneToMany || attribute.relType === RelType.manyToMany)
         throw new Error('Illegal attribute')
 
@@ -81,7 +78,6 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, 
         } finally {
             setLoading(false)
         }
-
     }
 
     function handleClear() {
@@ -99,10 +95,11 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, 
                 name={attrName}
                 label={t(attribute.displayName)}
                 hidden={attribute.fieldHidden}
-                initialValue={initialData ? extractTitleAttrValue(targetItem, initialData) : null}
+                initialValue={initialData ? (initialData[targetItem.titleAttribute] ?? initialData.id) : null}
                 rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
             >
                 <Search
+                    id={`${pageKey}#${attrName}`}
                     style={{maxWidth: attribute.fieldWidth ? attribute.fieldWidth + (currentId ? (SUFFIX_BUTTON_WIDTH * 2 + 4) : 0) : undefined}}
                     readOnly
                     disabled={isDisabled}
@@ -129,10 +126,10 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, 
                 />
             </FormItem>
             <FormItem hidden name={`${attrName}.id`} initialValue={value?.data ? value.data.id : null}>
-                <Input/>
+                <Input id={`${pageKey}#${attrName}.id`}/>
             </FormItem>
             <Modal
-                title={`${t('Select')} ${attribute.displayName}`}
+                title={t(attribute.displayName)}
                 visible={isRelationModalVisible}
                 destroyOnClose
                 width={RELATION_MODAL_WIDTH}

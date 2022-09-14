@@ -8,7 +8,7 @@ import {useTranslation} from 'react-i18next'
 
 const FormItem = Form.Item
 
-const BoolAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, value}) => {
+const BoolAttributeField: FC<AttributeFieldProps> = ({pageKey, attrName, attribute, value}) => {
     if (attribute.type !== AttrType.bool)
         throw new Error('Illegal attribute')
 
@@ -33,7 +33,7 @@ const BoolAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, value
             valuePropName="checked"
             initialValue={parseValue(value) ?? parseValue(attribute.defaultValue)}
         >
-            <Checkbox disabled={isDisabled}>{t(attribute.displayName)}</Checkbox>
+            <Checkbox id={`${pageKey}#${attrName}`} disabled={isDisabled}>{t(attribute.displayName)}</Checkbox>
         </FormItem>
     )
 }

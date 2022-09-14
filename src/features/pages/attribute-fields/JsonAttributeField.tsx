@@ -9,7 +9,7 @@ import appConfig from '../../../config'
 const FormItem = Form.Item
 const {TextArea} = Input
 
-const JsonAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, value}) => {
+const JsonAttributeField: FC<AttributeFieldProps> = ({pageKey, attrName, attribute, value}) => {
     if (attribute.type !== AttrType.json && attribute.type !== AttrType.array)
         throw new Error('Illegal attribute')
 
@@ -27,7 +27,7 @@ const JsonAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, value
             initialValue={parseValue(value) ?? attribute.defaultValue}
             rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
         >
-            <TextArea style={{maxWidth: attribute.fieldWidth}} disabled={isDisabled} rows={appConfig.ui.textArea.rows}/>
+            <TextArea id={`${pageKey}#${attrName}`} style={{maxWidth: attribute.fieldWidth}} disabled={isDisabled} rows={appConfig.ui.textArea.rows}/>
         </FormItem>
     )
 }

@@ -66,7 +66,7 @@ interface Point {
 
 export interface Permission extends DefaultItemTemplate {
     name: string
-    access: {data: Access[]}
+    accesses: {data: Access[]}
 }
 
 export interface Access extends DefaultItemTemplate, IntermediateItemTemplate {
@@ -81,7 +81,7 @@ export interface Access extends DefaultItemTemplate, IntermediateItemTemplate {
 interface Identity extends DefaultItemTemplate {
     name: string
     principal: boolean
-    access: {data: Access[]}
+    accesses: {data: Access[]}
 }
 
 interface User extends DefaultItemTemplate {

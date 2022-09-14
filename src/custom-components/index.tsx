@@ -4,6 +4,7 @@ import {ReactElement, ReactNode} from 'react'
 import {IBuffer, Item, ItemData, UserInfo} from '../types'
 import customComponentConfig from '../config/custom-component'
 import {FormInstance} from 'antd'
+import {Callback} from '../services/mediator'
 
 /* Mount points:
 default.header
@@ -19,7 +20,8 @@ view.content.form
 <itemName>.view.header
 <itemName>.view.footer
 <itemName>.view.content
-<itemName>.view.content.form
+<itemName>.view.content.form.begin
+<itemName>.view.content.form.end
 tabs.content
 tabs.begin
 tabs.end
@@ -43,10 +45,14 @@ export interface CustomComponentRenderProps {
 
 export interface CustomComponentRenderContext {
     me: UserInfo
+    pageKey: string
     item: Item
     buffer: IBuffer
     data?: ItemData | null
     form?: FormInstance | null
+    onItemCreate: (item: Item, initialData?: ItemData | null, cb?: Callback, observerKey?: string) => void
+    onItemView: (item: Item, id: string, cb?: Callback, observerKey?: string) => void
+    onItemDelete: (itemName: string, id: string) => void
 }
 
 const customComponents: CustomComponent[] = customComponentConfig.components.sort((a, b) => a.priority - b.priority)

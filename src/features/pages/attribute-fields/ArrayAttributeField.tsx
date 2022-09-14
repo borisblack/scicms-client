@@ -11,7 +11,7 @@ import appConfig from '../../../config'
 const FormItem = Form.Item
 const {TextArea} = Input
 
-const ArrayAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, value}) => {
+const ArrayAttributeField: FC<AttributeFieldProps> = ({pageKey, attrName, attribute, value}) => {
     if (attribute.type !== AttrType.array)
         throw new Error('Illegal attribute')
 
@@ -44,7 +44,7 @@ const ArrayAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, valu
             initialValue={parseValue(value) ?? (attribute.defaultValue ? parseValue(JSON.parse(attribute.defaultValue)) : null)}
             rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
         >
-            <TextArea style={{maxWidth: attribute.fieldWidth}} disabled={isDisabled} rows={appConfig.ui.textArea.rows}/>
+            <TextArea id={`${pageKey}#${attrName}`} style={{maxWidth: attribute.fieldWidth}} disabled={isDisabled} rows={appConfig.ui.textArea.rows}/>
         </FormItem>
     )
 }

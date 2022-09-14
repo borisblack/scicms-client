@@ -77,7 +77,17 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
     const [canCreate, canEdit, canDelete] = permissions
     
     const pluginContext: CustomPluginRenderContext = useMemo(() => ({me, item, buffer: bufferRef.current, data}), [data, item, me])
-    const customComponentContext: CustomComponentRenderContext = useMemo(() => ({me, item, buffer: bufferRef.current, data, form}), [data, form, item, me])
+    const customComponentContext: CustomComponentRenderContext = useMemo(() => ({
+        me,
+        pageKey: page.key,
+        item,
+        buffer: bufferRef.current,
+        data,
+        form,
+        onItemCreate,
+        onItemView,
+        onItemDelete
+    }), [data, form, item, me, onItemCreate, onItemDelete, onItemView, page.key])
 
     useEffect(() => {
         if (DEBUG)
@@ -301,6 +311,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
             return (
                 <AttributeFieldWrapper
                     key={attrName}
+                    pageKey={page.key}
                     form={form}
                     item={item}
                     attrName={attrName}
@@ -395,13 +406,16 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
                     && !attribute.private && !attribute.fieldHidden
             })
 
+        const hasTabs =
+            !hasTabContentPluginsOrComponents && collectionAttrNames.length > 0 && hasComponents('tabs.begin', `${item.name}.tabs.begin`, 'tabs.end', `${item.name}.tabs.end`)
+
         return (
             <>
                 {hasComponents('tabs.content') && renderComponents('tabs.content', customComponentContext)}
                 {hasComponents(`${item.name}.tabs.content`) && renderComponents(`${item.name}.tabs.content`, customComponentContext)}
                 {hasPlugins('tabs.content', `${item.name}.tabs.content`) && <div ref={tabsContentRef}/>}
 
-                {!hasTabContentPluginsOrComponents && (
+                {hasTabs && (
                     <Tabs>
                         {hasComponents('tabs.begin') && renderTabComponents('tabs.begin')}
                         {hasComponents(`${item.name}.tabs.begin`) && renderTabComponents(`${item.name}.tabs.begin`)}
@@ -418,11 +432,11 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
                                 <TabPane key={key} tab={TargetIcon ? <span><TargetIcon/>&nbsp;{title}</span> : title}>
                                     <RelationsDataGridWrapper
                                         me={me}
+                                        pageKey={page.key}
                                         item={item}
                                         itemData={data}
                                         relAttrName={key}
                                         relAttribute={attribute}
-                                        pageKey={page.key}
                                         onItemCreate={onItemCreate}
                                         onItemView={onItemView}
                                         onItemDelete={onItemDelete}
@@ -480,12 +494,15 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
                     onFinish={handleFormFinish}
                 >
                     <Row gutter={16}>
-                        <Col span={12}>{renderAttributes(ownAttributes)}</Col>
+                        <Col span={12}>
+                            {hasComponents(`${item.name}.view.content.form.begin`) && renderComponents(`${item.name}.view.content.form.begin`, customComponentContext)}
+                            {renderAttributes(ownAttributes)}
+                            {hasComponents(`${item.name}.view.content.form.end`) && renderComponents(`${item.name}.view.content.form.end`, customComponentContext)}
+                        </Col>
                         <Col span={12}>{renderAttributes(templateAttributes)}</Col>
                     </Row>
                     {hasPlugins('view.content.form', `${item.name}.view.content.form`) && <div ref={contentFormRef}/>}
                     {hasComponents('view.content.form') && renderComponents('view.content.form', customComponentContext)}
-                    {hasComponents(`${item.name}.view.content.form`) && renderComponents(`${item.name}.view.content.form`, customComponentContext)}
                 </Form>
             }
 

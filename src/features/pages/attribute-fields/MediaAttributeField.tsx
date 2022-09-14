@@ -11,7 +11,7 @@ import styles from './AttributeField.module.css'
 
 const {Item: FormItem} = Form
 
-const MediaAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, attribute, value, setLoading}) => {
+const MediaAttributeField: FC<AttributeFieldProps> = ({pageKey, form, item, attrName, attribute, value, setLoading}) => {
     if (attribute.type !== AttrType.media)
         throw new Error('Illegal attribute')
 
@@ -83,7 +83,7 @@ const MediaAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, att
     return (
         <>
             <FormItem hidden name={`${attrName}.id`} initialValue={mediaData?.id}>
-                <Input/>
+                <Input id={`${pageKey}#${attrName}.id`}/>
             </FormItem>
             <FormItem
                 className={styles.formItem}
@@ -97,6 +97,7 @@ const MediaAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, att
                 rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
             >
                 <Upload
+                    id={`${pageKey}#${attrName}`}
                     name="files"
                     maxCount={1}
                     disabled={isDisabled}

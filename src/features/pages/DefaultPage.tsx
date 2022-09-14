@@ -21,12 +21,13 @@ import {ItemType} from 'antd/es/menu/hooks/useItems'
 import MutationService from '../../services/mutation'
 import {ApiMiddlewareContext, ApiOperation, handleApiMiddleware, hasApiMiddleware} from '../../api-middleware'
 import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME} from '../../config/constants'
+import {Callback} from '../../services/mediator'
 
 interface Props {
     me: UserInfo
     page: IPage
-    onItemCreate: (item: Item, initialData?: ItemData | null, cb?: () => void, observerKey?: string) => void
-    onItemView: (item: Item, id: string, cb?: () => void, observerKey?: string) => void
+    onItemCreate: (item: Item, initialData?: ItemData | null, cb?: Callback, observerKey?: string) => void
+    onItemView: (item: Item, id: string, cb?: Callback, observerKey?: string) => void
     onItemDelete: (itemName: string, id: string) => void
     onLogout: () => void
 }
@@ -51,7 +52,15 @@ function DefaultPage({me, page, onItemCreate, onItemView, onItemDelete, onLogout
     const columnsMemoized = useMemo(() => getColumns(item), [item])
     const hiddenColumnsMemoized = useMemo(() => getHiddenColumns(item), [item])
     const pluginContext = useMemo(() => ({me, item, buffer: bufferRef.current}), [item, me])
-    const customComponentContext = useMemo(() => ({me, item, buffer: bufferRef.current}), [item, me])
+    const customComponentContext = useMemo(() => ({
+        me,
+        pageKey: page.key,
+        item,
+        buffer: bufferRef.current,
+        onItemCreate,
+        onItemView,
+        onItemDelete
+    }), [item, me, onItemCreate, onItemDelete, onItemView, page.key])
 
     useEffect(() => {
         const headerNode = headerRef.current

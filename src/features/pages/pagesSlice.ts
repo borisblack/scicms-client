@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import {createSlice, PayloadAction} from '@reduxjs/toolkit'
 
 import {RootState} from '../../store'
@@ -6,7 +5,6 @@ import {Item, ItemData} from '../../types'
 import i18n from '../../i18n'
 import Mediator, {CallbackOperation} from '../../services/mediator'
 import {ID_ATTR_NAME} from '../../config/constants'
-import {extractTitleAttrValue} from '../../util/item'
 
 export interface IPage {
     key: string
@@ -52,14 +50,12 @@ export function getLabel(page: IPage) {
     const {key, item, viewType, data} = page
     switch (viewType) {
         case ViewType.view:
-            if (data) {
-                let titleAttrValue = extractTitleAttrValue(item, data)
-                if (titleAttrValue) {
-                    if (item.titleAttribute === ID_ATTR_NAME)
-                        titleAttrValue = _.truncate(titleAttrValue, {length: 11})
+            if (data?.id) {
+                let titleAttrValue = data[item.titleAttribute]
+                if (!titleAttrValue || item.titleAttribute === ID_ATTR_NAME)
+                    titleAttrValue = `${i18n.t(item.displayName)} ${data.id.substring(0, 8)}`
 
-                    return titleAttrValue
-                }
+                return titleAttrValue
             }
             return `${i18n.t(item.displayName)} ${key.substring(key.lastIndexOf('#') + 1)} *`
         case ViewType.default:

@@ -10,7 +10,7 @@ const mask = {
 
 function hasAccess(user: UserInfo, permission: Permission, mask: Set<number>): boolean {
     const roleSet = new Set(user.roles)
-    for (const access of permission.access.data) {
+    for (const access of permission.accesses.data) {
         const identity = access.target.data
         if (mask.has(access.mask) && ((identity.principal && identity.name === user.username) || (!identity.principal && roleSet.has(identity.name))))
             return true

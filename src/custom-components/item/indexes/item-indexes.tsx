@@ -1,11 +1,11 @@
-import {CustomComponent} from '../index'
+import {CustomComponent} from '../../index'
 import Indexes from './Indexes'
 
-const COMPONENT_ID = 'itemTemplateIndexes'
+const COMPONENT_ID = 'itemIndexes'
 
-export const itemTemplateIndexes: CustomComponent = {
+export const itemIndexes: CustomComponent = {
     id: COMPONENT_ID,
-    mountPoint: 'itemTemplate.tabs.begin',
+    mountPoint: 'item.tabs.begin',
     priority: 20,
     title: 'Indexes',
     icon: 'HolderOutlined',

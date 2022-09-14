@@ -12,7 +12,7 @@ import {UTC} from '../../../config/constants'
 const FormItem = Form.Item
 const {momentDisplayDateFormatString} = appConfig.dateTime
 
-const DateAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, value}) => {
+const DateAttributeField: FC<AttributeFieldProps> = ({pageKey, attrName, attribute, value}) => {
     if (attribute.type !== AttrType.date)
         throw new Error('Illegal attribute')
 
@@ -30,7 +30,7 @@ const DateAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, value
             initialValue={parseValue(value) ?? parseValue(attribute.defaultValue)}
             rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
         >
-            <DatePicker format={momentDisplayDateFormatString} disabled={isDisabled}/>
+            <DatePicker id={`${pageKey}#${attrName}`} format={momentDisplayDateFormatString} disabled={isDisabled}/>
         </FormItem>
     )
 }

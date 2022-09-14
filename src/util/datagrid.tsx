@@ -12,7 +12,6 @@ import QueryService, {ExtRequestParams, FiltersInput} from '../services/query'
 import MediaService from '../services/media'
 import {UTC} from '../config/constants'
 import i18n from '../i18n'
-import {extractTitleAttrValue} from './item'
 
 const {luxonDisplayDateFormatString, luxonDisplayTimeFormatString, luxonDisplayDateTimeFormatString} = appConfig.dateTime
 const columnHelper = createColumnHelper<any>()
@@ -89,7 +88,7 @@ const renderCell = (attribute: Attribute, value: any): ReactElement | string | n
 
             return (
                 <Button type="link" size="small" style={{margin: 0, padding: 0}} onClick={() => mediaService.download(mediaData.id, mediaData.filename)}>
-                    {extractTitleAttrValue(media, mediaData)}
+                    {(mediaData as any)[media.titleAttribute] ?? mediaData.filename}
                 </Button>
             )
         case AttrType.location:
@@ -103,7 +102,7 @@ const renderCell = (attribute: Attribute, value: any): ReactElement | string | n
                 throw new Error('Illegal state')
 
             const subItem = itemService.getByName(attribute.target)
-            return (value && value.data) ? extractTitleAttrValue(subItem, value.data) : null
+            return (value && value.data) ? (value.data[subItem.titleAttribute] ?? value.data.id) : null
         default:
             throw new Error('Illegal attribute')
     }

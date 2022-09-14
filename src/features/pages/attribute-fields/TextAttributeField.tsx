@@ -8,7 +8,7 @@ import {FC} from 'react'
 const FormItem = Form.Item
 const {TextArea} = Input
 
-const TextAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, value}) => {
+const TextAttributeField: FC<AttributeFieldProps> = ({pageKey, attrName, attribute, value}) => {
     if (attribute.type !== AttrType.text)
         throw new Error('Illegal attribute')
 
@@ -24,7 +24,7 @@ const TextAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, value
             initialValue={value ?? attribute.defaultValue}
             rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
         >
-            <TextArea style={{maxWidth: attribute.fieldWidth}} disabled={isDisabled} rows={4}/>
+            <TextArea id={`${pageKey}#${attrName}`} style={{maxWidth: attribute.fieldWidth}} disabled={isDisabled} rows={4}/>
         </FormItem>
     )
 }

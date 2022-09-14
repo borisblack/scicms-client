@@ -10,7 +10,7 @@ import {regExpRule} from '../../../util/form'
 
 const FormItem = Form.Item
 
-const StringAttributeField: FC<AttributeFieldProps> = ({item, attrName, attribute, value}) => {
+const StringAttributeField: FC<AttributeFieldProps> = ({pageKey, item, attrName, attribute, value}) => {
     if (attribute.type !== AttrType.string && attribute.type !== AttrType.uuid
         && attribute.type !== AttrType.email && attribute.type !== AttrType.sequence)
         throw new Error('Illegal attribute')
@@ -70,7 +70,7 @@ const StringAttributeField: FC<AttributeFieldProps> = ({item, attrName, attribut
             initialValue={value ?? attribute.defaultValue}
             rules={getRules()}
         >
-            <Input style={{maxWidth: attribute.fieldWidth}} maxLength={attribute.length} disabled={!isEnabled()}/>
+            <Input id={`${pageKey}#${attrName}`} style={{maxWidth: attribute.fieldWidth}} maxLength={attribute.length} disabled={!isEnabled()}/>
         </FormItem>
     )
 }

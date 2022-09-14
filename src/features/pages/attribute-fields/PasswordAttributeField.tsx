@@ -9,7 +9,7 @@ import {FC} from 'react'
 const FormItem = Form.Item
 const {Password} = Input
 
-const PasswordAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, value}) => {
+const PasswordAttributeField: FC<AttributeFieldProps> = ({pageKey, attrName, attribute, value}) => {
     if (attribute.type !== AttrType.password)
         throw new Error('Illegal attribute')
 
@@ -27,7 +27,7 @@ const PasswordAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, v
                 // hasFeedback
                 rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
             >
-                <Password style={{maxWidth: attribute.fieldWidth}} maxLength={attribute.length} disabled={isDisabled}/>
+                <Password id={`${pageKey}#${attrName}`} style={{maxWidth: attribute.fieldWidth}} maxLength={attribute.length} disabled={isDisabled}/>
             </FormItem>
             {attribute.confirm && (
                 <Form.Item
@@ -52,7 +52,7 @@ const PasswordAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, v
                         }),
                     ]}
                 >
-                    <Password style={{maxWidth: attribute.fieldWidth}} maxLength={attribute.length} disabled={isDisabled}/>
+                    <Password id={`${pageKey}#${attrName}.confirm`} style={{maxWidth: attribute.fieldWidth}} maxLength={attribute.length} disabled={isDisabled}/>
                 </Form.Item>
             )}
         </>

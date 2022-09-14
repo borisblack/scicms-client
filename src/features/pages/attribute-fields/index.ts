@@ -4,6 +4,7 @@ import {FormInstance} from 'antd'
 import {Attribute, Item} from '../../../types'
 
 export interface AttributeFieldProps {
+    pageKey: string
     form: FormInstance
     item: Item
     attrName: string

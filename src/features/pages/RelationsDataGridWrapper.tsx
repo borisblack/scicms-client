@@ -13,7 +13,6 @@ import {Callback, CallbackOperation} from '../../services/mediator'
 import MutationService from '../../services/mutation'
 import ItemService from '../../services/item'
 import QueryService, {FiltersInput} from '../../services/query'
-import {copyTitleAttrValue} from '../../util/item'
 import SearchDataGridWrapper from './SearchDataGridWrapper'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
 import * as ACL from '../../util/acl'
@@ -21,11 +20,11 @@ import PermissionService from '../../services/permission'
 
 interface Props {
     me: UserInfo
+    pageKey: string
     item: Item
     itemData: ItemData
     relAttrName: string
     relAttribute: Attribute
-    pageKey: string
     onItemCreate: (item: Item, initialData?: ItemData | null, cb?: Callback, observerKey?: string) => void
     onItemView: (item: Item, id: string, cb?: Callback, observerKey?: string) => void
     onItemDelete: (itemName: string, id: string) => void
@@ -33,7 +32,7 @@ interface Props {
 
 const SELECTION_MODAL_WIDTH = 800
 
-export default function RelationsDataGridWrapper({me, item, itemData, relAttrName, relAttribute, pageKey, onItemCreate, onItemView, onItemDelete}: Props) {
+export default function RelationsDataGridWrapper({me, pageKey, item, itemData, relAttrName, relAttribute, onItemCreate, onItemView, onItemDelete}: Props) {
     if (!relAttribute.target || (relAttribute.relType !== RelType.oneToMany && relAttribute.relType !== RelType.manyToMany))
         throw Error('Illegal attribute')
 
@@ -144,7 +143,7 @@ export default function RelationsDataGridWrapper({me, item, itemData, relAttrNam
         
         const initialData: any = {id: itemData.id}
         if (item.titleAttribute !== ID_ATTR_NAME)
-            copyTitleAttrValue(item, itemData, initialData)
+            initialData[item.titleAttribute] = itemData[item.titleAttribute]
 
         return {[oppositeAttrName]: {data: initialData}} as ItemData
     }, [oppositeAttrName, relAttribute.relType, itemData, item])
@@ -242,7 +241,7 @@ export default function RelationsDataGridWrapper({me, item, itemData, relAttrNam
         return (
             <Space>
                 {!isOneToMany && <Button size="small" icon={<SelectOutlined/>} onClick={() => setSelectionModalVisible(true)}>{t('Select')}</Button>}
-                {canCreate && <Button type="primary" size="small" icon={<PlusCircleOutlined/>} onClick={handleCreate}>{t('Create')}</Button>}
+                {canCreate && <Button type="primary" size="small" icon={<PlusCircleOutlined/>} onClick={handleCreate}>{t('Add')}</Button>}
             </Space>
         )
     }, [handleCreate, isOneToMany, me, permissionService, relAttribute.readOnly, t, target.permission.data?.id])

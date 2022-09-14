@@ -10,7 +10,7 @@ import styles from './AttributeField.module.css'
 const {Item: FormItem} = Form
 const {Group: InputGroup} = Input
 
-const LocationAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, attribute, value}) => {
+const LocationAttributeField: FC<AttributeFieldProps> = ({pageKey, form, attrName, attribute, value}) => {
     if (attribute.type !== AttrType.location)
         throw new Error('Illegal attribute')
 
@@ -63,6 +63,7 @@ const LocationAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, 
                         rules={[latitudeRule as FormRule]}
                     >
                         <InputNumber
+                            id={`${pageKey}#${attrName}.latitude`}
                             style={{width: '25%'}}
                             placeholder={t('Latitude')}
                             min={-90}
@@ -77,6 +78,7 @@ const LocationAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, 
                         rules={[longitudeRule as FormRule]}
                     >
                         <InputNumber
+                            id={`${pageKey}#${attrName}.longitude`}
                             style={{width: '25%'}}
                             placeholder={t('Longitude')}
                             min={-180}
@@ -91,6 +93,7 @@ const LocationAttributeField: FC<AttributeFieldProps> = ({form, item, attrName, 
                         rules={[labelRule as FormRule]}
                     >
                         <Input
+                            id={`${pageKey}#${attrName}.label`}
                             style={{width: '50%'}}
                             placeholder={t('Label')}
                             onChange={validateNestedFields}
