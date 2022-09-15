@@ -1,0 +1,9 @@
+.pageContent {
+    padding: 16px;
+    background: #fff;
+    min-height: 78vh;
+}
+
+.pageHeader {
+    padding: 16px 4px;
+}

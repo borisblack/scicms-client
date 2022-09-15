@@ -10,8 +10,9 @@ import ItemService from '../services/item'
 import {DataWithPagination, RequestParams} from '../components/datagrid/DataGrid'
 import QueryService, {ExtRequestParams, FiltersInput} from '../services/query'
 import MediaService from '../services/media'
-import {UTC} from '../config/constants'
+import {ACCESS_ITEM_NAME, MASK_ATTR_NAME, UTC} from '../config/constants'
 import i18n from '../i18n'
+import {getBit} from './index'
 
 const {luxonDisplayDateFormatString, luxonDisplayTimeFormatString, luxonDisplayDateTimeFormatString} = appConfig.dateTime
 const columnHelper = createColumnHelper<any>()
@@ -41,10 +42,11 @@ export function getColumns(item: Item): ColumnDef<any, any>[] {
 
         const column = columnHelper.accessor(attrName, {
             header: i18n.t(attr.displayName) as string,
-            cell: info => renderCell(attr, info.getValue()),
+            cell: info => renderCell(item, attrName, attr, info.getValue()),
             size: attr.colWidth ?? appConfig.ui.dataGrid.colWidth,
             enableSorting: attr.type !== AttrType.text && attr.type !== AttrType.json && attr.type !== AttrType.array
-                && attr.type !== AttrType.media && attr.type !== AttrType.location && attr.type !== AttrType.relation
+                && attr.type !== AttrType.media && attr.type !== AttrType.location && attr.type !== AttrType.relation,
+            enableColumnFilter: item.name !== ACCESS_ITEM_NAME || attrName !== MASK_ATTR_NAME
         })
 
         columns.push(column)
@@ -53,7 +55,7 @@ export function getColumns(item: Item): ColumnDef<any, any>[] {
     return columns
 }
 
-const renderCell = (attribute: Attribute, value: any): ReactElement | string | null => {
+const renderCell = (item: Item, attrName: string, attribute: Attribute, value: any): ReactElement | string | null => {
     switch (attribute.type) {
         case AttrType.string:
         case AttrType.text:
@@ -63,6 +65,16 @@ const renderCell = (attribute: Attribute, value: any): ReactElement | string | n
         case AttrType.sequence:
         case AttrType.enum:
         case AttrType.int:
+            if (item.name === ACCESS_ITEM_NAME && attrName === MASK_ATTR_NAME && value != null) {
+                const r = getBit(value, 0) ? 'R' : '-'
+                const w = getBit(value, 1) ? 'W' : '-'
+                const c = getBit(value, 2) ? 'C' : '-'
+                const d = getBit(value, 3) ? 'D' : '-'
+                const a = getBit(value, 4) ? 'A' : '-'
+
+                return <Tag style={{fontFamily: 'monospace', fontWeight: 600}}>{`${a} ${d} ${c} ${w} ${r}`}</Tag>
+            }
+            return value
         case AttrType.long:
         case AttrType.float:
         case AttrType.double:

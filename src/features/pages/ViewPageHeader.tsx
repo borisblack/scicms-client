@@ -19,7 +19,7 @@ import appConfig from '../../config'
 import {useTranslation} from 'react-i18next'
 import MutationService from '../../services/mutation'
 import SearchDataGridWrapper from './SearchDataGridWrapper'
-import styles from './Page.module.css'
+import styles from './Pages.module.css'
 import {FiltersInput} from '../../services/query'
 import Promote from './Promote'
 import {

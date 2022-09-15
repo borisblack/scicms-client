@@ -16,12 +16,25 @@ default.content
 view.header
 view.footer
 view.content
-view.content.form
+view.content.form.begin
+view.content.form.end
+view.content.form.left
+view.content.form.left.begin
+view.content.form.left.end
+view.content.form.right
+view.content.form.right.begin
+view.content.form.right.end
 <itemName>.view.header
 <itemName>.view.footer
 <itemName>.view.content
 <itemName>.view.content.form.begin
 <itemName>.view.content.form.end
+<itemName>.view.content.form.left
+<itemName>.view.content.form.left.begin
+<itemName>.view.content.form.left.end
+<itemName>.view.content.form.right
+<itemName>.view.content.form.right.begin
+<itemName>.view.content.form.right.end
 tabs.content
 tabs.begin
 tabs.end
@@ -32,7 +45,11 @@ tabs.end
 
 export interface CustomComponent {
     id: string
-    mountPoint: string | 'default.header' | 'default.content' | 'default.footer' | 'view.header' | 'view.footer' | 'view.content' | 'tabs.content' | 'tabs.start' | 'tabs.end'
+    mountPoint: string | 'default.header' | 'default.content' | 'default.footer' | 'view.header' | 'view.footer'
+        | 'view.content' | 'view.content.form.begin' | 'view.content.form.end'
+        | 'view.content.form.left' | 'view.content.form.left.begin' | 'view.content.form.left.end'
+        | 'view.content.form.right' | 'view.content.form.right.begin' | 'view.content.form.right.end'
+        | 'tabs.content' | 'tabs.begin' | 'tabs.end'
     priority: number
     title?: string // for tabs rendering
     icon?: string // for tabs rendering

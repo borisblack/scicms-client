@@ -389,11 +389,12 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
         }), [customComponentContext, t])
 
     const renderCollectionRelations = useCallback(() => {
-        const hasTabContentPluginsOrComponents =
-            hasPlugins('tabs.content', `${item.name}.tabs.content`) || hasComponents('tabs.content', `${item.name}.tabs.content`)
+        const hasTabsContentPlugins = hasPlugins('tabs.content', `${item.name}.tabs.content`)
+        const hasTabsContentPluginsOrComponents =
+            hasTabsContentPlugins || hasComponents('tabs.content', `${item.name}.tabs.content`)
 
         const hasTabsPluginsOrComponents =
-            hasTabContentPluginsOrComponents || hasComponents('tabs.begin', `${item.name}.tabs.begin`, 'tabs.end', `${item.name}.tabs.end`)
+            hasTabsContentPluginsOrComponents || hasComponents('tabs.begin', `${item.name}.tabs.begin`, 'tabs.end', `${item.name}.tabs.end`)
 
         if (isNew && !hasTabsPluginsOrComponents)
             return null
@@ -407,13 +408,13 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
             })
 
         const hasTabs =
-            !hasTabContentPluginsOrComponents && collectionAttrNames.length > 0 && hasComponents('tabs.begin', `${item.name}.tabs.begin`, 'tabs.end', `${item.name}.tabs.end`)
+            !hasTabsContentPluginsOrComponents && (collectionAttrNames.length > 0 || hasComponents('tabs.begin', `${item.name}.tabs.begin`, 'tabs.end', `${item.name}.tabs.end`))
 
         return (
             <>
                 {hasComponents('tabs.content') && renderComponents('tabs.content', customComponentContext)}
                 {hasComponents(`${item.name}.tabs.content`) && renderComponents(`${item.name}.tabs.content`, customComponentContext)}
-                {hasPlugins('tabs.content', `${item.name}.tabs.content`) && <div ref={tabsContentRef}/>}
+                {hasTabsContentPlugins && <div ref={tabsContentRef}/>}
 
                 {hasTabs && (
                     <Tabs>
@@ -453,13 +454,15 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
         )
     }, [customComponentContext, data, isNew, item, itemService, me, onItemCreate, onItemDelete, onItemView, page.key, renderTabComponents, t])
 
+    const hasHeaderPlugins = hasPlugins('view.header', `${item.name}.view.header`)
+    const hasContentPlugins = hasPlugins('view.content', `${item.name}.view.content`)
     return (
         <Spin spinning={loading}>
             {hasComponents('view.header') && renderComponents('view.header', customComponentContext)}
             {hasComponents(`${item.name}.view.header`) && renderComponents(`${item.name}.view.header`, customComponentContext)}
-            {hasPlugins('view.header', `${item.name}.view.header`) && <div ref={headerRef}/>}
+            {hasHeaderPlugins && <div ref={headerRef}/>}
 
-            {(!hasComponents('view.header', `${item.name}.view.header`) && !hasPlugins('view.header', `${item.name}.view.header`)) && (
+            {(!hasComponents('view.header', `${item.name}.view.header`) && !hasHeaderPlugins) && (
                 <ViewPageHeader
                     me={me}
                     page={page}
@@ -483,9 +486,9 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
 
             {hasComponents('view.content') && renderComponents('view.content', customComponentContext)}
             {hasComponents(`${item.name}.view.content`) && renderComponents(`${item.name}.view.content`, customComponentContext)}
-            {hasPlugins('view.content', `${item.name}.view.content`) && <div ref={contentRef}/>}
+            {hasContentPlugins && <div ref={contentRef}/>}
 
-            {(!hasComponents('view.content', `${item.name}.view.content`) && !hasPlugins('view.content', `${item.name}.view.content`)) &&
+            {(!hasComponents('view.content', `${item.name}.view.content`) && !hasContentPlugins) &&
                 <Form
                     form={form}
                     size="small"
@@ -493,16 +496,34 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
                     disabled={(!canEdit || !isLockedByMe /*|| viewState === ViewState.VIEW*/) && (!canCreate || !isNew)}
                     onFinish={handleFormFinish}
                 >
+                    {hasComponents('view.content.form.begin') && renderComponents('view.content.form.begin', customComponentContext)}
+                    {hasComponents(`${item.name}.view.content.form.begin`) && renderComponents(`${item.name}.view.content.form.begin`, customComponentContext)}
                     <Row gutter={16}>
                         <Col span={12}>
-                            {hasComponents(`${item.name}.view.content.form.begin`) && renderComponents(`${item.name}.view.content.form.begin`, customComponentContext)}
-                            {renderAttributes(ownAttributes)}
-                            {hasComponents(`${item.name}.view.content.form.end`) && renderComponents(`${item.name}.view.content.form.end`, customComponentContext)}
+                            {!hasComponents('view.content.form.left', `${item.name}.view.content.form.left`) && (
+                                <>
+                                    {hasComponents('view.content.form.left.begin') && renderComponents('view.content.form.left.begin', customComponentContext)}
+                                    {hasComponents(`${item.name}.view.content.form.left.begin`) && renderComponents(`${item.name}.view.content.form.left.begin`, customComponentContext)}
+                                    {renderAttributes(ownAttributes)}
+                                    {hasComponents('view.content.form.left.end') && renderComponents('view.content.form.left.end', customComponentContext)}
+                                    {hasComponents(`${item.name}.view.content.form.left.end`) && renderComponents(`${item.name}.view.content.form.left.end`, customComponentContext)}
+                                </>
+                            )}
                         </Col>
-                        <Col span={12}>{renderAttributes(templateAttributes)}</Col>
+                        <Col span={12}>
+                            {!hasComponents('view.content.form.right', `${item.name}.view.content.form.right`) && (
+                                <>
+                                    {hasComponents('view.content.form.right.begin') && renderComponents('view.content.form.right.begin', customComponentContext)}
+                                    {hasComponents(`${item.name}.view.content.form.right.begin`) && renderComponents(`${item.name}.view.content.form.right.begin`, customComponentContext)}
+                                    {renderAttributes(templateAttributes)}
+                                    {hasComponents('view.content.form.right.end') && renderComponents('view.content.form.right.end', customComponentContext)}
+                                    {hasComponents(`${item.name}.view.content.form.right.end`) && renderComponents(`${item.name}.view.content.form.right.end`, customComponentContext)}
+                                </>
+                            )}
+                        </Col>
                     </Row>
-                    {hasPlugins('view.content.form', `${item.name}.view.content.form`) && <div ref={contentFormRef}/>}
-                    {hasComponents('view.content.form') && renderComponents('view.content.form', customComponentContext)}
+                    {hasComponents('view.content.form.end') && renderComponents('view.content.form.end', customComponentContext)}
+                    {hasComponents('view.content.form.end') && renderComponents('view.content.form.end', customComponentContext)}
                 </Form>
             }
 

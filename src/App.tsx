@@ -4,7 +4,6 @@ import {Avatar, ConfigProvider, Layout, Menu} from 'antd'
 import {LogoutOutlined, MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined} from '@ant-design/icons'
 
 import {useAppDispatch, useAppSelector} from './util/hooks'
-import './App.css'
 import config from './config'
 import i18n from './i18n'
 import {logout, selectIsExpired, selectMe} from './features/auth/authSlice'
@@ -13,6 +12,7 @@ import {reset as resetPages} from './features/pages/pagesSlice'
 import Login from './features/auth/Login'
 import Navbar from './features/registry/Navbar'
 import Pages from './features/pages/Pages'
+import './App.css'
 
 const {Header, Content, Footer} = Layout
 

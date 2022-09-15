@@ -4,7 +4,7 @@
 
 .ant-table.ant-table-small .ant-table-thead > tr > th,
 .ant-table.ant-table-middle .ant-table-thead > tr > th {
-    border-bottom: 2px solid #cccccc
+    border-bottom: 1px solid #cccccc
 }
 
 .ant-table.ant-table-small .ant-table-thead > tr > th.has-filter,
@@ -21,7 +21,7 @@
 }
 
 .ant-table-thead>tr>th {
-    background: #eeeeee;
+    /*background: #eeeeee;*/
     border-left: 1px solid #cccccc;
 }
 
@@ -31,7 +31,7 @@
 
 .ant-table-thead>tr>th:hover,
 .ant-table-thead th.ant-table-column-has-sorters:hover {
-    background: #e7e9ee;
+    /*background: #e7e9ee;*/
 }
 
 .ant-table-thead .ant-input,
@@ -42,7 +42,8 @@
 
 .ant-table-thead .ant-input,
 .ant-table-thead .ant-input:hover {
-    background: #dde7f5;
+    /*background: #dde7f5;*/
+    background: rgba(0,0,0,.04);
 }
 
 .ant-table-thead .ant-input:focus {

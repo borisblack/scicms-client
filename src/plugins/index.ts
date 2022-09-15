@@ -12,11 +12,9 @@ default.footer
 <itemName>.default.footer
 view.header
 view.content
-view.content.form
 view.footer
 <itemName>.view.header
 <itemName>.view.content
-<itemName>.view.content.form
 <itemName>.view.footer
 tabs.content
 <itemName>.tabs.content

@@ -1,14 +1,14 @@
-import {Button, Form, FormInstance, Input, message, Modal, Tooltip} from 'antd'
+import {Button, Form, Input, message, Modal, Tooltip} from 'antd'
 import {FC, useMemo, useState} from 'react'
 
-import {Attribute, AttrType, Item, ItemData} from '../../../types'
+import {AttrType, ItemData} from '../../../types'
 import ItemService from '../../../services/item'
 import SearchDataGridWrapper from '../SearchDataGridWrapper'
 import {useTranslation} from 'react-i18next'
 import {CloseCircleOutlined, FolderOpenOutlined} from '@ant-design/icons'
 import QueryService from '../../../services/query'
-import {Callback} from '../../../services/mediator'
 import styles from './AttributeField.module.css'
+import {AttributeFieldProps} from './index'
 
 const SUFFIX_BUTTON_WIDTH = 24
 const RELATION_MODAL_WIDTH = 800
@@ -16,16 +16,9 @@ const RELATION_MODAL_WIDTH = 800
 const {Item: FormItem} = Form
 const {Search} = Input
 
-interface Props {
-    pageKey: string
-    form: FormInstance
-    item: Item
-    attrName: string
-    attribute: Attribute
+interface Props extends AttributeFieldProps {
     target: string
-    value: any
     forceVisible?: boolean
-    onItemView: (item: Item, id: string, cb?: Callback, observerKey?: string) => void
 }
 
 const StringRelationAttributeField: FC<Props> = ({pageKey, form, item, attrName, attribute, target, value, forceVisible, onItemView}) => {

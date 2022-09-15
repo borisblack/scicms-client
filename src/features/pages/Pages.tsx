@@ -21,6 +21,7 @@ import ViewPage from './ViewPage'
 import QueryService from '../../services/query'
 import Mediator, {Callback, CallbackOperation} from '../../services/mediator'
 import {allIcons} from '../../util/icons'
+import styles from './Pages.module.css'
 
 interface Props {
     me: UserInfo,
@@ -106,7 +107,7 @@ function Pages({me, onLogout}: Props) {
                         tab={Icon ? <span><Icon/>&nbsp;{title}</span> : title}
                         style={{background: '#fff'}}
                     >
-                        <div className="page-content">
+                        <div className={styles.pageContent}>
                             {viewType === ViewType.default ?
                                 <DefaultPage
                                     me={me}

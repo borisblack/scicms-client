@@ -33,6 +33,8 @@ const menuConfig: MenuConfig = {
                 itemName: 'user'
             }, {
                 itemName: 'permission'
+            }, {
+                itemName: 'identity'
             }]
         }, {
             key: 'storage',
