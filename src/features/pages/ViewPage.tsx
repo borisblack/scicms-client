@@ -314,6 +314,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
                     pageKey={page.key}
                     form={form}
                     item={item}
+                    data={data}
                     attrName={attrName}
                     attribute={attr}
                     value={data ? data[attrName] : null}

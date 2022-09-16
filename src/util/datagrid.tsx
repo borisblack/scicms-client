@@ -10,7 +10,7 @@ import ItemService from '../services/item'
 import {DataWithPagination, RequestParams} from '../components/datagrid/DataGrid'
 import QueryService, {ExtRequestParams, FiltersInput} from '../services/query'
 import MediaService from '../services/media'
-import {ACCESS_ITEM_NAME, MASK_ATTR_NAME, UTC} from '../config/constants'
+import {ACCESS_ITEM_NAME, FILENAME_ATTR_NAME, MASK_ATTR_NAME, MEDIA_ITEM_NAME, UTC} from '../config/constants'
 import i18n from '../i18n'
 import {getBit} from './index'
 
@@ -42,7 +42,7 @@ export function getColumns(item: Item): ColumnDef<any, any>[] {
 
         const column = columnHelper.accessor(attrName, {
             header: i18n.t(attr.displayName) as string,
-            cell: info => renderCell(item, attrName, attr, info.getValue()),
+            cell: info => renderCell(item, info.row.original, attrName, attr, info.getValue()),
             size: attr.colWidth ?? appConfig.ui.dataGrid.colWidth,
             enableSorting: attr.type !== AttrType.text && attr.type !== AttrType.json && attr.type !== AttrType.array
                 && attr.type !== AttrType.media && attr.type !== AttrType.location && attr.type !== AttrType.relation,
@@ -55,15 +55,24 @@ export function getColumns(item: Item): ColumnDef<any, any>[] {
     return columns
 }
 
-const renderCell = (item: Item, attrName: string, attribute: Attribute, value: any): ReactElement | string | null => {
+const renderCell = (item: Item, data: ItemData, attrName: string, attribute: Attribute, value: any): ReactElement | string | null => {
     switch (attribute.type) {
         case AttrType.string:
+            if (item.name === MEDIA_ITEM_NAME && attrName === FILENAME_ATTR_NAME && value != null) {
+                return (
+                    <Button type="link" size="small" style={{margin: 0, padding: 0}} onClick={() => mediaService.download(data.id, value)}>
+                        {value}
+                    </Button>
+                )
+            }
+            return value
         case AttrType.text:
         case AttrType.uuid:
         case AttrType.email:
         case AttrType.password:
         case AttrType.sequence:
         case AttrType.enum:
+            return value
         case AttrType.int:
             if (item.name === ACCESS_ITEM_NAME && attrName === MASK_ATTR_NAME && value != null) {
                 const r = getBit(value, 0) ? 'R' : '-'

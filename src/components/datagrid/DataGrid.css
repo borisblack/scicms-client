@@ -43,7 +43,7 @@
 .ant-table-thead .ant-input,
 .ant-table-thead .ant-input:hover {
     /*background: #dde7f5;*/
-    background: rgba(0,0,0,.04);
+    background: #e6f7ff;
 }
 
 .ant-table-thead .ant-input:focus {

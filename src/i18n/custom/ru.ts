@@ -1,13 +1,30 @@
 const customRu = {
+    'Cause': 'Причина',
+    'Change Notice': 'Извещение об изменении',
+    'Change Notices': 'Извещения об изменении',
+    'Cost (RUB)': 'Стоимость (руб)',
     'Design': 'Проектирование',
+    'Document': 'Документ',
+    'Documents': 'Документы',
+    'Effective Date': 'Дата выпуска (факт)',
+    'Notice Type': 'Тип извещения',
+    'Ownership Type': 'Тип владения',
     'Part': 'Составная часть',
+    'Part BOM': 'Спецификация BOM',
+    'Part BOM Entry': 'Позиция BOM',
+    'Part Type': 'Тип',
     'Parts': 'Составные части',
     'Product': 'Продукт',
     'Products': 'Продукты',
+    'Quantity': 'Количество',
+    'Release Date': 'Дата выпуска (план)',
+    'Source Part': 'Исходная сост. часть',
+    'Target Part': 'Целевая сост. часть',
     'Start Sheet': 'Листок запуска',
     'Start Sheets': 'Листки запуска',
-    'Change Notice': 'Извещение об изменении',
-    'Change Notices': 'Извещения об изменении'
+    'Superseded Date': 'Когда замещен',
+    'Units': 'Ед. изм.',
+    'Weight (kg)': 'Вес (кг)'
 }
 
 export default customRu

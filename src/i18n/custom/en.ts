@@ -1,13 +1,30 @@
 const customEn = {
+    'Cause': 'Cause',
+    'Change Notice': 'Change Notice',
+    'Change Notices': 'Change Notices',
+    'Cost (RUB)': 'Cost (RUB)',
     'Design': 'Design',
+    'Document': 'Document',
+    'Documents': 'Documents',
+    'Effective Date': 'Effective Date',
+    'Notice Type': 'Notice Type',
+    'Ownership Type': 'Ownership Type',
     'Part': 'Part',
+    'Part BOM': 'Part BOM',
+    'Part BOM Entry': 'Part BOM Entry',
+    'Part Type': 'Part Type',
     'Parts': 'Parts',
     'Product': 'Product',
     'Products': 'Products',
+    'Quantity': 'Quantity',
+    'Release Date': 'Release Date',
+    'Source Part': 'Source Part',
+    'Target Part': 'Target Part',
     'Start Sheet': 'Start Sheet',
     'Start Sheets': 'Start Sheets',
-    'Change Notice': 'Change Notice',
-    'Change Notices': 'Change Notices'
+    'Superseded Date': 'Superseded Date',
+    'Units': 'Units',
+    'Weight (kg)': 'Вес (кг)'
 }
 
 export default customEn
