@@ -4,6 +4,7 @@ import {itemTemplateAttributes} from '../custom-components/item/attributes/item-
 import {itemIndexes} from '../custom-components/item/indexes/item-indexes'
 import {itemTemplateIndexes} from '../custom-components/item/indexes/item-template-indexes'
 import {userRoles} from '../custom-components/user/user-roles/user-roles'
+import {lifecycleSpec} from '../custom-components/lifecycle/spec/lifecycle-spec'
 // import {userGroups} from '../custom-components/user/user-groups/user-groups'
 
 interface CustomComponentConfig {
@@ -18,7 +19,8 @@ const customComponentConfig: CustomComponentConfig = {
         itemIndexes,
         itemTemplateIndexes,
         userRoles,
-        // userGroups, // owner is a group
+        // userGroups, // owner is a group,
+        lifecycleSpec
     ]
 }
 
