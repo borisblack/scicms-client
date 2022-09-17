@@ -44,8 +44,7 @@ export function getColumns(item: Item): ColumnDef<any, any>[] {
             header: i18n.t(attr.displayName) as string,
             cell: info => renderCell(item, info.row.original, attrName, attr, info.getValue()),
             size: attr.colWidth ?? appConfig.ui.dataGrid.colWidth,
-            enableSorting: attr.type !== AttrType.text && attr.type !== AttrType.json && attr.type !== AttrType.array
-                && attr.type !== AttrType.media && attr.type !== AttrType.location && attr.type !== AttrType.relation,
+            enableSorting: attr.type !== AttrType.text && attr.type !== AttrType.json && attr.type !== AttrType.array,
             enableColumnFilter: item.name !== ACCESS_ITEM_NAME || attrName !== MASK_ATTR_NAME
         })
 
