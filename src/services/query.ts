@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import {gql} from '@apollo/client'
-import {ColumnFiltersState} from '@tanstack/react-table'
+import {ColumnFiltersState, SortingState} from '@tanstack/react-table'
 
 import i18n from '../i18n'
 import {apolloClient, extractGraphQLErrorMessages} from './index'
@@ -57,6 +57,8 @@ type FilterInput<FilterType extends ItemData, ElementType extends string | boole
     null?: boolean
     notNull?: boolean
 }
+
+const SORT_ATTR_PATTERN = /^(\w+)\.?(\w+)?$/
 
 function buildDateFilter(filterValue: string): FilterInput<ItemData, string> {
     let dt = DateTime.fromFormat(filterValue, LUXON_DATE_FORMAT_STRING)
@@ -205,7 +207,7 @@ export default class QueryService {
         const query = gql(this.buildFindAllQuery(item))
         const {page, pageSize} = pagination
         const variables: any = {
-            sort: sorting.map(it => `${it.id}:${it.desc ? 'desc' : 'asc'}`),
+            sort: this.buildSortExpression(item, sorting),
             filters: {...this.buildItemFiltersInput(item, filters), ...extraFiltersInput},
             pagination: {page, pageSize},
         }
@@ -229,6 +231,34 @@ export default class QueryService {
 
         return res.data[item.pluralName]
     }
+
+    private buildSortExpression = (item: Item, sorting: SortingState) => sorting.map(it => {
+        const matchRes = it.id.match(SORT_ATTR_PATTERN)
+        if (matchRes == null)
+            throw new Error(`Illegal sort attribute [${it.id}]`)
+
+        const attrName = matchRes[1]
+        const nestedAttrName = matchRes[2]
+        const dir = it.desc ? 'desc' : 'asc'
+        if (nestedAttrName == null) {
+            const attr = item.spec.attributes[attrName]
+            switch (attr.type) {
+                case AttrType.relation:
+                    const target = this.itemService.getByName(attr.target as string)
+                    return `${attrName}.${target.titleAttribute}:${dir}`
+                case AttrType.media:
+                    const media = this.itemService.getMedia()
+                    return `${attrName}.${media.titleAttribute}:${dir}`
+                case AttrType.location:
+                    const location = this.itemService.getLocation()
+                    return `${attrName}.${location.titleAttribute}:${dir}`
+                default:
+                    return `${attrName}:${dir}`
+            }
+        } else {
+            return `${attrName}.${nestedAttrName}:${dir}`
+        }
+    })
 
     private buildFindAllQuery = (item: Item, state?: string) => `
         query findAll${_.upperFirst(item.pluralName)}(
