@@ -14,6 +14,7 @@ interface AppConfig {
     coreUrl: string
     i18nLng: string
     antdLocale: Locale
+    diagramTranslation: string
     dateTime: {
         timeZone: string
         luxonDisplayDateFormatString: string
@@ -46,6 +47,7 @@ const appConfig: AppConfig = {
     coreUrl: 'http://localhost:8079',
     i18nLng: 'ru',
     antdLocale: ruRU,
+    diagramTranslation: 'ru',
     dateTime: {
         timeZone: 'Asia/Krasnoyarsk',
         luxonDisplayDateFormatString: LUXON_DATE_FORMAT_STRING,

@@ -1,0 +1,14 @@
+.bpmnDiagramWrapper {
+  position: relative;
+  background-color: #fff;
+  min-height: 420px;
+  border: 1px solid #dadce0;
+  overflow: auto;
+}
+
+.bpmnDiagramContainer {
+    position: absolute;
+    background-color: #fff;
+    width: 100%;
+    height:  100%;
+}
