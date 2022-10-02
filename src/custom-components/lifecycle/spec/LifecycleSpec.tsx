@@ -1,37 +1,70 @@
-import {useEffect, useRef} from 'react'
+import {useEffect, useMemo, useRef} from 'react'
 import 'diagram-js/assets/diagram-js.css'
 import 'bpmn-font/dist/css/bpmn-embedded.css'
 
 import {CustomComponentRenderContext} from '../../index'
 import Modeler from '../../../diagram/Modeler'
+import Viewer from '../../../diagram/Viewer'
 import customTranslate from '../../../diagram/i18s/custom-translate'
 import '../../../diagram/bpmn-js.css'
 import styles from './LifecycleSpec.module.css'
+import {LIFECYCLE_ITEM_NAME} from '../../../config/constants'
+import PermissionService from '../../../services/permission'
 
 const customTranslateModule = {
     translate: [ 'value', customTranslate ]
 }
 
-export default function LifecycleSpec({}: CustomComponentRenderContext) {
+export default function LifecycleSpec({me, item, buffer, data}: CustomComponentRenderContext) {
+    if (item.name !== LIFECYCLE_ITEM_NAME)
+        throw new Error('Illegal attribute')
+
+    const isNew = !data?.id
+    const isLockedByMe = data?.lockedBy?.data?.id === me.id
+    const permissionService = useMemo(() => PermissionService.getInstance(), [])
+    const permissions = useMemo(() => {
+        const acl = permissionService.getAcl(me, item, data)
+        const canEdit = (isNew && acl.canCreate) || (isLockedByMe && acl.canWrite)
+        return [canEdit]
+    }, [data, isLockedByMe, isNew, item, me, permissionService])
+
+    const [canEdit] = permissions
     const container = useRef<HTMLDivElement>(null)
-    const modeler = useRef<Modeler | null>(null)
+    const modeler = useRef<any>(null)
 
     useEffect(() => {
-        let m: any = modeler.current
-        if (!m) {
-            m = new Modeler({
-                container: container.current,
-                additionalModules: [
-                    customTranslateModule
-                ]
-            })
-            m.createDiagram()
-
-            modeler.current = m
+        const props = {
+            container: container.current,
+            additionalModules: [customTranslateModule]
         }
 
-        // return () => { (m as any).destroy() }
-    }, [])
+        let m: any
+        if (canEdit) {
+            m = new Modeler(props)
+            const eventBus = m.get('eventBus')
+            eventBus.on('elements.changed', (context: any) => {
+                m.saveXML({format: true})
+                    .then((xml: any) => {
+                        buffer.form.spec = xml.xml
+                    })
+            })
+        } else {
+            m = new Viewer(props)
+        }
+
+        if (data?.spec)
+            m.importXML(data.spec)
+        else
+            m.createDiagram()
+
+        modeler.current = m
+
+        return () => {
+            m.destroy()
+            m = null
+            modeler.current = null
+        }
+    }, [buffer.form, canEdit, data?.spec])
 
     return (
         <div className={styles.bpmnDiagramWrapper}>

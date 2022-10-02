@@ -32,11 +32,11 @@ export interface Lifecycle extends DefaultItemTemplate {
     icon: string | null
     startState: string
     implementation: string | null
-    spec: LifecycleSpec
+    spec: string
     checksum: string | null
 }
 
-interface LifecycleSpec {
+export interface LifecycleSpec {
     states: StateMap
 }
 
@@ -45,23 +45,7 @@ export interface StateMap {
 }
 
 export interface State {
-    displayName: string
-    transitions: TransitionMap
-    point: Point
-}
-
-export interface TransitionMap {
-    [name: string]: Transition
-}
-
-interface Transition {
-    displayName?: string
-    points: Point[]
-}
-
-interface Point {
-    x: number
-    y: number
+    transitions: string[]
 }
 
 export interface Permission extends DefaultItemTemplate {
