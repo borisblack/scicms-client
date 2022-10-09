@@ -300,6 +300,33 @@ export interface Locale extends DefaultItemTemplate {
     displayName: string | null
 }
 
+export interface Dashboard extends DefaultItemTemplate {
+    name: string
+    displayName: string | null
+    spec: DashboardSpec
+    checksum: string | null
+}
+
+export interface DashboardSpec {
+    rows: number
+    cols: number
+    dashes: Dash[]
+}
+
+interface Dash {
+    name: string
+    displayName: string
+    rows: number
+    cols: number
+    refreshIntervalSeconds: number
+    items: DashItem[]
+}
+
+interface DashItem {
+    name: string
+    attributes: string[]
+}
+
 export interface ItemData extends DefaultItemTemplate {
     [name: string]: any
 }

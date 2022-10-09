@@ -60,6 +60,14 @@ const menuConfig: MenuConfig = {
             itemName: 'lifecycle'
         }]
     }, {
+        key: 'analysis',
+        label: 'Analysis',
+        icon: 'PieChartOutlined',
+        roles: [ROLE_ADMIN],
+        children: [{
+            itemName: 'dashboard'
+        }]
+    }, {
         key: 'design',
         label: 'Design',
         icon: 'RocketOutlined',
