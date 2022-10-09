@@ -62,8 +62,6 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({pageKey, form, item, a
         setCurrentId(itemData.id)
         form.setFieldValue(attrName, itemData[targetItem.titleAttribute])
         form.setFieldValue(`${attrName}.id`, itemData.id)
-        if (attrName === LIFECYCLE_ATTR_NAME)
-            form.setFieldValue(STATE_ATTR_NAME, (itemData as Lifecycle).startState)
 
         setRelationModalVisible(false)
     }

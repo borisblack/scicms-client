@@ -71,15 +71,21 @@ export function parseLifecycleSpec(bpmn: string): LifecycleSpec {
     const {process} = definitions
     const tasks = _.mapKeys(process.tasks, it => it.id)
     const sequenceFlows = _.mapKeys(process.sequenceFlows, it => it.id)
+
+    const startTransitions = process.startEvent.outgoings
+        .map(sequenceFlowId => sequenceFlows[sequenceFlowId])
+        .filter(sequenceFlow => sequenceFlow.targetRef !== process.endEvent.id)
+        .map(sequenceFlow => {
+            const targetTask = tasks[sequenceFlow.targetRef]
+            return targetTask.name
+        })
+
     const states: StateMap = {}
     process.tasks.forEach(task => {
         const transitions = task.outgoings
-            .filter(sequenceFlowId => {
-                const sequenceFlow = sequenceFlows[sequenceFlowId]
-                return sequenceFlow.targetRef != process.endEvent.id
-            })
-            .map(sequenceFlowId => {
-                const sequenceFlow = sequenceFlows[sequenceFlowId]
+            .map(sequenceFlowId => sequenceFlows[sequenceFlowId])
+            .filter(sequenceFlow => sequenceFlow.targetRef !== process.endEvent.id)
+            .map(sequenceFlow => {
                 const targetTask = tasks[sequenceFlow.targetRef]
                 return targetTask.name
             })
@@ -87,5 +93,8 @@ export function parseLifecycleSpec(bpmn: string): LifecycleSpec {
         states[task.name] = {transitions}
     })
 
-    return {states}
+    return {
+        startEvent: {transitions: startTransitions},
+        states
+    }
 }

@@ -1,4 +1,4 @@
-import {CustomComponent} from '../../index'
+import {CustomComponent} from '../../.'
 import Attributes from './Attributes'
 
 const COMPONENT_ID = 'itemAttributes'

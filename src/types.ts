@@ -30,13 +30,13 @@ export interface Lifecycle extends DefaultItemTemplate {
     displayName: string | null
     description: string | null
     icon: string | null
-    startState: string
     implementation: string | null
     spec: string
     checksum: string | null
 }
 
 export interface LifecycleSpec {
+    startEvent: State
     states: StateMap
 }
 

@@ -14,7 +14,6 @@ const FIND_BY_ID_QUERY = gql`
                 name
                 displayName
                 description
-                startState
                 spec
             }
         }

@@ -41,15 +41,16 @@ export default function Promote({lifecycleId, currentState: currentStateName, on
         if (!lifecycle)
             return []
 
-        const {states} = parseLifecycleSpec(lifecycle.spec)
+        const {startEvent, states} = parseLifecycleSpec(lifecycle.spec)
         if (!currentStateName) {
-            const startState = states[lifecycle.startState]
-            if (!startState)
-                throw new Error('Invalid start state')
+            return startEvent.transitions
+                .map(targetStateName => {
+                    const allowedState = states[targetStateName]
+                    if (!allowedState)
+                        throw new Error('Invalid transition')
 
-            return [{
-                title: lifecycle.startState
-            }]
+                    return {title: targetStateName}
+                })
         }
 
         const currentState = states[currentStateName]
@@ -62,9 +63,7 @@ export default function Promote({lifecycleId, currentState: currentStateName, on
                 if (!allowedState)
                     throw new Error('Invalid transition')
 
-                return {
-                    title: targetStateName
-                }
+                return {title: targetStateName}
             })
     }, [currentStateName, lifecycle])
 
