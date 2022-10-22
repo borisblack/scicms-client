@@ -1,6 +1,6 @@
 import {useEffect, useMemo, useState} from 'react'
 import RGL, {Layout, WidthProvider} from 'react-grid-layout'
-import {Button, Form, Modal, Select, Tooltip, Transfer} from 'antd'
+import {Button, Form, Input, Modal, Select, Tooltip, Transfer} from 'antd'
 import {useTranslation} from 'react-i18next'
 import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
@@ -128,12 +128,13 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
         if (!canEdit || !activeDash)
             return
 
+        const {name, displayName, type, refreshIntervalSeconds} = values
         const dashToUpdate: Dash = {
             ...activeDash,
-            name: values.name,
-            displayName: values.displayName,
-            type: values.type,
-            refreshIntervalSeconds: values.refreshIntervalSeconds
+            name,
+            displayName,
+            type,
+            refreshIntervalSeconds
         }
 
         setSpec(prevSpec => ({
@@ -250,20 +251,20 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
                     <>
                         <DashForm form={dashForm} dash={activeDash} canEdit={canEdit} onFormFinish={handleDashFormFinish}/>
 
+                        <h4>{t('Items')}</h4>
                         {activeDash.items.map((item, i) => (
                             <div key={`${item.name}${i}`}>
                                 <Select
-                                    style={{width: 300, marginTop: 12, marginBottom: 8}}
+                                    style={{width: 300, marginBottom: 8}}
                                     size="small"
                                     value={item.name}
                                     onSelect={(name: string) => handleActiveDashItemSelect(i, name)}
                                 >
                                     {sortedItemNames.map(it => <SelectOption key={it} value={it}>{it}</SelectOption>)}
                                 </Select>
-                                <Tooltip key="clear" title={t('Delete')}>
+                                <Tooltip title={t('Delete')}>
                                     <Button
                                         type="link"
-                                        style={{width: 24}}
                                         className="red"
                                         icon={<DeleteOutlined/>}
                                         disabled={!canEdit}
@@ -274,17 +275,35 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
                                 <Transfer
                                     dataSource={getTransferDataSource(item.name)}
                                     targetKeys={item.attributes}
-                                    onChange={(nextTargetKeys: string[]) => handleTransferChange(i, nextTargetKeys)}
+                                    style={{marginBottom: 16}}
                                     render={it => it.title}
+                                    onChange={(nextTargetKeys: string[]) => handleTransferChange(i, nextTargetKeys)}
                                 />
+
+                                {/*<Input*/}
+                                {/*    style={{width: 300, marginTop: 8, marginBottom: 16}}*/}
+                                {/*    size="small"*/}
+                                {/*    placeholder={t('Composite attribute')}*/}
+                                {/*    disabled={!canEdit}*/}
+                                {/*/>*/}
+                                {/*<Tooltip title={t('Add')}>*/}
+                                {/*    <Button*/}
+                                {/*        type="link"*/}
+                                {/*        size="small"*/}
+                                {/*        style={{marginLeft: 4}}*/}
+                                {/*        icon={<PlusCircleOutlined/>}*/}
+                                {/*        disabled={!canEdit}*/}
+                                {/*        // onClick={() => handleActiveDashItemAttributeAdd(i, item.name)}*/}
+                                {/*    />*/}
+                                {/*</Tooltip>*/}
                             </div>
                         ))}
 
-                        <Button type="primary" style={{marginTop: 16}} icon={<PlusCircleOutlined/>} disabled={!canEdit} onClick={() => handleItemAdd(sortedItemNames[0])}>
+                        <Button type="primary" style={{marginBottom: 16}} icon={<PlusCircleOutlined/>} disabled={!canEdit} onClick={() => handleItemAdd(sortedItemNames[0])}>
                             {t('Add Item')}
                         </Button>
                         <br/>
-                        <Button type="primary" danger style={{marginTop: 16}} icon={<DeleteOutlined/>} disabled={!canEdit} onClick={() => removeDash(activeDash.name)}>
+                        <Button type="primary" danger icon={<DeleteOutlined/>} disabled={!canEdit} onClick={() => removeDash(activeDash.name)}>
                             {t('Remove Dash')}
                         </Button>
                     </>

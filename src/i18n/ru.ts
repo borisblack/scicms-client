@@ -36,6 +36,7 @@ const ru = {
         'Columns': 'Столбцы',
         'Config ID': 'ID конфигурации',
         'Confirm': 'Подтверждение',
+        'Composite attribute': 'Составной атрибут',
         'Core': 'Ядро',
         'Create': 'Создать',
         'Created At': 'Дата создания',

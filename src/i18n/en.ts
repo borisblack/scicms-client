@@ -36,6 +36,7 @@ const en = {
         'Columns': 'Columns',
         'Config ID': 'Config ID',
         'Confirm': 'Confirm',
+        'Composite attribute': 'Composite attribute',
         'Core': 'Core',
         'Create': 'Create',
         'Created At': 'Created At',
