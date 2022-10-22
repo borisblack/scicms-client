@@ -265,6 +265,7 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
                                 <Tooltip title={t('Delete')}>
                                     <Button
                                         type="link"
+                                        size="small"
                                         className="red"
                                         icon={<DeleteOutlined/>}
                                         disabled={!canEdit}
@@ -290,7 +291,6 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
                                 {/*    <Button*/}
                                 {/*        type="link"*/}
                                 {/*        size="small"*/}
-                                {/*        style={{marginLeft: 4}}*/}
                                 {/*        icon={<PlusCircleOutlined/>}*/}
                                 {/*        disabled={!canEdit}*/}
                                 {/*        // onClick={() => handleActiveDashItemAttributeAdd(i, item.name)}*/}
