@@ -308,18 +308,23 @@ export interface Dashboard extends DefaultItemTemplate {
 }
 
 export interface DashboardSpec {
-    rows: number
-    cols: number
     dashes: Dash[]
 }
 
-interface Dash {
+export interface Dash {
     name: string
     displayName: string
-    rows: number
-    cols: number
+    type: DashType
+    x: number
+    y: number
+    w: number
+    h: number
     refreshIntervalSeconds: number
     items: DashItem[]
+}
+
+export enum DashType {
+    bar = 'bar'
 }
 
 interface DashItem {

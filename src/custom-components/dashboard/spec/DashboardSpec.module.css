@@ -1,0 +1,20 @@
+.layout {
+    background-color: #eee;
+    margin-top: 12px;
+}
+
+.layout .dashWrapper {
+    background-color: #dde7f5;
+    border: 1px solid #aaa;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    justify-items: center;
+    flex-direction: row;
+}
+
+.layout .dashWrapper.activeDash {
+    background-color: #ccc;
+}

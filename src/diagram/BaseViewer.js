@@ -4,20 +4,22 @@
  *
  * @see http://bpmn.io/license for more information.
  */
-import { assign, find, isNumber, omit } from 'min-dash';
+import {assign, find, isNumber, omit} from 'min-dash'
 
-import { assignStyle, domify, query as domQuery, remove as domRemove } from 'min-dom';
+import {assignStyle, domify, event as domEvent, query as domQuery, remove as domRemove} from 'min-dom'
 
-import { innerSVG } from 'tiny-svg';
+import {innerSVG} from 'tiny-svg'
 
-import Diagram from 'diagram-js';
-import BpmnModdle from 'bpmn-moddle';
+import Diagram from 'diagram-js'
+import BpmnModdle from 'bpmn-moddle'
 
-import inherits from 'inherits-browser';
+import inherits from 'inherits-browser'
 
-import { importBpmnDiagram } from './import/Importer';
+import {importBpmnDiagram} from './import/Importer'
 
-import { wrapForCompatibility } from './util/CompatibilityUtil';
+import {wrapForCompatibility} from './util/CompatibilityUtil'
+
+import {BPMNIO_IMG, LINK_STYLES, LOGO_STYLES, open as openPoweredBy} from './util/PoweredByUtil'
 
 /**
  * A base viewer for BPMN 2.0 diagrams.
@@ -40,6 +42,12 @@ export default function BaseViewer(options) {
   this._moddle = this._createModdle(options);
 
   this._container = this._createContainer(options);
+
+  /* <project-logo> */
+
+  addProjectLogo(this._container);
+
+  /* </project-logo> */
 
   this._init(this._container, this._moddle, options);
 }
@@ -673,3 +681,46 @@ function findBPMNDiagram(definitions, diagramId) {
     return element.id === diagramId;
   }) || null;
 }
+
+/* <project-logo> */
+
+/**
+ * Adds the project logo to the diagram container as
+ * required by the bpmn.io license.
+ *
+ * @see http://bpmn.io/license
+ *
+ * @param {Element} container
+ */
+function addProjectLogo(container) {
+  const img = BPMNIO_IMG;
+
+  const linkMarkup =
+      '<a href="http://bpmn.io" ' +
+      'target="_blank" ' +
+      'class="bjs-powered-by" ' +
+      'title="Powered by bpmn.io" ' +
+      '>' +
+      img +
+      '</a>';
+
+  const linkElement = domify(linkMarkup);
+
+  assignStyle(domQuery('svg', linkElement), LOGO_STYLES);
+  assignStyle(linkElement, LINK_STYLES, {
+    position: 'absolute',
+    bottom: '15px',
+    right: '15px',
+    zIndex: '100'
+  });
+
+  container.appendChild(linkElement);
+
+  domEvent.bind(linkElement, 'click', function(event) {
+    openPoweredBy();
+
+    event.preventDefault();
+  });
+}
+
+/* </project-logo> */
