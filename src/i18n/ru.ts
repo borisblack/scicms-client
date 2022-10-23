@@ -139,6 +139,7 @@ const ru = {
         'Plural Name': 'Имя (мн. ч.)',
         'Precision': 'Размер',
         'Prefix': 'Префикс',
+        'Preview': 'Просмотр',
         'Principal': 'Пользователь',
         'Private': 'Приватный',
         'Promote': 'Переместить',
@@ -207,6 +208,7 @@ const ru = {
         'Versioned': 'Версионирование',
         'Versions': 'Версии',
         'Welcome': 'Добро пожаловать',
+        'You do not have permission to access this content': 'У вас нет разрешения на доступ к этому контенту',
         'You must sign in again to apply the changes': 'Для применения изменений необходимо выполнить повторный вход',
         ...customRu
     }

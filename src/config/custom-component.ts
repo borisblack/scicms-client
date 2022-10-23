@@ -6,6 +6,7 @@ import {itemTemplateIndexes} from '../custom-components/item/indexes/item-templa
 import {userRoles} from '../custom-components/user/user-roles/user-roles'
 import {lifecycleSpec} from '../custom-components/lifecycle/spec/lifecycle-spec'
 import {dashboardSpec} from '../custom-components/dashboard/spec/dashboard-spec'
+import {dashboardPreview} from '../custom-components/dashboard/preview/dashboard-preview'
 // import {userGroups} from '../custom-components/user/user-groups/user-groups'
 
 interface CustomComponentConfig {
@@ -22,6 +23,7 @@ const customComponentConfig: CustomComponentConfig = {
         userRoles,
         lifecycleSpec,
         dashboardSpec,
+        dashboardPreview,
         // userGroups, // owner is a group
     ]
 }

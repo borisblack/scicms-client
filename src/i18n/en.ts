@@ -139,6 +139,7 @@ const en = {
         'Plural Name': 'Plural Name',
         'Precision': 'Precision',
         'Prefix': 'Prefix',
+        'Preview': 'Preview',
         'Principal': 'Principal',
         'Private': 'Private',
         'Promote': 'Promote',
@@ -207,6 +208,7 @@ const en = {
         'Versioned': 'Versioned',
         'Versions': 'Versions',
         'Welcome': 'Welcome',
+        'You do not have permission to access this content': 'You do not have permission to access this content',
         'You must sign in again to apply the changes': 'You must sign in again to apply the changes',
         ...customEn
     }

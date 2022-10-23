@@ -104,7 +104,7 @@ function Pages({me, onLogout}: Props) {
                 return (
                     <TabPane
                         key={page.key}
-                        tab={Icon ? <span><Icon/>&nbsp;{title}</span> : title}
+                        tab={Icon ? <span><Icon/>{title}</span> : title}
                         style={{background: '#fff'}}
                     >
                         <div className={styles.pageContent}>

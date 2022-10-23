@@ -5,7 +5,7 @@ import ruRU from 'antd/lib/locale-provider/ru_RU'
 import 'moment/locale/ru'
 
 import {LUXON_DATE_FORMAT_STRING, LUXON_DATETIME_FORMAT_STRING, LUXON_TIME_FORMAT_STRING} from './constants'
-import {DeletingStrategy} from '../types'
+import {DashType, DeletingStrategy} from '../types'
 
 // LuxonSettings.defaultZone = UTC
 // moment.tz.setDefault(UTC)
@@ -32,6 +32,13 @@ interface AppConfig {
     mutation: {
         copyCollectionRelations: boolean
         deletingStrategy: DeletingStrategy
+    }
+    dashboard: {
+        cols: number
+        rowHeight: number
+        minRefreshIntervalSeconds: number
+        defaultRefreshIntervalSeconds: number
+        defaultDashType: DashType
     }
     ui: {
         dataGrid: {
@@ -65,6 +72,13 @@ const appConfig: AppConfig = {
     mutation: {
         copyCollectionRelations: true,
         deletingStrategy: DeletingStrategy.CASCADE
+    },
+    dashboard: {
+        cols: 12,
+        rowHeight: 100,
+        minRefreshIntervalSeconds: 5,
+        defaultRefreshIntervalSeconds: 300,
+        defaultDashType: DashType.bar
     },
     ui: {
         dataGrid: {

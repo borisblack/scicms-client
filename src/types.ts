@@ -303,15 +303,15 @@ export interface Locale extends DefaultItemTemplate {
 export interface Dashboard extends DefaultItemTemplate {
     name: string
     displayName: string | null
-    spec: DashboardSpec
+    spec: IDashboardSpec
     checksum: string | null
 }
 
-export interface DashboardSpec {
-    dashes: Dash[]
+export interface IDashboardSpec {
+    dashes: IDash[]
 }
 
-export interface Dash {
+export interface IDash {
     name: string
     displayName: string
     type: DashType

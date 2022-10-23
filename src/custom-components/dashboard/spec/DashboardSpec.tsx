@@ -1,6 +1,6 @@
 import {useEffect, useMemo, useState} from 'react'
 import RGL, {Layout, WidthProvider} from 'react-grid-layout'
-import {Button, Form, Input, Modal, Select, Tooltip, Transfer} from 'antd'
+import {Button, Form, Modal, Select, Tooltip, Transfer} from 'antd'
 import {useTranslation} from 'react-i18next'
 import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
@@ -8,24 +8,20 @@ import 'react-resizable/css/styles.css'
 import {CustomComponentRenderContext} from '../../index'
 import {DASHBOARD_ITEM_NAME} from '../../../config/constants'
 import PermissionService from '../../../services/permission'
-import {Dash, DashboardSpec as IDashboardSpec, DashType} from '../../../types'
+import {IDash, IDashboardSpec} from '../../../types'
 import './DashboardSpec.css'
 import styles from './DashboardSpec.module.css'
 import DashForm from './DashForm'
 import {DeleteOutlined, PlusCircleOutlined} from '@ant-design/icons'
 import ItemService from '../../../services/item'
 import {getDashIcon} from '../../../util/icons'
+import appConfig from '../../../config'
 
 interface TransferRecord {
     key: string;
     title: string;
     description: string;
 }
-
-const COLS_COUNT = 12
-const ROW_HEIGHT = 100
-const DEFAULT_REFRESH_INTERVAL_SECONDS = 300
-const DEFAULT_DASH_TYPE = DashType.bar
 
 const ReactGridLayout = WidthProvider(RGL)
 const {Option: SelectOption} = Select
@@ -53,7 +49,7 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
     const itemService = useMemo(() => ItemService.getInstance(), [])
     const sortedItemNames = useMemo(() => itemService.getNames().sort(), [itemService])
     const [spec, setSpec] = useState<IDashboardSpec>(buffer.form.spec ?? {...(data?.spec ?? initialSpec)})
-    const [activeDash, setActiveDash] = useState<Dash | null>(null)
+    const [activeDash, setActiveDash] = useState<IDash | null>(null)
     const [isDashModalVisible, setDashModalVisible] = useState(false)
     const [dashForm] = Form.useForm()
 
@@ -70,12 +66,12 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
                     {
                         name: id,
                         displayName: id,
-                        type: DEFAULT_DASH_TYPE,
+                        type: appConfig.dashboard.defaultDashType,
                         x: 0,
                         y: 0,
-                        w: COLS_COUNT / 2,
+                        w: appConfig.dashboard.cols / 2,
                         h: 1,
-                        refreshIntervalSeconds: DEFAULT_REFRESH_INTERVAL_SECONDS,
+                        refreshIntervalSeconds: appConfig.dashboard.defaultRefreshIntervalSeconds,
                         items: []
                     },
                     ...dashes
@@ -89,28 +85,27 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
             dashes: layouts.map((it, i) => {
                 const curDash = prevSpec.dashes[i]
                 return {
-                    name: it.i,
-                    displayName: it.i,
-                    type: curDash?.type ?? DEFAULT_DASH_TYPE,
+                    name: curDash.name,
+                    displayName: curDash.displayName,
+                    type: curDash?.type ?? appConfig.dashboard.defaultDashType,
                     x: it.x,
                     y: it.y,
                     w: it.w,
                     h: it.h,
-                    refreshIntervalSeconds: curDash?.refreshIntervalSeconds ?? DEFAULT_REFRESH_INTERVAL_SECONDS,
+                    refreshIntervalSeconds: curDash?.refreshIntervalSeconds ?? appConfig.dashboard.defaultRefreshIntervalSeconds,
                     items: curDash?.items ?? []
                 }
             })
         }))
     }
 
-    function selectDash(dash: Dash) {
+    function selectDash(dash: IDash) {
         setActiveDash(dash)
     }
 
-    function openDash(dash: Dash) {
+    function openDash(dash: IDash) {
         // setActiveDash(dash)
         setDashModalVisible(true)
-        dashForm.resetFields()
     }
 
     function removeDash(name: string) {
@@ -129,7 +124,7 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
             return
 
         const {name, displayName, type, refreshIntervalSeconds} = values
-        const dashToUpdate: Dash = {
+        const dashToUpdate: IDash = {
             ...activeDash,
             name,
             displayName,
@@ -145,7 +140,7 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
         setActiveDash(null)
     }
 
-    function renderDash(dash: Dash) {
+    function renderDash(dash: IDash) {
         const Icon = getDashIcon(dash.type)
         return (
             <div
@@ -164,7 +159,7 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
             return
 
         setActiveDash(prevActiveDash => ({
-            ...prevActiveDash as Dash,
+            ...prevActiveDash as IDash,
             items: [...prevActiveDash?.items ?? [], {name, attributes: []}]
         }))
     }
@@ -173,7 +168,7 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
         setActiveDash(prevActiveDash => ({
             ...prevActiveDash,
             items: (prevActiveDash?.items ?? []).map((it, i) => i === index ? {name, attributes: []} : it)
-        } as Dash))
+        } as IDash))
     }
 
     function handleActiveDashItemRemove(index: number, name: string) {
@@ -181,7 +176,7 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
             return
 
         setActiveDash(prevActiveDash => ({
-            ...prevActiveDash as Dash,
+            ...prevActiveDash as IDash,
             items: (prevActiveDash?.items ?? []).filter((it, i) => it.name !== name || i !== index)
         }))
     }
@@ -204,7 +199,7 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
             return
 
         setActiveDash(prevActiveDash => ({
-            ...prevActiveDash as Dash,
+            ...prevActiveDash as IDash,
             items: (prevActiveDash?.items ?? []).map((it, i) => {
                 if (i === index)
                     return {...it, attributes: nextTargetKeys}
@@ -229,8 +224,8 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
                 <ReactGridLayout
                     className={styles.layout}
                     layout={layout}
-                    cols={COLS_COUNT}
-                    rowHeight={ROW_HEIGHT}
+                    cols={appConfig.dashboard.cols}
+                    rowHeight={appConfig.dashboard.rowHeight}
                     isDraggable={canEdit}
                     isDroppable={canEdit}
                     isResizable={canEdit}
@@ -241,9 +236,9 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
             )}
 
             <Modal
+                style={{top: 20}}
                 title={activeDash?.name}
                 visible={isDashModalVisible}
-                destroyOnClose
                 onOk={() => dashForm.submit()}
                 onCancel={() => setDashModalVisible(false)}
             >
@@ -257,6 +252,7 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
                                 <Select
                                     style={{width: 300, marginBottom: 8}}
                                     size="small"
+                                    disabled={!canEdit}
                                     value={item.name}
                                     onSelect={(name: string) => handleActiveDashItemSelect(i, name)}
                                 >
@@ -277,6 +273,7 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
                                     dataSource={getTransferDataSource(item.name)}
                                     targetKeys={item.attributes}
                                     style={{marginBottom: 16}}
+                                    disabled={!canEdit}
                                     render={it => it.title}
                                     onChange={(nextTargetKeys: string[]) => handleTransferChange(i, nextTargetKeys)}
                                 />

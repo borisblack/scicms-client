@@ -21,6 +21,7 @@ export const MOMENT_ISO_TIME_FORMAT_STRING: string = "HH:mm:ssZ"
 
 export const ROLE_ADMIN: string = 'ROLE_ADMIN'
 export const ROLE_DESIGNER: string = 'ROLE_DESIGNER'
+export const ROLE_ANALYST: string = 'ROLE_ANALYST'
 export const ROLE_USER: string = 'ROLE_USER'
 export const PASSWORD_PLACEHOLDER = "********"
 

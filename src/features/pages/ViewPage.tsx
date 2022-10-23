@@ -67,7 +67,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
     const permissionService = useMemo(() => PermissionService.getInstance(), [])
     const queryService = useMemo(() => QueryService.getInstance(), [])
     const mutationService = useMemo(() => MutationService.getInstance(), [])
-    
+
     const permissions = useMemo(() => {
         const acl = permissionService.getAcl(me, item, data)
         const canEdit = (!isSystemItem || !data?.core) && (!item.versioned || !!data?.current) && acl.canWrite
@@ -75,7 +75,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
         return [acl.canCreate, canEdit, canDelete]
     }, [data, isSystemItem, item, me, permissionService])
     const [canCreate, canEdit, canDelete] = permissions
-    
+
     const pluginContext: CustomPluginRenderContext = useMemo(() => ({me, item, buffer: bufferRef.current, data}), [data, item, me])
     const customComponentContext: CustomComponentRenderContext = useMemo(() => ({
         me,
@@ -127,11 +127,11 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
             renderPlugins(`${item.name}.tabs.content`, tabsContentNode, pluginContext)
         }
     }, [item.name, pluginContext])
-    
+
     const logoutIfNeed = useCallback(() => {
         if (!isSystemItem)
             return
-        
+
         info({
             title: `${t('You must sign in again to apply the changes')}`,
             onOk: onLogout
@@ -377,7 +377,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
         }
         return ownAttributes
     }, [item.spec.attributes, templateAttributes])
-    
+
     const renderTabComponents = useCallback((mountPoint: string): ReactNode[] =>
         getComponents(mountPoint).map(it => {
             const Icon = it.icon ? allIcons[it.icon] : null
@@ -431,7 +431,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
                             const TargetIcon = target.icon && allIcons[target.icon]
                             const title = t(attribute.displayName)
                             return (
-                                <TabPane key={key} tab={TargetIcon ? <span><TargetIcon/>&nbsp;{title}</span> : title}>
+                                <TabPane key={key} tab={TargetIcon ? <span><TargetIcon/>{title}</span> : title}>
                                     <RelationsDataGridWrapper
                                         me={me}
                                         pageKey={page.key}
