@@ -1,6 +1,8 @@
+import _ from 'lodash'
 import {useEffect, useMemo, useState} from 'react'
 import RGL, {Layout, WidthProvider} from 'react-grid-layout'
-import {Button, Form, Modal, Select, Tooltip, Transfer} from 'antd'
+import util from 'util'
+import {Button, Form, message, Modal, Select, Tooltip, Transfer} from 'antd'
 import {useTranslation} from 'react-i18next'
 import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
@@ -8,7 +10,7 @@ import 'react-resizable/css/styles.css'
 import {CustomComponentRenderContext} from '../../index'
 import {DASHBOARD_ITEM_NAME} from '../../../config/constants'
 import PermissionService from '../../../services/permission'
-import {IDash, IDashboardSpec} from '../../../types'
+import {AttrType, DashItem, IDash, IDashboardSpec} from '../../../types'
 import './DashboardSpec.css'
 import styles from './DashboardSpec.module.css'
 import DashForm from './DashForm'
@@ -25,6 +27,9 @@ interface TransferRecord {
 
 const ReactGridLayout = WidthProvider(RGL)
 const {Option: SelectOption} = Select
+
+const dateTypes = new Set([AttrType.date, AttrType.time, AttrType.datetime, AttrType.timestamp])
+const notAllowedTypes = new Set([AttrType.array, AttrType.json])
 
 const initialSpec: IDashboardSpec = {
     dashes: []
@@ -132,12 +137,81 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
             refreshIntervalSeconds
         }
 
+        if (validateDash(dashToUpdate))
+            return
+
         setSpec(prevSpec => ({
             dashes: prevSpec.dashes.map(it => it.name === activeDash.name ? dashToUpdate : it)
         }))
 
         setDashModalVisible(false)
         setActiveDash(null)
+    }
+
+    function validateDash(dash: IDash): boolean {
+        const firstDashItem: DashItem | null = dash.items.length > 0 ? dash.items[0] : null
+        const firstItem = firstDashItem ? itemService.getByName(firstDashItem.name) : null
+        const firstDateAttributesCount: number = (firstDashItem && firstItem) ?
+            _.sumBy(firstDashItem.attributes, attrName => {
+                const attr = firstItem.spec.attributes[attrName]
+                return dateTypes.has(attr.type) ? 1 : 0
+            }) : 0
+        if (firstDateAttributesCount > 1) {
+            message.error(util.format(t('Only one %s type is allowed'), 'date'))
+            return false
+        }
+
+        const firstLocationAttributesCount: number = (firstDashItem && firstItem) ?
+            _.sumBy(firstDashItem.attributes, attrName => {
+                const attr = firstItem.spec.attributes[attrName]
+                return attr.type === AttrType.location ? 1 : 0
+            }) : 0
+        if (firstLocationAttributesCount > 1) {
+            message.error(util.format(t('Only one %s type is allowed'), 'location'))
+            return false
+        }
+
+        const firstDateType: AttrType | undefined = (firstDashItem && firstItem) ?
+            _.find(firstDashItem.attributes.map(attrName => firstItem.spec.attributes[attrName].type), attrType => dateTypes.has(attrType)) : undefined
+
+        const firstLocationType: AttrType | undefined = (firstDashItem && firstItem) ?
+            _.find(firstDashItem.attributes.map(attrName => firstItem.spec.attributes[attrName].type), attrType => attrType === AttrType.location) : undefined
+
+        for (const dashItem of dash.items) {
+            const curItem = itemService.getByName(dashItem.name)
+            let dateTypesCount = 0
+            let locationTypesCount = 0
+            for (const attrName of dashItem.attributes) {
+                const attr = curItem.spec.attributes[attrName]
+                if (dateTypes.has(attr.type)) {
+                    if (attr.type !== firstDateType) {
+                        message.error(util.format(t('All %s types must be of the same'), 'date'))
+                        return false
+                    }
+                    dateTypesCount++
+                }
+
+                if (attr.type === AttrType.location) {
+                    if (attr.type !== firstLocationType) {
+                        message.error(util.format(t('All %s types must be of the same'), 'location'))
+                        return false
+                    }
+                    locationTypesCount++
+                }
+            }
+
+            if (dateTypesCount > 1) {
+                message.error(util.format(t('Only one %s type is allowed'), 'date'))
+                return false
+            }
+
+            if (locationTypesCount > 1) {
+                message.error(util.format(t('Only one %s type is allowed'), 'location'))
+                return false
+            }
+        }
+
+        return true
     }
 
     function renderDash(dash: IDash) {
@@ -184,14 +258,20 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
     function getTransferDataSource(itemName: string): TransferRecord[] {
         const item = itemService.getByName(itemName)
         const {attributes} = item.spec
-        return Object.keys(attributes).sort().map(attrName => {
-            const attr = attributes[attrName]
-            return {
-                key: attrName,
-                title: attrName,
-                description: attr.description ?? attrName
-            }
-        })
+        return Object.keys(attributes)
+            .filter(attrName => {
+                const attr = attributes[attrName]
+                return !notAllowedTypes.has(attr.type)
+            })
+            .sort()
+            .map(attrName => {
+                const attr = attributes[attrName]
+                return {
+                    key: attrName,
+                    title: attrName,
+                    description: attr.description ?? attrName
+                }
+            })
     }
 
     function handleTransferChange(index: number, nextTargetKeys: string[]) {

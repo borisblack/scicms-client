@@ -16,7 +16,7 @@ const BarDash: FC<DashProps> = ({pageKey, dash}) => {
 
         const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
         const barChart = new Chart(ctx, {
-            type: 'bar',
+            type: DashType.bar,
             data: {
                 labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
                 datasets: [{

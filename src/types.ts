@@ -327,7 +327,7 @@ export enum DashType {
     bar = 'bar'
 }
 
-interface DashItem {
+export interface DashItem {
     name: string
     attributes: string[]
 }

@@ -7,7 +7,7 @@ const dashMap: DashMap = {
     [DashType.bar]: BarDash
 }
 
-export default function Dash(props: DashProps) {
+export default function DashWrapper(props: DashProps) {
     const {dash} = props
     const getDashComponent = useCallback(() => dashMap[dash.type], [dash.type])
 
