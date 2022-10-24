@@ -1,10 +1,8 @@
 import {FC, useEffect, useRef} from 'react'
-import {BarElement, Chart} from 'chart.js'
+import Chart from 'chart.js/auto'
 
 import {DashType} from '../types'
 import {DashProps} from '.'
-
-Chart.register(BarElement)
 
 const BarDash: FC<DashProps> = ({pageKey, dash}) => {
     const canvasRef = useRef<HTMLCanvasElement>(null)

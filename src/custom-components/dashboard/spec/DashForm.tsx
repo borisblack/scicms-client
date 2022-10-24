@@ -3,11 +3,10 @@ import {DashType, IDash} from '../../../types'
 import styles from './DashboardSpec.module.css'
 import {useTranslation} from 'react-i18next'
 import appConfig from '../../../config'
-import {useEffect} from 'react'
 
 interface Props {
     form: FormInstance
-    dash: IDash | null
+    dash: IDash
     canEdit: boolean
     onFormFinish: (values: any) => void
 }
@@ -18,17 +17,13 @@ const {Option: SelectOption} = Select
 export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
     const {t} = useTranslation()
 
-    useEffect(() => {
-        form.resetFields()
-    }, [form, dash])
-
     return (
         <Form form={form} size="small" layout="vertical" disabled={!canEdit} onFinish={onFormFinish}>
             <FormItem
                 className={styles.formItem}
                 name="name"
                 label={t('Name')}
-                initialValue={dash?.name}
+                initialValue={dash.name}
                 rules={[{required: true, message: t('Required field')}]}
             >
                 <Input/>
@@ -38,7 +33,7 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                 className={styles.formItem}
                 name="displayName"
                 label={t('Display Name')}
-                initialValue={dash?.displayName}
+                initialValue={dash.displayName}
                 rules={[{required: true, message: t('Required field')}]}
             >
                 <Input/>
@@ -48,7 +43,7 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                 className={styles.formItem}
                 name="type"
                 label={t('Type')}
-                initialValue={dash?.type}
+                initialValue={dash.type}
                 rules={[{required: true, message: t('Required field')}]}
             >
                 <Select>
@@ -60,7 +55,7 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                 className={styles.formItem}
                 name="refreshIntervalSeconds"
                 label={t('Refresh Interval (sec)')}
-                initialValue={dash?.refreshIntervalSeconds}
+                initialValue={dash.refreshIntervalSeconds}
                 rules={[
                     {required: true, message: t('Required field')},
                     {type: 'number', min: appConfig.dashboard.minRefreshIntervalSeconds}

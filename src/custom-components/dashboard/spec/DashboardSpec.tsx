@@ -10,7 +10,7 @@ import 'react-resizable/css/styles.css'
 import {CustomComponentRenderContext} from '../../index'
 import {DASHBOARD_ITEM_NAME} from '../../../config/constants'
 import PermissionService from '../../../services/permission'
-import {AttrType, DashItem, IDash, IDashboardSpec} from '../../../types'
+import {AttrType, DashItem, IDash, IDashboardSpec, RelType} from '../../../types'
 import './DashboardSpec.css'
 import styles from './DashboardSpec.module.css'
 import DashForm from './DashForm'
@@ -108,9 +108,10 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
         setActiveDash(dash)
     }
 
-    function openDash(dash: IDash) {
-        // setActiveDash(dash)
-        setDashModalVisible(true)
+    async function openDash(dash: IDash) {
+        await setActiveDash(dash)
+        await setDashModalVisible(true)
+        dashForm.resetFields()
     }
 
     function removeDash(name: string) {
@@ -137,7 +138,7 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
             refreshIntervalSeconds
         }
 
-        if (validateDash(dashToUpdate))
+        if (!validateDash(dashToUpdate))
             return
 
         setSpec(prevSpec => ({
@@ -240,9 +241,9 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
 
     function handleActiveDashItemSelect(index: number, name: string) {
         setActiveDash(prevActiveDash => ({
-            ...prevActiveDash,
+            ...prevActiveDash as IDash,
             items: (prevActiveDash?.items ?? []).map((it, i) => i === index ? {name, attributes: []} : it)
-        } as IDash))
+        }))
     }
 
     function handleActiveDashItemRemove(index: number, name: string) {
@@ -261,7 +262,7 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
         return Object.keys(attributes)
             .filter(attrName => {
                 const attr = attributes[attrName]
-                return !notAllowedTypes.has(attr.type)
+                return !notAllowedTypes.has(attr.type) && (attr.type !== AttrType.relation || (attr.relType !== RelType.oneToMany && attr.relType !== RelType.manyToMany))
             })
             .sort()
             .map(attrName => {
@@ -299,7 +300,7 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
 
     return (
         <>
-            <Button type="dashed" onClick={handleDashAdd}>{t('Add Dash')}</Button>
+            <Button type="dashed" disabled={!canEdit} onClick={handleDashAdd}>{t('Add Dash')}</Button>
             {spec.dashes.length > 0 && (
                 <ReactGridLayout
                     className={styles.layout}
