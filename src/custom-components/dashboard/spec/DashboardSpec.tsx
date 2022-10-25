@@ -1,8 +1,6 @@
-import _ from 'lodash'
 import {useEffect, useMemo, useState} from 'react'
 import RGL, {Layout, WidthProvider} from 'react-grid-layout'
-import util from 'util'
-import {Button, Form, message, Modal, Select, Tooltip, Transfer} from 'antd'
+import {Button, Form, Modal} from 'antd'
 import {useTranslation} from 'react-i18next'
 import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
@@ -10,26 +8,15 @@ import 'react-resizable/css/styles.css'
 import {CustomComponentRenderContext} from '../../index'
 import {DASHBOARD_ITEM_NAME} from '../../../config/constants'
 import PermissionService from '../../../services/permission'
-import {AttrType, DashItem, IDash, IDashboardSpec, RelType} from '../../../types'
-import './DashboardSpec.css'
-import styles from './DashboardSpec.module.css'
-import DashForm from './DashForm'
-import {DeleteOutlined, PlusCircleOutlined} from '@ant-design/icons'
-import ItemService from '../../../services/item'
+import {AttrType, IDash, IDashboardSpec} from '../../../types'
+import DashForm, {DashValues} from './DashForm'
+import {DeleteOutlined} from '@ant-design/icons'
 import {getDashIcon} from '../../../util/icons'
 import appConfig from '../../../config'
-
-interface TransferRecord {
-    key: string;
-    title: string;
-    description: string;
-}
+import './DashboardSpec.css'
+import styles from './DashboardSpec.module.css'
 
 const ReactGridLayout = WidthProvider(RGL)
-const {Option: SelectOption} = Select
-
-const dateTypes = new Set([AttrType.date, AttrType.time, AttrType.datetime, AttrType.timestamp])
-const notAllowedTypes = new Set([AttrType.array, AttrType.json])
 
 const initialSpec: IDashboardSpec = {
     dashes: []
@@ -51,8 +38,6 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
         return [canEdit]
     }, [data, isLockedByMe, isNew, item, me, permissionService])
     const [canEdit] = permissions
-    const itemService = useMemo(() => ItemService.getInstance(), [])
-    const sortedItemNames = useMemo(() => itemService.getNames().sort(), [itemService])
     const [spec, setSpec] = useState<IDashboardSpec>(buffer.form.spec ?? {...(data?.spec ?? initialSpec)})
     const [activeDash, setActiveDash] = useState<IDash | null>(null)
     const [isDashModalVisible, setDashModalVisible] = useState(false)
@@ -77,6 +62,7 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
                         w: appConfig.dashboard.cols / 2,
                         h: 1,
                         refreshIntervalSeconds: appConfig.dashboard.defaultRefreshIntervalSeconds,
+                        metricType: AttrType.int,
                         items: []
                     },
                     ...dashes
@@ -98,6 +84,8 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
                     w: it.w,
                     h: it.h,
                     refreshIntervalSeconds: curDash?.refreshIntervalSeconds ?? appConfig.dashboard.defaultRefreshIntervalSeconds,
+                    metricType: curDash?.metricType ?? AttrType.int,
+                    temporalType: curDash?.temporalType,
                     items: curDash?.items ?? []
                 }
             })
@@ -125,94 +113,32 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
         }))
     }
 
-    function handleDashFormFinish(values: any) {
+    function handleActiveDashChange(newActiveDash: DashValues) {
         if (!canEdit || !activeDash)
             return
 
-        const {name, displayName, type, refreshIntervalSeconds} = values
+        const {name, displayName, type, refreshIntervalSeconds, metricType, temporalType, items} = newActiveDash
         const dashToUpdate: IDash = {
             ...activeDash,
             name,
             displayName,
             type,
-            refreshIntervalSeconds
+            refreshIntervalSeconds,
+            metricType,
+            temporalType,
+            items
         }
-
-        if (!validateDash(dashToUpdate))
-            return
 
         setSpec(prevSpec => ({
             dashes: prevSpec.dashes.map(it => it.name === activeDash.name ? dashToUpdate : it)
         }))
 
-        setDashModalVisible(false)
-        setActiveDash(null)
+        setActiveDash(dashToUpdate)
     }
 
-    function validateDash(dash: IDash): boolean {
-        const firstDashItem: DashItem | null = dash.items.length > 0 ? dash.items[0] : null
-        const firstItem = firstDashItem ? itemService.getByName(firstDashItem.name) : null
-        const firstDateAttributesCount: number = (firstDashItem && firstItem) ?
-            _.sumBy(firstDashItem.attributes, attrName => {
-                const attr = firstItem.spec.attributes[attrName]
-                return dateTypes.has(attr.type) ? 1 : 0
-            }) : 0
-        if (firstDateAttributesCount > 1) {
-            message.error(util.format(t('Only one %s type is allowed'), 'date'))
-            return false
-        }
-
-        const firstLocationAttributesCount: number = (firstDashItem && firstItem) ?
-            _.sumBy(firstDashItem.attributes, attrName => {
-                const attr = firstItem.spec.attributes[attrName]
-                return attr.type === AttrType.location ? 1 : 0
-            }) : 0
-        if (firstLocationAttributesCount > 1) {
-            message.error(util.format(t('Only one %s type is allowed'), 'location'))
-            return false
-        }
-
-        const firstDateType: AttrType | undefined = (firstDashItem && firstItem) ?
-            _.find(firstDashItem.attributes.map(attrName => firstItem.spec.attributes[attrName].type), attrType => dateTypes.has(attrType)) : undefined
-
-        const firstLocationType: AttrType | undefined = (firstDashItem && firstItem) ?
-            _.find(firstDashItem.attributes.map(attrName => firstItem.spec.attributes[attrName].type), attrType => attrType === AttrType.location) : undefined
-
-        for (const dashItem of dash.items) {
-            const curItem = itemService.getByName(dashItem.name)
-            let dateTypesCount = 0
-            let locationTypesCount = 0
-            for (const attrName of dashItem.attributes) {
-                const attr = curItem.spec.attributes[attrName]
-                if (dateTypes.has(attr.type)) {
-                    if (attr.type !== firstDateType) {
-                        message.error(util.format(t('All %s types must be of the same'), 'date'))
-                        return false
-                    }
-                    dateTypesCount++
-                }
-
-                if (attr.type === AttrType.location) {
-                    if (attr.type !== firstLocationType) {
-                        message.error(util.format(t('All %s types must be of the same'), 'location'))
-                        return false
-                    }
-                    locationTypesCount++
-                }
-            }
-
-            if (dateTypesCount > 1) {
-                message.error(util.format(t('Only one %s type is allowed'), 'date'))
-                return false
-            }
-
-            if (locationTypesCount > 1) {
-                message.error(util.format(t('Only one %s type is allowed'), 'location'))
-                return false
-            }
-        }
-
-        return true
+    function handleDashFormFinish(newDash: DashValues) {
+        handleActiveDashChange(newDash)
+        setDashModalVisible(false)
     }
 
     function renderDash(dash: IDash) {
@@ -229,74 +155,7 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
         )
     }
 
-    function handleItemAdd(name: string) {
-        if (!activeDash)
-            return
-
-        setActiveDash(prevActiveDash => ({
-            ...prevActiveDash as IDash,
-            items: [...prevActiveDash?.items ?? [], {name, attributes: []}]
-        }))
-    }
-
-    function handleActiveDashItemSelect(index: number, name: string) {
-        setActiveDash(prevActiveDash => ({
-            ...prevActiveDash as IDash,
-            items: (prevActiveDash?.items ?? []).map((it, i) => i === index ? {name, attributes: []} : it)
-        }))
-    }
-
-    function handleActiveDashItemRemove(index: number, name: string) {
-        if (!activeDash)
-            return
-
-        setActiveDash(prevActiveDash => ({
-            ...prevActiveDash as IDash,
-            items: (prevActiveDash?.items ?? []).filter((it, i) => it.name !== name || i !== index)
-        }))
-    }
-
-    function getTransferDataSource(itemName: string): TransferRecord[] {
-        const item = itemService.getByName(itemName)
-        const {attributes} = item.spec
-        return Object.keys(attributes)
-            .filter(attrName => {
-                const attr = attributes[attrName]
-                return !notAllowedTypes.has(attr.type) && (attr.type !== AttrType.relation || (attr.relType !== RelType.oneToMany && attr.relType !== RelType.manyToMany))
-            })
-            .sort()
-            .map(attrName => {
-                const attr = attributes[attrName]
-                return {
-                    key: attrName,
-                    title: attrName,
-                    description: attr.description ?? attrName
-                }
-            })
-    }
-
-    function handleTransferChange(index: number, nextTargetKeys: string[]) {
-        if (!activeDash)
-            return
-
-        setActiveDash(prevActiveDash => ({
-            ...prevActiveDash as IDash,
-            items: (prevActiveDash?.items ?? []).map((it, i) => {
-                if (i === index)
-                    return {...it, attributes: nextTargetKeys}
-
-                return it
-            })
-        }))
-    }
-
-    const layout = spec.dashes.map(it => ({
-        i: it.name,
-        x: it.x,
-        y: it.y,
-        w: it.w,
-        h: it.h
-    }))
+    const layout = spec.dashes.map(it => ({i: it.name, x: it.x, y: it.y, w: it.w, h: it.h}))
 
     return (
         <>
@@ -325,65 +184,18 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
             >
                 {activeDash && (
                     <>
-                        <DashForm form={dashForm} dash={activeDash} canEdit={canEdit} onFormFinish={handleDashFormFinish}/>
-
-                        <h4>{t('Items')}</h4>
-                        {activeDash.items.map((item, i) => (
-                            <div key={`${item.name}${i}`}>
-                                <Select
-                                    style={{width: 300, marginBottom: 8}}
-                                    size="small"
-                                    disabled={!canEdit}
-                                    value={item.name}
-                                    onSelect={(name: string) => handleActiveDashItemSelect(i, name)}
-                                >
-                                    {sortedItemNames.map(it => <SelectOption key={it} value={it}>{it}</SelectOption>)}
-                                </Select>
-                                <Tooltip title={t('Delete')}>
-                                    <Button
-                                        type="link"
-                                        size="small"
-                                        className="red"
-                                        icon={<DeleteOutlined/>}
-                                        disabled={!canEdit}
-                                        onClick={() => handleActiveDashItemRemove(i, item.name)}
-                                    />
-                                </Tooltip>
-
-                                <Transfer
-                                    dataSource={getTransferDataSource(item.name)}
-                                    targetKeys={item.attributes}
-                                    style={{marginBottom: 16}}
-                                    disabled={!canEdit}
-                                    render={it => it.title}
-                                    onChange={(nextTargetKeys: string[]) => handleTransferChange(i, nextTargetKeys)}
-                                />
-
-                                {/*<Input*/}
-                                {/*    style={{width: 300, marginTop: 8, marginBottom: 16}}*/}
-                                {/*    size="small"*/}
-                                {/*    placeholder={t('Composite attribute')}*/}
-                                {/*    disabled={!canEdit}*/}
-                                {/*/>*/}
-                                {/*<Tooltip title={t('Add')}>*/}
-                                {/*    <Button*/}
-                                {/*        type="link"*/}
-                                {/*        size="small"*/}
-                                {/*        icon={<PlusCircleOutlined/>}*/}
-                                {/*        disabled={!canEdit}*/}
-                                {/*        // onClick={() => handleActiveDashItemAttributeAdd(i, item.name)}*/}
-                                {/*    />*/}
-                                {/*</Tooltip>*/}
-                            </div>
-                        ))}
-
-                        <Button type="primary" style={{marginBottom: 16}} icon={<PlusCircleOutlined/>} disabled={!canEdit} onClick={() => handleItemAdd(sortedItemNames[0])}>
-                            {t('Add Item')}
-                        </Button>
-                        <br/>
-                        <Button type="primary" danger icon={<DeleteOutlined/>} disabled={!canEdit} onClick={() => removeDash(activeDash.name)}>
-                            {t('Remove Dash')}
-                        </Button>
+                        <DashForm
+                            form={dashForm}
+                            dash={activeDash}
+                            canEdit={canEdit}
+                            onChange={handleActiveDashChange}
+                            onFormFinish={handleDashFormFinish}
+                        />
+                        <div className={styles.dashModalFooter}>
+                            <Button type="primary" danger icon={<DeleteOutlined/>} disabled={!canEdit} onClick={() => removeDash(activeDash.name)}>
+                                {t('Remove Dash')}
+                            </Button>
+                        </div>
                     </>
                 )}
             </Modal>

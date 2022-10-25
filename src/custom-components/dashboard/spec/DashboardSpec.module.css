@@ -19,3 +19,13 @@
 .layout .dashWrapper.activeDash {
     background-color: #ccc;
 }
+
+.dashModalFooter {
+    width: 100%;
+    text-align: right;
+}
+
+.dashItemField {
+    border-bottom: 1px solid #eeeeee;
+    margin-bottom: 16px;
+}

@@ -320,16 +320,27 @@ export interface IDash {
     w: number
     h: number
     refreshIntervalSeconds: number
+    metricType: MetricType
+    temporalType?: TemporalType
     items: DashItem[]
 }
+
+export type NumericType = AttrType.int | AttrType.long | AttrType.float | AttrType.double | AttrType.decimal
+
+export type TemporalType = AttrType.date | AttrType.time | AttrType.datetime | AttrType.timestamp
+
+export type MetricType = NumericType | TemporalType | AttrType.bool
 
 export enum DashType {
     bar = 'bar'
 }
 
 export interface DashItem {
-    name: string
-    attributes: string[]
+    name?: string
+    label?: string
+    metric?: string
+    location?: string
+    temporal?: string
 }
 
 export interface ItemData extends DefaultItemTemplate {
