@@ -21,7 +21,6 @@ import {
 } from '../config/constants'
 import ItemService from './item'
 import {RequestParams} from '../components/datagrid/DataGrid'
-import CoreConfigService from './core-config'
 
 export interface ExtRequestParams extends RequestParams {
     majorRev?: string | null
@@ -179,7 +178,6 @@ export default class QueryService {
     }
 
     private itemService = ItemService.getInstance()
-    private coreConfigService = CoreConfigService.getInstance()
 
     findById = async (item: Item, id: string): Promise<Response> => {
         const query = gql(this.buildFindByIdQuery(item))

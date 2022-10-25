@@ -1,10 +1,30 @@
-import {FC, useEffect, useRef} from 'react'
+import {FC, useEffect, useMemo, useRef} from 'react'
+import {DateTime} from 'luxon'
 import Chart from 'chart.js/auto'
 
-import {DashType} from '../types'
+import {AttrType, DashType, MetricType} from '../types'
 import {DashProps} from '.'
 
-const BarDash: FC<DashProps> = ({pageKey, dash}) => {
+const temporalTypes = [AttrType.date, AttrType.time, AttrType.datetime, AttrType.timestamp]
+const temporalTypeSet = new Set(temporalTypes)
+function parseMetrics(metrics: any[], metricType: MetricType): any[] {
+    if (temporalTypeSet.has(metricType))
+        return metrics.map(m => DateTime.fromISO(m).toJSDate())
+
+    return metrics
+}
+
+const BarDash: FC<DashProps> = ({pageKey, dash, results}) => {
+    const labels = useMemo(
+        () => results.map((result, i) => result.map(d => d[dash.items[i].label as string])).flatMap(label => label),
+        [dash.items, results]
+    )
+
+    const data = useMemo(
+        () => results.map((result, i) => result.map(d => d[dash.items[i].metric as string])).flatMap(metrics => parseMetrics(metrics, dash.metricType)),
+        [dash, results]
+    )
+
     const canvasRef = useRef<HTMLCanvasElement>(null)
 
     useEffect(() => {
@@ -16,10 +36,10 @@ const BarDash: FC<DashProps> = ({pageKey, dash}) => {
         const barChart = new Chart(ctx, {
             type: DashType.bar,
             data: {
-                labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                labels,
                 datasets: [{
                     label: dash.displayName,
-                    data: [12, 19, 3, 5, 2, 3],
+                    data,
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.2)',
                         'rgba(54, 162, 235, 0.2)',
@@ -49,7 +69,7 @@ const BarDash: FC<DashProps> = ({pageKey, dash}) => {
         })
 
         return () => { barChart.destroy() }
-    }, [dash.displayName])
+    }, [dash.displayName, results])
 
     if (dash.type !== DashType.bar)
         throw new Error('Illegal dash type')

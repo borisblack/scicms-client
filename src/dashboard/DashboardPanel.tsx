@@ -37,7 +37,7 @@ export default function DashboardPanel({me, pageKey, spec}: Props) {
                         {colDashes.sort(dashColCompareFn).map(colDash => {
                             return (
                                 <Col key={colDash.name} span={colDash.w * K}>
-                                    <DashWrapper pageKey={pageKey} dash={colDash}/>
+                                    <DashWrapper pageKey={pageKey} dash={colDash} results={[]}/>
                                 </Col>
                             )
                         })}
