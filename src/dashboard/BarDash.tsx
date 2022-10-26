@@ -16,12 +16,12 @@ function parseMetrics(metrics: any[], metricType: MetricType): any[] {
 
 const BarDash: FC<DashProps> = ({pageKey, dash, results}) => {
     const labels = useMemo(
-        () => results.map((result, i) => result.map(d => d[dash.items[i].label as string])).flatMap(label => label),
-        [dash.items, results]
+        () => results.map((result, i) => result.map(d => d[dash.datasets[i].label as string])).flatMap(label => label),
+        [dash.datasets, results]
     )
 
     const data = useMemo(
-        () => results.map((result, i) => result.map(d => d[dash.items[i].metric as string])).flatMap(metrics => parseMetrics(metrics, dash.metricType)),
+        () => results.map((result, i) => result.map(d => d[dash.datasets[i].metric as string])).flatMap(metrics => parseMetrics(metrics, dash.metricType)),
         [dash, results]
     )
 
@@ -38,7 +38,7 @@ const BarDash: FC<DashProps> = ({pageKey, dash, results}) => {
             data: {
                 labels,
                 datasets: [{
-                    label: dash.displayName,
+                    label: dash.name,
                     data,
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.2)',
@@ -69,7 +69,7 @@ const BarDash: FC<DashProps> = ({pageKey, dash, results}) => {
         })
 
         return () => { barChart.destroy() }
-    }, [dash.displayName, results])
+    }, [dash.name, data, labels, results])
 
     if (dash.type !== DashType.bar)
         throw new Error('Illegal dash type')

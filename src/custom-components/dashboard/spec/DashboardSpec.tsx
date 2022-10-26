@@ -63,7 +63,7 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
                         h: 1,
                         refreshIntervalSeconds: appConfig.dashboard.defaultRefreshIntervalSeconds,
                         metricType: AttrType.int,
-                        items: []
+                        datasets: []
                     },
                     ...dashes
                 ]
@@ -77,7 +77,6 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
                 const curDash = prevSpec.dashes[i]
                 return {
                     name: curDash.name,
-                    displayName: curDash.displayName,
                     type: curDash?.type ?? appConfig.dashboard.defaultDashType,
                     x: it.x,
                     y: it.y,
@@ -86,7 +85,7 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
                     refreshIntervalSeconds: curDash?.refreshIntervalSeconds ?? appConfig.dashboard.defaultRefreshIntervalSeconds,
                     metricType: curDash?.metricType ?? AttrType.int,
                     temporalType: curDash?.temporalType,
-                    items: curDash?.items ?? []
+                    datasets: curDash?.datasets ?? []
                 }
             })
         }))
@@ -117,16 +116,15 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
         if (!canEdit || !activeDash)
             return
 
-        const {name, displayName, type, refreshIntervalSeconds, metricType, temporalType, items} = newActiveDash
+        const {name, type, refreshIntervalSeconds, metricType, temporalType, datasets} = newActiveDash
         const dashToUpdate: IDash = {
             ...activeDash,
             name,
-            displayName,
             type,
             refreshIntervalSeconds,
             metricType,
             temporalType,
-            items
+            datasets: datasets
         }
 
         setSpec(prevSpec => ({

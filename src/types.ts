@@ -313,7 +313,6 @@ export interface IDashboardSpec {
 
 export interface IDash {
     name: string
-    displayName: string
     type: DashType
     x: number
     y: number
@@ -322,7 +321,7 @@ export interface IDash {
     refreshIntervalSeconds: number
     metricType: MetricType
     temporalType?: TemporalType
-    items: DashItem[]
+    datasets: Dataset[]
 }
 
 export type NumericType = AttrType.int | AttrType.long | AttrType.float | AttrType.double | AttrType.decimal
@@ -335,8 +334,8 @@ export enum DashType {
     bar = 'bar'
 }
 
-export interface DashItem {
-    name?: string
+export interface Dataset {
+    itemName?: string
     label?: string
     metric?: string
     location?: string

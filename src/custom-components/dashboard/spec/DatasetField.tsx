@@ -2,14 +2,14 @@ import {useCallback, useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Button, Col, Form, FormInstance, Row, Select} from 'antd'
 import {DeleteOutlined} from '@ant-design/icons'
-import {AttrType, DashItem, Item, MetricType, RelType, TemporalType} from '../../../types'
+import {AttrType, Dataset, Item, MetricType, RelType, TemporalType} from '../../../types'
 import ItemService from '../../../services/item'
 import styles from './DashboardSpec.module.css'
 
 interface Props {
     form: FormInstance
     index: number
-    item: DashItem
+    dataset: Dataset
     metricType: MetricType
     temporalType?: TemporalType
     onRemove: () => void
@@ -28,15 +28,15 @@ const labelTypes = [
 ]
 const labelTypeSet = new Set([...labelTypes])
 
-export default function DashItemField({form, index, item, metricType, temporalType, onRemove}: Props) {
+export default function DatasetField({index, dataset, metricType, temporalType, onRemove}: Props) {
     const {t} = useTranslation()
     const itemService = useMemo(() => ItemService.getInstance(), [])
     const sortedItemNames = useMemo(() => itemService.getNames().sort(), [itemService])
-    const [curItem, setCurItem] = useState<Item | null>(item.name ? itemService.getByName(item.name) : null)
+    const [curItem, setCurItem] = useState<Item | null>(dataset.itemName ? itemService.getByName(dataset.itemName) : null)
     const attributes = curItem?.spec?.attributes
 
-    const handleItemSelect = useCallback(async (name: string) => {
-        await setCurItem(itemService.getByName(name))
+    const handleItemSelect = useCallback((name: string) => {
+        setCurItem(itemService.getByName(name))
     }, [itemService])
 
     const getLabelAttrNames = useCallback(
@@ -87,9 +87,9 @@ export default function DashItemField({form, index, item, metricType, temporalTy
         <div className={styles.dashItemField}>
             <FormItem
                 className={styles.formItem}
-                name={['items', index, 'name']}
-                label={t('Name')}
-                initialValue={item.name}
+                name={['datasets', index, 'itemName']}
+                label={t('Item')}
+                initialValue={dataset.itemName}
                 rules={[{required: true, message: t('Required field')}]}
             >
                 <Select onSelect={handleItemSelect}>
@@ -101,9 +101,9 @@ export default function DashItemField({form, index, item, metricType, temporalTy
                 <Col span={12}>
                     <FormItem
                         className={styles.formItem}
-                        name={['items', index, 'label']}
+                        name={['datasets', index, 'label']}
                         label={t('Label')}
-                        initialValue={item.label}
+                        initialValue={dataset.label}
                         rules={[{required: true, message: t('Required field')}]}
                     >
                         <Select>
@@ -114,9 +114,9 @@ export default function DashItemField({form, index, item, metricType, temporalTy
                 <Col span={12}>
                     <FormItem
                         className={styles.formItem}
-                        name={['items', index, 'metric']}
+                        name={['datasets', index, 'metric']}
                         label={t('Metric')}
-                        initialValue={item.metric}
+                        initialValue={dataset.metric}
                         rules={[{required: true, message: t('Required field')}]}
                     >
                         <Select>
@@ -127,9 +127,9 @@ export default function DashItemField({form, index, item, metricType, temporalTy
                 <Col span={12}>
                     <FormItem
                         className={styles.formItem}
-                        name={['items', index, 'location']}
+                        name={['datasets', index, 'location']}
                         label={t('Location')}
-                        initialValue={item.location}
+                        initialValue={dataset.location}
                     >
                         <Select>
                             {getLocationAttrNames().map(it => <SelectOption key={it} value={it}>{it}</SelectOption>)}
@@ -139,9 +139,9 @@ export default function DashItemField({form, index, item, metricType, temporalTy
                 <Col span={12}>
                     <FormItem
                         className={styles.formItem}
-                        name={['items', index, 'temporal']}
+                        name={['datasets', index, 'temporal']}
                         label={t('Temporal')}
-                        initialValue={item.temporal}
+                        initialValue={dataset.temporal}
                     >
                         <Select>
                             {getTemporalAttrNames().map(it => <SelectOption key={it} value={it}>{it}</SelectOption>)}

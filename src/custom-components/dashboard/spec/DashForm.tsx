@@ -1,9 +1,9 @@
 import {Button, Form, FormInstance, Input, InputNumber, Select} from 'antd'
-import {AttrType, DashItem, DashType, IDash, MetricType, TemporalType} from '../../../types'
+import {AttrType, DashType, Dataset, IDash, MetricType, TemporalType} from '../../../types'
 import styles from './DashboardSpec.module.css'
 import {useTranslation} from 'react-i18next'
 import appConfig from '../../../config'
-import DashItemField from './DashItemField'
+import DatasetField from './DatasetField'
 import {useCallback, useEffect, useState} from 'react'
 import {PlusCircleOutlined} from '@ant-design/icons'
 
@@ -17,12 +17,11 @@ interface Props {
 
 export interface DashValues {
     name: string
-    displayName: string
     type: DashType
     refreshIntervalSeconds: number
     metricType: MetricType
     temporalType?: TemporalType
-    items: DashItem[]
+    datasets: Dataset[]
 }
 
 const {Item: FormItem} = Form
@@ -44,14 +43,14 @@ export default function DashForm({form, dash, canEdit, onFormFinish, onChange}: 
 
     const handleItemAdd = useCallback(() => {
         const newDash = form.getFieldsValue() as IDash
-        const newItems = [...(Object.values(newDash.items ?? {}) as DashItem[]), {}]
-        onChange({...newDash, items: newItems})
+        const newDatasets = [...(Object.values(newDash.datasets ?? {}) as Dataset[]), {}]
+        onChange({...newDash, datasets: newDatasets})
     }, [form, onChange])
 
-    const handleItemRemove = useCallback((index: number) => {
+    const handleDatasetRemove = useCallback((index: number) => {
         const newDash = form.getFieldsValue() as IDash
-        const newItems = (Object.values(newDash.items ?? {}) as DashItem[]).filter((_, i) => i !== index)
-        onChange({...newDash, items: newItems})
+        const newDatasets = (Object.values(newDash.datasets ?? {}) as Dataset[]).filter((_, i) => i !== index)
+        onChange({...newDash, datasets: newDatasets})
     }, [form, onChange])
 
     return (
@@ -61,16 +60,6 @@ export default function DashForm({form, dash, canEdit, onFormFinish, onChange}: 
                 name="name"
                 label={t('Name')}
                 initialValue={dash.name}
-                rules={[{required: true, message: t('Required field')}]}
-            >
-                <Input/>
-            </FormItem>
-
-            <FormItem
-                className={styles.formItem}
-                name="displayName"
-                label={t('Display Name')}
-                initialValue={dash.displayName}
                 rules={[{required: true, message: t('Required field')}]}
             >
                 <Input/>
@@ -124,20 +113,20 @@ export default function DashForm({form, dash, canEdit, onFormFinish, onChange}: 
                 </Select>
             </FormItem>
 
-            <h4>{t('Items')}</h4>
+            <h4>{t('Datasets')}</h4>
             <Button type="primary" style={{marginBottom: 16}} icon={<PlusCircleOutlined/>} disabled={!canEdit} onClick={handleItemAdd}>
-                {t('Add Item')}
+                {t('Add Dataset')}
             </Button>
 
-            {dash.items?.map((item, i) => (
-                <DashItemField
+            {dash.datasets?.map((dataset, i) => (
+                <DatasetField
                     key={i}
                     form={form}
                     index={i}
-                    item={dash.items[i]}
+                    dataset={dataset}
                     metricType={metricType}
                     temporalType={temporalType}
-                    onRemove={() => handleItemRemove(i)}
+                    onRemove={() => handleDatasetRemove(i)}
                 />
             ))}
         </Form>

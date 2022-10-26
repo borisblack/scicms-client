@@ -18,8 +18,8 @@ export default function DashWrapper(props: DashProps) {
     const [results, setResults] = useState<ItemData[][]>([])
 
     useEffect(() => {
-        Promise.all(dash.items.map(dashItem => {
-            const item = itemService.getByName(dashItem.name as string)
+        Promise.all(dash.datasets.map(dashItem => {
+            const item = itemService.getByName(dashItem.itemName as string)
             return queryService.findAll(item, {
                 sorting: [{id: dashItem.label as string, desc: false}],
                 filters: [],
@@ -27,7 +27,7 @@ export default function DashWrapper(props: DashProps) {
             })
         }))
             .then(fetchedResults => setResults(fetchedResults.map(res => res.data)))
-    }, [dash.items, itemService, queryService])
+    }, [dash.datasets, itemService, queryService])
 
     const DashComponent = getDashComponent()
     if (!DashComponent)
