@@ -1,4 +1,4 @@
-import {AttrType, DashType, IDash, ItemData, MetricType} from '../types'
+import {AttrType, DashType, IDash, ItemData, Location, MetricType} from '../types'
 import {DateTime} from 'luxon'
 import appConfig from '../config'
 import {UTC} from '../config/constants'
@@ -38,11 +38,28 @@ export const map2dMetrics = (dash: IDash, data: ItemData[][]): {x: DateTime, y: 
         return {x: DateTime.fromISO(cell[dataset.temporal as string]), y: parseMetric(cell[dataset.metric as string], dash.metricType)}
     })).flatMap(metricsWithTemporal => metricsWithTemporal)
 
-export const map3dMetrics = (dash: IDash, data: ItemData[][]): {x: any, y: any, r: any}[] =>
-    data.map((row, i) => row.map((cell, j) => {
+export const map3dMetrics = (dash: IDash, data: ItemData[][]): {x: DateTime, y: any, r: number}[] =>
+    data.map((row, i) => {
         const dataset = dash.datasets[i]
-        return {x: DateTime.fromISO(cell[dataset.temporal as string]), y: parseMetric(cell[dataset.metric as string], dash.metricType), r: 2}
-    })).flatMap(metricsWithTemporal => metricsWithTemporal)
+        return row.map(cell => ({x: DateTime.fromISO(cell[dataset.temporal as string]), y: parseMetric(cell[dataset.metric as string], dash.metricType), r: 2}))
+    }).flatMap(metrics => metrics)
+
+export const map3dMapMetrics = (dash: IDash, data: ItemData[][]): {longitude: number, latitude: number, value: any}[] =>
+    data.map((row, i) => {
+        const dataset = dash.datasets[i]
+        if (!dataset.location)
+            return []
+
+        return row.map(cell => {
+            const location = cell[dataset.location as string] as Location
+            const {latitude, longitude} = location
+            return {
+                longitude,
+                latitude,
+                value: parseMetric(cell[dataset.metric as string], dash.metricType)
+            }
+        })
+    }).flatMap(metrics => metrics)
 
 function parseMetric(metric: any, metricType: MetricType): any {
     if (temporalTypeSet.has(metricType))

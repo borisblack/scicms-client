@@ -13,10 +13,12 @@ import BubbleDash from './BubbleDash'
 import PolarAreaDash from './PolarAreaDash'
 import RadarDash from './RadarDash'
 import ScatterDash from './ScatterDash'
+import BubbleMapDash from './BubbleMapDash'
 
 const dashMap: DashMap = {
     [DashType.bar]: BarDash,
     [DashType.bubble]: BubbleDash,
+    [DashType.bubbleMap]: BubbleMapDash,
     [DashType.doughnut]: DoughnutDash,
     [DashType.line]: LineDash,
     [DashType.pie]: PieDash,
