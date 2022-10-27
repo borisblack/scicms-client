@@ -1,11 +1,12 @@
 import {Button, Form, FormInstance, Input, InputNumber, Select} from 'antd'
-import {AttrType, DashType, Dataset, IDash, MetricType, TemporalType} from '../../../types'
+import {DashType, Dataset, IDash, MetricType, TemporalType} from '../../../types'
 import styles from './DashboardSpec.module.css'
 import {useTranslation} from 'react-i18next'
 import appConfig from '../../../config'
 import DatasetField from './DatasetField'
 import {useCallback, useEffect, useState} from 'react'
 import {PlusCircleOutlined} from '@ant-design/icons'
+import {dashTypes, metricTypes, temporalTypes} from '../../../util/dashboard'
 
 interface Props {
     form: FormInstance
@@ -26,11 +27,6 @@ export interface DashValues {
 
 const {Item: FormItem} = Form
 const {Option: SelectOption} = Select
-
-const dashTypes = Object.keys(DashType).sort()
-const numericTypes = [AttrType.int, AttrType.long, AttrType.float, AttrType.double, AttrType.decimal]
-const temporalTypes = [AttrType.date, AttrType.time, AttrType.datetime, AttrType.timestamp]
-const metricTypes = [...numericTypes, ...temporalTypes, AttrType.bool]
 
 export default function DashForm({form, dash, canEdit, onFormFinish, onChange}: Props) {
     const {t} = useTranslation()

@@ -5,6 +5,7 @@ import {DeleteOutlined} from '@ant-design/icons'
 import {AttrType, Dataset, Item, MetricType, RelType, TemporalType} from '../../../types'
 import ItemService from '../../../services/item'
 import styles from './DashboardSpec.module.css'
+import {labelTypeSet} from '../../../util/dashboard'
 
 interface Props {
     form: FormInstance
@@ -17,16 +18,6 @@ interface Props {
 
 const {Item: FormItem} = Form
 const {Option: SelectOption} = Select
-
-const numericTypes = [AttrType.int, AttrType.long, AttrType.float, AttrType.double, AttrType.decimal]
-const temporalTypes = [AttrType.date, AttrType.time, AttrType.datetime, AttrType.timestamp]
-const labelTypes = [
-    AttrType.uuid, AttrType.string, AttrType.text, AttrType.sequence, AttrType.email, AttrType.enum,
-    ...numericTypes,
-    ...temporalTypes,
-    AttrType.bool, AttrType.media, AttrType.location, AttrType.relation
-]
-const labelTypeSet = new Set([...labelTypes])
 
 export default function DatasetField({index, dataset, metricType, temporalType, onRemove}: Props) {
     const {t} = useTranslation()

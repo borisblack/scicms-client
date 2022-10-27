@@ -331,7 +331,14 @@ export type TemporalType = AttrType.date | AttrType.time | AttrType.datetime | A
 export type MetricType = NumericType | TemporalType | AttrType.bool
 
 export enum DashType {
-    bar = 'bar'
+    bar = 'bar',
+    bubble = 'bubble',
+    doughnut = 'doughnut',
+    line = 'line',
+    pie = 'pie',
+    polarArea = 'polarArea',
+    radar = 'radar',
+    scatter = 'scatter'
 }
 
 export interface Dataset {

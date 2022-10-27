@@ -1,30 +1,17 @@
+// import _ from 'lodash'
 import {FC, useEffect, useMemo, useRef} from 'react'
-import {DateTime} from 'luxon'
 import Chart from 'chart.js/auto'
 
-import {AttrType, DashType, MetricType} from '../types'
+import {DashType} from '../../types'
 import {DashProps} from '.'
+import {mapLabels, mapMetrics, temporalTypeSet, timeScaleProps} from '../../util/dashboard'
 
-const temporalTypes = [AttrType.date, AttrType.time, AttrType.datetime, AttrType.timestamp]
-const temporalTypeSet = new Set(temporalTypes)
-function parseMetrics(metrics: any[], metricType: MetricType): any[] {
-    if (temporalTypeSet.has(metricType))
-        return metrics.map(m => DateTime.fromISO(m).toJSDate())
+const BarDash: FC<DashProps> = ({pageKey, dash, data}) => {
+    if (dash.type !== DashType.bar)
+        throw new Error('Illegal dash type')
 
-    return metrics
-}
-
-const BarDash: FC<DashProps> = ({pageKey, dash, results}) => {
-    const labels = useMemo(
-        () => results.map((result, i) => result.map(d => d[dash.datasets[i].label as string])).flatMap(label => label),
-        [dash.datasets, results]
-    )
-
-    const data = useMemo(
-        () => results.map((result, i) => result.map(d => d[dash.datasets[i].metric as string])).flatMap(metrics => parseMetrics(metrics, dash.metricType)),
-        [dash, results]
-    )
-
+    const labels = useMemo(() => mapLabels(dash, data), [dash, data])
+    const preparedData = useMemo(() => mapMetrics(dash, data), [dash, data])
     const canvasRef = useRef<HTMLCanvasElement>(null)
 
     useEffect(() => {
@@ -33,13 +20,21 @@ const BarDash: FC<DashProps> = ({pageKey, dash, results}) => {
             return
 
         const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
-        const barChart = new Chart(ctx, {
+        const scales: any = {}
+        if (temporalTypeSet.has(dash.metricType)) {
+            scales.y = {
+                ...timeScaleProps,
+                // min: _.min(preparedData)?.toISOString()
+            }
+        }
+
+        const chart = new Chart(ctx, {
             type: DashType.bar,
             data: {
                 labels,
                 datasets: [{
                     label: dash.name,
-                    data,
+                    data: preparedData,
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.2)',
                         'rgba(54, 162, 235, 0.2)',
@@ -60,19 +55,12 @@ const BarDash: FC<DashProps> = ({pageKey, dash, results}) => {
                 }]
             },
             options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
+                scales
             }
         })
 
-        return () => { barChart.destroy() }
-    }, [dash.name, data, labels, results])
-
-    if (dash.type !== DashType.bar)
-        throw new Error('Illegal dash type')
+        return () => { chart.destroy() }
+    }, [dash.metricType, dash.name, data, labels, preparedData])
 
     return (
         <canvas id={`${pageKey}#${dash.name}`} ref={canvasRef}/>

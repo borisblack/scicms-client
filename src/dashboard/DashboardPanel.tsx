@@ -7,7 +7,7 @@ import {useMemo} from 'react'
 import {Alert, Col, Row} from 'antd'
 import {hasRole} from '../util/acl'
 import {ROLE_ADMIN, ROLE_ANALYST} from '../config/constants'
-import DashWrapper from './DashWrapper'
+import DashWrapper from './dashes/DashWrapper'
 
 interface Props {
     me: UserInfo
@@ -37,7 +37,7 @@ export default function DashboardPanel({me, pageKey, spec}: Props) {
                         {colDashes.sort(dashColCompareFn).map(colDash => {
                             return (
                                 <Col key={colDash.name} span={colDash.w * K}>
-                                    <DashWrapper pageKey={pageKey} dash={colDash} results={[]}/>
+                                    <DashWrapper pageKey={pageKey} dash={colDash} data={[]}/>
                                 </Col>
                             )
                         })}
