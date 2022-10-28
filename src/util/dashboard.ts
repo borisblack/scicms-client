@@ -51,7 +51,7 @@ export const map3dMapMetrics = (dash: IDash, data: ItemData[][]): {longitude: nu
             return []
 
         return row.map(cell => {
-            const location = cell[dataset.location as string] as Location
+            const location = (cell[dataset.location as string]?.data ?? {}) as Location
             const {latitude, longitude} = location
             return {
                 longitude,

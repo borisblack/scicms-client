@@ -4,8 +4,8 @@
 }
 
 .layout .dashWrapper {
-    background-color: #dde7f5;
-    border: 1px solid #aaa;
+    background-color: #fff;
+    border: 1px solid #ccc;
     cursor: pointer;
     display: flex;
     justify-content: center;
@@ -16,8 +16,16 @@
     user-select: none;
 }
 
+.layout .dashWrapper:hover {
+    background-color: #fefbd7;
+}
+
 .layout .dashWrapper.activeDash {
-    background-color: #ccc;
+    background-color: #fef7af;
+}
+
+.layout .dashWrapper.activeDash:hover {
+    background-color: #fef386;
 }
 
 .dashModalFooter {
@@ -26,6 +34,6 @@
 }
 
 .dashItemField {
-    border-bottom: 1px solid #eeeeee;
+    border-bottom: 1px solid #eee;
     margin-bottom: 16px;
 }

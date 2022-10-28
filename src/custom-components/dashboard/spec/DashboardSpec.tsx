@@ -148,7 +148,7 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
                 onClick={() => selectDash(dash)}
                 onDoubleClick={() => openDash(dash)}
             >
-                <Icon/>&nbsp;{dash.name}
+                <Icon/>&nbsp;{dash.name}&nbsp;({dash.type})
             </div>
         )
     }

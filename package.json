@@ -33,6 +33,7 @@
     "luxon": "^3.0.1",
     "min-dash": "^4.0.0",
     "moment-timezone": "^0.5.37",
+    "papaparse": "^5.3.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-grid-layout": "^1.3.4",
@@ -71,6 +72,7 @@
   "devDependencies": {
     "@types/lodash": "^4.14.168",
     "@types/luxon": "^3.0.0",
+    "@types/papaparse": "^5.3.5",
     "bpmn-font": "^0.10.0"
   }
 }
