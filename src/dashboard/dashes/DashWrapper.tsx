@@ -14,6 +14,7 @@ import PolarAreaDash from './PolarAreaDash'
 import RadarDash from './RadarDash'
 import ScatterDash from './ScatterDash'
 import BubbleMapDash from './BubbleMapDash'
+import styles from './DashWrapper.module.css'
 
 const dashMap: DashMap = {
     [DashType.bar]: BarDash,
@@ -51,7 +52,7 @@ export default function DashWrapper(props: DashProps) {
         throw new Error('Illegal attribute')
 
     return (
-        <div>
+        <div className={styles.dashWrapper}>
             <DashComponent {...props} data={results}/>
         </div>
     )
