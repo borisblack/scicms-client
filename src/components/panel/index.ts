@@ -1,7 +1,7 @@
 import {CSSProperties, ReactNode} from 'react'
 
 interface PanelProps {
-    title: string
+    title: ReactNode
     initialExpanded?: boolean
     style?: CSSProperties
     stickerStyle?: CSSProperties
