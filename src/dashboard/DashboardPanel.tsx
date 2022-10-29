@@ -1,13 +1,13 @@
 import _ from 'lodash'
+import {useMemo} from 'react'
+import {Alert, Col, Row} from 'antd'
 import {useTranslation} from 'react-i18next'
 
 import {IDash, IDashboardSpec, UserInfo} from '../types'
 import appConfig from '../config'
-import {useMemo} from 'react'
-import {Alert, Col, Row} from 'antd'
 import {hasRole} from '../util/acl'
 import {ROLE_ADMIN, ROLE_ANALYST} from '../config/constants'
-import DashWrapper from './dashes/DashWrapper'
+import DashWrapper from './DashWrapper'
 
 interface Props {
     me: UserInfo
@@ -33,7 +33,7 @@ export default function DashboardPanel({me, pageKey, spec}: Props) {
             {Object.keys(rows).sort(intCompareFn).map(rowIndex => {
                 const colDashes = rows[rowIndex]
                 return(
-                    <Row key={rowIndex} gutter={16}>
+                    <Row key={rowIndex} gutter={16} style={{marginBottom: 16}}>
                         {colDashes.sort(dashColCompareFn).map(colDash => {
                             return (
                                 <Col key={colDash.name} span={colDash.w * K}>

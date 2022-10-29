@@ -39,6 +39,8 @@ interface AppConfig {
         minRefreshIntervalSeconds: number
         defaultRefreshIntervalSeconds: number
         defaultDashType: DashType
+        defaultPageSize: number
+        maxPageSize: number
     }
     ui: {
         dataGrid: {
@@ -67,7 +69,7 @@ const appConfig: AppConfig = {
     query: {
         minPageSize: 5,
         defaultPageSize: 20,
-        maxPageSize: 50
+        maxPageSize: 100
     },
     mutation: {
         copyCollectionRelations: true,
@@ -78,7 +80,9 @@ const appConfig: AppConfig = {
         rowHeight: 100,
         minRefreshIntervalSeconds: 5,
         defaultRefreshIntervalSeconds: 300,
-        defaultDashType: DashType.bar
+        defaultDashType: DashType.bar,
+        defaultPageSize: 100,
+        maxPageSize: 1000
     },
     ui: {
         dataGrid: {

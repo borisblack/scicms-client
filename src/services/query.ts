@@ -34,7 +34,7 @@ export type FiltersInput<FiltersType extends ItemData> = {
     not?: FiltersType
 } & {[name: string]: FiltersInput<FiltersType> | FilterInput<FiltersType, string | boolean | number>}
 
-type FilterInput<FilterType extends ItemData, ElementType extends string | boolean | number> = {
+export type FilterInput<FilterType extends ItemData, ElementType extends string | boolean | number> = {
     and?: [FilterType]
     or?: [FilterType]
     not?: FilterType
@@ -302,7 +302,7 @@ export default class QueryService {
         const {page, pageSize} = pagination
         const variables = {
             id: itemId,
-            sort: sorting.map(it => `${it.id}:${it.desc ? 'desc' : 'asc'}`),
+            sort: this.buildSortExpression(target, sorting),
             filters: {...this.buildItemFiltersInput(target, filters), ...extraFiltersInput},
             pagination: {page, pageSize},
         }
@@ -417,6 +417,29 @@ export default class QueryService {
         throw new Error('Illegal attribute')
     }
 
+    findAllBy = async (item: Item, filtersInput: FiltersInput<ItemData>): Promise<ItemData[]> => {
+        const query = gql(this.buildFindAllBy(item))
+        const res = await apolloClient.query({query, variables: {filters: filtersInput}})
+        if (res.errors) {
+            console.error(extractGraphQLErrorMessages(res.errors))
+            throw new Error(i18n.t('An error occurred while executing the request'))
+        }
+
+        return res.data[item.pluralName].data
+    }
+
+    private buildFindAllBy = (item: Item) => `
+        query findAll${_.upperFirst(item.pluralName)}By($filters: ${_.upperFirst(item.name)}FiltersInput!) {
+            ${item.pluralName} (
+                filters: $filters
+            ) {
+                data {
+                    ${this.itemService.listNonCollectionAttributes(item).join('\n')}
+                }
+            }
+        }
+    `
+
     findLocalization = async (item: Item, configId: string, majorRev: string, locale: string): Promise<ItemData | null> => {
         const query = gql(this.buildFindAllLocalizations(item))
         const res = await apolloClient.query({query, variables: {configId, majorRev, locale}})
@@ -442,29 +465,6 @@ export default class QueryService {
                         eq: $configId
                     }
                 }
-            ) {
-                data {
-                    ${this.itemService.listNonCollectionAttributes(item).join('\n')}
-                }
-            }
-        }
-    `
-
-    findAllBy = async (item: Item, filtersInput: FiltersInput<ItemData>): Promise<ItemData[]> => {
-        const query = gql(this.buildFindAllBy(item))
-        const res = await apolloClient.query({query, variables: {filters: filtersInput}})
-        if (res.errors) {
-            console.error(extractGraphQLErrorMessages(res.errors))
-            throw new Error(i18n.t('An error occurred while executing the request'))
-        }
-
-        return res.data[item.pluralName].data
-    }
-
-    private buildFindAllBy = (item: Item) => `
-        query findAll${_.upperFirst(item.pluralName)}By($filters: ${_.upperFirst(item.name)}FiltersInput!) {
-            ${item.pluralName} (
-                filters: $filters
             ) {
                 data {
                     ${this.itemService.listNonCollectionAttributes(item).join('\n')}

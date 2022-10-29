@@ -1,0 +1,10 @@
+.dashWrapper {
+    background-color: #fff;
+    padding-top: 16px;
+}
+
+.topRight {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+}
