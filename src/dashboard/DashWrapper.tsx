@@ -16,15 +16,15 @@ import RadarDash from './dashes/RadarDash'
 import ScatterDash from './dashes/ScatterDash'
 import BubbleMapDash from './dashes/BubbleMapDash'
 import styles from './DashWrapper.module.css'
-import {Button, Tooltip, Tree, TreeDataNode, TreeProps} from 'antd'
-import {FolderOutlined, FullscreenExitOutlined, FullscreenOutlined} from '@ant-design/icons'
+import {Button, Tooltip} from 'antd'
+import {FullscreenExitOutlined, FullscreenOutlined} from '@ant-design/icons'
 import RightPanel from '../components/panel/RightPanel'
 import LeftPanel from '../components/panel/LeftPanel'
 import TopPanel from '../components/panel/TopPanel'
 import TemporalToolbar from './TemporalToolbar'
 import FullScreen from '../components/fullscreen/FullScreen'
-
-const childTreeNodeKeyRegExp = /(.+?)-(\d+)-child/
+import LabelToolbar from './LabelToolbar'
+import LocationToolbar from './LocationToolbar'
 
 const dashMap: DashMap = {
     [DashType.bar]: BarDash,
@@ -63,7 +63,6 @@ export default function DashWrapper(props: DashProps) {
     const [fullScreen, setFullScreen] = useState<boolean>(false)
     const [beginTemporal, setBeginTemporal] = useState<string | null>(null)
     const [endTemporal, setEndTemporal] = useState<string | null>(null)
-    const datasetItemNameKeys = useMemo(() => dash.datasets.map((dataset, i) => `${dataset.itemName as string}-${i}`), [dash.datasets])
 
     const fetchResults = useCallback(() => {
         Promise.all(dash.datasets.map(dataset => {
@@ -123,69 +122,6 @@ export default function DashWrapper(props: DashProps) {
         return () => clearInterval(interval)
     }, [dash.refreshIntervalSeconds, fetchResults])
 
-    const getLabelTreeData = useCallback((): TreeDataNode[] => dash.datasets.map((dataset, i) => {
-        const datasetResult: ItemData[] = results[i]
-        const label = dataset.label as string
-        const labels = datasetResult.filter(itemData => itemData[label]).map(itemData => itemData[label] as string)
-        return {
-            key: `${dataset.itemName}-${i}`,
-            title: dataset.itemName as string,
-            icon: <FolderOutlined/>,
-            children: labels.map(label => ({
-                key: `${label}-${i}-child`,
-                title: label
-            }))
-        }
-    }), [dash.datasets, results])
-
-    const getLocationTreeData = useCallback((): TreeDataNode[] => dash.datasets.map((dataset, i) => {
-        const datasetResult: ItemData[] = results[i]
-        const {location} = dataset
-        const locationLabels = location ? datasetResult.filter(itemData => itemData[location]).map(itemData => (itemData[location].data as Location).label) : []
-        return {
-            key: `${dataset.itemName}-${i}`,
-            title: dataset.itemName as string,
-            icon: <FolderOutlined/>,
-            disabled: !location,
-            children: locationLabels.map(locationLabel => ({
-                key: `${locationLabel}-${i}-child`,
-                title: locationLabel
-            }))
-        }
-    }), [dash.datasets, results])
-
-    const handleLabelTreeCheck: TreeProps['onCheck'] = useCallback((checkedKeys: any) => {
-        const checkedLabelSets: Set<string>[] = new Array(dash.datasets.length).fill(new Set<string>())
-        for (const checkedKey of (checkedKeys as string[])) {
-            const matches = checkedKey.match(childTreeNodeKeyRegExp)
-            if (!matches)
-                continue
-
-            const [, label, index] = matches
-            const i = parseInt(index)
-            const datasetLabelSet = checkedLabelSets[i]
-            datasetLabelSet.add(label)
-        }
-
-        setFilteredLabelSets(checkedLabelSets)
-    }, [dash.datasets.length])
-
-    const handleLocationTreeCheck: TreeProps['onCheck'] = useCallback((checkedKeys: any) => {
-        const checkedLocationLabelSets: Set<string>[] = new Array(dash.datasets.length).fill(new Set<string>())
-        for (const checkedKey of (checkedKeys as string[])) {
-            const matches = checkedKey.match(childTreeNodeKeyRegExp)
-            if (!matches)
-                continue
-
-            const [, label, index] = matches
-            const i = parseInt(index)
-            const datasetLabelSet = checkedLocationLabelSets[i]
-            datasetLabelSet.add(label)
-        }
-
-        setFilteredLocationLabelSets(checkedLocationLabelSets)
-    }, [dash.datasets.length])
-
     return (
         <FullScreen active={fullScreen}>
             {fullScreen ? (
@@ -202,26 +138,12 @@ export default function DashWrapper(props: DashProps) {
                     )}
                     <LeftPanel title={t('Labels')} width={250}>
                         <div style={{padding: 8}}>
-                            <Tree
-                                checkable
-                                showIcon
-                                defaultExpandedKeys={[...datasetItemNameKeys]}
-                                defaultCheckedKeys={[...datasetItemNameKeys]}
-                                treeData={getLabelTreeData()}
-                                onCheck={handleLabelTreeCheck}
-                            />
+                            <LabelToolbar dash={dash} results={results} onChange={setFilteredLabelSets}/>
                         </div>
                     </LeftPanel>
                     <RightPanel title={t('Locations')} width={250}>
                         <div style={{padding: 8}}>
-                            <Tree
-                                checkable
-                                showIcon
-                                defaultExpandedKeys={[...datasetItemNameKeys]}
-                                defaultCheckedKeys={[...datasetItemNameKeys]}
-                                treeData={getLocationTreeData()}
-                                onCheck={handleLocationTreeCheck}
-                            />
+                            <LocationToolbar dash={dash} results={results} onChange={setFilteredLocationLabelSets}/>
                         </div>
                     </RightPanel>
                 </>
