@@ -21,7 +21,7 @@ const LocationAttributeField: FC<AttributeFieldProps> = ({pageKey, form, attrNam
         validator(_, value) {
             const longitude = getFieldValue([attrName, 'longitude'])
             const label = getFieldValue([attrName, 'label'])
-            const resolve = value || (!longitude && !label)
+            const resolve = value != null || (longitude == null && label == null)
 
             return resolve ? Promise.resolve() : Promise.reject(new Error(util.format(t('Field %s is required'), t('Latitude'))))
         }})
@@ -30,7 +30,7 @@ const LocationAttributeField: FC<AttributeFieldProps> = ({pageKey, form, attrNam
         validator(_, value) {
             const latitude = getFieldValue([attrName, 'latitude'])
             const label = getFieldValue([attrName, 'label'])
-            const resolve = value || (!latitude && !label)
+            const resolve = value != null || (latitude == null && label == null)
 
             return resolve ? Promise.resolve() : Promise.reject(new Error(util.format(t('Field %s is required'), t('Longitude'))))
         }})
@@ -39,7 +39,7 @@ const LocationAttributeField: FC<AttributeFieldProps> = ({pageKey, form, attrNam
         validator(_, value) {
             const latitude = getFieldValue([attrName, 'latitude'])
             const longitude = getFieldValue([attrName, 'longitude'])
-            const resolve = value || (!latitude && !longitude)
+            const resolve = value != null || (latitude == null && longitude == null)
 
             return resolve ? Promise.resolve() : Promise.reject(new Error(util.format(t('Field %s is required'), t('Label'))))
         }})

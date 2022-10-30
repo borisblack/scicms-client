@@ -1,7 +1,7 @@
-import {CSSProperties, useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import 'chartjs-adapter-luxon'
-import {DashType, ItemData} from '../types'
+import {DashType, ItemData, Location} from '../types'
 import {DashMap, DashProps} from './dashes'
 import QueryService, {ExtRequestParams, FilterInput, FiltersInput} from '../services/query'
 import ItemService from '../services/item'
@@ -16,15 +16,15 @@ import RadarDash from './dashes/RadarDash'
 import ScatterDash from './dashes/ScatterDash'
 import BubbleMapDash from './dashes/BubbleMapDash'
 import styles from './DashWrapper.module.css'
-import {Button, Tooltip} from 'antd'
-import {FullscreenExitOutlined, FullscreenOutlined} from '@ant-design/icons'
+import {Button, Tooltip, Tree, TreeDataNode, TreeProps} from 'antd'
+import {FolderOutlined, FullscreenExitOutlined, FullscreenOutlined} from '@ant-design/icons'
 import RightPanel from '../components/panel/RightPanel'
 import LeftPanel from '../components/panel/LeftPanel'
 import TopPanel from '../components/panel/TopPanel'
 import TemporalToolbar from './TemporalToolbar'
+import FullScreen from '../components/fullscreen/FullScreen'
 
-const fullScreenWrapperStyle: CSSProperties = {position: 'fixed', left: 0, top: 0, width: '100%', height: '100%'}
-const normalWrapperStyle: CSSProperties = {position: 'relative'}
+const childTreeNodeKeyRegExp = /(.+?)-(\d+)-child/
 
 const dashMap: DashMap = {
     [DashType.bar]: BarDash,
@@ -40,15 +40,30 @@ const dashMap: DashMap = {
 
 export default function DashWrapper(props: DashProps) {
     const {dash} = props
+    const getDashComponent = useCallback(() => dashMap[dash.type], [dash.type])
+    const DashComponent = getDashComponent()
+    if (!DashComponent)
+        throw new Error('Illegal attribute')
+
     const {t} = useTranslation()
     const itemService = useMemo(() => ItemService.getInstance(), [])
     const queryService = useMemo(() => QueryService.getInstance(), [])
-    const getDashComponent = useCallback(() => dashMap[dash.type], [dash.type])
     const [results, setResults] = useState<ItemData[][]>([])
+    const initialFilteredLabelSets = useMemo((): Set<string>[] => new Array(dash.datasets.length).fill(new Set<string>()), [dash.datasets])
+    const [filteredLabelSets, setFilteredLabelSets] = useState<Set<string>[]>(initialFilteredLabelSets)
+    const initialFilteredLocationLabelSets = useMemo((): Set<string>[] => new Array(dash.datasets.length).fill(new Set<string>()), [dash.datasets])
+    const [filteredLocationLabelSets, setFilteredLocationLabelSets] = useState<Set<string>[]>(initialFilteredLocationLabelSets)
+    const filteredResults = useMemo((): ItemData[][] => results.map((datasetResult, i) => datasetResult.filter(itemData => {
+        const dataset = dash.datasets[i]
+        const {location} = dataset
+        const hasLabel = filteredLabelSets[i].has(itemData[dataset.label as string])
+        return location ? (hasLabel && filteredLocationLabelSets[i].has(itemData[location]?.data?.label)) : hasLabel
+    })), [dash.datasets, filteredLabelSets, filteredLocationLabelSets, results])
+
     const [fullScreen, setFullScreen] = useState<boolean>(false)
-    const wrapperStyle: CSSProperties = useMemo(() => fullScreen ? fullScreenWrapperStyle : normalWrapperStyle, [fullScreen])
     const [beginTemporal, setBeginTemporal] = useState<string | null>(null)
     const [endTemporal, setEndTemporal] = useState<string | null>(null)
+    const datasetItemNameKeys = useMemo(() => dash.datasets.map((dataset, i) => `${dataset.itemName as string}-${i}`), [dash.datasets])
 
     const fetchResults = useCallback(() => {
         Promise.all(dash.datasets.map(dataset => {
@@ -74,8 +89,32 @@ export default function DashWrapper(props: DashProps) {
 
             return queryService.findAll(item, requestParams, extraFiltersInput)
         }))
-            .then(fetchedResults => setResults(fetchedResults.map(res => res.data)))
-    }, [dash.datasets, beginTemporal, endTemporal, itemService, queryService])
+            .then(fetchedResults => {
+                const newResults = fetchedResults.map(res => res.data)
+                setResults(newResults)
+
+                // Update checked labels
+                const checkedLabelSets: Set<string>[] = new Array(dash.datasets.length).fill(new Set<string>())
+                for (let i = 0; i < newResults.length; i++) {
+                    const dataset = dash.datasets[i]
+                    const datasetResult = newResults[i]
+                    const labels = datasetResult.map(itemData => itemData[dataset.label as string])
+                    checkedLabelSets[i] = new Set(labels)
+                }
+                setFilteredLabelSets(checkedLabelSets)
+
+                // Update checked location labels
+                const checkedLocationLabelSets: Set<string>[] = new Array(dash.datasets.length).fill(new Set<string>())
+                for (let i = 0; i < newResults.length; i++) {
+                    const dataset = dash.datasets[i]
+                    const {location} = dataset
+                    const datasetResult = newResults[i]
+                    const locationLabels = location ? datasetResult.filter(itemData => itemData[location]).map(itemData => (itemData[location].data as Location).label) : []
+                    checkedLocationLabelSets[i] = new Set(locationLabels)
+                }
+                setFilteredLocationLabelSets(checkedLocationLabelSets)
+            })
+    }, [beginTemporal, dash.datasets, endTemporal, itemService, queryService])
 
     useEffect(() => {
         fetchResults()
@@ -84,12 +123,71 @@ export default function DashWrapper(props: DashProps) {
         return () => clearInterval(interval)
     }, [dash.refreshIntervalSeconds, fetchResults])
 
-    const DashComponent = getDashComponent()
-    if (!DashComponent)
-        throw new Error('Illegal attribute')
+    const getLabelTreeData = useCallback((): TreeDataNode[] => dash.datasets.map((dataset, i) => {
+        const datasetResult: ItemData[] = results[i]
+        const label = dataset.label as string
+        const labels = datasetResult.filter(itemData => itemData[label]).map(itemData => itemData[label] as string)
+        return {
+            key: `${dataset.itemName}-${i}`,
+            title: dataset.itemName as string,
+            icon: <FolderOutlined/>,
+            children: labels.map(label => ({
+                key: `${label}-${i}-child`,
+                title: label
+            }))
+        }
+    }), [dash.datasets, results])
+
+    const getLocationTreeData = useCallback((): TreeDataNode[] => dash.datasets.map((dataset, i) => {
+        const datasetResult: ItemData[] = results[i]
+        const {location} = dataset
+        const locationLabels = location ? datasetResult.filter(itemData => itemData[location]).map(itemData => (itemData[location].data as Location).label) : []
+        return {
+            key: `${dataset.itemName}-${i}`,
+            title: dataset.itemName as string,
+            icon: <FolderOutlined/>,
+            disabled: !location,
+            children: locationLabels.map(locationLabel => ({
+                key: `${locationLabel}-${i}-child`,
+                title: locationLabel
+            }))
+        }
+    }), [dash.datasets, results])
+
+    const handleLabelTreeCheck: TreeProps['onCheck'] = useCallback((checkedKeys: any) => {
+        const checkedLabelSets: Set<string>[] = new Array(dash.datasets.length).fill(new Set<string>())
+        for (const checkedKey of (checkedKeys as string[])) {
+            const matches = checkedKey.match(childTreeNodeKeyRegExp)
+            if (!matches)
+                continue
+
+            const [, label, index] = matches
+            const i = parseInt(index)
+            const datasetLabelSet = checkedLabelSets[i]
+            datasetLabelSet.add(label)
+        }
+
+        setFilteredLabelSets(checkedLabelSets)
+    }, [dash.datasets.length])
+
+    const handleLocationTreeCheck: TreeProps['onCheck'] = useCallback((checkedKeys: any) => {
+        const checkedLocationLabelSets: Set<string>[] = new Array(dash.datasets.length).fill(new Set<string>())
+        for (const checkedKey of (checkedKeys as string[])) {
+            const matches = checkedKey.match(childTreeNodeKeyRegExp)
+            if (!matches)
+                continue
+
+            const [, label, index] = matches
+            const i = parseInt(index)
+            const datasetLabelSet = checkedLocationLabelSets[i]
+            datasetLabelSet.add(label)
+        }
+
+        setFilteredLocationLabelSets(checkedLocationLabelSets)
+    }, [dash.datasets.length])
 
     return (
-        <div className={styles.dashWrapper} style={wrapperStyle}>
+        <FullScreen active={fullScreen}>
             {fullScreen ? (
                 <>
                     <Tooltip title={t('Exit full screen')} placement="leftBottom">
@@ -103,10 +201,28 @@ export default function DashWrapper(props: DashProps) {
                         </TopPanel>
                     )}
                     <LeftPanel title={t('Labels')} width={250}>
-                        Hi Left!
+                        <div style={{padding: 8}}>
+                            <Tree
+                                checkable
+                                showIcon
+                                defaultExpandedKeys={[...datasetItemNameKeys]}
+                                defaultCheckedKeys={[...datasetItemNameKeys]}
+                                treeData={getLabelTreeData()}
+                                onCheck={handleLabelTreeCheck}
+                            />
+                        </div>
                     </LeftPanel>
                     <RightPanel title={t('Locations')} width={250}>
-                        Hi Right!
+                        <div style={{padding: 8}}>
+                            <Tree
+                                checkable
+                                showIcon
+                                defaultExpandedKeys={[...datasetItemNameKeys]}
+                                defaultCheckedKeys={[...datasetItemNameKeys]}
+                                treeData={getLocationTreeData()}
+                                onCheck={handleLocationTreeCheck}
+                            />
+                        </div>
                     </RightPanel>
                 </>
             ) : (
@@ -114,7 +230,7 @@ export default function DashWrapper(props: DashProps) {
                     <Button type="link" icon={<FullscreenOutlined style={{fontSize: 24}}/>} className={styles.topRight} onClick={() => setFullScreen(true)}/>
                 </Tooltip>
             )}
-            <DashComponent {...props} data={results}/>
-        </div>
+            <DashComponent {...props} data={filteredResults}/>
+        </FullScreen>
     )
 }
