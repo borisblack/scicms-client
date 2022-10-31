@@ -124,12 +124,12 @@ export default function OneToManyDataGridWrapper({me, pageKey, target, mappedBy,
 
         return <Menu items={items}/>
     }, [t, permissionService, me, openTarget, targetItem.versioned, deleteTarget])
-    
+
     const renderToolbar = useCallback(() => {
         const targetPermissionId = targetItem.permission.data?.id
         const targetPermission = targetPermissionId ? permissionService.findById(targetPermissionId) : null
         const canCreate = !!targetPermission && ACL.canCreate(me, targetPermission)
-        
+
         return (
             <Space>
                 {canCreate && <Button type="primary" size="small" icon={<PlusCircleOutlined/>} onClick={handleCreate}>{t('Add')}</Button>}
@@ -149,6 +149,7 @@ export default function OneToManyDataGridWrapper({me, pageKey, target, mappedBy,
                     pageSize: appConfig.query.defaultPageSize
                 }}
                 toolbar={renderToolbar()}
+                title={t(targetItem.displayPluralName)}
                 getRowContextMenu={getRowContextMenu}
                 onRequest={handleRequest}
                 onRowDoubleClick={row => openTarget(row.original.id)}

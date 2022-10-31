@@ -23,6 +23,7 @@ interface Props {
     hasFilters?: boolean
     version?: number
     toolbar?: ReactNode
+    title?: string
     getRowContextMenu?: (row: any) => ReactElement
     onRequest: (params: RequestParams) => void
     onRowDoubleClick: (row: Row<any>) => void
@@ -52,7 +53,7 @@ interface RequestPagination {
     pageSize: number
 }
 
-function DataGrid({loading = false, columns, data, initialState, hasFilters = true, version = 0, toolbar = null, getRowContextMenu, onRequest, onRowDoubleClick}: Props) {
+function DataGrid({loading = false, columns, data, initialState, hasFilters = true, version = 0, toolbar = null, title = '', getRowContextMenu, onRequest, onRowDoubleClick}: Props) {
     const initialColumnVisibilityMemoized = useMemo((): ColumnVisibility => {
         const initialColumnVisibility: ColumnVisibility = {}
         initialState.hiddenColumns.forEach(it => {
@@ -165,6 +166,7 @@ function DataGrid({loading = false, columns, data, initialState, hasFilters = tr
                     </style>
                 </head>
                 <body>
+                    <h2>${title}</h2>
                     <table>
                         <thead>
                             <tr>
@@ -181,7 +183,7 @@ function DataGrid({loading = false, columns, data, initialState, hasFilters = tr
         // const exportWinUrl = URL.createObjectURL(new Blob([exportWinHtml], { type: "text/html" }))
         const exportWin = window.open('', 'Export HTML', exportWinFeatures) as Window
         exportWin.document.body.innerHTML = exportWinHtml
-    }, [columnVisibility, columns, data.data, renderHtmlTableRow])
+    }, [columnVisibility, columns, data.data, renderHtmlTableRow, t, title])
 
     return (
         <Spin spinning={loading}>

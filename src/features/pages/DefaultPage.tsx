@@ -20,7 +20,7 @@ import {ExtRequestParams} from '../../services/query'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
 import MutationService from '../../services/mutation'
 import {ApiMiddlewareContext, ApiOperation, handleApiMiddleware, hasApiMiddleware} from '../../api-middleware'
-import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME, LOCATION_ITEM_NAME, MEDIA_ITEM_NAME} from '../../config/constants'
+import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME, MEDIA_ITEM_NAME} from '../../config/constants'
 import {Callback} from '../../services/mediator'
 
 interface Props {
@@ -230,6 +230,7 @@ function DefaultPage({me, page, onItemCreate, onItemView, onItemDelete, onLogout
                     hasFilters={true}
                     version={version}
                     toolbar={item.localized && <Checkbox onChange={handleLocalizationsCheckBoxChange}>{t('All Locales')}</Checkbox>}
+                    title={t(item.displayPluralName)}
                     getRowContextMenu={getRowContextMenu}
                     onRequest={handleRequest}
                     onRowDoubleClick={handleRowDoubleClick}

@@ -38,12 +38,12 @@ export default function Attributes({me, item, buffer, data}: CustomComponentRend
     const columns = useMemo(() => getAttributeColumns(), [])
     const hiddenColumns = useMemo(() => getHiddenAttributeColumns(), [])
     const spec: ItemSpec = useMemo(() => buffer.form.spec ?? {...(data?.spec ?? {})}, [buffer.form.spec, data?.spec])
-    
+
     const initialNamedAttributes = useMemo((): NamedAttribute[] => {
         const attributes = spec.attributes ?? {}
         let namedAttributes = Object.keys(attributes)
             .map(attrName => ({name: attrName, ...attributes[attrName]}))
-        
+
         if (item.name !== ITEM_TEMPLATE_ITEM_NAME && namedAttributes.length > 0 && !isNew) {
             const excludedAttrNameSet = new Set()
             for (const itemTemplateName of data.includeTemplates) {
@@ -53,7 +53,7 @@ export default function Attributes({me, item, buffer, data}: CustomComponentRend
             }
             namedAttributes = namedAttributes.filter(it => !excludedAttrNameSet.has(it.name))
         }
-        
+
         return namedAttributes
 
     }, [data?.includeTemplates, isNew, item.name, itemTemplateService, spec.attributes])
@@ -77,7 +77,7 @@ export default function Attributes({me, item, buffer, data}: CustomComponentRend
     const handleRequest = useCallback(async (params: RequestParams) => {
         setFilteredData(processLocal(namedAttributes, params))
     }, [namedAttributes])
-    
+
     const openRow = useCallback((row: Row<NamedAttribute>) => {
         setSelectedAttribute(row.original)
         setEditModalVisible(true)
@@ -161,7 +161,7 @@ export default function Attributes({me, item, buffer, data}: CustomComponentRend
 
         return <Menu items={items}/>
     }, [t, canEdit, openRow, deleteRow])
-    
+
     return (
         <>
             <DataGrid
@@ -172,6 +172,7 @@ export default function Attributes({me, item, buffer, data}: CustomComponentRend
                     pageSize: appConfig.query.defaultPageSize
                 }}
                 toolbar={renderToolbar()}
+                title={t('Attributes')}
                 version={version}
                 getRowContextMenu={getRowContextMenu}
                 onRequest={handleRequest}

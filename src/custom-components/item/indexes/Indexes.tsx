@@ -36,7 +36,7 @@ export default function Indexes({me, item, buffer, data}: CustomComponentRenderC
     const columns = useMemo(() => getIndexColumns(), [])
     const hiddenColumns = useMemo(() => getHiddenIndexColumns(), [])
     const spec: ItemSpec = useMemo(() => buffer.form.spec ?? {...(data?.spec ?? {})}, [buffer.form.spec, data?.spec])
-    
+
     const initialNamedIndexes = useMemo((): NamedIndex[] => {
         const indexes = spec.indexes ?? {}
         let namedIndexes = Object.keys(indexes)
@@ -51,7 +51,7 @@ export default function Indexes({me, item, buffer, data}: CustomComponentRenderC
             }
             namedIndexes = namedIndexes.filter(it => !excludedIndexNameSet.has(it.name))
         }
-        
+
         return namedIndexes
 
     }, [data?.includeTemplates, isNew, item.name, itemTemplateService, spec.indexes])
@@ -75,7 +75,7 @@ export default function Indexes({me, item, buffer, data}: CustomComponentRenderC
     const handleRequest = useCallback(async (params: RequestParams) => {
         setFilteredData(processLocal(namedIndexes, params))
     }, [namedIndexes])
-    
+
     const openRow = useCallback((row: Row<NamedIndex>) => {
         setSelectedIndex(row.original)
         setEditModalVisible(true)
@@ -159,7 +159,7 @@ export default function Indexes({me, item, buffer, data}: CustomComponentRenderC
 
         return <Menu items={items}/>
     }, [t, canEdit, openRow, deleteRow])
-    
+
     return (
         <>
             <DataGrid
@@ -171,6 +171,7 @@ export default function Indexes({me, item, buffer, data}: CustomComponentRenderC
                 }}
                 toolbar={renderToolbar()}
                 version={version}
+                title={t('Indexes')}
                 getRowContextMenu={getRowContextMenu}
                 onRequest={handleRequest}
                 onRowDoubleClick={handleRowDoubleClick}

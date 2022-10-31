@@ -140,7 +140,7 @@ export default function RelationsDataGridWrapper({me, pageKey, item, itemData, r
     const createManyToOneInitialData = useCallback((): ItemData | null => {
         if (relAttribute.relType !== RelType.oneToMany || !oppositeAttrName)
             throw new Error('Illegal attribute')
-        
+
         const initialData: any = {id: itemData.id}
         if (item.titleAttribute !== ID_ATTR_NAME)
             initialData[item.titleAttribute] = itemData[item.titleAttribute]
@@ -229,15 +229,15 @@ export default function RelationsDataGridWrapper({me, pageKey, item, itemData, r
 
         return <Menu items={items}/>
     }, [t, permissionService, me, relAttribute.readOnly, openTarget, target.versioned, deleteTarget])
-    
+
     const renderToolbar = useCallback(() => {
         if (relAttribute.readOnly)
             return null
-        
+
         const targetPermissionId = target.permission.data?.id
         const targetPermission = targetPermissionId ? permissionService.findById(targetPermissionId) : null
         const canCreate = !!targetPermission && ACL.canCreate(me, targetPermission)
-        
+
         return (
             <Space>
                 {!isOneToMany && <Button size="small" icon={<SelectOutlined/>} onClick={() => setSelectionModalVisible(true)}>{t('Select')}</Button>}
@@ -258,6 +258,7 @@ export default function RelationsDataGridWrapper({me, pageKey, item, itemData, r
                     pageSize: appConfig.query.defaultPageSize
                 }}
                 toolbar={renderToolbar()}
+                title={t(target.displayPluralName)}
                 getRowContextMenu={getRowContextMenu}
                 onRequest={handleRequest}
                 onRowDoubleClick={row => openTarget(row.original.id)}

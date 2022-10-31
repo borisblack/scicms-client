@@ -64,6 +64,7 @@ export default function SearchDataGridWrapper({item, notHiddenColumns = [], extr
                 pageSize: appConfig.query.defaultPageSize
             }}
             toolbar={item.localized && <Checkbox onChange={handleLocalizationsCheckBoxChange}>{t('All Locales')}</Checkbox>}
+            title={t(item.displayPluralName)}
             onRequest={handleRequest}
             onRowDoubleClick={handleRowDoubleClick}
         />
