@@ -9,6 +9,8 @@ import './DataGrid.css'
 import ColumnFilter from './ColumnFilter'
 import Toolbar from './Toolbar'
 import {useTranslation} from 'react-i18next'
+import {exportWinFeatures, exportWinStyle, renderValue} from '../../util/export'
+import {ItemData} from '../../types'
 
 interface Props {
     loading?: boolean
@@ -147,6 +149,40 @@ function DataGrid({loading = false, columns, data, initialState, hasFilters = tr
         }
     }, [table, rowSelection])
 
+    const renderHtmlTableRow = useCallback((row: ItemData): string =>
+            `<tr>${Object.keys(row).filter(key => columnVisibility[key] !== false).map(key => `<td>${renderValue(row[key])}</td>`).join('')}</tr>`,
+        [columnVisibility]
+    )
+
+    const handleHtmlExport = useCallback(() => {
+        const visibleColumns = columns.filter(col => columnVisibility[col.accessorKey] !== false)
+        const exportWinHtml = `<!DOCTYPE html>
+            <html>
+                <head>
+                    <title>${t('Export')} - HTML</title>
+                    <style>
+                        ${exportWinStyle}
+                    </style>
+                </head>
+                <body>
+                    <table>
+                        <thead>
+                            <tr>
+                                ${visibleColumns.map(col => `<th>${col.header}</th>`).join('')}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.data.map(row => renderHtmlTableRow(row)).join('')}
+                        </tbody>
+                    </table>
+                </body>
+            </html>`
+
+        // const exportWinUrl = URL.createObjectURL(new Blob([exportWinHtml], { type: "text/html" }))
+        const exportWin = window.open('', 'Export HTML', exportWinFeatures) as Window
+        exportWin.document.body.innerHTML = exportWinHtml
+    }, [columnVisibility, columns, data.data, renderHtmlTableRow])
+
     return (
         <Spin spinning={loading}>
             <AntdRow>
@@ -165,6 +201,7 @@ function DataGrid({loading = false, columns, data, initialState, hasFilters = tr
                             const {page, pageSize} = data.pagination
                             refresh({page, pageSize}, true)
                         }}
+                        onHtmlExport={handleHtmlExport}
                     />
                 </Col>
             </AntdRow>

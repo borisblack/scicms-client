@@ -69,6 +69,7 @@ const en = {
         'Enter password': 'Enter password',
         'Enum Set': 'Enum Set',
         'Exit full screen': 'Exit full screen',
+        'Export': 'Export',
         'Field Hidden': 'Field Hidden',
         'Field Width': 'Field Width',
         'Field %s is required': 'Field %s is required',

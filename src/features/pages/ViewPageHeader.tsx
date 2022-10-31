@@ -7,6 +7,8 @@ import {
     DiffOutlined,
     DownOutlined,
     ExclamationCircleOutlined,
+    ExportOutlined,
+    Html5Outlined,
     LockOutlined,
     SaveOutlined,
     SubnodeOutlined,
@@ -48,6 +50,7 @@ interface Props {
     onItemView: (item: Item, id: string, cb?: () => void, observerKey?: string) => void
     onUpdate: (data: ItemData) => void
     onItemDelete: (itemName: string, id: string) => void
+    onHtmlExport: () => void
     logoutIfNeed: () => void
 }
 
@@ -56,7 +59,7 @@ const VERSIONS_MODAL_WIDTH = 800
 const {confirm} = Modal
 
 export default function ViewPageHeader({
-    me, page, form, buffer, canCreate, canEdit, canDelete, viewState, setViewState, isLockedByMe, setLockedByMe, setLoading, closePage, onItemView, onUpdate, onItemDelete, logoutIfNeed
+    me, page, form, buffer, canCreate, canEdit, canDelete, viewState, setViewState, isLockedByMe, setLockedByMe, setLoading, closePage, onItemView, onUpdate, onItemDelete, onHtmlExport, logoutIfNeed
 }: Props) {
     const {item, data} = page
     const isNew = !data?.id
@@ -248,6 +251,21 @@ export default function ViewPageHeader({
         />
     )
 
+    const renderExportMenu = () => (
+        <Menu
+            items={[{
+                key: 'html',
+                label: (
+                    <Space>
+                        <Html5Outlined className="blue"/>
+                        HTML
+                    </Space>
+                ),
+                onClick: onHtmlExport
+            }]}
+        />
+    )
+
     const getVersionsExtraFiltersInput = (): FiltersInput<ItemData> => {
         if (isNew)
             return {} as FiltersInput<ItemData>
@@ -296,12 +314,7 @@ export default function ViewPageHeader({
                 if (item.versioned) {
                     extra.push(
                         <Dropdown key="purge" placement="bottomRight" overlay={renderPurgeMenu()}>
-                            <Button type="primary" danger>
-                                <Space>
-                                    {t('Delete')}
-                                    <DownOutlined />
-                                </Space>
-                            </Button>
+                            <Button type="primary" danger icon={<DownOutlined/>}>{t('Delete')}</Button>
                         </Dropdown>
                     )
                 } else {
@@ -317,6 +330,12 @@ export default function ViewPageHeader({
                     )
                 }
             }
+
+            extra.push(
+                <Dropdown key="export" placement="bottomLeft" trigger={['click']} overlay={renderExportMenu()}>
+                    <Button icon={<ExportOutlined/>}>{t('Export')}</Button>
+                </Dropdown>
+            )
         }
 
         return extra

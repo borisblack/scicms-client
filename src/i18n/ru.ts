@@ -69,6 +69,7 @@ const ru = {
         'Enter password': 'Введите пароль',
         'Enum Set': 'Элементы перечисления',
         'Exit full screen': 'Выход из полноэкранного режима',
+        'Export': 'Экспорт',
         'Field Hidden': 'Скрытое поле',
         'Field Width': 'Ширина поля',
         'Field %s is required': 'Поле %s обязательное',

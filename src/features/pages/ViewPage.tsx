@@ -30,6 +30,7 @@ import RelationsDataGridWrapper from './RelationsDataGridWrapper'
 import {Callback} from '../../services/mediator'
 import {ApiMiddlewareContext, ApiOperation, handleApiMiddleware, hasApiMiddleware} from '../../api-middleware'
 import {allIcons} from '../../util/icons'
+import {exportWinFeatures, exportWinStyle, renderValue} from '../../util/export'
 
 interface Props {
     me: UserInfo
@@ -298,14 +299,15 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
         }
     }
 
-    const renderAttributes = (attributes: {[name: string]: Attribute}) => Object.keys(attributes)
-        .filter(attrName => {
-            const attr = attributes[attrName]
-            return !attr.private && !attr.fieldHidden
-                && (attr.type !== AttrType.relation || (attr.relType !== RelType.oneToMany && attr.relType !== RelType.manyToMany))
-                && (item.versioned || (attrName !== CONFIG_ID_ATTR_NAME && attrName !== MAJOR_REV_ATTR_NAME && attrName !== MINOR_REV_ATTR_NAME && attrName !== CURRENT_ATTR_NAME))
-                && (item.localized || attrName !== LOCALE_ATTR_NAME)
-        })
+    const filterVisibleAttributeNames = (attributes: {[name: string]: Attribute}): string[] => Object.keys(attributes).filter(attrName => {
+        const attr = attributes[attrName]
+        return !attr.private && !attr.fieldHidden
+            && (attr.type !== AttrType.relation || (attr.relType !== RelType.oneToMany && attr.relType !== RelType.manyToMany))
+            && (item.versioned || (attrName !== CONFIG_ID_ATTR_NAME && attrName !== MAJOR_REV_ATTR_NAME && attrName !== MINOR_REV_ATTR_NAME && attrName !== CURRENT_ATTR_NAME))
+            && (item.localized || attrName !== LOCALE_ATTR_NAME)
+    })
+
+    const renderAttributes = (attributes: {[name: string]: Attribute}) => filterVisibleAttributeNames(attributes)
         .map(attrName => {
             const attr = attributes[attrName]
             return (
@@ -377,6 +379,39 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
         }
         return ownAttributes
     }, [item.spec.attributes, templateAttributes])
+
+    const handleHtmlExport = useCallback(() => {
+        if (!data)
+            return
+
+        const {attributes} = item.spec
+        const visibleAttributeNames = filterVisibleAttributeNames(attributes)
+
+        const exportWinHtml = `<!DOCTYPE html>
+            <html>
+                <head>
+                    <title>${t('Export')} - HTML</title>
+                    <style>
+                        ${exportWinStyle}
+                    </style>
+                </head>
+                <body>
+                    <h2>${t(item.displayName)}</h2>
+                    <table>
+                        <tbody>
+                            ${visibleAttributeNames.map(attrName => {
+                                const attribute = attributes[attrName]
+                                return `<tr><td style="font-weight: 600">${t(attribute.displayName)}</td><td>${renderValue(data[attrName])}</td></tr>`
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </body>
+            </html>`
+
+        // const exportWinUrl = URL.createObjectURL(new Blob([exportWinHtml], { type: "text/html" }))
+        const exportWin = window.open('', 'Export HTML', exportWinFeatures) as Window
+        exportWin.document.body.innerHTML = exportWinHtml
+    }, [data, filterVisibleAttributeNames, item.displayName, item.spec, t])
 
     const renderTabComponents = useCallback((mountPoint: string): ReactNode[] =>
         getComponents(mountPoint).map(it => {
@@ -481,6 +516,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
                     onItemView={onItemView}
                     onItemDelete={onItemDelete}
                     onUpdate={onUpdate}
+                    onHtmlExport={handleHtmlExport}
                     logoutIfNeed={logoutIfNeed}
                 />
             )}

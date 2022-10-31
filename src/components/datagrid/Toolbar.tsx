@@ -1,6 +1,6 @@
-import React from 'react'
-import {Checkbox, Popover} from 'antd'
-import {ClearOutlined, ReloadOutlined, SettingOutlined} from '@ant-design/icons'
+import React, {useCallback} from 'react'
+import {Checkbox, Dropdown, Menu, Popover, Space, Tooltip} from 'antd'
+import {ClearOutlined, ExportOutlined, Html5Outlined, ReloadOutlined, SettingOutlined} from '@ant-design/icons'
 import {Table} from '@tanstack/react-table'
 import {useTranslation} from 'react-i18next'
 
@@ -11,33 +11,65 @@ interface Props {
     hasFilters: boolean
     onRefresh: () => void
     onClearFilters: () => void
+    onHtmlExport: () => void
 }
 
-function Toolbar({table, hasFilters, onRefresh, onClearFilters}: Props) {
+function Toolbar({table, hasFilters, onRefresh, onClearFilters, onHtmlExport}: Props) {
     const {t} = useTranslation()
+
+    const renderExportMenu = useCallback(() => (
+        <Menu
+            items={[{
+                key: 'html',
+                label: (
+                    <Space>
+                        <Html5Outlined className="blue"/>
+                        HTML
+                    </Space>
+                ),
+                onClick: onHtmlExport
+            }]}
+        />
+    ), [onHtmlExport])
 
     return (
         <div className={styles.toolbar}>
-            <ReloadOutlined className={styles.toolbarBtn} title={t('Refresh')} onClick={onRefresh}/>
-            {hasFilters && <ClearOutlined className={styles.toolbarBtn} title={t('Clear filters')} onClick={onClearFilters}/>}
-            <Popover
-                content={
-                    table.getAllLeafColumns().map(column => (
-                        <div key={column.id}>
-                            <Checkbox
-                                checked={column.getIsVisible()}
-                                onChange={column.getToggleVisibilityHandler()}
-                            >
-                                {column.columnDef.header as string}
-                            </Checkbox>
-                        </div>
-                    ))
-                }
-                placement='leftTop'
-                trigger='click'
-            >
-                <SettingOutlined className={styles.toolbarBtn} title={t('Settings')}/>
-            </Popover>
+            <Tooltip title={t('Refresh')}>
+                <ReloadOutlined className={styles.toolbarBtn} onClick={onRefresh}/>
+            </Tooltip>
+
+            {hasFilters && (
+                <Tooltip title={t('Clear filters')}>
+                    <ClearOutlined className={styles.toolbarBtn} onClick={onClearFilters}/>
+                </Tooltip>
+            )}
+
+            <Tooltip title={t('Settings')}>
+                <Popover
+                    content={
+                        table.getAllLeafColumns().map(column => (
+                            <div key={column.id}>
+                                <Checkbox
+                                    checked={column.getIsVisible()}
+                                    onChange={column.getToggleVisibilityHandler()}
+                                >
+                                    {column.columnDef.header as string}
+                                </Checkbox>
+                            </div>
+                        ))
+                    }
+                    placement='leftTop'
+                    trigger='click'
+                >
+                    <SettingOutlined className={styles.toolbarBtn}/>
+                </Popover>
+            </Tooltip>
+
+            <Tooltip title={t('Export')}>
+                <Dropdown placement="bottomLeft" trigger={['click']} overlay={renderExportMenu()}>
+                    <ExportOutlined className={styles.toolbarBtn} title={t('Export')}/>
+                </Dropdown>
+            </Tooltip>
         </div>
     )
 }
