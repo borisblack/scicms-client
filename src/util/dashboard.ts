@@ -29,7 +29,7 @@ export const timeScaleProps = {
 export const childTreeNodeKeyRegExp = /(.+?)-(\d+)-child/
 
 export const mapLabels = (dash: IDash, data: ItemData[][]) =>
-    data.map((row, i) => row.map(cell => cell[dash.datasets[i].label as string])).flatMap(labels => labels)
+    data.map((row, i) => row.map(cell => cell[dash.datasets[i].label as string]?.trim())).flatMap(labels => labels)
 
 export const mapMetrics = (dash: IDash, data: ItemData[][]): any[] =>
     data.map((row, i) => row.map(cell => parseMetric(cell[dash.datasets[i].metric as string], dash.metricType))).flatMap(metrics => metrics)
