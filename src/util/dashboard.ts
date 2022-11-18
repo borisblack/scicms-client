@@ -1,4 +1,4 @@
-import {AttrType, DashType, IDash, ItemData, Location, MetricType} from '../types'
+import {AttrType, DashType, Dataset, IDash, ItemData, Location, MetricType} from '../types'
 import {DateTime} from 'luxon'
 import appConfig from '../config'
 import {UTC} from '../config/constants'
@@ -68,4 +68,22 @@ function parseMetric(metric: any, metricType: MetricType): any {
         return DateTime.fromISO(metric).toJSDate()
 
     return metric
+}
+
+export function getAttributePaths(dataset: Dataset): {[name: string]: string} {
+    const attributesOverride = {} as {[name: string]: string}
+    const {label, metric, location, temporal} = dataset
+    if (label && label.includes('.'))
+        attributesOverride[label.substring(0, label.indexOf('.'))] = label
+
+    if (metric && metric.includes('.'))
+        attributesOverride[metric.substring(0, metric.indexOf('.'))] = metric
+
+    if (location && location.includes('.'))
+        attributesOverride[location.substring(0, location.indexOf('.'))] = location
+
+    if (temporal && temporal.includes('.'))
+        attributesOverride[temporal.substring(0, temporal.indexOf('.'))] = temporal
+
+    return attributesOverride
 }

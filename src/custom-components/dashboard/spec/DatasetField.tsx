@@ -1,6 +1,7 @@
+import _ from 'lodash'
 import {useCallback, useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
-import {Button, Col, Form, FormInstance, Row, Select} from 'antd'
+import {AutoComplete, Button, Col, Form, FormInstance, Row, Select} from 'antd'
 import {DeleteOutlined} from '@ant-design/icons'
 import {AttrType, Dataset, Item, MetricType, RelType, TemporalType} from '../../../types'
 import ItemService from '../../../services/item'
@@ -16,13 +17,24 @@ interface Props {
     onRemove: () => void
 }
 
+interface OptionType {
+    label: string
+    value: string
+}
+
 const {Item: FormItem} = Form
 const {Option: SelectOption} = Select
+const MIN_SEARCH_LENGTH = 2
+const DEBOUNCE_WAIT_INTERVAL = 500
 
 export default function DatasetField({index, dataset, metricType, temporalType, onRemove}: Props) {
     const {t} = useTranslation()
     const itemService = useMemo(() => ItemService.getInstance(), [])
     const sortedItemNames = useMemo(() => itemService.getNames().sort(), [itemService])
+    const [labelOptions, setLabelOptions] = useState<OptionType[]>([])
+    const [metricOptions, setMetricOptions] = useState<OptionType[]>([])
+    const [locationOptions, setLocationOptions] = useState<OptionType[]>([])
+    const [temporalOptions, setTemporalOptions] = useState<OptionType[]>([])
     const [curItem, setCurItem] = useState<Item | null>(dataset.itemName ? itemService.getByName(dataset.itemName) : null)
     const attributes = curItem?.spec?.attributes
 
@@ -30,7 +42,7 @@ export default function DatasetField({index, dataset, metricType, temporalType, 
         setCurItem(itemService.getByName(name))
     }, [itemService])
 
-    const getLabelAttrNames = useCallback(
+    const labelAttrNames = useMemo(
         () => {
             if (!attributes)
                 return []
@@ -41,7 +53,7 @@ export default function DatasetField({index, dataset, metricType, temporalType, 
             }
         )}, [attributes])
 
-    const getMetricAttrNames = useCallback(
+    const metricAttrNames = useMemo(
         () => {
             if (!attributes)
                 return []
@@ -52,7 +64,7 @@ export default function DatasetField({index, dataset, metricType, temporalType, 
             }
         )}, [attributes, metricType])
 
-    const getLocationAttrNames = useCallback(
+    const locationAttrNames = useMemo(
         () => {
             if (!attributes)
                 return []
@@ -63,7 +75,7 @@ export default function DatasetField({index, dataset, metricType, temporalType, 
             }
         )}, [attributes])
 
-    const getTemporalAttrNames = useCallback(
+    const temporalAttrNames = useMemo(
         () => {
             if (!attributes)
                 return []
@@ -73,6 +85,46 @@ export default function DatasetField({index, dataset, metricType, temporalType, 
                 return attr.type === temporalType
             })
         }, [attributes, temporalType])
+
+    const handleLabelSearch = _.debounce((value: string) => {
+        setLabelOptions([])
+        if (value.length < MIN_SEARCH_LENGTH)
+            return
+
+        const regExp = new RegExp(value, 'i')
+        const labels = labelAttrNames.filter(it => it.match(regExp))
+        setLabelOptions(labels.map(it => ({label: it, value: it})))
+    }, DEBOUNCE_WAIT_INTERVAL)
+
+    const handleMetricSearch = _.debounce((value: string) => {
+        setMetricOptions([])
+        if (value.length < MIN_SEARCH_LENGTH)
+            return
+
+        const regExp = new RegExp(value, 'i')
+        const metrics = metricAttrNames.filter(it => it.match(regExp))
+        setMetricOptions(metrics.map(it => ({label: it, value: it})))
+    }, DEBOUNCE_WAIT_INTERVAL)
+
+    const handleLocationSearch = _.debounce((value: string) => {
+        setLocationOptions([])
+        if (value.length < MIN_SEARCH_LENGTH)
+            return
+
+        const regExp = new RegExp(value, 'i')
+        const locations = locationAttrNames.filter(it => it.match(regExp))
+        setLocationOptions(locations.map(it => ({label: it, value: it})))
+    }, DEBOUNCE_WAIT_INTERVAL)
+
+    const handleTemporalSearch = _.debounce((value: string) => {
+        setTemporalOptions([])
+        if (value.length < MIN_SEARCH_LENGTH)
+            return
+
+        const regExp = new RegExp(value, 'i')
+        const temporalList = temporalAttrNames.filter(it => it.match(regExp))
+        setTemporalOptions(temporalList.map(it => ({label: it, value: it})))
+    }, DEBOUNCE_WAIT_INTERVAL)
 
     return (
         <div className={styles.dashItemField}>
@@ -97,9 +149,7 @@ export default function DatasetField({index, dataset, metricType, temporalType, 
                         initialValue={dataset.label}
                         rules={[{required: true, message: t('Required field')}]}
                     >
-                        <Select>
-                            {getLabelAttrNames().map(it => <SelectOption key={it} value={it}>{it}</SelectOption>)}
-                        </Select>
+                        <AutoComplete options={labelOptions} placeholder={t('Label')} onSearch={handleLabelSearch}/>
                     </FormItem>
                 </Col>
                 <Col span={12}>
@@ -110,9 +160,7 @@ export default function DatasetField({index, dataset, metricType, temporalType, 
                         initialValue={dataset.metric}
                         rules={[{required: true, message: t('Required field')}]}
                     >
-                        <Select>
-                            {getMetricAttrNames().map(it => <SelectOption key={it} value={it}>{it}</SelectOption>)}
-                        </Select>
+                        <AutoComplete options={metricOptions} placeholder={t('Metric')} onSearch={handleMetricSearch}/>
                     </FormItem>
                 </Col>
                 <Col span={12}>
@@ -122,9 +170,7 @@ export default function DatasetField({index, dataset, metricType, temporalType, 
                         label={t('Location')}
                         initialValue={dataset.location}
                     >
-                        <Select>
-                            {getLocationAttrNames().map(it => <SelectOption key={it} value={it}>{it}</SelectOption>)}
-                        </Select>
+                        <AutoComplete options={locationOptions} placeholder={t('Location')} onSearch={handleLocationSearch}/>
                     </FormItem>
                 </Col>
                 <Col span={12}>
@@ -134,9 +180,7 @@ export default function DatasetField({index, dataset, metricType, temporalType, 
                         label={t('Temporal')}
                         initialValue={dataset.temporal}
                     >
-                        <Select>
-                            {getTemporalAttrNames().map(it => <SelectOption key={it} value={it}>{it}</SelectOption>)}
-                        </Select>
+                        <AutoComplete options={temporalOptions} placeholder={t('Temporal')} onSearch={handleTemporalSearch}/>
                     </FormItem>
                 </Col>
             </Row>

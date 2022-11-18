@@ -112,12 +112,17 @@ export default class ItemService {
 
     getNames = (): string[] => Object.keys(this.items)
 
-    listNonCollectionAttributes = (item: Item): string[] => {
+    listNonCollectionAttributes = (item: Item, attributesOverride: {[name: string]: string} = {}): string[] => {
         const result: string[] = []
         const {attributes} = item.spec
         for (const attrName in attributes) {
             if (!attributes.hasOwnProperty(attrName))
                 continue
+
+            if (attrName in attributesOverride) {
+                result.push(attributesOverride[attrName])
+                continue
+            }
 
             const attr = attributes[attrName]
             if (attr.private || (attr.type === AttrType.relation && (attr.relType === RelType.oneToMany || attr.relType === RelType.manyToMany)))

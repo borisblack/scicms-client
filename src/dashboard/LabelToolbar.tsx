@@ -17,11 +17,12 @@ export default function LabelToolbar({dash, results, onChange}: Props) {
         const datasetResult: ItemData[] = results[i]
         const label = dataset.label as string
         const labels = datasetResult.filter(itemData => itemData[label]).map(itemData => itemData[label] as string)
+        const labelSet = new Set(labels)
         return {
             key: `${dataset.itemName}-${i}`,
             title: dataset.itemName as string,
             icon: <FolderOutlined/>,
-            children: labels.map(label => ({
+            children: Array.from(labelSet).map(label => ({
                 key: `${label}-${i}-child`,
                 title: label
             }))

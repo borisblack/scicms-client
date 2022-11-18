@@ -25,6 +25,8 @@ import TemporalToolbar from './TemporalToolbar'
 import FullScreen from '../components/fullscreen/FullScreen'
 import LabelToolbar from './LabelToolbar'
 import LocationToolbar from './LocationToolbar'
+import {ID_ATTR_NAME} from '../config/constants'
+import {getAttributePaths} from '../util/dashboard'
 
 const dashMap: DashMap = {
     [DashType.bar]: BarDash,
@@ -80,37 +82,35 @@ export default function DashWrapper(props: DashProps) {
                 extraFiltersInput[dataset.temporal as string] = temporalFilter
             }
 
+            const label = dataset.label as string
             const requestParams: ExtRequestParams = {
-                sorting: [{id: dataset.label as string, desc: false}],
+                sorting: [{id: label.includes('.') ? ID_ATTR_NAME : label, desc: false}],
                 filters: [],
                 pagination: {page: 1, pageSize: hasExtraFiltersInput ? appConfig.dashboard.maxPageSize : appConfig.dashboard.defaultPageSize}
             }
 
-            return queryService.findAll(item, requestParams, extraFiltersInput)
+            const attributePaths = getAttributePaths(dataset)
+            return queryService.findAll(item, requestParams, extraFiltersInput, attributePaths)
         }))
             .then(fetchedResults => {
                 const newResults = fetchedResults.map(res => res.data)
                 setResults(newResults)
 
-                // Update checked labels
+                // Update checked labels and locations
                 const checkedLabelSets: Set<string>[] = new Array(dash.datasets.length).fill(new Set<string>())
-                for (let i = 0; i < newResults.length; i++) {
-                    const dataset = dash.datasets[i]
-                    const datasetResult = newResults[i]
-                    const labels = datasetResult.map(itemData => itemData[dataset.label as string])
-                    checkedLabelSets[i] = new Set(labels)
-                }
-                setFilteredLabelSets(checkedLabelSets)
-
-                // Update checked location labels
                 const checkedLocationLabelSets: Set<string>[] = new Array(dash.datasets.length).fill(new Set<string>())
                 for (let i = 0; i < newResults.length; i++) {
                     const dataset = dash.datasets[i]
-                    const {location} = dataset
+                    const {label, location} = dataset
                     const datasetResult = newResults[i]
+
+                    const labels = datasetResult.map(itemData => itemData[label as string])
+                    checkedLabelSets[i] = new Set(labels)
+
                     const locationLabels = location ? datasetResult.filter(itemData => itemData[location]).map(itemData => (itemData[location].data as Location).label) : []
                     checkedLocationLabelSets[i] = new Set(locationLabels)
                 }
+                setFilteredLabelSets(checkedLabelSets)
                 setFilteredLocationLabelSets(checkedLocationLabelSets)
             })
     }, [beginTemporal, dash.datasets, endTemporal, itemService, queryService])

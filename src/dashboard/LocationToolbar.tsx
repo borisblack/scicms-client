@@ -17,12 +17,13 @@ export default function LocationToolbar({dash, results, onChange}: Props) {
         const datasetResult: ItemData[] = results[i]
         const {location} = dataset
         const locationLabels = location ? datasetResult.filter(itemData => itemData[location]).map(itemData => (itemData[location].data as Location).label) : []
+        const locationLabelSet = new Set(locationLabels)
         return {
             key: `${dataset.itemName}-${i}`,
             title: dataset.itemName as string,
             icon: <FolderOutlined/>,
             disabled: !location,
-            children: locationLabels.map(locationLabel => ({
+            children: Array.from(locationLabelSet).map(locationLabel => ({
                 key: `${locationLabel}-${i}-child`,
                 title: locationLabel
             }))

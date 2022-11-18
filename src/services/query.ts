@@ -167,6 +167,22 @@ function buildDateTimeFilter(filterValue: string): FilterInput<ItemData, string>
     throw new Error(i18n.t('Invalid filter format'))
 }
 
+function attributePathToGraphQl(attributePath: string): string {
+    const tokens = attributePath.split('.')
+    if (tokens.length === 1)
+        return attributePath
+
+    return tokens.join(' { ') + ' }'.repeat(tokens.length - 1)
+}
+
+function getAttribute(data: ItemData, attributePath: string): any {
+    const tokens = attributePath.split('.')
+    if (tokens.length === 1)
+        return data[attributePath]
+
+    return tokens.reduce((obj, s) => (obj ?? {})[s], data)
+}
+
 export default class QueryService {
     private static instance: QueryService | null = null
 
@@ -201,8 +217,14 @@ export default class QueryService {
         }
     `
 
-    findAll = async (item: Item, {sorting, filters, pagination, majorRev, locale, state}: ExtRequestParams, extraFiltersInput?: FiltersInput<ItemData>): Promise<ResponseCollection<any>> => {
-        const query = gql(this.buildFindAllQuery(item))
+    findAll = async (
+        item: Item,
+        {sorting, filters, pagination, majorRev, locale, state}: ExtRequestParams,
+        extraFiltersInput?: FiltersInput<ItemData>,
+        attributePaths?: {[name: string]: string}
+    ): Promise<ResponseCollection<ItemData>> => {
+        const attributesOverride = _.mapValues(attributePaths, v => attributePathToGraphQl(v))
+        const query = gql(this.buildFindAllQuery(item, null, attributesOverride))
         const {page, pageSize} = pagination
         const variables: any = {
             sort: this.buildSortExpression(item, sorting),
@@ -227,10 +249,27 @@ export default class QueryService {
             throw new Error(i18n.t('An error occurred while executing the request'))
         }
 
-        return res.data[item.pluralName]
+        const responseCollection = res.data[item.pluralName] as ResponseCollection<ItemData>
+        if (_.isEmpty(attributePaths))
+            return responseCollection
+
+        const dataWithAttributePaths: ItemData[] = responseCollection.data.map(d => {
+            const o = {...d}
+            _.forOwn(attributePaths, v => {
+                o[v] = getAttribute(d, v)
+            })
+
+            return o
+        })
+
+        return {...responseCollection, data: dataWithAttributePaths}
     }
 
-    private buildSortExpression = (item: Item, sorting: SortingState) => sorting.map(it => {
+    private buildSortExpression = (
+        item: Item,
+        sorting: SortingState,
+        overrideAttributes?: {[name: string]: string}
+    ) => sorting.map(it => {
         const matchRes = it.id.match(SORT_ATTR_PATTERN)
         if (matchRes == null)
             throw new Error(`Illegal sort attribute [${it.id}]`)
@@ -258,7 +297,7 @@ export default class QueryService {
         }
     })
 
-    private buildFindAllQuery = (item: Item, state?: string) => `
+    private buildFindAllQuery = (item: Item, state?: string | null, attributesOverride?: {[name: string]: string}) => `
         query findAll${_.upperFirst(item.pluralName)}(
             $sort: [String]
             $filters: ${_.upperFirst(item.name)}FiltersInput
@@ -276,7 +315,7 @@ export default class QueryService {
                 ${state ? 'state: $state' : ''}
             ) {
                 data {
-                    ${this.itemService.listNonCollectionAttributes(item).join('\n')}
+                    ${this.itemService.listNonCollectionAttributes(item, attributesOverride).join('\n')}
                 }
                 meta {
                     pagination {
