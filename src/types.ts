@@ -114,11 +114,13 @@ export interface Item extends ItemTemplate {
     pluralName: string
     displayPluralName: string
     dataSource: string
-    tableName: string
+    tableName: string | null
+    query: string | null
     titleAttribute: string
     includeTemplates: string[]
     description: string | null
     icon: string | null
+    readOnly: boolean | null
     performDdl: boolean | null
     versioned: boolean | null
     manualVersioning: boolean | null
@@ -142,10 +144,12 @@ interface ItemMetadata extends ItemTemplateMetadata{
     pluralName: string
     displayPluralName: string
     dataSource: string,
-    tableName: string
+    tableName: string | null
+    query: string | null
     titleAttribute: string
     description: string | null
     icon: string | null
+    readonly: boolean | null
     performDdl: boolean | null
     versioned: boolean | null
     manualVersioning: boolean | null

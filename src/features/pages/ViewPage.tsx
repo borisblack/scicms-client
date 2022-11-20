@@ -71,8 +71,8 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
 
     const permissions = useMemo(() => {
         const acl = permissionService.getAcl(me, item, data)
-        const canEdit = (!isSystemItem || !data?.core) && (!item.versioned || !!data?.current) && acl.canWrite
-        const canDelete = (!isSystemItem || !data?.core) && acl.canDelete
+        const canEdit = (!isSystemItem || !data?.core) && !item.readOnly && (!item.versioned || !!data?.current) && acl.canWrite
+        const canDelete = (!isSystemItem || !data?.core) && !item.readOnly && acl.canDelete
         return [acl.canCreate, canEdit, canDelete]
     }, [data, isSystemItem, item, me, permissionService])
     const [canCreate, canEdit, canDelete] = permissions

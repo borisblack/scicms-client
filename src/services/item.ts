@@ -23,10 +23,12 @@ const FIND_ALL_QUERY = gql`
                 displayPluralName
                 dataSource
                 tableName
+                query
                 titleAttribute
                 includeTemplates
                 description
                 icon
+                readOnly
                 core
                 performDdl
                 versioned

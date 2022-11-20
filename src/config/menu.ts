@@ -51,6 +51,8 @@ const menuConfig: MenuConfig = {
         }, {
             itemName: 'item'
         }, {
+            itemName: 'itemView'
+        }, {
             itemName: 'revisionPolicy'
         }, {
             itemName: 'sequence'
