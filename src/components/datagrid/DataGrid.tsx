@@ -160,7 +160,7 @@ function DataGrid({loading = false, columns, data, initialState, hasFilters = tr
         const exportWinHtml = `<!DOCTYPE html>
             <html>
                 <head>
-                    <title>${t('Export')} - HTML</title>
+                    <title>${title}</title>
                     <style>
                         ${exportWinStyle}
                     </style>

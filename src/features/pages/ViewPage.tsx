@@ -390,7 +390,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
         const exportWinHtml = `<!DOCTYPE html>
             <html>
                 <head>
-                    <title>${t('Export')} - HTML</title>
+                    <title>${t(item.displayName)}</title>
                     <style>
                         ${exportWinStyle}
                     </style>
