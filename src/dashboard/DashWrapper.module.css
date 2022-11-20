@@ -1,10 +1,7 @@
 .dashWrapper {
     background-color: #fff;
-    padding-top: 16px;
 }
 
-.topRight {
-    position: absolute;
-    top: 8px;
-    right: 8px;
+.pageHeader {
+    padding: 0 8px 8px;
 }

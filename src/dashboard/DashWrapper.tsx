@@ -16,8 +16,8 @@ import RadarDash from './dashes/RadarDash'
 import ScatterDash from './dashes/ScatterDash'
 import BubbleMapDash from './dashes/BubbleMapDash'
 import styles from './DashWrapper.module.css'
-import {Button, Tooltip} from 'antd'
-import {FullscreenExitOutlined, FullscreenOutlined} from '@ant-design/icons'
+import {Button, Col, PageHeader, Row, Tooltip} from 'antd'
+import {FullscreenExitOutlined, FullscreenOutlined, PlusCircleOutlined} from '@ant-design/icons'
 import RightPanel from '../components/panel/RightPanel'
 import LeftPanel from '../components/panel/LeftPanel'
 import TopPanel from '../components/panel/TopPanel'
@@ -27,6 +27,7 @@ import LabelToolbar from './LabelToolbar'
 import LocationToolbar from './LocationToolbar'
 import {ID_ATTR_NAME} from '../config/constants'
 import {getAttributePaths} from '../util/dashboard'
+import {getLabel} from '../features/pages/pagesSlice'
 
 const dashMap: DashMap = {
     [DashType.bar]: BarDash,
@@ -124,11 +125,22 @@ export default function DashWrapper(props: DashProps) {
 
     return (
         <FullScreen active={fullScreen}>
-            {fullScreen ? (
-                <>
-                    <Tooltip title={t('Exit full screen')} placement="leftBottom">
-                        <Button type="link" icon={<FullscreenExitOutlined style={{fontSize: 24}}/>} className={styles.topRight} onClick={() => setFullScreen(false)}/>
+            <PageHeader
+                className={styles.pageHeader}
+                title={dash.name}
+                extra={fullScreen ? (
+                    <Tooltip title={t('Exit full screen')} placement="left">
+                        <Button type="link" icon={<FullscreenExitOutlined style={{fontSize: 24}}/>} onClick={() => setFullScreen(false)}/>
                     </Tooltip>
+                ) : (
+                    <Tooltip title={t('Full screen')} placement="left">
+                        <Button type="link" icon={<FullscreenOutlined style={{fontSize: 24}}/>} onClick={() => setFullScreen(true)}/>
+                    </Tooltip>
+                )}
+            />
+
+            {fullScreen && (
+                <>
                     {dash.temporalType && (
                         <TopPanel title={t('Temporal')} height={60}>
                             <div style={{padding: '16px 8px'}}>
@@ -147,11 +159,8 @@ export default function DashWrapper(props: DashProps) {
                         </div>
                     </RightPanel>
                 </>
-            ) : (
-                <Tooltip title={t('Full screen')} placement="leftBottom">
-                    <Button type="link" icon={<FullscreenOutlined style={{fontSize: 24}}/>} className={styles.topRight} onClick={() => setFullScreen(true)}/>
-                </Tooltip>
             )}
+
             <DashComponent {...props} data={filteredResults}/>
         </FullScreen>
     )

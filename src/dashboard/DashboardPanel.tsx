@@ -33,7 +33,7 @@ export default function DashboardPanel({me, pageKey, spec}: Props) {
             {Object.keys(rows).sort(intCompareFn).map(rowIndex => {
                 const colDashes = rows[rowIndex]
                 return(
-                    <Row key={rowIndex} gutter={16} style={{marginBottom: 16}}>
+                    <Row key={rowIndex} gutter={16}>
                         {colDashes.sort(dashColCompareFn).map(colDash => {
                             return (
                                 <Col key={colDash.name} span={colDash.w * K}>
