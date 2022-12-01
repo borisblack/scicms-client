@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import {useMemo} from 'react'
+import {useMemo, useState} from 'react'
 import {Alert, Col, Row} from 'antd'
 import {useTranslation} from 'react-i18next'
 
@@ -25,6 +25,7 @@ const dashColCompareFn = (a: IDash, b: IDash) => a.x - b.x
 export default function DashboardPanel({me, pageKey, spec}: Props) {
     const {dashes} = spec
     const {t} = useTranslation()
+    const [hasFullScreen, setFullScreen] = useState<boolean>(false)
     const canPreview = useMemo(() => hasRole(me, ROLE_ANALYST) || hasRole(me, ROLE_ADMIN), [me])
     const rows = useMemo(() => _.groupBy(dashes, d => d.y), [dashes])
 
@@ -36,7 +37,13 @@ export default function DashboardPanel({me, pageKey, spec}: Props) {
                     <Row key={rowIndex} gutter={16}>
                         {colDashes.sort(dashColCompareFn).map(colDash => (
                             <Col key={colDash.name} span={colDash.w * K}>
-                                <DashWrapper pageKey={pageKey} dash={colDash} data={[]}/>
+                                <DashWrapper
+                                    pageKey={pageKey}
+                                    dash={colDash}
+                                    data={[]}
+                                    hasFullScreen={hasFullScreen}
+                                    onFullScreenChange={setFullScreen}
+                                />
                             </Col>
                         ))}
                     </Row>

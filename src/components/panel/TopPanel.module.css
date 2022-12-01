@@ -1,5 +1,5 @@
 .topPanelSticker {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 45%;
     background-color: #fff;
@@ -16,7 +16,7 @@
 }
 
 .topPanel {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;

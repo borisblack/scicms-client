@@ -41,7 +41,7 @@ const dashMap: DashMap = {
 }
 
 export default function DashWrapper(props: DashProps) {
-    const {dash} = props
+    const {dash, hasFullScreen, onFullScreenChange} = props
     const getDashComponent = useCallback(() => dashMap[dash.type], [dash.type])
     const DashComponent = getDashComponent()
     if (!DashComponent)
@@ -65,6 +65,11 @@ export default function DashWrapper(props: DashProps) {
     const [fullScreen, setFullScreen] = useState<boolean>(false)
     const [beginTemporal, setBeginTemporal] = useState<string | null>(null)
     const [endTemporal, setEndTemporal] = useState<string | null>(null)
+
+    const handleFullScreenChange = useCallback((fullScreen: boolean) => {
+        setFullScreen(fullScreen)
+        onFullScreenChange(fullScreen)
+    }, [onFullScreenChange])
 
     const fetchResults = useCallback(() => {
         Promise.all(dash.datasets.map(dataset => {
@@ -123,17 +128,17 @@ export default function DashWrapper(props: DashProps) {
     }, [dash.refreshIntervalSeconds, fetchResults])
 
     return (
-        <FullScreen active={fullScreen}>
+        <FullScreen active={fullScreen} normalStyle={{display: hasFullScreen ? 'none' : 'block'}}>
             <PageHeader
                 className={styles.pageHeader}
                 title={dash.name}
                 extra={fullScreen ? (
                     <Tooltip title={t('Exit full screen')} placement="left">
-                        <Button type="link" icon={<FullscreenExitOutlined style={{fontSize: 24}}/>} onClick={() => setFullScreen(false)}/>
+                        <Button type="link" icon={<FullscreenExitOutlined style={{fontSize: 24}}/>} onClick={() => handleFullScreenChange(false)}/>
                     </Tooltip>
                 ) : (
                     <Tooltip title={t('Full screen')} placement="left">
-                        <Button type="link" icon={<FullscreenOutlined style={{fontSize: 24}}/>} onClick={() => setFullScreen(true)}/>
+                        <Button type="link" icon={<FullscreenOutlined style={{fontSize: 24}}/>} onClick={() => handleFullScreenChange(true)}/>
                     </Tooltip>
                 )}
             />
