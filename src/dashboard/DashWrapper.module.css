@@ -1,5 +1,6 @@
 .dashWrapper {
     background-color: #fff;
+    overflow: auto;
 }
 
 .pageHeader {
