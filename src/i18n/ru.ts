@@ -156,6 +156,7 @@ const ru = {
         'Private': 'Приватный',
         'Promote': 'Переместить',
         'Promotion': 'Перемещение',
+        'Query': 'Запрос',
         'Read Only': 'Только для чтения',
         'Refresh': 'Обновить',
         'Refresh Interval (sec)': 'Интервал обновления (сек)',

@@ -156,6 +156,7 @@ const en = {
         'Private': 'Private',
         'Promote': 'Promote',
         'Promotion': 'Promotion',
+        'Query': 'Query',
         'Read Only': 'Read Only',
         'Refresh': 'Refresh',
         'Refresh Interval (sec)': 'Refresh Interval (sec)',
