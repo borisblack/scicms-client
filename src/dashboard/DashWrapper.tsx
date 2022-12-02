@@ -15,7 +15,7 @@ import PolarAreaDash from './dashes/PolarAreaDash'
 import RadarDash from './dashes/RadarDash'
 import ScatterDash from './dashes/ScatterDash'
 import BubbleMapDash from './dashes/BubbleMapDash'
-import {Button, PageHeader, Tooltip} from 'antd'
+import {Button, PageHeader} from 'antd'
 import {FullscreenExitOutlined, FullscreenOutlined} from '@ant-design/icons'
 import RightPanel from '../components/panel/RightPanel'
 import LeftPanel from '../components/panel/LeftPanel'
@@ -41,7 +41,7 @@ const dashMap: DashMap = {
 }
 
 export default function DashWrapper(props: DashProps) {
-    const {dash, hasFullScreen, onFullScreenChange} = props
+    const {dash, isFullScreenComponentExist, onFullScreenComponentStateChange} = props
     const getDashComponent = useCallback(() => dashMap[dash.type], [dash.type])
     const DashComponent = getDashComponent()
     if (!DashComponent)
@@ -68,8 +68,8 @@ export default function DashWrapper(props: DashProps) {
 
     const handleFullScreenChange = useCallback((fullScreen: boolean) => {
         setFullScreen(fullScreen)
-        onFullScreenChange(fullScreen)
-    }, [onFullScreenChange])
+        onFullScreenComponentStateChange(fullScreen)
+    }, [onFullScreenComponentStateChange])
 
     const fetchResults = useCallback(() => {
         Promise.all(dash.datasets.map(dataset => {
@@ -128,18 +128,14 @@ export default function DashWrapper(props: DashProps) {
     }, [dash.refreshIntervalSeconds, fetchResults])
 
     return (
-        <FullScreen active={fullScreen} normalStyle={{display: hasFullScreen ? 'none' : 'block'}}>
+        <FullScreen active={fullScreen} normalStyle={{display: isFullScreenComponentExist ? 'none' : 'block'}}>
             <PageHeader
                 className={styles.pageHeader}
                 title={dash.name}
                 extra={fullScreen ? (
-                    <Tooltip title={t('Exit full screen')} placement="left">
-                        <Button type="link" icon={<FullscreenExitOutlined style={{fontSize: 24}}/>} onClick={() => handleFullScreenChange(false)}/>
-                    </Tooltip>
+                    <Button type="link" icon={<FullscreenExitOutlined style={{fontSize: 24}}/>} title={t('Exit full screen')} onClick={() => handleFullScreenChange(false)}/>
                 ) : (
-                    <Tooltip title={t('Full screen')} placement="left">
-                        <Button type="link" icon={<FullscreenOutlined style={{fontSize: 24}}/>} onClick={() => handleFullScreenChange(true)}/>
-                    </Tooltip>
+                    <Button type="link" icon={<FullscreenOutlined style={{fontSize: 24}}/>} title={t('Full screen')} onClick={() => handleFullScreenChange(true)}/>
                 )}
             />
 
@@ -165,7 +161,7 @@ export default function DashWrapper(props: DashProps) {
                 </>
             )}
 
-            <DashComponent {...props} data={filteredResults}/>
+            <DashComponent {...props} fullScreen={fullScreen} data={filteredResults}/>
         </FullScreen>
     )
 }

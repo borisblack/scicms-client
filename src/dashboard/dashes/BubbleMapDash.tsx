@@ -3,12 +3,12 @@ import {FC, useEffect, useMemo, useRef, useState} from 'react'
 import Chart from 'chart.js/auto'
 import {BubbleMapController, ColorScale, GeoFeature, ProjectionScale, SizeScale, topojson} from 'chartjs-chart-geo'
 import {DashType} from '../../types'
-import {DashProps} from '.'
+import {InnerDashProps} from '.'
 import {map3dMapMetrics, mapLabels, temporalTypeSet, timeScaleProps} from '../../util/dashboard'
 
 Chart.register(BubbleMapController, GeoFeature, ColorScale, ProjectionScale, SizeScale)
 
-const BubbleMapDash: FC<DashProps> = ({pageKey, dash, data}) => {
+const BubbleMapDash: FC<InnerDashProps> = ({pageKey, fullScreen, dash, data}) => {
     if (dash.type !== DashType.bubbleMap)
         throw new Error('Illegal dash type')
 
@@ -67,12 +67,13 @@ const BubbleMapDash: FC<DashProps> = ({pageKey, dash, data}) => {
                     // r: {
                     //     size: [1, 20],
                     // }
-                }
+                },
+                maintainAspectRatio: !fullScreen
             }
         })
 
         return () => { chart.destroy() }
-    }, [countries, dash.metricType, dash.name, data, labels, preparedData])
+    }, [countries, dash.metricType, dash.name, data, fullScreen, labels, preparedData])
 
     return (
         <canvas id={`${pageKey}#${dash.name}`} ref={canvasRef}/>

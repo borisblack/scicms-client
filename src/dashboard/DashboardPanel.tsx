@@ -25,7 +25,7 @@ const dashColCompareFn = (a: IDash, b: IDash) => a.x - b.x
 export default function DashboardPanel({me, pageKey, spec}: Props) {
     const {dashes} = spec
     const {t} = useTranslation()
-    const [hasFullScreen, setFullScreen] = useState<boolean>(false)
+    const [isFullScreenComponentExist, setFullScreenComponentExist] = useState<boolean>(false)
     const canPreview = useMemo(() => hasRole(me, ROLE_ANALYST) || hasRole(me, ROLE_ADMIN), [me])
     const rows = useMemo(() => _.groupBy(dashes, d => d.y), [dashes])
 
@@ -40,9 +40,8 @@ export default function DashboardPanel({me, pageKey, spec}: Props) {
                                 <DashWrapper
                                     pageKey={pageKey}
                                     dash={colDash}
-                                    data={[]}
-                                    hasFullScreen={hasFullScreen}
-                                    onFullScreenChange={setFullScreen}
+                                    isFullScreenComponentExist={isFullScreenComponentExist}
+                                    onFullScreenComponentStateChange={setFullScreenComponentExist}
                                 />
                             </Col>
                         ))}

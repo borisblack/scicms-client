@@ -2,10 +2,10 @@ import {FC, useEffect, useMemo, useRef} from 'react'
 import Chart from 'chart.js/auto'
 
 import {DashType} from '../../types'
-import {DashProps} from '.'
+import {InnerDashProps} from '.'
 import {mapLabels, mapMetrics} from '../../util/dashboard'
 
-const DoughnutDash: FC<DashProps> = ({pageKey, dash, data}) => {
+const DoughnutDash: FC<InnerDashProps> = ({pageKey, fullScreen, dash, data}) => {
     if (dash.type !== DashType.doughnut)
         throw new Error('Illegal dash type')
 
@@ -34,11 +34,14 @@ const DoughnutDash: FC<DashProps> = ({pageKey, dash, data}) => {
                     ],
                     hoverOffset: 4
                 }]
+            },
+            options: {
+                maintainAspectRatio: !fullScreen
             }
         })
 
         return () => { chart.destroy() }
-    }, [dash.name, data, labels, preparedData])
+    }, [dash.name, data, fullScreen, labels, preparedData])
 
     return (
         <canvas id={`${pageKey}#${dash.name}`} ref={canvasRef}/>

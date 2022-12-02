@@ -2,10 +2,10 @@ import {FC, useEffect, useMemo, useRef} from 'react'
 import Chart from 'chart.js/auto'
 
 import {DashType} from '../../types'
-import {DashProps} from '.'
+import {InnerDashProps} from '.'
 import {mapLabels, mapMetrics} from '../../util/dashboard'
 
-const RadarDash: FC<DashProps> = ({pageKey, dash, data}) => {
+const RadarDash: FC<InnerDashProps> = ({pageKey, dash, fullScreen, data}) => {
     if (dash.type !== DashType.radar)
         throw new Error('Illegal dash type')
 
@@ -35,11 +35,14 @@ const RadarDash: FC<DashProps> = ({pageKey, dash, data}) => {
                     pointHoverBackgroundColor: '#fff',
                     pointHoverBorderColor: 'rgb(255, 99, 132)'
                 }]
+            },
+            options: {
+                maintainAspectRatio: !fullScreen
             }
         })
 
         return () => { chart.destroy() }
-    }, [dash.name, data, labels, preparedData])
+    }, [dash.name, data, fullScreen, labels, preparedData])
 
     return (
         <canvas id={`${pageKey}#${dash.name}`} ref={canvasRef}/>

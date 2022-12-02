@@ -2,10 +2,10 @@
 import {FC, useEffect, useMemo, useRef} from 'react'
 import Chart from 'chart.js/auto'
 import {DashType} from '../../types'
-import {DashProps} from '.'
-import {mapLabels, map2dMetrics, temporalTypeSet, timeScaleProps} from '../../util/dashboard'
+import {InnerDashProps} from '.'
+import {map2dMetrics, mapLabels, temporalTypeSet, timeScaleProps} from '../../util/dashboard'
 
-const LineDash: FC<DashProps> = ({pageKey, dash, data}) => {
+const LineDash: FC<InnerDashProps> = ({pageKey, dash, fullScreen, data}) => {
     if (dash.type !== DashType.line)
         throw new Error('Illegal dash type')
 
@@ -56,12 +56,13 @@ const LineDash: FC<DashProps> = ({pageKey, dash, data}) => {
                             }
                         }
                     }
-                }
+                },
+                maintainAspectRatio: !fullScreen
             }
         })
 
         return () => { chart.destroy() }
-    }, [dash.metricType, dash.name, data, labels, preparedData])
+    }, [dash.metricType, dash.name, data, fullScreen, labels, preparedData])
 
     return (
         <canvas id={`${pageKey}#${dash.name}`} ref={canvasRef}/>

@@ -2,10 +2,10 @@
 import {FC, useEffect, useMemo, useRef} from 'react'
 import Chart from 'chart.js/auto'
 import {DashType} from '../../types'
-import {DashProps} from '.'
+import {InnerDashProps} from '.'
 import {map2dMetrics, mapLabels, temporalTypeSet, timeScaleProps} from '../../util/dashboard'
 
-const ScatterDash: FC<DashProps> = ({pageKey, dash, data}) => {
+const ScatterDash: FC<InnerDashProps> = ({pageKey, dash, fullScreen, data}) => {
     if (dash.type !== DashType.scatter)
         throw new Error('Illegal dash type')
 
@@ -54,12 +54,13 @@ const ScatterDash: FC<DashProps> = ({pageKey, dash, data}) => {
                             }
                         }
                     }
-                }
+                },
+                maintainAspectRatio: !fullScreen
             }
         })
 
         return () => { chart.destroy() }
-    }, [dash.metricType, dash.name, data, labels, preparedData])
+    }, [dash.metricType, dash.name, data, fullScreen, labels, preparedData])
 
     return (
         <canvas id={`${pageKey}#${dash.name}`} ref={canvasRef}/>

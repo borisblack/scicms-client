@@ -4,11 +4,15 @@ import {IDash, ItemData} from '../../types'
 export interface DashProps {
     pageKey: string
     dash: IDash
+    isFullScreenComponentExist: boolean
+    onFullScreenComponentStateChange: (fullScreen: boolean) => void
+}
+
+export interface InnerDashProps extends DashProps {
+    fullScreen: boolean
     data: ItemData[][]
-    hasFullScreen: boolean
-    onFullScreenChange: (fullScreen: boolean) => void
 }
 
 export interface DashMap {
-    [type: string]: FC<DashProps>
+    [type: string]: FC<InnerDashProps>
 }
