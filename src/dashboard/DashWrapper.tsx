@@ -26,6 +26,7 @@ import LabelToolbar from './LabelToolbar'
 import LocationToolbar from './LocationToolbar'
 import {ID_ATTR_NAME} from '../config/constants'
 import {getAttributePaths} from '../util/dashboard'
+import StatisticDash from './dashes/StatisticDash'
 import styles from './DashWrapper.module.css'
 
 const dashMap: DashMap = {
@@ -37,7 +38,9 @@ const dashMap: DashMap = {
     [DashType.pie]: PieDash,
     [DashType.polarArea]: PolarAreaDash,
     [DashType.radar]: RadarDash,
-    [DashType.scatter]: ScatterDash
+    [DashType.radar]: RadarDash,
+    [DashType.scatter]: ScatterDash,
+    [DashType.statistic]: StatisticDash
 }
 
 export default function DashWrapper(props: DashProps) {

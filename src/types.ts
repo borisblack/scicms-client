@@ -343,7 +343,8 @@ export enum DashType {
     pie = 'pie',
     polarArea = 'polarArea',
     radar = 'radar',
-    scatter = 'scatter'
+    scatter = 'scatter',
+    statistic = 'statistic'
 }
 
 export interface Dataset {
