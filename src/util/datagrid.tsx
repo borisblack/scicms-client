@@ -4,7 +4,7 @@ import {ColumnDef, ColumnFiltersState, createColumnHelper, SortingState} from '@
 import {Button, Checkbox, Tag} from 'antd'
 import {DateTime} from 'luxon'
 
-import {Attribute, AttrType, Item, ItemData, Location, Media, NamedAttribute, NamedIndex, RelType} from '../types'
+import {Attribute, AttrType, Item, ItemData, Media, NamedAttribute, NamedIndex, RelType} from '../types'
 import appConfig from '../config'
 import ItemService from '../services/item'
 import {DataWithPagination, RequestParams} from '../components/datagrid/DataGrid'
@@ -111,9 +111,6 @@ const renderCell = (item: Item, data: ItemData, attrName: string, attribute: Att
                     {(mediaData as any)[media.titleAttribute] ?? mediaData.filename}
                 </Button>
             )
-        case AttrType.location:
-            const locationData: Location | null = (value && value.data) ? value.data as Location : null
-            return locationData ? locationData.label : null
         case AttrType.relation:
             if (attribute.relType === RelType.oneToMany || attribute.relType === RelType.manyToMany)
                 throw new Error('Cannot render oneToMany or manyToMany relation')

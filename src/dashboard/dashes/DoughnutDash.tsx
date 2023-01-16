@@ -5,12 +5,12 @@ import {DashType} from '../../types'
 import {InnerDashProps} from '.'
 import {mapLabels, mapMetrics} from '../../util/dashboard'
 
-const DoughnutDash: FC<InnerDashProps> = ({pageKey, fullScreen, dash, data}) => {
+const DoughnutDash: FC<InnerDashProps> = ({pageKey, fullScreen, dash, dataset, data}) => {
     if (dash.type !== DashType.doughnut)
         throw new Error('Illegal dash type')
 
-    const labels = useMemo(() => mapLabels(dash, data), [dash, data])
-    const preparedData = useMemo(() => mapMetrics(dash, data), [dash, data])
+    const labels = useMemo(() => mapLabels(dataset, data), [data, dataset])
+    const preparedData = useMemo(() => mapMetrics(dataset, data), [data, dataset])
     const canvasRef = useRef<HTMLCanvasElement>(null)
 
     useEffect(() => {

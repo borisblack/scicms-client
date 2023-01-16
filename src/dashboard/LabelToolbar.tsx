@@ -1,57 +1,45 @@
 import {Tree, TreeDataNode, TreeProps} from 'antd'
-import {useCallback, useMemo} from 'react'
-import {IDash, ItemData} from '../types'
+import {useCallback} from 'react'
+import {Dataset} from '../types'
 import {FolderOutlined} from '@ant-design/icons'
-import {childTreeNodeKeyRegExp} from '../util/dashboard'
 
 interface Props {
-    dash: IDash
-    results: ItemData[][]
-    onChange: (checkedLabelSets: Set<string>[]) => void
+    dataset: Dataset
+    data: any[]
+    onChange: (checkedLabelSet: Set<string>) => void
 }
 
-export default function LabelToolbar({dash, results, onChange}: Props) {
-    const datasetItemNameKeys = useMemo(() => dash.datasets.map((dataset, i) => `${dataset.itemName as string}-${i}`), [dash.datasets])
-
-    const getLabelTreeData = useCallback((): TreeDataNode[] => dash.datasets.map((dataset, i) => {
-        const datasetResult: ItemData[] = results[i]
-        const label = dataset.label as string
-        const labels = datasetResult.filter(itemData => itemData[label]).map(itemData => itemData[label] as string)
+export default function LabelToolbar({dataset, data, onChange}: Props) {
+    const getLabelTreeNode = useCallback((): TreeDataNode => {
+        const labels = data.map(it => it[dataset.labelField]).filter(it => it != null)
         const labelSet = new Set(labels)
         return {
-            key: `${dataset.itemName}-${i}`,
-            title: dataset.itemName as string,
+            key: dataset.name,
+            title: dataset.name,
             icon: <FolderOutlined/>,
             children: Array.from(labelSet).map(label => ({
-                key: `${label}-${i}-child`,
+                key: label,
                 title: label
             }))
         }
-    }), [dash.datasets, results])
+    }, [data, dataset.labelField, dataset.name])
 
     const handleLabelTreeCheck: TreeProps['onCheck'] = useCallback((checkedKeys: any) => {
-        const checkedLabelSets: Set<string>[] = new Array(dash.datasets.length).fill(new Set<string>())
-        for (const checkedKey of (checkedKeys as string[])) {
-            const matches = checkedKey.match(childTreeNodeKeyRegExp)
-            if (!matches)
-                continue
+        const checkedLabelSet: Set<string> = new Set()
+        checkedKeys.forEach((key: string) => {
+            checkedLabelSet.add(key)
+        })
 
-            const [, label, index] = matches
-            const i = parseInt(index)
-            const datasetLabelSet = checkedLabelSets[i]
-            datasetLabelSet.add(label)
-        }
-
-        onChange(checkedLabelSets)
-    }, [dash.datasets.length, onChange])
+        onChange(checkedLabelSet)
+    }, [onChange])
 
     return (
         <Tree
             checkable
             showIcon
-            defaultExpandedKeys={[...datasetItemNameKeys]}
-            defaultCheckedKeys={[...datasetItemNameKeys]}
-            treeData={getLabelTreeData()}
+            defaultExpandedKeys={[dataset.name]}
+            defaultCheckedKeys={[dataset.name]}
+            treeData={[getLabelTreeNode()]}
             onCheck={handleLabelTreeCheck}
         />
     )

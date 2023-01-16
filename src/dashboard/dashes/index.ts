@@ -1,5 +1,5 @@
 import {FC} from 'react'
-import {IDash, ItemData} from '../../types'
+import {Dataset, IDash} from '../../types'
 
 export interface DashProps {
     pageKey: string
@@ -10,7 +10,8 @@ export interface DashProps {
 
 export interface InnerDashProps extends DashProps {
     fullScreen: boolean
-    data: ItemData[][]
+    dataset: Dataset
+    data: any[]
 }
 
 export interface DashMap {

@@ -1,53 +1,41 @@
-import {Button, Form, FormInstance, Input, InputNumber, Select} from 'antd'
-import {DashType, Dataset, IDash, MetricType, TemporalType} from '../../../types'
+import {Form, FormInstance, Input, InputNumber, Select} from 'antd'
+import {DashType, Dataset, IDash} from '../../../types'
 import styles from './DashboardSpec.module.css'
 import {useTranslation} from 'react-i18next'
 import appConfig from '../../../config'
-import DatasetField from './DatasetField'
-import {useCallback, useEffect, useState} from 'react'
-import {PlusCircleOutlined} from '@ant-design/icons'
-import {dashTypes, metricTypes, temporalTypes} from '../../../util/dashboard'
+import {useEffect, useMemo, useState} from 'react'
+import {dashTypes} from '../../../util/dashboard'
+import DatasetService from '../../../services/dataset'
 
 interface Props {
     form: FormInstance
     dash: IDash
     canEdit: boolean
-    onChange: (dash: DashValues) => void
     onFormFinish: (dash: DashValues) => void
 }
 
 export interface DashValues {
     name: string
     type: DashType
+    dataset: string
     refreshIntervalSeconds: number
-    metricType: MetricType
-    temporalType?: TemporalType
-    datasets: Dataset[]
 }
 
 const {Item: FormItem} = Form
 const {Option: SelectOption} = Select
 
-export default function DashForm({form, dash, canEdit, onFormFinish, onChange}: Props) {
+export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
     const {t} = useTranslation()
-    const [metricType, setMetricType] = useState<MetricType>(dash.metricType)
-    const [temporalType, setTemporalType] = useState<TemporalType | undefined>(dash.temporalType)
+    const datasetService = useMemo(() => DatasetService.getInstance(), [])
+    const [datasetNames, setDatasetNames] = useState<string[]>([])
+
+    useEffect(() => {
+        datasetService.findAll().then(data => setDatasetNames(data.map(it => it.name).sort()))
+    }, [datasetService])
 
     useEffect(() => {
         form.resetFields()
     }, [form, dash])
-
-    const handleItemAdd = useCallback(() => {
-        const newDash = form.getFieldsValue() as IDash
-        const newDatasets = [...(Object.values(newDash.datasets ?? {}) as Dataset[]), {}]
-        onChange({...newDash, datasets: newDatasets})
-    }, [form, onChange])
-
-    const handleDatasetRemove = useCallback((index: number) => {
-        const newDash = form.getFieldsValue() as IDash
-        const newDatasets = (Object.values(newDash.datasets ?? {}) as Dataset[]).filter((_, i) => i !== index)
-        onChange({...newDash, datasets: newDatasets})
-    }, [form, onChange])
 
     return (
         <Form form={form} size="small" layout="vertical" disabled={!canEdit} onFinish={onFormFinish}>
@@ -75,6 +63,18 @@ export default function DashForm({form, dash, canEdit, onFormFinish, onChange}: 
 
             <FormItem
                 className={styles.formItem}
+                name="dataset"
+                label={t('Dataset')}
+                initialValue={dash.dataset}
+                rules={[{required: true, message: t('Required field')}]}
+            >
+                <Select>
+                    {datasetNames.map(it => <SelectOption key={it} value={it}>{it}</SelectOption>)}
+                </Select>
+            </FormItem>
+
+            <FormItem
+                className={styles.formItem}
                 name="refreshIntervalSeconds"
                 label={t('Refresh Interval (sec)')}
                 initialValue={dash.refreshIntervalSeconds}
@@ -85,46 +85,6 @@ export default function DashForm({form, dash, canEdit, onFormFinish, onChange}: 
             >
                 <InputNumber min={appConfig.dashboard.minRefreshIntervalSeconds}/>
             </FormItem>
-
-            <FormItem
-                className={styles.formItem}
-                name="metricType"
-                label={t('Metric Type')}
-                initialValue={dash.metricType}
-                rules={[{required: true, message: t('Required field')}]}
-            >
-                <Select onSelect={setMetricType}>
-                    {metricTypes.map(it => <SelectOption key={it} value={it}>{it}</SelectOption>)}
-                </Select>
-            </FormItem>
-
-            <FormItem
-                className={styles.formItem}
-                name="temporalType"
-                label={t('Temporal Type')}
-                initialValue={dash.temporalType}
-            >
-                <Select onSelect={setTemporalType}>
-                    {temporalTypes.map(it => <SelectOption key={it} value={it}>{it}</SelectOption>)}
-                </Select>
-            </FormItem>
-
-            <h4>{t('Datasets')}</h4>
-            <Button type="primary" style={{marginBottom: 16}} icon={<PlusCircleOutlined/>} disabled={!canEdit} onClick={handleItemAdd}>
-                {t('Add Dataset')}
-            </Button>
-
-            {dash.datasets?.map((dataset, i) => (
-                <DatasetField
-                    key={i}
-                    form={form}
-                    index={i}
-                    dataset={dataset}
-                    metricType={metricType}
-                    temporalType={temporalType}
-                    onRemove={() => handleDatasetRemove(i)}
-                />
-            ))}
         </Form>
     )
 }

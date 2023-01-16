@@ -43,8 +43,6 @@ const menuConfig: MenuConfig = {
             roles: [ROLE_ADMIN],
             children: [{
                 itemName: 'media'
-            }, {
-                itemName: 'location'
             }]
         }, {
             itemName: 'itemTemplate'
@@ -65,6 +63,8 @@ const menuConfig: MenuConfig = {
         icon: 'PieChartOutlined',
         roles: [ROLE_ADMIN],
         children: [{
+            itemName: 'dataset'
+        }, {
             itemName: 'dashboard'
         }]
     }, {

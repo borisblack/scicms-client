@@ -10,7 +10,6 @@ interface ItemCache {
 }
 
 const MEDIA_ITEM_NAME = 'media'
-const LOCATION_ITEM_NAME = 'location'
 
 const FIND_ALL_QUERY = gql`
     query {
@@ -110,8 +109,6 @@ export default class ItemService {
 
     getMedia = (): Item => this.getByName(MEDIA_ITEM_NAME)
 
-    getLocation = (): Item => this.getByName(LOCATION_ITEM_NAME)
-
     getNames = (): string[] => Object.keys(this.items)
 
     listNonCollectionAttributes = (item: Item, attributesOverride: {[name: string]: string} = {}): string[] => {
@@ -155,9 +152,6 @@ export default class ItemService {
                 case AttrType.media:
                     const media = this.getMedia()
                     result.push(`${attrName} { data { id ${media.titleAttribute === ID_ATTR_NAME ? '' : media.titleAttribute} ${media.titleAttribute === FILENAME_ATTR_NAME ? '' : FILENAME_ATTR_NAME} } }`)
-                    break
-                case AttrType.location:
-                    result.push(`${attrName} { data { id latitude longitude label } }`)
                     break
                 case AttrType.relation:
                     if (!attr.target)

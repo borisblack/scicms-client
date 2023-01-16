@@ -12,7 +12,6 @@ import PasswordAttributeField from './attribute-fields/PasswordAttributeField'
 import StringAttributeField from './attribute-fields/StringAttributeField'
 import LocaleAttributeField from './attribute-fields/LocaleAttributeField'
 import MediaAttributeField from './attribute-fields/MediaAttributeField'
-import LocationAttributeField from './attribute-fields/LocationAttributeField'
 import EnumAttributeField from './attribute-fields/EnumAttributeField'
 import './attribute-fields/AttributeField.css'
 import ArrayAttributeField from './attribute-fields/ArrayAttributeField'
@@ -53,13 +52,12 @@ const attributeFields: AttributeFields = {
     [AttrType.datetime]: DateTimeAttributeField,
     [AttrType.timestamp]: DateTimeAttributeField,
     [AttrType.media]: MediaAttributeField,
-    [AttrType.location]: LocationAttributeField,
     [AttrType.relation]: RelationAttributeField
 }
 
 export default function AttributeFieldWrapper(props: AttributeFieldProps) {
     const {item, attrName, attribute} = props
-    
+
     const getAttributeFieldComponent = useCallback(() => {
         if (attrName === LOCALE_ATTR_NAME && attribute.type === AttrType.string)
             return LocaleAttributeField
@@ -69,7 +67,7 @@ export default function AttributeFieldWrapper(props: AttributeFieldProps) {
 
         if (attrName === MASK_ATTR_NAME && item.name === ACCESS_ITEM_NAME)
             return AccessMaskAttributeField
-        
+
         return attributeFields[attribute.type]
     }, [attrName, attribute.type, item.name])
 

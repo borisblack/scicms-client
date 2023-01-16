@@ -2,9 +2,8 @@ import _ from 'lodash'
 import {Moment} from 'moment'
 import {DateTime} from 'luxon'
 
-import {Attribute, AttrType, Item, ItemData, Location} from '../types'
+import {Attribute, AttrType, Item, ItemData} from '../types'
 import MediaService from '../services/media'
-import LocationService from '../services/location'
 import {
     LOWERCASE_NO_WHITESPACE_MESSAGE,
     LOWERCASE_NO_WHITESPACE_PATTERN,
@@ -21,7 +20,6 @@ import i18n from '../i18n'
 
 const {timeZone} = appConfig.dateTime
 const mediaService = MediaService.getInstance()
-const locationService = LocationService.getInstance()
 
 interface FilteredItemData {
     majorRev?: string
@@ -51,7 +49,7 @@ export async function parseValues(item: Item, data: ItemData | null | undefined,
         if (attribute.type === AttrType.string && key === STATE_ATTR_NAME)
             continue
 
-        if (value === undefined && attribute.type !== AttrType.media && attribute.type !== AttrType.location)
+        if (value === undefined && attribute.type !== AttrType.media)
             continue
 
         parsedValues[key] = await parseValue(item, key, attribute, data, values)
@@ -71,8 +69,6 @@ async function parseValue(item: Item, attrName: string, attribute: Attribute, da
             return parseDateTime(attrName, values)
         case AttrType.media:
             return await parseMedia(attrName, data, values)
-        case AttrType.location:
-            return await parseLocation(item, attrName, data, values)
         case AttrType.array:
             return _.isString(value) ? value.split('\n').map(it => tryParseJson(it)) : value
         case AttrType.json:
@@ -123,37 +119,6 @@ async function parseMedia(attrName: string, data: ItemData | null | undefined, v
             return mediaInfo.id
         }
         return null
-    }
-}
-
-async function parseLocation(item: Item, attrName: string, data: ItemData | null | undefined, values: any): Promise<string | null> {
-    const value = values[attrName]
-    const prevItemPermissionId = data?.permission?.data?.id
-    const itemPermissionId = values['permission.id']
-    const locationData = data ? data[attrName]?.data as Location : null
-    const {latitude, longitude, label} = value
-    const isEmpty = !latitude && !longitude && !label
-    if (locationData) {
-        if (isEmpty) {
-            // Can be used by another versions or localizations
-            if (!item.versioned && !item.localized)
-                await locationService.delete(locationData.id)
-
-            return null
-        } else {
-            const isChanged = latitude !== locationData.latitude || longitude !== locationData.longitude || label !== locationData.label || itemPermissionId !== prevItemPermissionId
-            if (isChanged) {
-                await locationService.update(locationData.id, {latitude, longitude, label, permission: itemPermissionId})
-            }
-            return locationData.id
-        }
-    } else {
-        if (isEmpty) {
-            return null
-        } else {
-            const location = await locationService.create({latitude, longitude, label, permission: itemPermissionId})
-            return location.id
-        }
     }
 }
 

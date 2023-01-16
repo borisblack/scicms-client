@@ -286,9 +286,6 @@ export default class QueryService {
                 case AttrType.media:
                     const media = this.itemService.getMedia()
                     return `${attrName}.${media.titleAttribute}:${dir}`
-                case AttrType.location:
-                    const location = this.itemService.getLocation()
-                    return `${attrName}.${location.titleAttribute}:${dir}`
                 default:
                     return `${attrName}:${dir}`
             }
@@ -438,8 +435,6 @@ export default class QueryService {
                 return buildDateTimeFilter(filterValue)
             case AttrType.media:
                 return {filename: {containsi: filterValue}}
-            case AttrType.location:
-                return {label: {containsi: filterValue}}
             case AttrType.relation:
                 if (!attr.target)
                     throw new Error('Illegal attribute')

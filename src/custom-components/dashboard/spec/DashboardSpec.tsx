@@ -8,7 +8,7 @@ import 'react-resizable/css/styles.css'
 import {CustomComponentRenderContext} from '../../index'
 import {DASHBOARD_ITEM_NAME} from '../../../config/constants'
 import PermissionService from '../../../services/permission'
-import {AttrType, IDash, IDashboardSpec} from '../../../types'
+import {IDash, IDashboardSpec} from '../../../types'
 import DashForm, {DashValues} from './DashForm'
 import {DeleteOutlined} from '@ant-design/icons'
 import {getDashIcon} from '../../../util/icons'
@@ -61,9 +61,8 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
                         y: 0,
                         w: appConfig.dashboard.cols / 2,
                         h: 1,
-                        refreshIntervalSeconds: appConfig.dashboard.defaultRefreshIntervalSeconds,
-                        metricType: AttrType.int,
-                        datasets: []
+                        dataset: '',
+                        refreshIntervalSeconds: appConfig.dashboard.defaultRefreshIntervalSeconds
                     },
                     ...dashes
                 ]
@@ -77,15 +76,13 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
                 const curDash = prevSpec.dashes[i]
                 return {
                     name: curDash.name,
-                    type: curDash?.type ?? appConfig.dashboard.defaultDashType,
+                    type: curDash.type,
                     x: it.x,
                     y: it.y,
                     w: it.w,
                     h: it.h,
-                    refreshIntervalSeconds: curDash?.refreshIntervalSeconds ?? appConfig.dashboard.defaultRefreshIntervalSeconds,
-                    metricType: curDash?.metricType ?? AttrType.int,
-                    temporalType: curDash?.temporalType,
-                    datasets: curDash?.datasets ?? []
+                    dataset: curDash.dataset,
+                    refreshIntervalSeconds: curDash.refreshIntervalSeconds
                 }
             })
         }))
@@ -116,15 +113,13 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
         if (!canEdit || !activeDash)
             return
 
-        const {name, type, refreshIntervalSeconds, metricType, temporalType, datasets} = newActiveDash
+        const {name, type, dataset, refreshIntervalSeconds} = newActiveDash
         const dashToUpdate: IDash = {
             ...activeDash,
             name,
             type,
-            refreshIntervalSeconds,
-            metricType,
-            temporalType,
-            datasets: datasets
+            dataset,
+            refreshIntervalSeconds
         }
 
         setSpec(prevSpec => ({
@@ -186,7 +181,6 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
                             form={dashForm}
                             dash={activeDash}
                             canEdit={canEdit}
-                            onChange={handleActiveDashChange}
                             onFormFinish={handleDashFormFinish}
                         />
                         <div className={styles.dashModalFooter}>

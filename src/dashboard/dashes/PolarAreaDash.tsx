@@ -5,12 +5,12 @@ import {DashType} from '../../types'
 import {InnerDashProps} from '.'
 import {mapLabels, mapMetrics} from '../../util/dashboard'
 
-const PolarAreaDash: FC<InnerDashProps> = ({pageKey, dash, fullScreen, data}) => {
+const PolarAreaDash: FC<InnerDashProps> = ({pageKey, dash, fullScreen, dataset, data}) => {
     if (dash.type !== DashType.polarArea)
         throw new Error('Illegal dash type')
 
-    const labels = useMemo(() => mapLabels(dash, data), [dash, data])
-    const preparedData = useMemo(() => mapMetrics(dash, data), [dash, data])
+    const labels = useMemo(() => mapLabels(dataset, data), [data, dataset])
+    const preparedData = useMemo(() => mapMetrics(dataset, data), [data, dataset])
     const canvasRef = useRef<HTMLCanvasElement>(null)
 
     useEffect(() => {

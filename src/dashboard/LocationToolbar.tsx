@@ -1,58 +1,47 @@
 import {Tree, TreeDataNode, TreeProps} from 'antd'
-import {useCallback, useMemo} from 'react'
-import {IDash, ItemData, Location} from '../types'
+import {useCallback} from 'react'
+import {Dataset} from '../types'
 import {FolderOutlined} from '@ant-design/icons'
-import {childTreeNodeKeyRegExp} from '../util/dashboard'
 
 interface Props {
-    dash: IDash
-    results: ItemData[][]
-    onChange: (checkedLabelSets: Set<string>[]) => void
+    dataset: Dataset
+    data: any[]
+    onChange: (checkedLabelSet: Set<string>) => void
 }
 
-export default function LocationToolbar({dash, results, onChange}: Props) {
-    const datasetItemNameKeys = useMemo(() => dash.datasets.map((dataset, i) => `${dataset.itemName as string}-${i}`), [dash.datasets])
-
-    const getLocationTreeData = useCallback((): TreeDataNode[] => dash.datasets.map((dataset, i) => {
-        const datasetResult: ItemData[] = results[i]
-        const {location} = dataset
-        const locationLabels = location ? datasetResult.filter(itemData => itemData[location]).map(itemData => (itemData[location].data as Location).label) : []
+export default function LocationToolbar({dataset, data, onChange}: Props) {
+    const getLocationTreeNode = useCallback((): TreeDataNode => {
+        const {locationLabelField} = dataset
+        const locationLabels = locationLabelField ? data.map(it => it[locationLabelField]).filter(it => it != null) : []
         const locationLabelSet = new Set(locationLabels)
         return {
-            key: `${dataset.itemName}-${i}`,
-            title: dataset.itemName as string,
+            key: dataset.name,
+            title: dataset.name,
             icon: <FolderOutlined/>,
-            disabled: !location,
+            disabled: !locationLabelField,
             children: Array.from(locationLabelSet).map(locationLabel => ({
-                key: `${locationLabel}-${i}-child`,
+                key: locationLabel,
                 title: locationLabel
             }))
         }
-    }), [dash.datasets, results])
+    }, [data, dataset])
 
     const handleLocationTreeCheck: TreeProps['onCheck'] = useCallback((checkedKeys: any) => {
-        const checkedLocationLabelSets: Set<string>[] = new Array(dash.datasets.length).fill(new Set<string>())
-        for (const checkedKey of (checkedKeys as string[])) {
-            const matches = checkedKey.match(childTreeNodeKeyRegExp)
-            if (!matches)
-                continue
+        const checkedLocationLabelSet: Set<string> = new Set<string>()
+        checkedKeys.forEach((key: string) => {
+            checkedLocationLabelSet.add(key)
+        })
 
-            const [, label, index] = matches
-            const i = parseInt(index)
-            const datasetLabelSet = checkedLocationLabelSets[i]
-            datasetLabelSet.add(label)
-        }
-
-        onChange(checkedLocationLabelSets)
-    }, [dash.datasets.length, onChange])
+        onChange(checkedLocationLabelSet)
+    }, [onChange])
 
     return (
         <Tree
             checkable
             showIcon
-            defaultExpandedKeys={[...datasetItemNameKeys]}
-            defaultCheckedKeys={[...datasetItemNameKeys]}
-            treeData={getLocationTreeData()}
+            defaultExpandedKeys={[dataset.name]}
+            defaultCheckedKeys={[dataset.name]}
+            treeData={[getLocationTreeNode()]}
             onCheck={handleLocationTreeCheck}
         />
     )

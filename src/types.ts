@@ -241,7 +241,6 @@ export enum AttrType {
     array = 'array',
     json = 'json',
     media = 'media',
-    location = 'location',
     relation = 'relation'
 }
 
@@ -250,6 +249,15 @@ export enum RelType {
     oneToMany = 'oneToMany',
     manyToOne = 'manyToOne',
     manyToMany = 'manyToMany'
+}
+
+export enum AggregateType {
+    countAll = 'countAll',
+    count = 'count',
+    sum = 'sum',
+    avg = 'avg',
+    min = 'min',
+    max = 'max'
 }
 
 export interface Index {
@@ -292,11 +300,20 @@ export interface MediaInfo {
     createdAt: string
 }
 
-export interface Location extends DefaultItemTemplate {
-    latitude: number
-    longitude: number
-    label: string
-    sortOrder: number | null
+export interface Dataset extends DefaultItemTemplate {
+    name: string
+    dataSource: string
+    tableName: string | null
+    query: string | null,
+    labelField: string
+    metricType: MetricType
+    metricField: string
+    unit: string | null
+    temporalType: TemporalType
+    temporalField: string | null
+    latitudeField: string | null
+    longitudeField: string | null
+    locationLabelField: string | null
 }
 
 export interface Locale extends DefaultItemTemplate {
@@ -322,10 +339,8 @@ export interface IDash {
     y: number
     w: number
     h: number
+    dataset: string
     refreshIntervalSeconds: number
-    metricType: MetricType
-    temporalType?: TemporalType
-    datasets: Dataset[]
 }
 
 export type NumericType = AttrType.int | AttrType.long | AttrType.float | AttrType.double | AttrType.decimal
@@ -345,14 +360,6 @@ export enum DashType {
     radar = 'radar',
     scatter = 'scatter',
     statistic = 'statistic'
-}
-
-export interface Dataset {
-    itemName?: string
-    label?: string
-    metric?: string
-    location?: string
-    temporal?: string
 }
 
 export interface ItemData extends DefaultItemTemplate {

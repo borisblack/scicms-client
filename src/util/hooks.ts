@@ -1,4 +1,4 @@
-import {useEffect, useRef} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import type {TypedUseSelectorHook} from 'react-redux'
 import {useDispatch, useSelector} from 'react-redux'
 import type {AppDispatch, RootState} from '../store'
@@ -13,4 +13,25 @@ export function usePrevious(value: any): any {
         ref.current = value
     })
     return ref.current
+}
+
+export function useCache<T>(cb: () => Promise<T>) {
+    const cache = useRef<T | null>(null)
+    const [loading, setLoading] = useState<boolean>(false)
+    const [data, setData] = useState<T | null>(null)
+    useEffect(() => {
+        setLoading(true)
+        if (cache.current) {
+            setData(cache.current)
+            setLoading(false)
+        } else {
+            cb().then(res => {
+                cache.current = res
+                setData(res)
+                setLoading(false)
+            })
+        }
+    }, [cb])
+
+    return {loading, data}
 }

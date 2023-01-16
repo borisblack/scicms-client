@@ -1,11 +1,8 @@
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import 'chartjs-adapter-luxon'
-import {DashType, ItemData, Location} from '../types'
+import {DashType, Dataset} from '../types'
 import {DashMap, DashProps} from './dashes'
-import QueryService, {ExtRequestParams, FilterInput, FiltersInput} from '../services/query'
-import ItemService from '../services/item'
-import appConfig from '../config'
 import BarDash from './dashes/BarDash'
 import DoughnutDash from './dashes/DoughnutDash'
 import PieDash from './dashes/PieDash'
@@ -24,10 +21,10 @@ import TemporalToolbar from './TemporalToolbar'
 import FullScreen from '../components/fullscreen/FullScreen'
 import LabelToolbar from './LabelToolbar'
 import LocationToolbar from './LocationToolbar'
-import {ID_ATTR_NAME} from '../config/constants'
-import {getAttributePaths} from '../util/dashboard'
 import StatisticDash from './dashes/StatisticDash'
 import styles from './DashWrapper.module.css'
+import DatasetService from '../services/dataset'
+import {useCache} from '../util/hooks'
 
 const dashMap: DashMap = {
     [DashType.bar]: BarDash,
@@ -51,19 +48,21 @@ export default function DashWrapper(props: DashProps) {
         throw new Error('Illegal attribute')
 
     const {t} = useTranslation()
-    const itemService = useMemo(() => ItemService.getInstance(), [])
-    const queryService = useMemo(() => QueryService.getInstance(), [])
-    const [results, setResults] = useState<ItemData[][]>([])
-    const initialFilteredLabelSets = useMemo((): Set<string>[] => new Array(dash.datasets.length).fill(new Set<string>()), [dash.datasets])
-    const [filteredLabelSets, setFilteredLabelSets] = useState<Set<string>[]>(initialFilteredLabelSets)
-    const initialFilteredLocationLabelSets = useMemo((): Set<string>[] => new Array(dash.datasets.length).fill(new Set<string>()), [dash.datasets])
-    const [filteredLocationLabelSets, setFilteredLocationLabelSets] = useState<Set<string>[]>(initialFilteredLocationLabelSets)
-    const filteredResults = useMemo((): ItemData[][] => results.map((datasetResult, i) => datasetResult.filter(itemData => {
-        const dataset = dash.datasets[i]
-        const {location} = dataset
-        const hasLabel = filteredLabelSets[i].has(itemData[dataset.label as string])
-        return location ? (hasLabel && filteredLocationLabelSets[i].has(itemData[location]?.data?.label)) : hasLabel
-    })), [dash.datasets, filteredLabelSets, filteredLocationLabelSets, results])
+    const datasetService = useMemo(() => DatasetService.getInstance(), [])
+    const {data: datasetItem} = useCache<Dataset>(() => datasetService.findByName(dash.dataset))
+    const [datasetData, setDatasetData] = useState<any[]>([])
+    const [filteredLabelSet, setFilteredLabelSet] = useState<Set<string>>(new Set())
+    const [filteredLocationLabelSet, setFilteredLocationLabelSet] = useState<Set<string>>(new Set())
+    const filteredData = useMemo((): any[] => {
+        if (datasetItem == null)
+            return []
+
+        return datasetData.filter(it => {
+            const {labelField, locationLabelField} = datasetItem
+            const hasLabel = filteredLabelSet.has(it[labelField])
+            return locationLabelField ? (hasLabel && filteredLocationLabelSet.has(it[locationLabelField])) : hasLabel
+        })
+    }, [datasetData, datasetItem, filteredLabelSet, filteredLocationLabelSet])
 
     const [fullScreen, setFullScreen] = useState<boolean>(false)
     const [beginTemporal, setBeginTemporal] = useState<string | null>(null)
@@ -74,63 +73,31 @@ export default function DashWrapper(props: DashProps) {
         onFullScreenComponentStateChange(fullScreen)
     }, [onFullScreenComponentStateChange])
 
-    const fetchResults = useCallback(() => {
-        Promise.all(dash.datasets.map(dataset => {
-            const item = itemService.getByName(dataset.itemName as string)
-            const hasExtraFiltersInput = beginTemporal || endTemporal
-            const extraFiltersInput: FiltersInput<ItemData> = {}
-            if (hasExtraFiltersInput) {
-                const temporalFilter: FilterInput<ItemData, string> = {}
-                if (beginTemporal)
-                    temporalFilter.gte = beginTemporal
+    const fetchDatasetData = useCallback(async () => {
+        if (datasetItem == null)
+            return
 
-                if (endTemporal)
-                    temporalFilter.lte = endTemporal
+        const fetchedDatasetData = await datasetService.loadData(dash.dataset, beginTemporal, endTemporal)
+        setDatasetData(fetchedDatasetData)
 
-                extraFiltersInput[dataset.temporal as string] = temporalFilter
-            }
-
-            const label = dataset.label as string
-            const requestParams: ExtRequestParams = {
-                sorting: [{id: label.includes('.') ? ID_ATTR_NAME : label, desc: false}],
-                filters: [],
-                pagination: {page: 1, pageSize: hasExtraFiltersInput ? appConfig.dashboard.maxPageSize : appConfig.dashboard.defaultPageSize}
-            }
-
-            const attributePaths = getAttributePaths(dataset)
-            return queryService.findAll(item, requestParams, extraFiltersInput, attributePaths)
-        }))
-            .then(fetchedResults => {
-                const newResults = fetchedResults.map(res => res.data)
-                setResults(newResults)
-
-                // Update checked labels and locations
-                const checkedLabelSets: Set<string>[] = new Array(dash.datasets.length).fill(new Set<string>())
-                const checkedLocationLabelSets: Set<string>[] = new Array(dash.datasets.length).fill(new Set<string>())
-                for (let i = 0; i < newResults.length; i++) {
-                    const dataset = dash.datasets[i]
-                    const {label, location} = dataset
-                    const datasetResult = newResults[i]
-
-                    const labels = datasetResult.map(itemData => itemData[label as string])
-                    checkedLabelSets[i] = new Set(labels)
-
-                    const locationLabels = location ? datasetResult.filter(itemData => itemData[location]).map(itemData => (itemData[location].data as Location).label) : []
-                    checkedLocationLabelSets[i] = new Set(locationLabels)
-                }
-                setFilteredLabelSets(checkedLabelSets)
-                setFilteredLocationLabelSets(checkedLocationLabelSets)
-            })
-    }, [beginTemporal, dash.datasets, endTemporal, itemService, queryService])
+        // Update checked labels and locations
+        const {labelField, locationLabelField} = datasetItem
+        const labels = fetchedDatasetData.map(it => it[labelField])
+        const checkedLabelSet = new Set(labels)
+        const locationLabels = locationLabelField ? fetchedDatasetData.map(it => it[locationLabelField]) : []
+        const checkedLocationLabelSet = new Set(locationLabels)
+        setFilteredLabelSet(checkedLabelSet)
+        setFilteredLocationLabelSet(checkedLocationLabelSet)
+    }, [beginTemporal, dash.dataset, datasetItem, datasetService, endTemporal])
 
     useEffect(() => {
-        fetchResults()
-        const interval = setInterval(fetchResults, dash.refreshIntervalSeconds * 1000)
+        fetchDatasetData()
+        const interval = setInterval(fetchDatasetData, dash.refreshIntervalSeconds * 1000)
 
         return () => clearInterval(interval)
-    }, [dash.refreshIntervalSeconds, fetchResults])
+    }, [dash.refreshIntervalSeconds, fetchDatasetData])
 
-    return (
+    return datasetItem && (
         <FullScreen active={fullScreen} normalStyle={{display: isFullScreenComponentExist ? 'none' : 'block'}}>
             <PageHeader
                 className={styles.pageHeader}
@@ -144,27 +111,27 @@ export default function DashWrapper(props: DashProps) {
 
             {fullScreen && (
                 <>
-                    {dash.temporalType && (
+                    {datasetItem.temporalType && (
                         <TopPanel title={t('Temporal')} height={60}>
                             <div style={{padding: '16px 8px'}}>
-                                <TemporalToolbar temporalType={dash.temporalType} onBeginTemporalChange={setBeginTemporal} onEndTemporalChange={setEndTemporal}/>
+                                <TemporalToolbar temporalType={datasetItem.temporalType} onBeginTemporalChange={setBeginTemporal} onEndTemporalChange={setEndTemporal}/>
                             </div>
                         </TopPanel>
                     )}
                     <LeftPanel title={t('Labels')} width={250}>
                         <div style={{padding: 8}}>
-                            <LabelToolbar dash={dash} results={results} onChange={setFilteredLabelSets}/>
+                            <LabelToolbar dataset={datasetItem} data={datasetData} onChange={setFilteredLabelSet}/>
                         </div>
                     </LeftPanel>
                     <RightPanel title={t('Locations')} width={250}>
                         <div style={{padding: 8}}>
-                            <LocationToolbar dash={dash} results={results} onChange={setFilteredLocationLabelSets}/>
+                            <LocationToolbar dataset={datasetItem} data={datasetData} onChange={setFilteredLocationLabelSet}/>
                         </div>
                     </RightPanel>
                 </>
             )}
 
-            <DashComponent {...props} fullScreen={fullScreen} data={filteredResults}/>
+            <DashComponent {...props} fullScreen={fullScreen} dataset={datasetItem} data={filteredData}/>
         </FullScreen>
     )
 }
