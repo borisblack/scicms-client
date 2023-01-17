@@ -323,7 +323,6 @@ export interface Locale extends DefaultItemTemplate {
 
 export interface Dashboard extends DefaultItemTemplate {
     name: string
-    displayName: string | null
     spec: IDashboardSpec
     checksum: string | null
 }
