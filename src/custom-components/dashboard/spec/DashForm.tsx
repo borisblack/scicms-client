@@ -1,5 +1,5 @@
 import {Form, FormInstance, Input, InputNumber, Select} from 'antd'
-import {DashType, Dataset, IDash} from '../../../types'
+import {DashType, IDash} from '../../../types'
 import styles from './DashboardSpec.module.css'
 import {useTranslation} from 'react-i18next'
 import appConfig from '../../../config'

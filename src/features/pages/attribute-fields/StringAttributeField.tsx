@@ -1,4 +1,4 @@
-import {FC, useCallback} from 'react'
+import {FC, useCallback, useMemo} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Form, FormRule, Input} from 'antd'
 
@@ -17,7 +17,7 @@ const StringAttributeField: FC<AttributeFieldProps> = ({pageKey, item, attrName,
 
     const {t} = useTranslation()
 
-    function isEnabled() {
+    const isEnabled = useCallback((): boolean => {
         if (attribute.keyed || attribute.readOnly)
             return false
 
@@ -34,7 +34,15 @@ const StringAttributeField: FC<AttributeFieldProps> = ({pageKey, item, attrName,
         }
 
         return attrName !== STATE_ATTR_NAME
-    }
+    }, [attrName, attribute.keyed, attribute.readOnly, attribute.type, item.manualVersioning, item.versioned])
+
+    const additionalProps = useMemo((): any => {
+        const additionalProps: any = {}
+        if (!isEnabled())
+            additionalProps.disabled = true
+
+        return additionalProps
+    }, [isEnabled])
 
     const getRules = useCallback(() => {
         const rules: FormRule[] = [{
@@ -57,7 +65,7 @@ const StringAttributeField: FC<AttributeFieldProps> = ({pageKey, item, attrName,
             default:
                 break
         }
-        
+
         return rules
     }, [attrName, attribute, item, t])
 
@@ -70,7 +78,12 @@ const StringAttributeField: FC<AttributeFieldProps> = ({pageKey, item, attrName,
             initialValue={value ?? attribute.defaultValue}
             rules={getRules()}
         >
-            <Input id={`${pageKey}#${attrName}`} style={{maxWidth: attribute.fieldWidth}} maxLength={attribute.length} disabled={!isEnabled()}/>
+            <Input
+                id={`${pageKey}#${attrName}`}
+                style={{maxWidth: attribute.fieldWidth}}
+                maxLength={attribute.length}
+                {...additionalProps}
+            />
         </FormItem>
     )
 }
