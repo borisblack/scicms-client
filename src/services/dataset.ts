@@ -35,7 +35,6 @@ const FIND_BY_NAME_QUERY = gql`
                     eq: $name
                 }
             }
-            id: $id
         ) {
             data {
                 id
@@ -103,7 +102,7 @@ export default class DatasetService {
             params.aggregate = aggregateType
 
         try {
-            const res = await axios.get(`/api/dataset${datasetName}`, {params})
+            const res = await axios.get(`/api/dataset/${datasetName}`, {params})
             return res.data
         } catch (e: any) {
             throw new Error(extractAxiosErrorMessage(e))
