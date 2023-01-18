@@ -339,6 +339,8 @@ export interface IDash {
     w: number
     h: number
     dataset: string
+    isAggregate: boolean
+    aggregateType?: AggregateType
     refreshIntervalSeconds: number
 }
 

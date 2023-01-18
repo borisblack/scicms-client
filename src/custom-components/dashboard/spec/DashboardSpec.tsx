@@ -62,6 +62,7 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
                         w: appConfig.dashboard.cols / 2,
                         h: 1,
                         dataset: '',
+                        isAggregate: false,
                         refreshIntervalSeconds: appConfig.dashboard.defaultRefreshIntervalSeconds
                     },
                     ...dashes
@@ -82,6 +83,8 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
                     w: it.w,
                     h: it.h,
                     dataset: curDash.dataset,
+                    isAggregate: curDash.isAggregate,
+                    aggregateType: curDash.aggregateType,
                     refreshIntervalSeconds: curDash.refreshIntervalSeconds
                 }
             })

@@ -1,5 +1,5 @@
-import {Form, FormInstance, Input, InputNumber, Select} from 'antd'
-import {DashType, IDash} from '../../../types'
+import {Checkbox, Form, FormInstance, Input, InputNumber, Select} from 'antd'
+import {AggregateType, DashType, IDash} from '../../../types'
 import styles from './DashboardSpec.module.css'
 import {useTranslation} from 'react-i18next'
 import appConfig from '../../../config'
@@ -18,6 +18,8 @@ export interface DashValues {
     name: string
     type: DashType
     dataset: string
+    isAggregate: boolean
+    aggregateType?: AggregateType
     refreshIntervalSeconds: number
 }
 
@@ -72,6 +74,30 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                     {datasetNames.map(it => <SelectOption key={it} value={it}>{it}</SelectOption>)}
                 </Select>
             </FormItem>
+
+            <FormItem
+                className={styles.formItem}
+                name="isAggregate"
+                valuePropName="checked"
+                initialValue={dash.isAggregate}
+            >
+                <Checkbox>{t('Aggregate')}</Checkbox>
+            </FormItem>
+
+            {form.getFieldValue('isAggregate') &&
+                <FormItem
+                    className={styles.formItem}
+                    name="aggregateType"
+                    label={t('Aggregate Type')}
+                    dependencies={['isAggregate']}
+                    initialValue={dash.aggregateType}
+                    rules={[{required: true, message: t('Required field')}]}
+                >
+                    <Select>
+                        {Object.keys(AggregateType).map(it => <SelectOption key={it} value={it}>{it}</SelectOption>)}
+                    </Select>
+                </FormItem>
+            }
 
             <FormItem
                 className={styles.formItem}
