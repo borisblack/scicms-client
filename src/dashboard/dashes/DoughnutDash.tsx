@@ -9,7 +9,7 @@ const DoughnutDash: FC<InnerDashProps> = ({pageKey, fullScreen, dash, dataset, d
     if (dash.type !== DashType.doughnut)
         throw new Error('Illegal dash type')
 
-    const labels = useMemo(() => mapLabels(dataset, data), [data, dataset])
+    const labels = useMemo(() => mapLabels(data, dash.labelField), [dash.labelField, data])
     const preparedData = useMemo(() => mapMetrics(dataset, data), [data, dataset])
     const canvasRef = useRef<HTMLCanvasElement>(null)
 

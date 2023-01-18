@@ -9,7 +9,7 @@ const PieDash: FC<InnerDashProps> = ({pageKey, dash, fullScreen, dataset, data})
     if (dash.type !== DashType.pie)
         throw new Error('Illegal dash type')
 
-    const labels = useMemo(() => mapLabels(dataset, data), [data, dataset])
+    const labels = useMemo(() => mapLabels(data, dash.labelField), [dash.labelField, data])
     const preparedData = useMemo(() => mapMetrics(dataset, data), [data, dataset])
     const canvasRef = useRef<HTMLCanvasElement>(null)
 

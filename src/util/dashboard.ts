@@ -26,8 +26,8 @@ export const timeScaleProps = {
     }
 }
 
-export const mapLabels = (dataset: Dataset, data: any[]): string[] =>
-    data.map(it => it[dataset.labelField]?.trim())
+export const mapLabels = (data: any[], labelField: string): string[] =>
+    data.map(it => it[labelField]?.toString()?.trim())
 
 export const mapMetrics = (dataset: Dataset, data: any[]): any[] =>
     data.map(it => parseMetric(it[dataset.metricField], dataset.metricType))

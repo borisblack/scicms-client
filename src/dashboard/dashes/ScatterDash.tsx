@@ -9,7 +9,7 @@ const ScatterDash: FC<InnerDashProps> = ({pageKey, dash, fullScreen, dataset, da
     if (dash.type !== DashType.scatter)
         throw new Error('Illegal dash type')
 
-    const labels = useMemo(() => mapLabels(dataset, data), [data, dataset])
+    const labels = useMemo(() => mapLabels(data, dash.labelField), [dash.labelField, data])
     const preparedData = useMemo(() => map2dMetrics(dataset, data), [data, dataset])
     const canvasRef = useRef<HTMLCanvasElement>(null)
 

@@ -62,6 +62,7 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
                         w: appConfig.dashboard.cols / 2,
                         h: 1,
                         dataset: '',
+                        labelField: '',
                         isAggregate: false,
                         refreshIntervalSeconds: appConfig.dashboard.defaultRefreshIntervalSeconds
                     },
@@ -83,6 +84,7 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
                     w: it.w,
                     h: it.h,
                     dataset: curDash.dataset,
+                    labelField: curDash.labelField,
                     isAggregate: curDash.isAggregate,
                     aggregateType: curDash.aggregateType,
                     refreshIntervalSeconds: curDash.refreshIntervalSeconds
@@ -116,12 +118,15 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
         if (!canEdit || !activeDash)
             return
 
-        const {name, type, dataset, refreshIntervalSeconds} = newActiveDash
+        const {name, type, dataset, labelField, isAggregate, aggregateType, refreshIntervalSeconds} = newActiveDash
         const dashToUpdate: IDash = {
             ...activeDash,
             name,
             type,
             dataset,
+            labelField,
+            isAggregate,
+            aggregateType,
             refreshIntervalSeconds
         }
 

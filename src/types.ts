@@ -305,7 +305,6 @@ export interface Dataset extends DefaultItemTemplate {
     dataSource: string
     tableName: string | null
     query: string | null,
-    labelField: string
     metricType: MetricType
     metricField: string
     unit: string | null
@@ -339,6 +338,7 @@ export interface IDash {
     w: number
     h: number
     dataset: string
+    labelField: string
     isAggregate: boolean
     aggregateType?: AggregateType
     refreshIntervalSeconds: number

@@ -11,6 +11,8 @@ const ru = {
         'Add Dash': 'Добавить даш',
         'Add Dataset': 'Добавить датасет',
         'Administration': 'Администрирование',
+        'Aggregate': 'Агрегатная функция',
+        'Aggregate Type': 'Тип агрегатной функции',
         'All Locales': 'Все языки',
         'All Versions': 'Все версии',
         'Allowed Lifecycle': 'Доступный ЖЦ',

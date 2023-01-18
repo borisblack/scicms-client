@@ -19,6 +19,7 @@ export interface DashValues {
     type: DashType
     dataset: string
     isAggregate: boolean
+    labelField: string
     aggregateType?: AggregateType
     refreshIntervalSeconds: number
 }
@@ -77,6 +78,16 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
 
             <FormItem
                 className={styles.formItem}
+                name="labelField"
+                label={t('Label Field')}
+                initialValue={dash.labelField}
+                rules={[{required: true, message: t('Required field')}]}
+            >
+                <Input/>
+            </FormItem>
+
+            <FormItem
+                className={styles.formItem}
                 name="isAggregate"
                 valuePropName="checked"
                 initialValue={dash.isAggregate}
@@ -84,20 +95,25 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                 <Checkbox>{t('Aggregate')}</Checkbox>
             </FormItem>
 
-            {form.getFieldValue('isAggregate') &&
-                <FormItem
-                    className={styles.formItem}
-                    name="aggregateType"
-                    label={t('Aggregate Type')}
-                    dependencies={['isAggregate']}
-                    initialValue={dash.aggregateType}
-                    rules={[{required: true, message: t('Required field')}]}
-                >
-                    <Select>
-                        {Object.keys(AggregateType).map(it => <SelectOption key={it} value={it}>{it}</SelectOption>)}
-                    </Select>
-                </FormItem>
-            }
+            <FormItem
+                className={styles.formItem}
+                name="aggregateType"
+                label={t('Aggregate Type')}
+                dependencies={['isAggregate']}
+                initialValue={dash.aggregateType}
+                rules={[({ getFieldValue }) => ({
+                    validator(_, value) {
+                        if (!getFieldValue('isAggregate'))
+                            return Promise.resolve()
+
+                        return Promise.reject(new Error(t('Required field')))
+                    },
+                })]}
+            >
+                <Select>
+                    {Object.keys(AggregateType).map(it => <SelectOption key={it} value={it}>{it}</SelectOption>)}
+                </Select>
+            </FormItem>
 
             <FormItem
                 className={styles.formItem}

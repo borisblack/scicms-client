@@ -13,7 +13,7 @@ const BubbleMapDash: FC<InnerDashProps> = ({pageKey, fullScreen, dash, dataset, 
         throw new Error('Illegal dash type')
 
     const [countries, setCountries] = useState([])
-    const labels = useMemo(() => mapLabels(dataset, data), [data, dataset])
+    const labels = useMemo(() => mapLabels(data, dash.labelField), [dash.labelField, data])
     const preparedData = useMemo(() => map3dMapMetrics(dataset, data), [data, dataset])
     const canvasRef = useRef<HTMLCanvasElement>(null)
 

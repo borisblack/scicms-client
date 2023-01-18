@@ -1,4 +1,4 @@
-// import _ from 'lodash'
+import _ from 'lodash'
 import {FC, useEffect, useMemo, useRef} from 'react'
 import Chart from 'chart.js/auto'
 import {DashType} from '../../types'
@@ -9,7 +9,7 @@ const LineDash: FC<InnerDashProps> = ({pageKey, dash, fullScreen, dataset, data}
     if (dash.type !== DashType.line)
         throw new Error('Illegal dash type')
 
-    const labels = useMemo(() => mapLabels(dataset, data), [data, dataset])
+    const labels = useMemo(() => mapLabels(data, dash.labelField), [dash.labelField, data])
     const preparedData = useMemo(() => map2dMetrics(dataset, data), [data, dataset])
     const canvasRef = useRef<HTMLCanvasElement>(null)
 
@@ -22,7 +22,8 @@ const LineDash: FC<InnerDashProps> = ({pageKey, dash, fullScreen, dataset, data}
         const scales: any = {
             x: {
                 ...timeScaleProps,
-                // min: _.min(preparedData.map(it => it.x.toJSDate()))?.toISOString()
+                min: _.min(preparedData.map(it => it.x.toJSDate()))?.toISOString(),
+                max: _.max(preparedData.map(it => it.x.toJSDate()))?.toISOString()
             }
         }
 
@@ -47,16 +48,16 @@ const LineDash: FC<InnerDashProps> = ({pageKey, dash, fullScreen, dataset, data}
             },
             options: {
                 scales,
-                plugins: {
-                    tooltip: {
-                        callbacks: {
-                            label: context => {
-                                const {label, dataIndex} = context
-                                return ` ${label}: ${labels[dataIndex]}`
-                            }
-                        }
-                    }
-                },
+                // plugins: {
+                //     tooltip: {
+                //         callbacks: {
+                //             label: context => {
+                //                 const {label, dataIndex} = context
+                //                 return ` ${label}: ${labels[dataIndex]}`
+                //             }
+                //         }
+                //     }
+                // },
                 maintainAspectRatio: !fullScreen
             }
         })

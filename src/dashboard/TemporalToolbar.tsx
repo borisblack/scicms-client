@@ -8,11 +8,11 @@ import {useCallback} from 'react'
 
 interface Props {
     temporalType: TemporalType
-    onBeginTemporalChange: (beginTemporal: string | null) => void
+    onStartTemporalChange: (startTemporal: string | null) => void
     onEndTemporalChange: (endTemporal: string | null) => void
 }
 
-export default function TemporalToolbar({temporalType, onBeginTemporalChange, onEndTemporalChange}: Props) {
+export default function TemporalToolbar({temporalType, onStartTemporalChange, onEndTemporalChange}: Props) {
     const {t} = useTranslation()
 
     const parseTemporal = useCallback((temporal: Moment | null): string | null => {
@@ -29,9 +29,9 @@ export default function TemporalToolbar({temporalType, onBeginTemporalChange, on
         return dt.setZone(appConfig.dateTime.timeZone, {keepLocalTime: true}).toISO()
     }, [temporalType])
 
-    const handleBeginTemporalChange = useCallback(
-        (beginTemporal: Moment | null) => onBeginTemporalChange(parseTemporal(beginTemporal)),
-        [onBeginTemporalChange, parseTemporal]
+    const handleStartTemporalChange = useCallback(
+        (startTemporal: Moment | null) => onStartTemporalChange(parseTemporal(startTemporal)),
+        [onStartTemporalChange, parseTemporal]
     )
 
     const handleEndTemporalChange = useCallback(
@@ -45,7 +45,7 @@ export default function TemporalToolbar({temporalType, onBeginTemporalChange, on
                 <Space>
                     <span>
                         {t('Begin')}:&nbsp;
-                        <TimePicker size="small" onChange={(time) => handleBeginTemporalChange(time)}/>
+                        <TimePicker size="small" onChange={(time) => handleStartTemporalChange(time)}/>
                     </span>
                     <span>
                         {t('End')}:&nbsp;
@@ -59,7 +59,7 @@ export default function TemporalToolbar({temporalType, onBeginTemporalChange, on
                         <DatePicker
                             size="small"
                             showTime={temporalType === AttrType.datetime || temporalType === AttrType.timestamp}
-                            onChange={(date) => handleBeginTemporalChange(date)}
+                            onChange={(date) => handleStartTemporalChange(date)}
                         />
                     </span>
                     <span>

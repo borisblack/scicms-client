@@ -9,7 +9,7 @@ const PolarAreaDash: FC<InnerDashProps> = ({pageKey, dash, fullScreen, dataset, 
     if (dash.type !== DashType.polarArea)
         throw new Error('Illegal dash type')
 
-    const labels = useMemo(() => mapLabels(dataset, data), [data, dataset])
+    const labels = useMemo(() => mapLabels(data, dash.labelField), [dash.labelField, data])
     const preparedData = useMemo(() => mapMetrics(dataset, data), [data, dataset])
     const canvasRef = useRef<HTMLCanvasElement>(null)
 

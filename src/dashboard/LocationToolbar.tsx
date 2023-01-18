@@ -6,10 +6,11 @@ import {FolderOutlined} from '@ant-design/icons'
 interface Props {
     dataset: Dataset
     data: any[]
-    onChange: (checkedLabelSet: Set<string>) => void
+    checkedLocationLabelSet: Set<string> | null
+    onChange: (checkedLocationLabelSet: Set<string>) => void
 }
 
-export default function LocationToolbar({dataset, data, onChange}: Props) {
+export default function LocationToolbar({dataset, data, checkedLocationLabelSet, onChange}: Props) {
     const getLocationTreeNode = useCallback((): TreeDataNode => {
         const {locationLabelField} = dataset
         const locationLabels = locationLabelField ? data.map(it => it[locationLabelField]).filter(it => it != null) : []
@@ -27,21 +28,16 @@ export default function LocationToolbar({dataset, data, onChange}: Props) {
     }, [data, dataset])
 
     const handleLocationTreeCheck: TreeProps['onCheck'] = useCallback((checkedKeys: any) => {
-        const checkedLocationLabelSet: Set<string> = new Set<string>()
-        checkedKeys.forEach((key: string) => {
-            checkedLocationLabelSet.add(key)
-        })
-
-        onChange(checkedLocationLabelSet)
+        onChange(new Set(checkedKeys as string[]))
     }, [onChange])
 
     return (
         <Tree
             checkable
             showIcon
-            defaultExpandedKeys={[dataset.name]}
-            defaultCheckedKeys={[dataset.name]}
             treeData={[getLocationTreeNode()]}
+            defaultExpandedKeys={[dataset.name]}
+            checkedKeys={checkedLocationLabelSet == null ? [] : Array.from(checkedLocationLabelSet)}
             onCheck={handleLocationTreeCheck}
         />
     )

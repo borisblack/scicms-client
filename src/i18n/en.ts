@@ -11,6 +11,8 @@ const en = {
         'Add Dash': 'Add Dash',
         'Add Dataset': 'Add Dataset',
         'Administration': 'Administration',
+        'Aggregate': 'Aggregate',
+        'Aggregate Type': 'Aggregate Type',
         'All Locales': 'All Locales',
         'All Versions': 'All Versions',
         'Allowed Lifecycle': 'Allowed Lifecycle',
