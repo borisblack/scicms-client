@@ -1,4 +1,4 @@
-import {FC, useCallback} from 'react'
+import {FC, useCallback, useMemo} from 'react'
 import {Checkbox, DatePicker, Form} from 'antd'
 import {useTranslation} from 'react-i18next'
 import moment, {Moment} from 'moment-timezone'
@@ -17,7 +17,14 @@ const DateTimeAttributeField: FC<AttributeFieldProps> = ({pageKey, form, attrNam
         throw new Error('Illegal attribute')
 
     const {t} = useTranslation()
-    const isDisabled = attribute.keyed || attribute.readOnly
+    const isDisabled = useMemo(() => attribute.keyed || attribute.readOnly, [attribute.keyed, attribute.readOnly])
+    const additionalProps = useMemo((): any => {
+        const additionalProps: any = {}
+        if (isDisabled)
+            additionalProps.disabled = true
+
+        return additionalProps
+    }, [isDisabled])
 
     function getValueFromEvent(evt: Moment) {
         form.setFieldValue(`${attrName}.changed`, true)
@@ -37,7 +44,7 @@ const DateTimeAttributeField: FC<AttributeFieldProps> = ({pageKey, form, attrNam
                 getValueFromEvent={getValueFromEvent}
                 rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
             >
-                <DatePicker id={`${pageKey}#${attrName}`} showTime showSecond={false} format={momentDisplayDateTimeFormatString} disabled={isDisabled}/>
+                <DatePicker id={`${pageKey}#${attrName}`} showTime showSecond={false} format={momentDisplayDateTimeFormatString} {...additionalProps}/>
             </FormItem>
             <FormItem name={`${attrName}.changed`} valuePropName="checked" hidden>
                 <Checkbox id={`${pageKey}#${attrName}.changed`}/>

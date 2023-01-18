@@ -14,8 +14,15 @@ const AccessMaskAttributeField: FC<AttributeFieldProps> = ({pageKey, form, item,
         throw new Error('Illegal attribute')
 
     const {t} = useTranslation()
-    const isDisabled = attribute.readOnly
-    const isRequired = attribute.required && !attribute.readOnly
+    const isDisabled = useMemo(() => attribute.readOnly, [attribute.readOnly])
+    const additionalProps = useMemo((): any => {
+        const additionalProps: any = {}
+        if (isDisabled)
+            additionalProps.disabled = true
+
+        return additionalProps
+    }, [isDisabled])
+    const isRequired = useMemo(() => attribute.required && !attribute.readOnly, [attribute.readOnly, attribute.required])
 
     const initialValue = useMemo(() => value ?? (attribute.defaultValue == null ? 0 : parseInt(attribute.defaultValue)), [attribute.defaultValue, value])
 
@@ -43,7 +50,7 @@ const AccessMaskAttributeField: FC<AttributeFieldProps> = ({pageKey, form, item,
                     style={{width: attribute.fieldWidth, display: 'none'}}
                     min={attribute.minRange}
                     max={attribute.maxRange}
-                    disabled={isDisabled}
+                    {...additionalProps}
                 />
             </FormItem>
 

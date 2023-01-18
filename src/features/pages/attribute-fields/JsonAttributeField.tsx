@@ -3,7 +3,7 @@ import styles from './AttributeField.module.css'
 import {Form, Input} from 'antd'
 import {useTranslation} from 'react-i18next'
 import {AttrType} from '../../../types'
-import {FC, useCallback} from 'react'
+import {FC, useCallback, useMemo} from 'react'
 import appConfig from '../../../config'
 
 const FormItem = Form.Item
@@ -14,7 +14,14 @@ const JsonAttributeField: FC<AttributeFieldProps> = ({pageKey, attrName, attribu
         throw new Error('Illegal attribute')
 
     const {t} = useTranslation()
-    const isDisabled = attribute.keyed || attribute.readOnly
+    const isDisabled = useMemo(() => attribute.keyed || attribute.readOnly, [attribute.keyed, attribute.readOnly])
+    const additionalProps = useMemo((): any => {
+        const additionalProps: any = {}
+        if (isDisabled)
+            additionalProps.disabled = true
+
+        return additionalProps
+    }, [isDisabled])
 
     const parseValue = useCallback((val: any) => val == null ? null : JSON.stringify(val), [])
 
@@ -27,7 +34,12 @@ const JsonAttributeField: FC<AttributeFieldProps> = ({pageKey, attrName, attribu
             initialValue={parseValue(value) ?? attribute.defaultValue}
             rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
         >
-            <TextArea id={`${pageKey}#${attrName}`} style={{maxWidth: attribute.fieldWidth}} disabled={isDisabled} rows={appConfig.ui.textArea.rows}/>
+            <TextArea
+                id={`${pageKey}#${attrName}`}
+                style={{maxWidth: attribute.fieldWidth}}
+                rows={appConfig.ui.textArea.rows}
+                {...additionalProps}
+            />
         </FormItem>
     )
 }

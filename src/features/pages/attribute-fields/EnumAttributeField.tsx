@@ -1,4 +1,4 @@
-import {FC} from 'react'
+import {FC, useMemo} from 'react'
 import {Form, Select} from 'antd'
 
 import {AttributeFieldProps} from '.'
@@ -14,7 +14,14 @@ const EnumAttributeField: FC<AttributeFieldProps> = ({pageKey, attrName, attribu
         throw new Error('Illegal attribute')
 
     const {t} = useTranslation()
-    const isDisabled = attribute.keyed || attribute.readOnly
+    const isDisabled = useMemo(() => attribute.keyed || attribute.readOnly, [attribute.keyed, attribute.readOnly])
+    const additionalProps = useMemo((): any => {
+        const additionalProps: any = {}
+        if (isDisabled)
+            additionalProps.disabled = true
+
+        return additionalProps
+    }, [isDisabled])
 
     return (
         <FormItem
@@ -25,7 +32,7 @@ const EnumAttributeField: FC<AttributeFieldProps> = ({pageKey, attrName, attribu
             initialValue={value ?? attribute.defaultValue}
             rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
         >
-            <Select id={`${pageKey}#${attrName}`} style={{maxWidth: attribute.fieldWidth}} disabled={isDisabled}>
+            <Select id={`${pageKey}#${attrName}`} style={{maxWidth: attribute.fieldWidth}} {...additionalProps}>
                 {attribute.enumSet.map(it => <SelectOption key={it} value={it}>{it}</SelectOption>)}
             </Select>
         </FormItem>

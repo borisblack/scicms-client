@@ -1,4 +1,4 @@
-import {FC} from 'react'
+import {FC, useMemo} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Form, InputNumber} from 'antd'
 
@@ -15,7 +15,14 @@ const NumberAttributeField: FC<AttributeFieldProps> = ({pageKey, attrName, attri
         throw new Error('Illegal attribute')
 
     const {t} = useTranslation()
-    const isDisabled = attribute.keyed || attribute.readOnly
+    const isDisabled = useMemo(() => attribute.keyed || attribute.readOnly, [attribute.keyed, attribute.readOnly])
+    const additionalProps = useMemo((): any => {
+        const additionalProps: any = {}
+        if (isDisabled)
+            additionalProps.disabled = true
+
+        return additionalProps
+    }, [isDisabled])
 
     return (
         <FormItem
@@ -34,7 +41,7 @@ const NumberAttributeField: FC<AttributeFieldProps> = ({pageKey, attrName, attri
                 style={{width: attribute.fieldWidth}}
                 min={attribute.minRange}
                 max={attribute.maxRange}
-                disabled={isDisabled}
+                {...additionalProps}
             />
         </FormItem>
     )

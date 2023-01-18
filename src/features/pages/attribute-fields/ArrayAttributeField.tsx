@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import {FC, useCallback} from 'react'
+import {FC, useCallback, useMemo} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Form, Input} from 'antd'
 
@@ -16,22 +16,29 @@ const ArrayAttributeField: FC<AttributeFieldProps> = ({pageKey, attrName, attrib
         throw new Error('Illegal attribute')
 
     const {t} = useTranslation()
-    const isDisabled = attribute.keyed || attribute.readOnly
-    
+    const isDisabled = useMemo(() => attribute.keyed || attribute.readOnly, [attribute.keyed, attribute.readOnly])
+    const additionalProps = useMemo((): any => {
+        const additionalProps: any = {}
+        if (isDisabled)
+            additionalProps.disabled = true
+
+        return additionalProps
+    }, [isDisabled])
+
     const parseValue = useCallback((val: any) => {
         if (val == null)
             return null
-        
+
         if (!_.isArray(val))
             throw new Error('Illegal attribute')
-        
+
         const arr = val.map(it => {
             if (_.isObject(it))
                 return JSON.stringify(it)
-            
+
             return it
         })
-        
+
         return arr.join('\n')
     }, [])
 
@@ -44,7 +51,12 @@ const ArrayAttributeField: FC<AttributeFieldProps> = ({pageKey, attrName, attrib
             initialValue={parseValue(value) ?? (attribute.defaultValue ? parseValue(JSON.parse(attribute.defaultValue)) : null)}
             rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
         >
-            <TextArea id={`${pageKey}#${attrName}`} style={{maxWidth: attribute.fieldWidth}} disabled={isDisabled} rows={appConfig.ui.textArea.rows}/>
+            <TextArea
+                id={`${pageKey}#${attrName}`}
+                style={{maxWidth: attribute.fieldWidth}}
+                rows={appConfig.ui.textArea.rows}
+                {...additionalProps}
+            />
         </FormItem>
     )
 }

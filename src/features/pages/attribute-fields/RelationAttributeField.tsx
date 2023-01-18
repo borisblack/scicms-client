@@ -30,7 +30,15 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({pageKey, form, item, a
     const {t} = useTranslation()
     const [loading, setLoading] = useState<boolean>(false)
     const [isRelationModalVisible, setRelationModalVisible] = useState<boolean>(false)
-    const isDisabled = attribute.keyed || attribute.readOnly
+    const isDisabled = useMemo(() => attribute.keyed || attribute.readOnly, [attribute.keyed, attribute.readOnly])
+    const additionalProps = useMemo((): any => {
+        const additionalProps: any = {}
+        if (isDisabled)
+            additionalProps.disabled = true
+
+        return additionalProps
+    }, [isDisabled])
+
     const [currentId, setCurrentId] = useState(value?.data?.id)
     const itemService = useMemo(() => ItemService.getInstance(), [])
     const targetItem = itemService.getByName(target)
@@ -100,7 +108,6 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({pageKey, form, item, a
                     id={`${pageKey}#${attrName}`}
                     style={{maxWidth: attribute.fieldWidth ? attribute.fieldWidth + (currentId ? (SUFFIX_BUTTON_WIDTH * 2 + 4) : 0) : undefined}}
                     readOnly
-                    disabled={isDisabled}
                     onSearch={() => setRelationModalVisible(true)}
                     addonAfter={currentId && [
                         <Tooltip key="open" title={t('Open')}>
@@ -121,6 +128,7 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({pageKey, form, item, a
                             />
                         </Tooltip>
                     ]}
+                    {...additionalProps}
                 />
             </FormItem>
             <FormItem hidden name={`${attrName}.id`} initialValue={value?.data ? value.data.id : null}>

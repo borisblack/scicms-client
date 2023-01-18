@@ -1,4 +1,4 @@
-import {FC, useCallback} from 'react'
+import {FC, useCallback, useMemo} from 'react'
 import {Checkbox, Form} from 'antd'
 
 import {AttributeFieldProps} from '.'
@@ -13,7 +13,15 @@ const BoolAttributeField: FC<AttributeFieldProps> = ({pageKey, attrName, attribu
         throw new Error('Illegal attribute')
 
     const {t} = useTranslation()
-    const isDisabled = attribute.keyed || attribute.readOnly
+    const isDisabled = useMemo(() => attribute.keyed || attribute.readOnly, [attribute.keyed, attribute.readOnly])
+
+    const additionalProps = useMemo((): any => {
+        const additionalProps: any = {}
+        if (isDisabled)
+            additionalProps.disabled = true
+
+        return additionalProps
+    }, [isDisabled])
 
     const parseValue = useCallback((val: boolean | string | number | null | undefined) => {
         if (val === 1 || val === '1' || val === 'true')
@@ -33,7 +41,7 @@ const BoolAttributeField: FC<AttributeFieldProps> = ({pageKey, attrName, attribu
             valuePropName="checked"
             initialValue={parseValue(value) ?? parseValue(attribute.defaultValue)}
         >
-            <Checkbox id={`${pageKey}#${attrName}`} disabled={isDisabled}>{t(attribute.displayName)}</Checkbox>
+            <Checkbox id={`${pageKey}#${attrName}`} {...additionalProps}>{t(attribute.displayName)}</Checkbox>
         </FormItem>
     )
 }

@@ -1,4 +1,4 @@
-import {FC, useCallback, useMemo} from 'react'
+import {FC, useMemo} from 'react'
 import {Form, Select} from 'antd'
 
 import {AttributeFieldProps} from '.'
@@ -19,7 +19,14 @@ const LocaleAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, val
     const {t} = useTranslation()
     const localeService = useMemo(() => LocaleService.getInstance(), [])
     const locales = useMemo(() => localeService.locales, [localeService])
-    const isDisabled = attribute.keyed || attribute.readOnly
+    const isDisabled = useMemo(() => attribute.keyed || attribute.readOnly, [attribute.keyed, attribute.readOnly])
+    const additionalProps = useMemo((): any => {
+        const additionalProps: any = {}
+        if (isDisabled)
+            additionalProps.disabled = true
+
+        return additionalProps
+    }, [isDisabled])
 
     return (
         <FormItem
@@ -30,7 +37,7 @@ const LocaleAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, val
             initialValue={value ?? attribute.defaultValue}
             rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
         >
-            <Select style={{maxWidth: attribute.fieldWidth}} disabled={isDisabled} onSelect={(val: string) => onChange(val)}>
+            <Select style={{maxWidth: attribute.fieldWidth}} onSelect={(val: string) => onChange(val)} {...additionalProps}>
                 {locales.map(it => <SelectOption key={it.name} value={it.name}>{it.displayName}</SelectOption>)}
             </Select>
         </FormItem>

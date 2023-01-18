@@ -4,7 +4,7 @@ import {useTranslation} from 'react-i18next'
 import {AttributeFieldProps} from '.'
 import {AttrType} from '../../../types'
 import styles from './AttributeField.module.css'
-import {FC} from 'react'
+import {FC, useMemo} from 'react'
 
 const FormItem = Form.Item
 const {Password} = Input
@@ -14,7 +14,14 @@ const PasswordAttributeField: FC<AttributeFieldProps> = ({pageKey, attrName, att
         throw new Error('Illegal attribute')
 
     const {t} = useTranslation()
-    const isDisabled = attribute.keyed || attribute.readOnly
+    const isDisabled = useMemo(() => attribute.keyed || attribute.readOnly, [attribute.keyed, attribute.readOnly])
+    const additionalProps = useMemo((): any => {
+        const additionalProps: any = {}
+        if (isDisabled)
+            additionalProps.disabled = true
+
+        return additionalProps
+    }, [isDisabled])
 
     return (
         <>
@@ -27,7 +34,12 @@ const PasswordAttributeField: FC<AttributeFieldProps> = ({pageKey, attrName, att
                 // hasFeedback
                 rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
             >
-                <Password id={`${pageKey}#${attrName}`} style={{maxWidth: attribute.fieldWidth}} maxLength={attribute.length} disabled={isDisabled}/>
+                <Password
+                    id={`${pageKey}#${attrName}`}
+                    style={{maxWidth: attribute.fieldWidth}}
+                    maxLength={attribute.length}
+                    {...additionalProps}
+                />
             </FormItem>
             {attribute.confirm && (
                 <Form.Item
@@ -52,7 +64,12 @@ const PasswordAttributeField: FC<AttributeFieldProps> = ({pageKey, attrName, att
                         }),
                     ]}
                 >
-                    <Password id={`${pageKey}#${attrName}.confirm`} style={{maxWidth: attribute.fieldWidth}} maxLength={attribute.length} disabled={isDisabled}/>
+                    <Password
+                        id={`${pageKey}#${attrName}.confirm`}
+                        style={{maxWidth: attribute.fieldWidth}}
+                        maxLength={attribute.length}
+                        {...additionalProps}
+                    />
                 </Form.Item>
             )}
         </>

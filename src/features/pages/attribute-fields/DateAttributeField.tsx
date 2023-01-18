@@ -1,4 +1,4 @@
-import {FC, useCallback} from 'react'
+import {FC, useCallback, useMemo} from 'react'
 import {useTranslation} from 'react-i18next'
 import moment from 'moment-timezone'
 import {DatePicker, Form} from 'antd'
@@ -17,7 +17,14 @@ const DateAttributeField: FC<AttributeFieldProps> = ({pageKey, attrName, attribu
         throw new Error('Illegal attribute')
 
     const {t} = useTranslation()
-    const isDisabled = attribute.keyed || attribute.readOnly
+    const isDisabled = useMemo(() => attribute.keyed || attribute.readOnly, [attribute.keyed, attribute.readOnly])
+    const additionalProps = useMemo((): any => {
+        const additionalProps: any = {}
+        if (isDisabled)
+            additionalProps.disabled = true
+
+        return additionalProps
+    }, [isDisabled])
 
     const parseValue = useCallback((val: string | null | undefined) => val == null ? null : moment.tz(val, UTC), [])
 
@@ -30,7 +37,7 @@ const DateAttributeField: FC<AttributeFieldProps> = ({pageKey, attrName, attribu
             initialValue={parseValue(value) ?? parseValue(attribute.defaultValue)}
             rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
         >
-            <DatePicker id={`${pageKey}#${attrName}`} format={momentDisplayDateFormatString} disabled={isDisabled}/>
+            <DatePicker id={`${pageKey}#${attrName}`} format={momentDisplayDateFormatString} {...additionalProps}/>
         </FormItem>
     )
 }

@@ -20,7 +20,14 @@ const MediaAttributeField: FC<AttributeFieldProps> = ({pageKey, form, item, attr
     const mediaService = useMemo(() => MediaService.getInstance(), [])
     const [fileList, setFileList] = useState<UploadFile[]>(getInitialUploadFileList())
     const mediaRef = useRef<Media | MediaInfo | null | undefined>(mediaData)
-    const isDisabled = attribute.keyed || attribute.readOnly
+    const isDisabled = useMemo(() => attribute.keyed || attribute.readOnly, [attribute.keyed, attribute.readOnly])
+    const additionalProps = useMemo((): any => {
+        const additionalProps: any = {}
+        if (isDisabled)
+            additionalProps.disabled = true
+
+        return additionalProps
+    }, [isDisabled])
 
     const normFile = (e: any) => {
         return e.fileList.length === 0 ? [] : [e.file]
@@ -100,12 +107,12 @@ const MediaAttributeField: FC<AttributeFieldProps> = ({pageKey, form, item, attr
                     id={`${pageKey}#${attrName}`}
                     name="files"
                     maxCount={1}
-                    disabled={isDisabled}
                     defaultFileList={getInitialUploadFileList()}
                     fileList={fileList}
                     beforeUpload={beforeUpload}
                     onPreview={handleDownload}
                     onRemove={handleRemove}
+                    {...additionalProps}
                 >
                     {fileList.length === 0 && <Button size="middle" icon={<UploadOutlined />}>{t('Add')}</Button>}
                 </Upload>

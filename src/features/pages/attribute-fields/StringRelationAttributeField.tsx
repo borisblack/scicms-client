@@ -28,7 +28,15 @@ const StringRelationAttributeField: FC<Props> = ({pageKey, form, item, attrName,
     const {t} = useTranslation()
     const [loading, setLoading] = useState<boolean>(false)
     const [isSearchModalVisible, setSearchModalVisible] = useState<boolean>(false)
-    const isDisabled = attribute.readOnly
+    const isDisabled = useMemo(() => attribute.readOnly, [attribute.readOnly])
+    const additionalProps = useMemo((): any => {
+        const additionalProps: any = {}
+        if (isDisabled)
+            additionalProps.disabled = true
+
+        return additionalProps
+    }, [isDisabled])
+
     const [currentValue, setCurrentValue] = useState(value)
     const itemService = useMemo(() => ItemService.getInstance(), [])
     const queryService = useMemo(() => QueryService.getInstance(), [])
@@ -84,7 +92,6 @@ const StringRelationAttributeField: FC<Props> = ({pageKey, form, item, attrName,
                     id={`${pageKey}#${attrName}`}
                     style={{maxWidth: attribute.fieldWidth ? attribute.fieldWidth + (currentValue ? (SUFFIX_BUTTON_WIDTH * 2 + 4) : 0) : undefined}}
                     readOnly
-                    disabled={isDisabled}
                     onSearch={() => setSearchModalVisible(true)}
                     addonAfter={currentValue && [
                         <Tooltip key="open" title={t('Open')}>
@@ -105,6 +112,7 @@ const StringRelationAttributeField: FC<Props> = ({pageKey, form, item, attrName,
                             />
                         </Tooltip>
                     ]}
+                    {...additionalProps}
                 />
             </FormItem>
 
