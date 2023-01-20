@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import 'chartjs-adapter-luxon'
-import {DashType, Dataset} from '../types'
+import {AttrType, DashType, Dataset} from '../types'
 import {DashMap, DashProps} from './dashes'
 import BarDash from './dashes/BarDash'
 import DoughnutDash from './dashes/DoughnutDash'
@@ -25,6 +25,8 @@ import StatisticDash from './dashes/StatisticDash'
 import styles from './DashWrapper.module.css'
 import DatasetService from '../services/dataset'
 import {useCache} from '../util/hooks'
+import {DateTime} from 'luxon'
+import appConfig from '../config'
 
 const dashMap: DashMap = {
     [DashType.bar]: BarDash,
@@ -134,11 +136,35 @@ export default function DashWrapper(props: DashProps) {
         setCheckedLocationLabelSet(checkedLocationLabelSet)
     }, [])
 
+    const formatTemporal = useCallback((temporal: string | null) => {
+        if (temporal == null || datasetItem == null)
+            return ''
+
+        const dt = DateTime.fromISO(temporal)
+        if (datasetItem.temporalType === AttrType.date)
+            return dt.toFormat(appConfig.dateTime.luxonDisplayDateFormatString)
+        else if (datasetItem.temporalType === AttrType.time)
+            return dt.toFormat(appConfig.dateTime.luxonDisplayTimeFormatString)
+        else
+            return dt.toFormat(appConfig.dateTime.luxonDisplayDateTimeFormatString)
+    }, [datasetItem])
+
+    const renderSubTitle = useCallback(() => {
+        if (startTemporal == null && endTemporal == null)
+            return null
+
+        const start = formatTemporal(startTemporal)
+        const end = formatTemporal(endTemporal)
+
+        return `${start} - ${end}`
+    }, [endTemporal, formatTemporal, startTemporal])
+
     return datasetItem && (
         <FullScreen active={fullScreen} normalStyle={{display: isFullScreenComponentExist ? 'none' : 'block'}}>
             <PageHeader
                 className={styles.pageHeader}
                 title={dash.name}
+                subTitle={renderSubTitle()}
                 extra={fullScreen ? (
                     <Button type="link" icon={<FullscreenExitOutlined style={{fontSize: 24}}/>} title={t('Exit full screen')} onClick={() => handleFullScreenChange(false)}/>
                 ) : (
@@ -151,7 +177,13 @@ export default function DashWrapper(props: DashProps) {
                     {datasetItem.temporalType && (
                         <TopPanel title={t('Temporal')} height={60}>
                             <div style={{padding: '16px 8px'}}>
-                                <TemporalToolbar temporalType={datasetItem.temporalType} onStartTemporalChange={setStartTemporal} onEndTemporalChange={setEndTemporal}/>
+                                <TemporalToolbar
+                                    temporalType={datasetItem.temporalType}
+                                    startTemporal={startTemporal}
+                                    endTemporal={endTemporal}
+                                    onStartTemporalChange={setStartTemporal}
+                                    onEndTemporalChange={setEndTemporal}
+                                />
                             </div>
                         </TopPanel>
                     )}

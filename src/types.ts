@@ -348,7 +348,7 @@ export type NumericType = AttrType.int | AttrType.long | AttrType.float | AttrTy
 
 export type TemporalType = AttrType.date | AttrType.time | AttrType.datetime | AttrType.timestamp
 
-export type MetricType = NumericType | TemporalType | AttrType.bool
+export type MetricType = NumericType | TemporalType
 
 export enum DashType {
     bar = 'bar',
