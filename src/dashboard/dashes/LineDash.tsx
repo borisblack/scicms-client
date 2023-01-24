@@ -5,12 +5,16 @@ import {DashType} from '../../types'
 import {InnerDashProps} from '.'
 import {map2dMetrics, mapLabels, temporalTypeSet, timeScaleProps} from '../../util/dashboard'
 
-const LineDash: FC<InnerDashProps> = ({pageKey, dash, fullScreen, dataset, data}) => {
+const LineDash: FC<InnerDashProps> = ({pageKey, dash, fullScreen, data}) => {
     if (dash.type !== DashType.line)
         throw new Error('Illegal dash type')
 
-    const labels = useMemo(() => mapLabels(data, dash.labelField), [dash.labelField, data])
-    const preparedData = useMemo(() => map2dMetrics(dataset, data), [data, dataset])
+    const {labelField} = dash
+    if (labelField == null)
+        throw new Error('Illegal argument')
+
+    const labels = useMemo(() => mapLabels(data, labelField), [data, labelField])
+    const preparedData = useMemo(() => map2dMetrics(dash, data), [dash, data])
     const canvasRef = useRef<HTMLCanvasElement>(null)
 
     useEffect(() => {
@@ -27,7 +31,7 @@ const LineDash: FC<InnerDashProps> = ({pageKey, dash, fullScreen, dataset, data}
             }
         }
 
-        if (temporalTypeSet.has(dataset.metricType)) {
+        if (dash.metricType != null && temporalTypeSet.has(dash.metricType)) {
             scales.y = {
                 ...timeScaleProps,
                 // min: _.min(preparedData.map(it => it.y))?.toISOString()
@@ -63,7 +67,7 @@ const LineDash: FC<InnerDashProps> = ({pageKey, dash, fullScreen, dataset, data}
         })
 
         return () => { chart.destroy() }
-    }, [dash.name, dataset.metricType, fullScreen, labels, preparedData])
+    }, [dash.metricType, dash.name, fullScreen, labels, preparedData])
 
     return (
         <canvas id={`${pageKey}#${dash.name}`} ref={canvasRef}/>

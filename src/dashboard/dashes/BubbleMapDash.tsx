@@ -8,13 +8,17 @@ import {map3dMapMetrics, mapLabels, temporalTypeSet, timeScaleProps} from '../..
 
 Chart.register(BubbleMapController, GeoFeature, ColorScale, ProjectionScale, SizeScale)
 
-const BubbleMapDash: FC<InnerDashProps> = ({pageKey, fullScreen, dash, dataset, data}) => {
+const BubbleMapDash: FC<InnerDashProps> = ({pageKey, fullScreen, dash, data}) => {
     if (dash.type !== DashType.bubbleMap)
         throw new Error('Illegal dash type')
 
+    const {labelField} = dash
+    if (labelField == null)
+        throw new Error('Illegal argument')
+
     const [countries, setCountries] = useState([])
-    const labels = useMemo(() => mapLabels(data, dash.labelField), [dash.labelField, data])
-    const preparedData = useMemo(() => map3dMapMetrics(dataset, data), [data, dataset])
+    const labels = useMemo(() => mapLabels(data, labelField), [data, labelField])
+    const preparedData = useMemo(() => map3dMapMetrics(dash, data), [data, dash])
     const canvasRef = useRef<HTMLCanvasElement>(null)
 
     useEffect(() => {
@@ -34,7 +38,7 @@ const BubbleMapDash: FC<InnerDashProps> = ({pageKey, fullScreen, dash, dataset, 
         const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
         const scales: any = {}
 
-        if (temporalTypeSet.has(dataset.metricType)) {
+        if (dash.metricType != null && temporalTypeSet.has(dash.metricType)) {
             scales.r = {
                 ...timeScaleProps,
                 // min: _.min(preparedData.map(it => it.y))?.toISOString()
@@ -73,7 +77,7 @@ const BubbleMapDash: FC<InnerDashProps> = ({pageKey, fullScreen, dash, dataset, 
         })
 
         return () => { chart.destroy() }
-    }, [countries, dash.name, dataset.metricType, fullScreen, labels, preparedData])
+    }, [countries, dash.metricType, dash.name, fullScreen, labels, preparedData])
 
     return (
         <canvas id={`${pageKey}#${dash.name}`} ref={canvasRef}/>

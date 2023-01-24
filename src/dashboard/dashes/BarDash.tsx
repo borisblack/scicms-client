@@ -6,12 +6,16 @@ import {DashType} from '../../types'
 import {InnerDashProps} from '.'
 import {mapLabels, mapMetrics, temporalTypeSet, timeScaleProps} from '../../util/dashboard'
 
-const BarDash: FC<InnerDashProps> = ({pageKey, dash, fullScreen, dataset, data, }) => {
+const BarDash: FC<InnerDashProps> = ({pageKey, dash, fullScreen, data, }) => {
     if (dash.type !== DashType.bar)
         throw new Error('Illegal dash type')
 
-    const labels = useMemo(() => mapLabels(data, dash.labelField), [dash.labelField, data])
-    const preparedData = useMemo(() => mapMetrics(dataset, data), [data, dataset])
+    const {labelField} = dash
+    if (labelField == null)
+        throw new Error('Illegal argument')
+
+    const labels = useMemo(() => mapLabels(data, labelField), [labelField, data])
+    const preparedData = useMemo(() => mapMetrics(dash, data), [dash, data])
     const canvasRef = useRef<HTMLCanvasElement>(null)
 
     useEffect(() => {
@@ -21,7 +25,7 @@ const BarDash: FC<InnerDashProps> = ({pageKey, dash, fullScreen, dataset, data, 
 
         const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
         const scales: any = {}
-        if (temporalTypeSet.has(dataset.metricType)) {
+        if (dash.metricType && temporalTypeSet.has(dash.metricType)) {
             scales.y = {
                 ...timeScaleProps,
                 // min: _.min(preparedData)?.toISOString()
@@ -61,7 +65,7 @@ const BarDash: FC<InnerDashProps> = ({pageKey, dash, fullScreen, dataset, data, 
         })
 
         return () => { chart.destroy() }
-    }, [dash.name, dataset.metricType, fullScreen, labels, preparedData])
+    }, [dash.name, dash.metricType, fullScreen, labels, preparedData])
 
     return (
         <canvas id={`${pageKey}#${dash.name}`} ref={canvasRef}/>

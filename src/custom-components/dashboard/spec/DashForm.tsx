@@ -1,5 +1,5 @@
 import {Checkbox, Form, FormInstance, Input, InputNumber, Select} from 'antd'
-import {AggregateType, DashType, IDash} from '../../../types'
+import {AggregateType, DashType, IDash, MetricType, TemporalType} from '../../../types'
 import styles from './DashboardSpec.module.css'
 import {useTranslation} from 'react-i18next'
 import appConfig from '../../../config'
@@ -19,8 +19,16 @@ export interface DashValues {
     name: string
     type: DashType
     dataset: string
+    metricType?: MetricType
+    metricField?: string
+    unit?: string
+    labelField?: string
+    temporalType?: TemporalType
+    temporalField?: string
+    latitudeField?: string
+    longitudeField?: string
+    locationLabelField?: string
     isAggregate: boolean
-    labelField: string
     aggregateType?: AggregateType
     refreshIntervalSeconds: number
 }
@@ -35,14 +43,14 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
     const [isAggregate, setAggregate] = useState<boolean>(dash.isAggregate)
 
     useEffect(() => {
-        datasetService.findAll().then(data => setDatasetNames(data.map(it => it.name).sort()))
-    }, [datasetService])
+        datasetService.findAll().then(datasets => setDatasetNames(datasets.map(it => it.name).sort()))
+    }, [datasetService, dash])
 
     useEffect(() => {
         form.resetFields()
         setAggregate(dash.isAggregate)
     }, [form, dash])
-    
+
     const handleAggregateChange = useCallback((evt: CheckboxChangeEvent) => {
         setAggregate(evt.target.checked)
     }, [])

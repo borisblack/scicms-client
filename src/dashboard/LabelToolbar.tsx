@@ -12,8 +12,12 @@ interface Props {
 }
 
 export default function LabelToolbar({dataset, data, dash, checkedLabelSet, onChange}: Props) {
+    const {labelField} = dash
+    if (labelField == null)
+        throw new Error('Illegal argument')
+
     const getLabelTreeNode = useCallback((): TreeDataNode => {
-        const labels = data.map(it => it[dash.labelField]).filter(it => it != null)
+        const labels = data.map(it => it[labelField]).filter(it => it != null)
         const labelSet = new Set(labels)
         return {
             key: dataset.name,
@@ -24,7 +28,7 @@ export default function LabelToolbar({dataset, data, dash, checkedLabelSet, onCh
                 title: label
             }))
         }
-    }, [dash.labelField, data, dataset.name])
+    }, [data, dataset.name, labelField])
 
     const handleLabelTreeCheck: TreeProps['onCheck'] = useCallback((checkedKeys: any) => {
         onChange(new Set(checkedKeys as string[]))

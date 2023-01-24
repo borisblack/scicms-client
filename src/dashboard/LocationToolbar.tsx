@@ -1,18 +1,19 @@
 import {Tree, TreeDataNode, TreeProps} from 'antd'
 import {useCallback} from 'react'
-import {Dataset} from '../types'
+import {Dataset, IDash} from '../types'
 import {FolderOutlined} from '@ant-design/icons'
 
 interface Props {
     dataset: Dataset
     data: any[]
+    dash: IDash
     checkedLocationLabelSet: Set<string> | null
     onChange: (checkedLocationLabelSet: Set<string>) => void
 }
 
-export default function LocationToolbar({dataset, data, checkedLocationLabelSet, onChange}: Props) {
+export default function LocationToolbar({dataset, data, dash, checkedLocationLabelSet, onChange}: Props) {
     const getLocationTreeNode = useCallback((): TreeDataNode => {
-        const {locationLabelField} = dataset
+        const {locationLabelField} = dash
         const locationLabels = locationLabelField ? data.map(it => it[locationLabelField]).filter(it => it != null) : []
         const locationLabelSet = new Set(locationLabels)
         return {

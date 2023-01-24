@@ -304,15 +304,7 @@ export interface Dataset extends DefaultItemTemplate {
     name: string
     dataSource: string
     tableName: string | null
-    query: string | null,
-    metricType: MetricType
-    metricField: string
-    unit: string | null
-    temporalType: TemporalType
-    temporalField: string | null
-    latitudeField: string | null
-    longitudeField: string | null
-    locationLabelField: string | null
+    query: string | null
 }
 
 export interface Locale extends DefaultItemTemplate {
@@ -337,8 +329,16 @@ export interface IDash {
     y: number
     w: number
     h: number
-    dataset: string
-    labelField: string
+    dataset?: string
+    metricType?: MetricType
+    metricField?: string
+    unit?: string
+    labelField?: string
+    temporalType?: TemporalType
+    temporalField?: string
+    latitudeField?: string
+    longitudeField?: string
+    locationLabelField?: string
     isAggregate: boolean
     aggregateType?: AggregateType
     refreshIntervalSeconds: number

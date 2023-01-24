@@ -44,14 +44,18 @@ const dashMap: DashMap = {
 
 export default function DashWrapper(props: DashProps) {
     const {dash, isFullScreenComponentExist, onFullScreenComponentStateChange} = props
+    const datasetName = dash.dataset
+    if (datasetName == null)
+        throw new Error('Illegal argument')
+
     const getDashComponent = useCallback(() => dashMap[dash.type], [dash.type])
     const DashComponent = getDashComponent()
-    if (!DashComponent)
-        throw new Error('Illegal attribute')
+    if (DashComponent == null)
+        throw new Error('Illegal argument')
 
     const {t} = useTranslation()
     const datasetService = useMemo(() => DatasetService.getInstance(), [])
-    const {data: datasetItem} = useCache<Dataset>(() => datasetService.findByName(dash.dataset))
+    const {data: datasetItem} = useCache<Dataset>(() => datasetService.findByName(datasetName))
     const [datasetData, setDatasetData] = useState<any[]>([])
     const [checkedLabelSet, setCheckedLabelSet] = useState<Set<string> | null>(null)
     const isCheckedLabelSetTouched = useRef<boolean>(false)
@@ -61,13 +65,13 @@ export default function DashWrapper(props: DashProps) {
         if (datasetItem == null)
             return []
 
+        const {labelField, locationLabelField} = dash
         return datasetData.filter(it => {
-            const hasLabel = checkedLabelSet == null || checkedLabelSet.has(it[dash.labelField])
-            const {locationLabelField} = datasetItem
+            const hasLabel = checkedLabelSet == null || labelField == null || checkedLabelSet.has(it[labelField])
             const hasLocationLabel = checkedLocationLabelSet == null || locationLabelField == null || checkedLocationLabelSet.has(it[locationLabelField])
             return hasLabel && hasLocationLabel
         })
-    }, [checkedLabelSet, checkedLocationLabelSet, dash.labelField, datasetData, datasetItem])
+    }, [checkedLabelSet, checkedLocationLabelSet, dash, datasetData, datasetItem])
 
     const [fullScreen, setFullScreen] = useState<boolean>(false)
     const [startTemporal, setStartTemporal] = useState<string | null>(null)
@@ -87,7 +91,7 @@ export default function DashWrapper(props: DashProps) {
             return
 
         const fetchedData = await datasetService.loadData(
-            dash.dataset,
+            datasetName,
             startTemporal,
             endTemporal,
             dash.aggregateType,
@@ -96,18 +100,20 @@ export default function DashWrapper(props: DashProps) {
         setDatasetData(fetchedData)
 
         // Update checked labels and locations
-        const fetchedLabels = fetchedData.map(it => it[dash.labelField])
-        const fetchedLabelSet = new Set(fetchedLabels)
-        if (checkedLabelSet == null || !isCheckedLabelSetTouched.current) {
-            setCheckedLabelSet(fetchedLabelSet)
-        } else {
-            const newCheckedLabels = Array.from(checkedLabelSet).filter(it => fetchedLabelSet.has(it))
+        const {labelField, locationLabelField} = dash
+        if (labelField != null) {
+            const fetchedLabels = fetchedData.map(it => it[labelField])
+            const fetchedLabelSet = new Set(fetchedLabels)
+            if (checkedLabelSet == null || !isCheckedLabelSetTouched.current) {
+                setCheckedLabelSet(fetchedLabelSet)
+            } else {
+                const newCheckedLabels = Array.from(checkedLabelSet).filter(it => fetchedLabelSet.has(it))
 
-            setCheckedLabelSet(new Set(newCheckedLabels))
+                setCheckedLabelSet(new Set(newCheckedLabels))
+            }
         }
 
         // Update checked location labels
-        const {locationLabelField} = datasetItem
         if (locationLabelField != null) {
             const fetchedLocationLabels = fetchedData.map(it => it[locationLabelField])
             const fetchedLocationLabelSet = new Set(fetchedLocationLabels)
@@ -119,7 +125,7 @@ export default function DashWrapper(props: DashProps) {
             }
         }
 
-    }, [checkedLabelSet, checkedLocationLabelSet, dash.aggregateType, dash.dataset, dash.labelField, datasetItem, datasetService, endTemporal, startTemporal])
+    }, [checkedLabelSet, checkedLocationLabelSet, dash, datasetItem, datasetName, datasetService, endTemporal, startTemporal])
 
     const handleFullScreenChange = useCallback((fullScreen: boolean) => {
         setFullScreen(fullScreen)
@@ -141,9 +147,9 @@ export default function DashWrapper(props: DashProps) {
             return ''
 
         const dt = DateTime.fromISO(temporal)
-        if (datasetItem.temporalType === AttrType.date)
+        if (dash.temporalType === AttrType.date)
             return dt.toFormat(appConfig.dateTime.luxonDisplayDateFormatString)
-        else if (datasetItem.temporalType === AttrType.time)
+        else if (dash.temporalType === AttrType.time)
             return dt.toFormat(appConfig.dateTime.luxonDisplayTimeFormatString)
         else
             return dt.toFormat(appConfig.dateTime.luxonDisplayDateTimeFormatString)
@@ -174,11 +180,11 @@ export default function DashWrapper(props: DashProps) {
 
             {fullScreen && (
                 <>
-                    {datasetItem.temporalType && (
+                    {dash.temporalType && (
                         <TopPanel title={t('Temporal')} height={60}>
                             <div style={{padding: '16px 8px'}}>
                                 <TemporalToolbar
-                                    temporalType={datasetItem.temporalType}
+                                    temporalType={dash.temporalType}
                                     startTemporal={startTemporal}
                                     endTemporal={endTemporal}
                                     onStartTemporalChange={setStartTemporal}
@@ -189,18 +195,30 @@ export default function DashWrapper(props: DashProps) {
                     )}
                     <LeftPanel title={t('Labels')} width={250}>
                         <div style={{padding: 8}}>
-                            <LabelToolbar dataset={datasetItem} data={datasetData} dash={dash} checkedLabelSet={checkedLabelSet} onChange={handleCheckedLabelSetChange}/>
+                            <LabelToolbar
+                                dataset={datasetItem}
+                                data={datasetData}
+                                dash={dash}
+                                checkedLabelSet={checkedLabelSet}
+                                onChange={handleCheckedLabelSetChange}
+                            />
                         </div>
                     </LeftPanel>
                     <RightPanel title={t('Locations')} width={250}>
                         <div style={{padding: 8}}>
-                            <LocationToolbar dataset={datasetItem} data={datasetData} checkedLocationLabelSet={checkedLocationLabelSet} onChange={handleCheckedLocationLabelSetChange}/>
+                            <LocationToolbar
+                                dataset={datasetItem}
+                                data={datasetData}
+                                dash={dash}
+                                checkedLocationLabelSet={checkedLocationLabelSet}
+                                onChange={handleCheckedLocationLabelSetChange}
+                            />
                         </div>
                     </RightPanel>
                 </>
             )}
 
-            <DashComponent {...props} fullScreen={fullScreen} dataset={datasetItem} data={filteredData}/>
+            <DashComponent {...props} fullScreen={fullScreen} data={filteredData}/>
         </FullScreen>
     )
 }

@@ -61,8 +61,6 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
                         y: 0,
                         w: appConfig.dashboard.cols / 2,
                         h: 1,
-                        dataset: '',
-                        labelField: '',
                         isAggregate: false,
                         refreshIntervalSeconds: appConfig.dashboard.defaultRefreshIntervalSeconds
                     },
@@ -76,18 +74,31 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
         setSpec(prevSpec => ({
             dashes: layouts.map((it, i) => {
                 const curDash = prevSpec.dashes[i]
+                const {
+                    name, type, dataset, metricType, metricField, unit, labelField, temporalType, temporalField,
+                    latitudeField, longitudeField, locationLabelField, isAggregate, aggregateType, refreshIntervalSeconds
+                } = curDash
+
                 return {
-                    name: curDash.name,
-                    type: curDash.type,
+                    name,
+                    type,
                     x: it.x,
                     y: it.y,
                     w: it.w,
                     h: it.h,
-                    dataset: curDash.dataset,
-                    labelField: curDash.labelField,
-                    isAggregate: curDash.isAggregate,
-                    aggregateType: curDash.aggregateType,
-                    refreshIntervalSeconds: curDash.refreshIntervalSeconds
+                    dataset,
+                    metricType,
+                    metricField,
+                    unit,
+                    labelField,
+                    temporalField,
+                    temporalType,
+                    latitudeField,
+                    longitudeField,
+                    locationLabelField,
+                    isAggregate,
+                    aggregateType,
+                    refreshIntervalSeconds
                 }
             })
         }))
@@ -118,13 +129,25 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
         if (!canEdit || !activeDash)
             return
 
-        const {name, type, dataset, labelField, isAggregate, aggregateType, refreshIntervalSeconds} = newActiveDash
+        const {
+            name, type, dataset, metricType, metricField, unit, labelField, temporalType, temporalField,
+            latitudeField, longitudeField, locationLabelField, isAggregate, aggregateType, refreshIntervalSeconds
+        } = newActiveDash
+
         const dashToUpdate: IDash = {
             ...activeDash,
             name,
             type,
             dataset,
+            metricType,
+            metricField,
+            unit,
             labelField,
+            temporalType,
+            temporalField,
+            latitudeField,
+            longitudeField,
+            locationLabelField,
             isAggregate,
             aggregateType,
             refreshIntervalSeconds

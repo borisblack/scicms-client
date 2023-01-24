@@ -1,4 +1,4 @@
-import {AttrType, DashType, Dataset, MetricType} from '../types'
+import {AttrType, DashType, IDash, MetricType} from '../types'
 import {DateTime} from 'luxon'
 import appConfig from '../config'
 import {UTC} from '../config/constants'
@@ -29,36 +29,50 @@ export const timeScaleProps = {
 export const mapLabels = (data: any[], labelField: string): string[] =>
     data.map(it => it[labelField]?.toString()?.trim())
 
-export const mapMetrics = (dataset: Dataset, data: any[]): any[] =>
-    data.map(it => parseMetric(it[dataset.metricField], dataset.metricType))
+export const mapMetrics = (dash: IDash, data: any[]): any[] => {
+    const {metricType, metricField} = dash
+    if (metricType == null || metricField == null)
+        throw new Error("Illegal argument")
 
-export const map2dMetrics = (dataset: Dataset, data: any[]): {x: DateTime, y: any}[] => {
-   const {temporalField} = dataset
+    return data.map(it => parseMetric(it[metricField], metricType))
+}
+
+export const map2dMetrics = (dash: IDash, data: any[]): {x: DateTime, y: any}[] => {
+    const {metricType, metricField, temporalField} = dash
     if (temporalField == null)
         return []
 
+    if (metricType == null || metricField == null)
+        throw new Error("Illegal argument")
+
     return data.map(it => ({
         x: DateTime.fromISO(it[temporalField]),
-        y: parseMetric(it[dataset.metricField], dataset.metricType)
+        y: parseMetric(it[metricField], metricType)
     }))
 }
 
-export const map3dMetrics = (dataset: Dataset, data: any[]): {x: DateTime, y: any, r: number}[] => {
-    const {temporalField} = dataset
+export const map3dMetrics = (dash: IDash, data: any[]): {x: DateTime, y: any, r: number}[] => {
+    const {metricType, temporalField} = dash
     if (temporalField == null)
         return []
 
+    if (metricType == null)
+        throw new Error("Illegal argument")
+
     return data.map(it => ({
         x: DateTime.fromISO(it[temporalField]),
-        y: parseMetric(it[temporalField], dataset.metricType),
+        y: parseMetric(it[temporalField], metricType),
         r: 2
     }))
 }
 
-export const map3dMapMetrics = (dataset: Dataset, data: any[]): {longitude: number, latitude: number, value: any}[] => {
-    const {latitudeField, longitudeField} = dataset
+export const map3dMapMetrics = (dash: IDash, data: any[]): {longitude: number, latitude: number, value: any}[] => {
+    const {metricType, metricField, latitudeField, longitudeField} = dash
     if (latitudeField == null || longitudeField == null)
         return []
+
+    if (metricType == null || metricField == null)
+        throw new Error("Illegal argument")
 
     return data.map(it => {
         const latitude = it[latitudeField]
@@ -66,7 +80,7 @@ export const map3dMapMetrics = (dataset: Dataset, data: any[]): {longitude: numb
         return {
             longitude,
             latitude,
-            value: parseMetric(it[dataset.metricField], dataset.metricType)
+            value: parseMetric(it[metricField], metricType)
         }
     })
 }

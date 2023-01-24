@@ -5,12 +5,16 @@ import {DashType} from '../../types'
 import {InnerDashProps} from '.'
 import {map3dMetrics, mapLabels, temporalTypeSet, timeScaleProps} from '../../util/dashboard'
 
-const BubbleDash: FC<InnerDashProps> = ({pageKey, dash, fullScreen, dataset, data}) => {
+const BubbleDash: FC<InnerDashProps> = ({pageKey, dash, fullScreen, data}) => {
     if (dash.type !== DashType.bubble)
         throw new Error('Illegal dash type')
 
-    const labels = useMemo(() => mapLabels(data, dash.labelField), [dash.labelField, data])
-    const preparedData = useMemo(() => map3dMetrics(dataset, data), [data, dataset])
+    const {labelField} = dash
+    if (labelField == null)
+        throw new Error('Illegal argument')
+
+    const labels = useMemo(() => mapLabels(data, labelField), [labelField, data])
+    const preparedData = useMemo(() => map3dMetrics(dash, data), [data, dash])
     const canvasRef = useRef<HTMLCanvasElement>(null)
 
     useEffect(() => {
@@ -26,7 +30,7 @@ const BubbleDash: FC<InnerDashProps> = ({pageKey, dash, fullScreen, dataset, dat
             }
         }
 
-        if (temporalTypeSet.has(dataset.metricType)) {
+        if (dash.metricType != null && temporalTypeSet.has(dash.metricType)) {
             scales.y = {
                 ...timeScaleProps,
                 // min: _.min(preparedData.map(it => it.y))?.toISOString()
@@ -60,7 +64,7 @@ const BubbleDash: FC<InnerDashProps> = ({pageKey, dash, fullScreen, dataset, dat
         })
 
         return () => { chart.destroy() }
-    }, [dash.name, dataset.metricType, fullScreen, labels, preparedData])
+    }, [dash.name, dash.metricType, fullScreen, labels, preparedData])
 
     return (
         <canvas id={`${pageKey}#${dash.name}`} ref={canvasRef}/>
