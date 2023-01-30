@@ -12,7 +12,7 @@ import {ID_ATTR_NAME, SOURCE_ATTR_NAME, TARGET_ATTR_NAME} from '../../config/con
 import {Callback, CallbackOperation} from '../../services/mediator'
 import MutationService from '../../services/mutation'
 import ItemService from '../../services/item'
-import QueryService, {FiltersInput} from '../../services/query'
+import QueryService, {ItemFiltersInput} from '../../services/query'
 import SearchDataGridWrapper from './SearchDataGridWrapper'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
 import * as ACL from '../../util/acl'
@@ -99,7 +99,7 @@ export default function RelationsDataGridWrapper({me, pageKey, item, itemData, r
             const [, targetAttrName] = getSourceTargetAttrNames()
             setLoading(true)
             try {
-                const intermediatesToDelete = await queryService.findAllBy(intermediate, {[targetAttrName]: {id: {eq: id}}} as unknown as FiltersInput<ItemData>) // must be only one
+                const intermediatesToDelete = await queryService.findAllBy(intermediate, {[targetAttrName]: {id: {eq: id}}} as unknown as ItemFiltersInput<ItemData>) // must be only one
                 for (const intermediateToDelete of intermediatesToDelete) {
                     await mutationService.delete(intermediate, intermediateToDelete.id, appConfig.mutation.deletingStrategy)
                 }

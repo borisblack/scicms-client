@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import 'chartjs-adapter-luxon'
-import {AttrType, DashType, Dataset} from '../types'
+import {AggregateType, AttrType, DashType, Dataset} from '../types'
 import {DashMap, DashProps} from './dashes'
 import BarDash from './dashes/BarDash'
 import DoughnutDash from './dashes/DoughnutDash'
@@ -23,7 +23,7 @@ import LabelToolbar from './LabelToolbar'
 import LocationToolbar from './LocationToolbar'
 import StatisticDash from './dashes/StatisticDash'
 import styles from './DashWrapper.module.css'
-import DatasetService from '../services/dataset'
+import DatasetService, {DatasetInput} from '../services/dataset'
 import {useCache} from '../util/hooks'
 import {DateTime} from 'luxon'
 import appConfig from '../config'
@@ -90,18 +90,50 @@ export default function DashWrapper(props: DashProps) {
         if (datasetItem == null)
             return
 
-        const fetchedData = await datasetService.loadData(
-            datasetName,
-            startTemporal,
-            endTemporal,
-            dash.aggregateType,
-            dash.labelField
-        )
+        if ((startTemporal != null || endTemporal != null) && dash.temporalField == null)
+            throw new Error('The temporalField must be specified')
+
+        if (dash.isAggregate) {
+            if (dash.aggregateType == null || dash.metricField == null)
+                throw new Error('metricField and aggregateType must be specified')
+
+            if (dash.aggregateType !== AggregateType.countAll && dash.labelField == null)
+                throw new Error('The labelField must be specified')
+        }
+
+        const datasetInput: DatasetInput<any> = {}
+        if (startTemporal != null) {
+            const temporalField = dash.temporalField as string
+            datasetInput.filters = datasetInput.filters ?? {}
+            datasetInput.filters[temporalField] = datasetInput.filters[temporalField] ?? {}
+            datasetInput.filters[temporalField]['$gte'] = startTemporal
+        }
+
+        if (endTemporal != null) {
+            const temporalField = dash.temporalField as string
+            datasetInput.filters = datasetInput.filters ?? {}
+            datasetInput.filters[temporalField] = datasetInput.filters[temporalField] ?? {}
+            datasetInput.filters[temporalField]['$lte'] = endTemporal
+        }
+
+        if (dash.temporalField != null)
+            datasetInput.sort = [`${dash.temporalField}:asc`]
+
+        if (dash.isAggregate) {
+            datasetInput.aggregate = dash.aggregateType
+            datasetInput.aggregateField = dash.metricField
+
+            if (dash.labelField !== null)
+                datasetInput.groupField = dash.labelField
+        }
+
+        const datasetResponse = await datasetService.loadData(datasetName, datasetInput)
+        const fetchedData = datasetResponse.data
         setDatasetData(fetchedData)
 
         // Update checked labels and locations
         const {labelField, locationLabelField} = dash
-        if (labelField != null) {
+        if (labelField) {
             const fetchedLabels = fetchedData.map(it => it[labelField])
             const fetchedLabelSet = new Set(fetchedLabels)
             if (checkedLabelSet == null || !isCheckedLabelSetTouched.current) {
@@ -114,7 +146,7 @@ export default function DashWrapper(props: DashProps) {
         }
 
         // Update checked location labels
-        if (locationLabelField != null) {
+        if (locationLabelField) {
             const fetchedLocationLabels = fetchedData.map(it => it[locationLabelField])
             const fetchedLocationLabelSet = new Set(fetchedLocationLabels)
             if (checkedLocationLabelSet == null || !isCheckedLocationLabelSetTouched.current) {

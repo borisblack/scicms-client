@@ -203,6 +203,7 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
                 style={{top: 20}}
                 title={activeDash?.name}
                 visible={isDashModalVisible}
+                width={800}
                 onOk={() => dashForm.submit()}
                 onCancel={() => setDashModalVisible(false)}
             >

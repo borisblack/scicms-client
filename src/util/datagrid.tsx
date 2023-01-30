@@ -8,7 +8,7 @@ import {Attribute, AttrType, Item, ItemData, Media, NamedAttribute, NamedIndex, 
 import appConfig from '../config'
 import ItemService from '../services/item'
 import {DataWithPagination, RequestParams} from '../components/datagrid/DataGrid'
-import QueryService, {ExtRequestParams, FiltersInput} from '../services/query'
+import QueryService, {ExtRequestParams, ItemFiltersInput} from '../services/query'
 import MediaService from '../services/media'
 import {ACCESS_ITEM_NAME, FILENAME_ATTR_NAME, MASK_ATTR_NAME, MEDIA_ITEM_NAME, UTC} from '../config/constants'
 import i18n from '../i18n'
@@ -143,13 +143,13 @@ export function getHiddenColumns(item: Item): string[] {
 export async function findAll(
     item: Item,
     params: ExtRequestParams,
-    extraFiltersInput?: FiltersInput<ItemData>
+    extraFiltersInput?: ItemFiltersInput<ItemData>
 ): Promise<DataWithPagination<any>> {
     const responseCollection = await queryService.findAll(item, params, extraFiltersInput)
     const {page, pageSize, total} = responseCollection.meta.pagination
     return {
         data: responseCollection.data,
-        pagination: {page, pageSize, total}
+        pagination: {page: page as number, pageSize, total}
     }
 }
 
@@ -159,13 +159,13 @@ export async function findAllRelated(
     relAttrName: string,
     target: Item,
     params: ExtRequestParams,
-    extraFiltersInput?: FiltersInput<ItemData>
+    extraFiltersInput?: ItemFiltersInput<ItemData>
 ): Promise<DataWithPagination<any>> {
     const responseCollection = await queryService.findAllRelated(itemName, itemId, relAttrName, target, params, extraFiltersInput)
     const {page, pageSize, total} = responseCollection.meta.pagination
     return {
         data: responseCollection.data,
-        pagination: {page, pageSize, total}
+        pagination: {page: page as number, pageSize, total}
     }
 }
 

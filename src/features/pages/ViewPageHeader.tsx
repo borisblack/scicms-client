@@ -22,7 +22,7 @@ import {useTranslation} from 'react-i18next'
 import MutationService from '../../services/mutation'
 import SearchDataGridWrapper from './SearchDataGridWrapper'
 import styles from './Pages.module.css'
-import {FiltersInput} from '../../services/query'
+import {ItemFiltersInput} from '../../services/query'
 import Promote from './Promote'
 import {
     ITEM_ITEM_NAME,
@@ -266,9 +266,9 @@ export default function ViewPageHeader({
         />
     )
 
-    const getVersionsExtraFiltersInput = (): FiltersInput<ItemData> => {
+    const getVersionsExtraFiltersInput = (): ItemFiltersInput<ItemData> => {
         if (isNew)
-            return {} as FiltersInput<ItemData>
+            return {} as ItemFiltersInput<ItemData>
 
         return {
             id: {

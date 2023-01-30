@@ -391,13 +391,13 @@ interface ResponseCollectionMeta {
     pagination: Pagination
 }
 
-interface Pagination {
-    limit?: number
-    page: number
-    pageCount?: number
+export interface Pagination {
+    page?: number
     pageSize: number
     start?: number
+    limit?: number
     total: number
+    pageCount?: number
 }
 
 export enum ViewState {
@@ -411,4 +411,11 @@ export enum ViewState {
 export interface IBuffer {
     form: {[key: string]: any}
     [key: string]: any
+}
+
+export interface PaginationInput {
+    page?: number
+    pageSize?: number
+    start?: number,
+    limit?: number
 }

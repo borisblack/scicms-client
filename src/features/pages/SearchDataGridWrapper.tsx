@@ -6,14 +6,14 @@ import appConfig from '../../config'
 import DataGrid, {RequestParams} from '../../components/datagrid/DataGrid'
 import {findAll, getColumns, getHiddenColumns, getInitialData} from '../../util/datagrid'
 import {Item, ItemData} from '../../types'
-import {ExtRequestParams, FiltersInput} from '../../services/query'
+import {ExtRequestParams, ItemFiltersInput} from '../../services/query'
 import {CheckboxChangeEvent} from 'antd/es/checkbox'
 import {useTranslation} from 'react-i18next'
 
 interface Props {
     item: Item
     notHiddenColumns?: string[]
-    extraFiltersInput?: FiltersInput<ItemData>
+    extraFiltersInput?: ItemFiltersInput<ItemData>
     majorRev?: string | null
     locale?: string | null
     state?: string | null

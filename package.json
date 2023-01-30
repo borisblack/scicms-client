@@ -33,6 +33,7 @@
     "luxon": "^3.0.1",
     "min-dash": "^4.0.0",
     "moment-timezone": "^0.5.37",
+    "qs": "^6.11.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-full-screen": "^1.1.1",

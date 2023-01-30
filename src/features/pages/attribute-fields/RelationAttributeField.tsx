@@ -9,7 +9,7 @@ import {AttributeFieldProps} from '.'
 import {CloseCircleOutlined, FolderOpenOutlined} from '@ant-design/icons'
 import {DEFAULT_LIFECYCLE_ID} from '../../../services/lifecycle'
 import {DEFAULT_PERMISSION_ID} from '../../../services/permission'
-import {FiltersInput} from '../../../services/query'
+import {ItemFiltersInput} from '../../../services/query'
 import styles from './AttributeField.module.css'
 import {LIFECYCLE_ATTR_NAME, PERMISSION_ATTR_NAME, STATE_ATTR_NAME} from '../../../config/constants'
 
@@ -44,14 +44,14 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({pageKey, form, item, a
     const targetItem = itemService.getByName(target)
     const initialData = useMemo(() => value?.data ?? attribute.defaultValue, [attribute.defaultValue, value?.data])
 
-    const extraFiltersInput: FiltersInput<ItemData> = useMemo(() => {
+    const extraFiltersInput: ItemFiltersInput<ItemData> = useMemo(() => {
         if (attrName === LIFECYCLE_ATTR_NAME) {
             const allowedLifecycleIds = [...item.allowedLifecycles.data.map(it => it.id), DEFAULT_LIFECYCLE_ID]
             return {
                 id: {
                     in: allowedLifecycleIds
                 }
-            } as FiltersInput<Lifecycle>
+            } as ItemFiltersInput<Lifecycle>
         }
 
         if (attrName === PERMISSION_ATTR_NAME) {
@@ -60,10 +60,10 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({pageKey, form, item, a
                 id: {
                     in: allowedPermissionIds
                 }
-            } as FiltersInput<Permission>
+            } as ItemFiltersInput<Permission>
         }
 
-        return {} as FiltersInput<ItemData>
+        return {} as ItemFiltersInput<ItemData>
     }, [item, attrName])
 
     function handleRelationSelect(itemData: ItemData) {

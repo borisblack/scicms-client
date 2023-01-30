@@ -28,16 +28,13 @@ export interface ExtRequestParams extends RequestParams {
     state?: string | null
 }
 
-export type FiltersInput<FiltersType extends ItemData> = {
+export type ItemFiltersInput<FiltersType extends ItemData> = {
     and?: [FiltersType]
     or?: [FiltersType]
     not?: FiltersType
-} & {[name: string]: FiltersInput<FiltersType> | FilterInput<FiltersType, string | boolean | number>}
+} & {[name: string]: ItemFiltersInput<FiltersType> | ItemFilterInput<FiltersType, string | boolean | number>}
 
-export type FilterInput<FilterType extends ItemData, ElementType extends string | boolean | number> = {
-    and?: [FilterType]
-    or?: [FilterType]
-    not?: FilterType
+export type ItemFilterInput<FilterType extends ItemData, ElementType extends string | boolean | number> = {
     eq?: ElementType
     ne?: ElementType
     gt?: ElementType
@@ -55,11 +52,14 @@ export type FilterInput<FilterType extends ItemData, ElementType extends string 
     notIn?: ElementType[]
     null?: boolean
     notNull?: boolean
+    and?: [FilterType]
+    or?: [FilterType]
+    not?: FilterType
 }
 
 const SORT_ATTR_PATTERN = /^(\w+)\.?(\w+)?$/
 
-function buildDateFilter(filterValue: string): FilterInput<ItemData, string> {
+function buildDateFilter(filterValue: string): ItemFilterInput<ItemData, string> {
     let dt = DateTime.fromFormat(filterValue, LUXON_DATE_FORMAT_STRING)
     if (dt.isValid) {
         const endDt = dt.endOf('day')
@@ -93,7 +93,7 @@ function buildDateFilter(filterValue: string): FilterInput<ItemData, string> {
     throw new Error(i18n.t('Invalid filter format'))
 }
 
-function buildTimeFilter(filterValue: string): FilterInput<ItemData, string> {
+function buildTimeFilter(filterValue: string): ItemFilterInput<ItemData, string> {
     let dt = DateTime.fromFormat(filterValue, LUXON_TIME_FORMAT_STRING)
     if (dt.isValid) {
         const endDt = dt.endOf('minute')
@@ -109,7 +109,7 @@ function buildTimeFilter(filterValue: string): FilterInput<ItemData, string> {
     throw new Error(i18n.t('Invalid filter format'))
 }
 
-function buildDateTimeFilter(filterValue: string): FilterInput<ItemData, string> {
+function buildDateTimeFilter(filterValue: string): ItemFilterInput<ItemData, string> {
     let dt = DateTime.fromFormat(filterValue, LUXON_DATETIME_FORMAT_STRING)
     if (dt.isValid) {
         const endDt = dt.endOf('minute')
@@ -220,7 +220,7 @@ export default class QueryService {
     findAll = async (
         item: Item,
         {sorting, filters, pagination, majorRev, locale, state}: ExtRequestParams,
-        extraFiltersInput?: FiltersInput<ItemData>,
+        extraFiltersInput?: ItemFiltersInput<ItemData>,
         attributePaths?: {[name: string]: string}
     ): Promise<ResponseCollection<ItemData>> => {
         const attributesOverride = _.mapValues(attributePaths, v => attributePathToGraphQl(v))
@@ -332,7 +332,7 @@ export default class QueryService {
         relAttrName: string,
         target: Item,
         {sorting, filters, pagination}: ExtRequestParams,
-        extraFiltersInput?: FiltersInput<ItemData>
+        extraFiltersInput?: ItemFiltersInput<ItemData>
     ): Promise<ResponseCollection<any>> {
         const query = gql(this.buildFindAllRelatedQuery(itemName, relAttrName, target))
         const {page, pageSize} = pagination
@@ -383,9 +383,9 @@ export default class QueryService {
         }
     `
 
-    private buildItemFiltersInput = (item: Item, filters: ColumnFiltersState): FiltersInput<ItemData> => {
+    private buildItemFiltersInput = (item: Item, filters: ColumnFiltersState): ItemFiltersInput<ItemData> => {
         const {attributes} = item.spec
-        const filtersInput: FiltersInput<ItemData> = {}
+        const filtersInput: ItemFiltersInput<ItemData> = {}
         for (const filter of filters) {
             const attr = attributes[filter.id]
             if (attr.private || (attr.type === AttrType.relation && (attr.relType === RelType.oneToMany || attr.relType === RelType.manyToMany)))
@@ -397,7 +397,7 @@ export default class QueryService {
         return filtersInput
     }
 
-    private buildAttributeFiltersInput(attr: Attribute, filterValue: any): FiltersInput<ItemData> | FilterInput<ItemData, any> {
+    private buildAttributeFiltersInput(attr: Attribute, filterValue: any): ItemFiltersInput<ItemData> | ItemFilterInput<ItemData, any> {
         if (attr.private || (attr.type === AttrType.relation && (attr.relType === RelType.oneToMany || attr.relType === RelType.manyToMany)))
             throw Error('Illegal attribute')
 
@@ -451,7 +451,7 @@ export default class QueryService {
         throw new Error('Illegal attribute')
     }
 
-    findAllBy = async (item: Item, filtersInput: FiltersInput<ItemData>): Promise<ItemData[]> => {
+    findAllBy = async (item: Item, filtersInput: ItemFiltersInput<ItemData>): Promise<ItemData[]> => {
         const query = gql(this.buildFindAllBy(item))
         const res = await apolloClient.query({query, variables: {filters: filtersInput}})
         if (res.errors) {

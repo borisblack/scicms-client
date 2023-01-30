@@ -31,7 +31,7 @@ export const mapLabels = (data: any[], labelField: string): string[] =>
 
 export const mapMetrics = (dash: IDash, data: any[]): any[] => {
     const {metricType, metricField} = dash
-    if (metricType == null || metricField == null)
+    if (metricField == null)
         throw new Error("Illegal argument")
 
     return data.map(it => parseMetric(it[metricField], metricType))
@@ -42,7 +42,7 @@ export const map2dMetrics = (dash: IDash, data: any[]): {x: DateTime, y: any}[] 
     if (temporalField == null)
         return []
 
-    if (metricType == null || metricField == null)
+    if (metricField == null)
         throw new Error("Illegal argument")
 
     return data.map(it => ({
@@ -56,9 +56,6 @@ export const map3dMetrics = (dash: IDash, data: any[]): {x: DateTime, y: any, r:
     if (temporalField == null)
         return []
 
-    if (metricType == null)
-        throw new Error("Illegal argument")
-
     return data.map(it => ({
         x: DateTime.fromISO(it[temporalField]),
         y: parseMetric(it[temporalField], metricType),
@@ -71,7 +68,7 @@ export const map3dMapMetrics = (dash: IDash, data: any[]): {longitude: number, l
     if (latitudeField == null || longitudeField == null)
         return []
 
-    if (metricType == null || metricField == null)
+    if (metricField == null)
         throw new Error("Illegal argument")
 
     return data.map(it => {
@@ -85,8 +82,8 @@ export const map3dMapMetrics = (dash: IDash, data: any[]): {longitude: number, l
     })
 }
 
-function parseMetric(metric: any, metricType: MetricType): any {
-    if (temporalTypeSet.has(metricType))
+function parseMetric(metric: any, metricType?: MetricType): any {
+    if (metricType != null && temporalTypeSet.has(metricType))
         return DateTime.fromISO(metric).toJSDate()
 
     return metric
