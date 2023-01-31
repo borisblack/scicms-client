@@ -119,7 +119,7 @@ const ru = {
         'Locale': 'Язык',
         'Locales': 'Языки',
         'Localized': 'Локализация',
-        'Location Label Field': 'Поле метки местоположения',
+        'Location Field': 'Поле местоположения',
         'Locked By': 'Кем заблокировано',
         'Login': 'Вход',
         'Logout': 'Выход',

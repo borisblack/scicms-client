@@ -119,7 +119,7 @@ const en = {
         'Locale': 'Locale',
         'Locales': 'Locales',
         'Localized': 'Localized',
-        'Location Label Field': 'Location Label Field',
+        'Location Field': 'Location Field',
         'Locked By': 'Locked By',
         'Login': 'Login',
         'Logout': 'Logout',

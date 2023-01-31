@@ -13,14 +13,14 @@ interface Props {
 
 export default function LocationToolbar({dataset, data, dash, checkedLocationLabelSet, onChange}: Props) {
     const getLocationTreeNode = useCallback((): TreeDataNode => {
-        const {locationLabelField} = dash
-        const locationLabels = locationLabelField ? data.map(it => it[locationLabelField]).filter(it => it != null) : []
+        const {locationField} = dash
+        const locationLabels = locationField ? data.map(it => it[locationField]).filter(it => it != null) : []
         const locationLabelSet = new Set(locationLabels)
         return {
             key: dataset.name,
             title: dataset.name,
             icon: <FolderOutlined/>,
-            disabled: !locationLabelField,
+            disabled: !locationField,
             children: Array.from(locationLabelSet).map(locationLabel => ({
                 key: locationLabel,
                 title: locationLabel

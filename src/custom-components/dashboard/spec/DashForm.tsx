@@ -27,7 +27,7 @@ export interface DashValues {
     temporalField?: string
     latitudeField?: string
     longitudeField?: string
-    locationLabelField?: string
+    locationField?: string
     isAggregate: boolean
     aggregateType?: AggregateType
     refreshIntervalSeconds: number
@@ -125,7 +125,7 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                         <Input/>
                     </FormItem>
                 </Col>
-                <Col span={8}>
+                <Col span={4}>
                     <FormItem
                         className={styles.formItem}
                         name="unit"
@@ -138,16 +138,6 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
             </Row>
 
             <Row gutter={10}>
-                <Col span={8}>
-                    <FormItem
-                        className={styles.formItem}
-                        name="labelField"
-                        label={t('Label Field')}
-                        initialValue={dash.labelField}
-                    >
-                        <Input/>
-                    </FormItem>
-                </Col>
                 <Col span={8}>
                     <FormItem
                         className={styles.formItem}
@@ -196,9 +186,9 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                 <Col span={8}>
                     <FormItem
                         className={styles.formItem}
-                        name="locationLabelField"
-                        label={t('Location Label Field')}
-                        initialValue={dash.locationLabelField}
+                        name="locationField"
+                        label={t('Location Field')}
+                        initialValue={dash.locationField}
                     >
                         <Input/>
                     </FormItem>
@@ -238,6 +228,16 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                             </Select>
                         </FormItem>
                     }
+                </Col>
+                <Col span={8}>
+                    <FormItem
+                        className={styles.formItem}
+                        name="labelField"
+                        label={t('Label Field')}
+                        initialValue={dash.labelField}
+                    >
+                        <Input/>
+                    </FormItem>
                 </Col>
             </Row>
 

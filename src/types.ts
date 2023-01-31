@@ -338,7 +338,7 @@ export interface IDash {
     temporalField?: string
     latitudeField?: string
     longitudeField?: string
-    locationLabelField?: string
+    locationField?: string
     isAggregate: boolean
     aggregateType?: AggregateType
     refreshIntervalSeconds: number
