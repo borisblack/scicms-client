@@ -67,26 +67,6 @@ const FIND_ALL_QUERY = gql`
     }
 `
 
-const FIND_BY_NAME_QUERY = gql`
-    query findDatasetByName($name: String!) {
-        datasets(
-            filters: {
-                name: {
-                    eq: $name
-                }
-            }
-        ) {
-            data {
-                id
-                name
-                dataSource
-                tableName
-                query
-            }
-        }
-    }
-`
-
 export default class DatasetService {
     private static instance: DatasetService | null = null
 
@@ -105,20 +85,6 @@ export default class DatasetService {
         }
 
         return res.data.datasets.data
-    }
-
-    async findByName(name: string): Promise<Dataset> {
-        const res = await apolloClient.query({query: FIND_BY_NAME_QUERY, variables: {name}})
-        if (res.errors) {
-            console.error(extractGraphQLErrorMessages(res.errors))
-            throw new Error(i18n.t('An error occurred while executing the request'))
-        }
-
-        const {data} = res.data.datasets
-        if (data.length === 0)
-            throw new Error("Dataset not found")
-
-        return data[0]
     }
 
     async loadData<T>(datasetName: string, input: DatasetInput<T>): Promise<DatasetResponse<T>> {

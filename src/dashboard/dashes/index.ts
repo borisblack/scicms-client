@@ -1,8 +1,9 @@
 import {FC} from 'react'
-import {IDash} from '../../types'
+import {Dataset, IDash} from '../../types'
 
 export interface DashProps {
     pageKey: string
+    dataset: Dataset
     dash: IDash
     isFullScreenComponentExist: boolean
     onFullScreenComponentStateChange: (fullScreen: boolean) => void
