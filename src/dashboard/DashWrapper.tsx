@@ -13,7 +13,7 @@ import RadarDash from './dashes/RadarDash'
 import ScatterDash from './dashes/ScatterDash'
 import BubbleMapDash from './dashes/BubbleMapDash'
 import {Button, PageHeader} from 'antd'
-import {FullscreenExitOutlined, FullscreenOutlined} from '@ant-design/icons'
+import {FullscreenExitOutlined, FullscreenOutlined, SyncOutlined} from '@ant-design/icons'
 import RightPanel from '../components/panel/RightPanel'
 import LeftPanel from '../components/panel/LeftPanel'
 import TopPanel from '../components/panel/TopPanel'
@@ -67,6 +67,7 @@ export default function DashWrapper(props: DashProps) {
     const [fullScreen, setFullScreen] = useState<boolean>(false)
     const [startTemporal, setStartTemporal] = useState<string | null>(null)
     const [endTemporal, setEndTemporal] = useState<string | null>(null)
+    const [loading, setLoading] = useState<boolean>(false)
 
     useEffect(() => {
         fetchDatasetData()
@@ -110,7 +111,9 @@ export default function DashWrapper(props: DashProps) {
                 datasetInput.groupField = dash.labelField
         }
 
+        setLoading(true)
         const datasetResponse = await datasetService.loadData(dataset.name, datasetInput)
+        setLoading(false)
         const fetchedData = datasetResponse.data
         setDatasetData(fetchedData)
 
@@ -184,7 +187,12 @@ export default function DashWrapper(props: DashProps) {
         <FullScreen active={fullScreen} normalStyle={{display: isFullScreenComponentExist ? 'none' : 'block'}}>
             <PageHeader
                 className={styles.pageHeader}
-                title={dash.name + (dash.unit ? `, ${dash.unit}` : '')}
+                title={(
+                    <>
+                        {dash.name + (dash.unit ? `, ${dash.unit}` : '')}
+                        {loading && <>&nbsp;<SyncOutlined spin className="blue"/></>}
+                    </>
+                )}
                 subTitle={renderSubTitle()}
                 extra={fullScreen ? (
                     <Button type="link" icon={<FullscreenExitOutlined style={{fontSize: 24}}/>} title={t('Exit full screen')} onClick={() => handleFullScreenChange(false)}/>

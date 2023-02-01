@@ -314,9 +314,8 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
                 .map(attrName => {
                     const attr = attributes[attrName]
                     return (
-                        <Col span={6}>
+                        <Col span={6} key={attrName}>
                             <AttributeFieldWrapper
-                                key={attrName}
                                 pageKey={page.key}
                                 form={form}
                                 item={item}

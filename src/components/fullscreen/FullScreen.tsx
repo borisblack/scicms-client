@@ -1,5 +1,5 @@
 import {CSSProperties, ReactNode, useMemo} from 'react'
-import styles from '../../dashboard/DashWrapper.module.css'
+import styles from './FullScreenWrapper.module.css'
 
 interface Props {
     active: boolean
@@ -18,7 +18,7 @@ export default function FullScreen({active, fullScreenStyle, normalStyle, childr
     )
 
     return (
-        <div className={styles.dashWrapper} style={wrapperStyle}>
+        <div className={styles.fullScreenWrapper} style={wrapperStyle}>
             {children}
         </div>
     )
