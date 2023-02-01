@@ -184,7 +184,7 @@ export default function DashWrapper(props: DashProps) {
         <FullScreen active={fullScreen} normalStyle={{display: isFullScreenComponentExist ? 'none' : 'block'}}>
             <PageHeader
                 className={styles.pageHeader}
-                title={dash.name}
+                title={dash.name + (dash.unit ? `, ${dash.unit}` : '')}
                 subTitle={renderSubTitle()}
                 extra={fullScreen ? (
                     <Button type="link" icon={<FullscreenExitOutlined style={{fontSize: 24}}/>} title={t('Exit full screen')} onClick={() => handleFullScreenChange(false)}/>
