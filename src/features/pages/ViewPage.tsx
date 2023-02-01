@@ -1,5 +1,5 @@
 import React, {ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {Col, Form, message, Modal, Row, Spin, Tabs} from 'antd'
+import {Col, Collapse, Form, message, Modal, Row, Spin, Tabs} from 'antd'
 
 import {Attribute, AttrType, IBuffer, Item, ItemData, RelType, UserInfo, ViewState} from '../../types'
 import PermissionService from '../../services/permission'
@@ -44,6 +44,7 @@ interface Props {
 }
 
 const TabPane = Tabs.TabPane
+const {Panel} = Collapse
 const {info} = Modal
 
 function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, onUpdate, onLogout}: Props) {
@@ -307,25 +308,31 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
             && (item.localized || attrName !== LOCALE_ATTR_NAME)
     })
 
-    const renderAttributes = (attributes: {[name: string]: Attribute}) => filterVisibleAttributeNames(attributes)
-        .map(attrName => {
-            const attr = attributes[attrName]
-            return (
-                <AttributeFieldWrapper
-                    key={attrName}
-                    pageKey={page.key}
-                    form={form}
-                    item={item}
-                    data={data}
-                    attrName={attrName}
-                    attribute={attr}
-                    value={data ? data[attrName] : null}
-                    setLoading={setLoading}
-                    onChange={(value: any) => handleFieldChange(attrName, value)}
-                    onItemView={onItemView}
-                />
-            )
-        })
+    const renderAttributes = (attributes: {[name: string]: Attribute}) => (
+        <Row gutter={16}>
+            {filterVisibleAttributeNames(attributes)
+                .map(attrName => {
+                    const attr = attributes[attrName]
+                    return (
+                        <Col span={6}>
+                            <AttributeFieldWrapper
+                                key={attrName}
+                                pageKey={page.key}
+                                form={form}
+                                item={item}
+                                data={data}
+                                attrName={attrName}
+                                attribute={attr}
+                                value={data ? data[attrName] : null}
+                                setLoading={setLoading}
+                                onChange={(value: any) => handleFieldChange(attrName, value)}
+                                onItemView={onItemView}
+                            />
+                        </Col>
+                    )
+                })}
+        </Row>
+    )
 
     async function handleFieldChange(attrName: string, value: any) {
         if (attrName === LOCALE_ATTR_NAME) {
@@ -535,30 +542,14 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
                 >
                     {hasComponents('view.content.form.begin') && renderComponents('view.content.form.begin', customComponentContext)}
                     {hasComponents(`${item.name}.view.content.form.begin`) && renderComponents(`${item.name}.view.content.form.begin`, customComponentContext)}
-                    <Row gutter={16}>
-                        <Col span={12}>
-                            {!hasComponents('view.content.form.left', `${item.name}.view.content.form.left`) && (
-                                <>
-                                    {hasComponents('view.content.form.left.begin') && renderComponents('view.content.form.left.begin', customComponentContext)}
-                                    {hasComponents(`${item.name}.view.content.form.left.begin`) && renderComponents(`${item.name}.view.content.form.left.begin`, customComponentContext)}
-                                    {renderAttributes(ownAttributes)}
-                                    {hasComponents('view.content.form.left.end') && renderComponents('view.content.form.left.end', customComponentContext)}
-                                    {hasComponents(`${item.name}.view.content.form.left.end`) && renderComponents(`${item.name}.view.content.form.left.end`, customComponentContext)}
-                                </>
-                            )}
-                        </Col>
-                        <Col span={12}>
-                            {!hasComponents('view.content.form.right', `${item.name}.view.content.form.right`) && (
-                                <>
-                                    {hasComponents('view.content.form.right.begin') && renderComponents('view.content.form.right.begin', customComponentContext)}
-                                    {hasComponents(`${item.name}.view.content.form.right.begin`) && renderComponents(`${item.name}.view.content.form.right.begin`, customComponentContext)}
-                                    {renderAttributes(templateAttributes)}
-                                    {hasComponents('view.content.form.right.end') && renderComponents('view.content.form.right.end', customComponentContext)}
-                                    {hasComponents(`${item.name}.view.content.form.right.end`) && renderComponents(`${item.name}.view.content.form.right.end`, customComponentContext)}
-                                </>
-                            )}
-                        </Col>
-                    </Row>
+                    <Collapse defaultActiveKey={['mainAttributes']}>
+                        <Panel header={t('Main attributes')} key="mainAttributes">
+                            {renderAttributes(ownAttributes)}
+                        </Panel>
+                        <Panel header={t('Additional attributes')} key="additionalAttributes">
+                            {renderAttributes(templateAttributes)}
+                        </Panel>
+                    </Collapse>
                     {hasComponents('view.content.form.end') && renderComponents('view.content.form.end', customComponentContext)}
                     {hasComponents('view.content.form.end') && renderComponents('view.content.form.end', customComponentContext)}
                 </Form>

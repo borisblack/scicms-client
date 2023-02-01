@@ -41,7 +41,7 @@ const BoolAttributeField: FC<AttributeFieldProps> = ({pageKey, attrName, attribu
             valuePropName="checked"
             initialValue={parseValue(value) ?? parseValue(attribute.defaultValue)}
         >
-            <Checkbox id={`${pageKey}#${attrName}`} {...additionalProps}>{t(attribute.displayName)}</Checkbox>
+            <Checkbox id={`${pageKey}#${attrName}`} style={{marginTop: 4}} {...additionalProps}>{t(attribute.displayName)}</Checkbox>
         </FormItem>
     )
 }
