@@ -12,8 +12,14 @@ import PolarAreaDash from './dashes/PolarAreaDash'
 import RadarDash from './dashes/RadarDash'
 import ScatterDash from './dashes/ScatterDash'
 import BubbleMapDash from './dashes/BubbleMapDash'
-import {Button, PageHeader} from 'antd'
-import {FullscreenExitOutlined, FullscreenOutlined, SyncOutlined} from '@ant-design/icons'
+import {Button, notification, PageHeader} from 'antd'
+import {
+    ExclamationCircleOutlined,
+    FullscreenExitOutlined,
+    FullscreenOutlined,
+    ReloadOutlined,
+    SyncOutlined
+} from '@ant-design/icons'
 import RightPanel from '../components/panel/RightPanel'
 import LeftPanel from '../components/panel/LeftPanel'
 import TopPanel from '../components/panel/TopPanel'
@@ -68,6 +74,7 @@ export default function DashWrapper(props: DashProps) {
     const [startTemporal, setStartTemporal] = useState<string | null>(null)
     const [endTemporal, setEndTemporal] = useState<string | null>(null)
     const [loading, setLoading] = useState<boolean>(false)
+    const [fetchError, setFetchError] = useState<string | null>(null)
 
     useEffect(() => {
         fetchDatasetData()
@@ -111,11 +118,26 @@ export default function DashWrapper(props: DashProps) {
                 datasetInput.groupField = dash.labelField
         }
 
+        let fetchedData: any[] | null = null
         setLoading(true)
-        const datasetResponse = await datasetService.loadData(dataset.name, datasetInput)
-        setLoading(false)
-        const fetchedData = datasetResponse.data
-        setDatasetData(fetchedData)
+        try {
+            setFetchError(null)
+            const datasetResponse = await datasetService.loadData(dataset.name, datasetInput)
+            fetchedData = datasetResponse.data
+            setDatasetData(fetchedData)
+        } catch (e: any) {
+            setFetchError(e.message)
+            notification.error({
+                message: t('Loading error'),
+                description: e.message
+            })
+        } finally {
+            setLoading(false)
+        }
+
+        if (fetchedData == null) {
+            return
+        }
 
         // Update checked labels and locations
         const {labelField, locationField} = dash
@@ -190,15 +212,19 @@ export default function DashWrapper(props: DashProps) {
                 title={(
                     <>
                         {dash.name + (dash.unit ? `, ${dash.unit}` : '')}
-                        {loading && <>&nbsp;<SyncOutlined spin className="blue"/></>}
+                        {loading && <>&nbsp;&nbsp;<SyncOutlined spin className="blue"/></>}
+                        {(!loading && fetchError != null) && <>&nbsp;&nbsp;<ExclamationCircleOutlined className="red" title={fetchError}/></>}
                     </>
                 )}
                 subTitle={renderSubTitle()}
-                extra={fullScreen ? (
-                    <Button type="link" icon={<FullscreenExitOutlined style={{fontSize: 24}}/>} title={t('Exit full screen')} onClick={() => handleFullScreenChange(false)}/>
-                ) : (
-                    <Button type="link" icon={<FullscreenOutlined style={{fontSize: 24}}/>} title={t('Full screen')} onClick={() => handleFullScreenChange(true)}/>
-                )}
+                extra={[
+                    <Button type="link" icon={<ReloadOutlined style={{fontSize: 20}}/>} title={t('Refresh')} onClick={() => fetchDatasetData()}/>,
+                    fullScreen ? (
+                        <Button type="link" icon={<FullscreenExitOutlined style={{fontSize: 20}}/>} title={t('Exit full screen')} onClick={() => handleFullScreenChange(false)}/>
+                    ) : (
+                        <Button type="link" icon={<FullscreenOutlined style={{fontSize: 20}}/>} title={t('Full screen')} onClick={() => handleFullScreenChange(true)}/>
+                    )
+                ]}
             />
 
             {fullScreen && (

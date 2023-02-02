@@ -120,6 +120,7 @@ const ru = {
         'Lifecycle': 'Жизненный цикл',
         'Lifecycle State': 'Состояние ЖЦ',
         'Lifecycles': 'Жизненные циклы',
+        'Loading error': 'Ошибка загрузки',
         'Locale': 'Язык',
         'Locales': 'Языки',
         'Localized': 'Локализация',

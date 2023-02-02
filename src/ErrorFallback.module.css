@@ -1,0 +1,27 @@
+.container {
+    height: 100vh;
+    padding: 0 24px;
+}
+
+.smile {
+    font-size: 3em;
+    font-weight: bold;
+}
+
+.title {
+    font-size: 1.875em;
+}
+
+.desc {
+    font-weight: bold;
+}
+
+.small {
+    font-size: .875em;
+}
+
+.label {
+    color: #aaa;
+    font-size: .75em;
+    margin: 16px 0;
+}

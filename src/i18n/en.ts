@@ -120,6 +120,7 @@ const en = {
         'Lifecycle': 'Lifecycle',
         'Lifecycle State': 'Lifecycle State',
         'Lifecycles': 'Lifecycles',
+        'Loading error': 'Loading error',
         'Locale': 'Locale',
         'Locales': 'Locales',
         'Localized': 'Localized',
