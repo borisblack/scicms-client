@@ -76,7 +76,7 @@ const appConfig: AppConfig = {
         deletingStrategy: DeletingStrategy.CASCADE
     },
     dashboard: {
-        cols: 12,
+        cols: 24,
         rowHeight: 100,
         minRefreshIntervalSeconds: 5,
         defaultRefreshIntervalSeconds: 300,
