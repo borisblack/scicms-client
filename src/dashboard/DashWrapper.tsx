@@ -107,9 +107,6 @@ export default function DashWrapper(props: DashProps) {
             datasetInput.filters[temporalField]['$lte'] = endTemporal
         }
 
-        if (dash.temporalField)
-            datasetInput.sort = [`${dash.temporalField}:asc`]
-
         if (dash.isAggregate) {
             datasetInput.aggregate = dash.aggregateType
             datasetInput.aggregateField = dash.metricField
@@ -117,6 +114,11 @@ export default function DashWrapper(props: DashProps) {
             if (dash.labelField)
                 datasetInput.groupField = dash.labelField
         }
+
+        if (dash.labelField)
+            datasetInput.sort = [`${dash.labelField}:asc`]
+        else if (dash.temporalField)
+            datasetInput.sort = [`${dash.temporalField}:asc`]
 
         let fetchedData: any[] | null = null
         setLoading(true)
