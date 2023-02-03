@@ -21,7 +21,7 @@ export const timeScaleProps = {
     adapters: {
         date: {
             locale: appConfig.i18nLng,
-            zone: UTC
+            // zone: UTC
         }
     }
 }
