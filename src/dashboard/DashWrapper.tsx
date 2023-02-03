@@ -218,11 +218,11 @@ export default function DashWrapper(props: DashProps) {
                 )}
                 subTitle={renderSubTitle()}
                 extra={[
-                    <Button type="link" icon={<ReloadOutlined style={{fontSize: 20}}/>} title={t('Refresh')} onClick={() => fetchDatasetData()}/>,
+                    <Button key="refresh" type="link" icon={<ReloadOutlined style={{fontSize: 20}}/>} title={t('Refresh')} onClick={() => fetchDatasetData()}/>,
                     fullScreen ? (
-                        <Button type="link" icon={<FullscreenExitOutlined style={{fontSize: 20}}/>} title={t('Exit full screen')} onClick={() => handleFullScreenChange(false)}/>
+                        <Button key="exitFullScreen" type="link" icon={<FullscreenExitOutlined style={{fontSize: 20}}/>} title={t('Exit full screen')} onClick={() => handleFullScreenChange(false)}/>
                     ) : (
-                        <Button type="link" icon={<FullscreenOutlined style={{fontSize: 20}}/>} title={t('Full screen')} onClick={() => handleFullScreenChange(true)}/>
+                        <Button key="fullScreen" type="link" icon={<FullscreenOutlined style={{fontSize: 20}}/>} title={t('Full screen')} onClick={() => handleFullScreenChange(true)}/>
                     )
                 ]}
             />

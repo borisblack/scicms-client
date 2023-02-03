@@ -125,6 +125,7 @@ const en = {
         'Locales': 'Locales',
         'Localized': 'Localized',
         'Location Field': 'Location Field',
+        'Locations': 'Locations',
         'Locked By': 'Locked By',
         'Login': 'Login',
         'Logout': 'Logout',

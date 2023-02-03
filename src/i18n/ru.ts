@@ -125,6 +125,7 @@ const ru = {
         'Locales': 'Языки',
         'Localized': 'Локализация',
         'Location Field': 'Поле местоположения',
+        'Locations': 'Местоположения',
         'Locked By': 'Кем заблокировано',
         'Login': 'Вход',
         'Logout': 'Выход',
