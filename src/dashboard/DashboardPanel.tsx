@@ -18,6 +18,7 @@ interface Props {
 
 const ANTD_GRID_COLS = 24
 const K = ANTD_GRID_COLS / appConfig.dashboard.cols
+const ROW_VERTICAL_SPACE = 16
 
 const intCompareFn = (a: string, b: string) => parseInt(a) - parseInt(b)
 
@@ -61,12 +62,13 @@ export default function DashboardPanel({me, pageKey, spec}: Props) {
         )
     }, [datasets, isFullScreenComponentExist, pageKey])
 
+    const rowKeys = Object.keys(rows).sort(intCompareFn)
     return (canPreview ? (
         <>
-            {datasets && Object.keys(rows).sort(intCompareFn).map(rowIndex => {
+            {datasets && rowKeys.map((rowIndex, i) => {
                 const colDashes = rows[rowIndex]
                 return(
-                    <Row key={rowIndex} gutter={16}>
+                    <Row key={rowIndex} gutter={16} style={{marginBottom: (i < rowKeys.length - 1) ? ROW_VERTICAL_SPACE : 0}}>
                         {colDashes.sort(dashColCompareFn).map(colDash => (
                             <Col key={colDash.name} span={colDash.w * K}>
                                 {renderDash(colDash)}

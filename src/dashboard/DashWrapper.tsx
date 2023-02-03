@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import 'chartjs-adapter-luxon'
 import {AttrType, DashType} from '../types'
@@ -12,12 +12,12 @@ import PolarAreaDash from './dashes/PolarAreaDash'
 import RadarDash from './dashes/RadarDash'
 import ScatterDash from './dashes/ScatterDash'
 import BubbleMapDash from './dashes/BubbleMapDash'
-import {Button, notification, PageHeader} from 'antd'
+import {Checkbox, notification, PageHeader, Popover} from 'antd'
 import {
     ExclamationCircleOutlined,
     FullscreenExitOutlined,
     FullscreenOutlined,
-    ReloadOutlined,
+    ReloadOutlined, SettingOutlined,
     SyncOutlined
 } from '@ant-design/icons'
 import RightPanel from '../components/panel/RightPanel'
@@ -220,11 +220,24 @@ export default function DashWrapper(props: DashProps) {
                 )}
                 subTitle={renderSubTitle()}
                 extra={[
-                    <Button key="refresh" type="link" icon={<ReloadOutlined style={{fontSize: 20}}/>} title={t('Refresh')} onClick={() => fetchDatasetData()}/>,
+                    <ReloadOutlined key="refresh" className={styles.toolbarBtn} title={t('Refresh')} onClick={() => fetchDatasetData()}/>,
+                    // <Popover
+                    //     key="settings"
+                    //     content={(
+                    //         <div>
+                    //             <p>Content</p>
+                    //             <p>Content</p>
+                    //         </div>
+                    //     )}
+                    //     placement='bottomRight'
+                    //     trigger='click'
+                    // >
+                    //     <SettingOutlined className={styles.toolbarBtn} title={t('Settings')}/>
+                    // </Popover>,
                     fullScreen ? (
-                        <Button key="exitFullScreen" type="link" icon={<FullscreenExitOutlined style={{fontSize: 20}}/>} title={t('Exit full screen')} onClick={() => handleFullScreenChange(false)}/>
+                        <FullscreenExitOutlined key="exitFullScreen" className={styles.toolbarBtn} title={t('Exit full screen')} onClick={() => handleFullScreenChange(false)}/>
                     ) : (
-                        <Button key="fullScreen" type="link" icon={<FullscreenOutlined style={{fontSize: 20}}/>} title={t('Full screen')} onClick={() => handleFullScreenChange(true)}/>
+                        <FullscreenOutlined key="fullScreen" className={styles.toolbarBtn} title={t('Full screen')} onClick={() => handleFullScreenChange(true)}/>
                     )
                 ]}
             />
