@@ -1,5 +1,6 @@
 import {FallbackProps} from 'react-error-boundary'
 import {useTranslation} from 'react-i18next'
+import {Divider} from 'antd'
 import styles from './ErrorFallback.module.css'
 
 export default function ErrorFallback({error}: FallbackProps) {
@@ -9,6 +10,7 @@ export default function ErrorFallback({error}: FallbackProps) {
         <div className={styles.container}>
             <p className={styles.smile}>:(</p>
             <p className={styles.title}>{t('Oops! An error has occurred')}</p>
+            <Divider/>
             <p className={styles.desc}>{t('Client application error')}</p>
             <div className={styles.small}>
                 <p>{t('Try to do the following')}:</p>
@@ -19,6 +21,7 @@ export default function ErrorFallback({error}: FallbackProps) {
                 </ul>
             </div>
             <p className={styles.label}>{error.message}</p>
+            <Divider/>
         </div>
     )
 }

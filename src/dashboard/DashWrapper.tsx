@@ -1,4 +1,6 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {notification} from 'antd'
+import {PageHeader} from '@ant-design/pro-layout'
 import {useTranslation} from 'react-i18next'
 import 'chartjs-adapter-luxon'
 import {AttrType, DashType} from '../types'
@@ -12,12 +14,11 @@ import PolarAreaDash from './dashes/PolarAreaDash'
 import RadarDash from './dashes/RadarDash'
 import ScatterDash from './dashes/ScatterDash'
 import BubbleMapDash from './dashes/BubbleMapDash'
-import {Checkbox, notification, PageHeader, Popover} from 'antd'
 import {
     ExclamationCircleOutlined,
     FullscreenExitOutlined,
     FullscreenOutlined,
-    ReloadOutlined, SettingOutlined,
+    ReloadOutlined,
     SyncOutlined
 } from '@ant-design/icons'
 import RightPanel from '../components/panel/RightPanel'

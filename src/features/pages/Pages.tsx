@@ -2,6 +2,7 @@ import React, {useCallback, useMemo} from 'react'
 import {useTranslation} from 'react-i18next'
 import {message, Tabs} from 'antd'
 import {SearchOutlined} from '@ant-design/icons'
+import {Tab} from 'rc-tabs/lib/interface'
 
 import {
     closePage,
@@ -28,7 +29,6 @@ interface Props {
     onLogout: () => void
 }
 
-const TabPane = Tabs.TabPane
 const mediator = Mediator.getInstance()
 
 function Pages({me, onLogout}: Props) {
@@ -85,6 +85,41 @@ function Pages({me, onLogout}: Props) {
 
     const handleUpdate = (data: ItemData) => dispatch(updateActivePage(data))
 
+    const getTabs = (): Tab[] => pages.map(page => {
+        const {item, viewType} = page
+        const Icon = (viewType === ViewType.default) ? SearchOutlined : (item.icon ? allIcons[item.icon] : null)
+        const title = getLabel(page)
+        return {
+            key: page.key,
+            label: Icon ? <span><Icon/>{title}</span> : title,
+            style: {background: '#fff'},
+            children: (
+                <div className={styles.pageContent}>
+                    {viewType === ViewType.default ?
+                        <DefaultPage
+                            me={me}
+                            page={page}
+                            onItemCreate={handleItemCreate}
+                            onItemView={handleItemView}
+                            onItemDelete={handleItemDelete}
+                            onLogout={onLogout}
+                        /> :
+                        <ViewPage
+                            me={me}
+                            page={page}
+                            closePage={() => closeTab(page.key)}
+                            onItemCreate={handleItemCreate}
+                            onItemView={handleItemView}
+                            onItemDelete={handleItemDelete}
+                            onUpdate={handleUpdate}
+                            onLogout={onLogout}
+                        />
+                    }
+                </div>
+            )
+        }
+    })
+
     if (pages.length === 0)
         return null
 
@@ -94,45 +129,10 @@ function Pages({me, onLogout}: Props) {
             hideAdd
             type="editable-card"
             className="pages"
+            items={getTabs()}
             onChange={handleTabsChange}
             onEdit={handleTabsEdit}
-        >
-            {pages.map(page => {
-                const {item, viewType} = page
-                const Icon = (viewType === ViewType.default) ? SearchOutlined : (item.icon ? allIcons[item.icon] : null)
-                const title = getLabel(page)
-                return (
-                    <TabPane
-                        key={page.key}
-                        tab={Icon ? <span><Icon/>{title}</span> : title}
-                        style={{background: '#fff'}}
-                    >
-                        <div className={styles.pageContent}>
-                            {viewType === ViewType.default ?
-                                <DefaultPage
-                                    me={me}
-                                    page={page}
-                                    onItemCreate={handleItemCreate}
-                                    onItemView={handleItemView}
-                                    onItemDelete={handleItemDelete}
-                                    onLogout={onLogout}
-                                /> :
-                                <ViewPage
-                                    me={me}
-                                    page={page}
-                                    closePage={() => closeTab(page.key)}
-                                    onItemCreate={handleItemCreate}
-                                    onItemView={handleItemView}
-                                    onItemDelete={handleItemDelete}
-                                    onUpdate={handleUpdate}
-                                    onLogout={onLogout}
-                                />
-                            }
-                        </div>
-                    </TabPane>
-                )
-            })}
-        </Tabs>
+        />
     )
 }
 

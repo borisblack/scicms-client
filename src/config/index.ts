@@ -1,14 +1,13 @@
 import {Locale} from 'antd/lib/locale-provider'
-import ruRU from 'antd/lib/locale-provider/ru_RU'
+import ruRU from 'antd/locale/ru_RU'
 // import {Settings as LuxonSettings} from 'luxon'
-// import moment from 'moment-timezone'
-import 'moment/locale/ru'
+import 'dayjs/locale/ru'
 
 import {LUXON_DATE_FORMAT_STRING, LUXON_DATETIME_FORMAT_STRING, LUXON_TIME_FORMAT_STRING} from './constants'
 import {DashType, DeletingStrategy} from '../types'
 
 // LuxonSettings.defaultZone = UTC
-// moment.tz.setDefault(UTC)
+// dayjs.tz.setDefault(UTC)
 
 interface AppConfig {
     coreUrl: string

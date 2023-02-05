@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {Row} from '@tanstack/react-table'
-import {Button, Form, Menu, Modal, Space} from 'antd'
+import {Button, Form, Modal, Space} from 'antd'
 import {useTranslation} from 'react-i18next'
 
 import {CustomComponentRenderContext} from '../../index'
@@ -157,7 +157,7 @@ export default function Indexes({me, item, buffer, data}: CustomComponentRenderC
             })
         }
 
-        return <Menu items={items}/>
+        return items
     }, [t, canEdit, openRow, deleteRow])
 
     return (
@@ -178,7 +178,7 @@ export default function Indexes({me, item, buffer, data}: CustomComponentRenderC
             />
             <Modal
                 title={t('Index')}
-                visible={isEditModalVisible}
+                open={isEditModalVisible}
                 destroyOnClose
                 onOk={() => indexForm.submit()}
                 onCancel={() => setEditModalVisible(false)}

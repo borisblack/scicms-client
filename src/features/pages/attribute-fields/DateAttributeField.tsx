@@ -1,13 +1,14 @@
 import {FC, useCallback, useMemo} from 'react'
 import {useTranslation} from 'react-i18next'
-import moment from 'moment-timezone'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
 import {DatePicker, Form} from 'antd'
-
 import appConfig from '../../../config'
 import {AttrType} from '../../../types'
 import {AttributeFieldProps} from '.'
 import styles from './AttributeField.module.css'
-import {UTC} from '../../../config/constants'
+
+dayjs.extend(utc)
 
 const FormItem = Form.Item
 const {momentDisplayDateFormatString} = appConfig.dateTime
@@ -26,7 +27,7 @@ const DateAttributeField: FC<AttributeFieldProps> = ({pageKey, attrName, attribu
         return additionalProps
     }, [isDisabled])
 
-    const parseValue = useCallback((val: string | null | undefined) => val == null ? null : moment.tz(val, UTC), [])
+    const parseValue = useCallback((val: string | null | undefined) => val == null ? null : dayjs.utc(val), [])
 
     return (
         <FormItem

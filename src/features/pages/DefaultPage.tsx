@@ -1,7 +1,8 @@
 import {ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Row} from '@tanstack/react-table'
-import {Button, Checkbox, Menu, message, Modal, PageHeader} from 'antd'
+import {Button, Checkbox, message, Modal} from 'antd'
+import {PageHeader} from '@ant-design/pro-layout'
 
 import appConfig from '../../config'
 import {IBuffer, Item, ItemData, UserInfo} from '../../types'
@@ -177,7 +178,7 @@ function DefaultPage({me, page, onItemCreate, onItemView, onItemDelete, onLogout
             }
         }
 
-        return <Menu items={items}/>
+        return items
     }, [t, permissionService, me, handleView, item.versioned, handleDelete])
 
     const handleCreate = useCallback(() => {

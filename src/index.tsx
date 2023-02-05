@@ -3,7 +3,7 @@ import {createRoot} from 'react-dom/client'
 import {Provider} from 'react-redux'
 import {ApolloProvider} from '@apollo/client/react'
 
-import 'antd/dist/antd.min.css'
+import 'antd/dist/reset.css'
 import './index.css'
 
 import {store} from './store'

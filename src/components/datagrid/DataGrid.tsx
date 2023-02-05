@@ -1,7 +1,7 @@
 import _ from 'lodash'
-import {MouseEvent, ReactElement, ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
+import {MouseEvent, ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
 import {ColumnFiltersState, flexRender, getCoreRowModel, Row, SortingState, useReactTable} from '@tanstack/react-table'
-import {Col, Dropdown, Pagination, Row as AntdRow, Spin} from 'antd'
+import {Col, Dropdown, MenuProps, Pagination, Row as AntdRow, Spin} from 'antd'
 import {CaretDownFilled, CaretUpFilled} from '@ant-design/icons'
 
 import styles from './DataGrid.module.css'
@@ -24,7 +24,7 @@ interface Props {
     version?: number
     toolbar?: ReactNode
     title?: string
-    getRowContextMenu?: (row: any) => ReactElement
+    getRowContextMenu?: (row: any) => MenuProps['items']
     onRequest: (params: RequestParams) => void
     onRowDoubleClick: (row: Row<any>) => void
 }
@@ -208,10 +208,10 @@ function DataGrid({loading = false, columns, data, initialState, hasFilters = tr
                 </Col>
             </AntdRow>
 
-            <div className="ant-table-wrapper">
-                <div className="ant-table ant-table-small">
-                    <div className="ant-table-container">
-                        <div className={`ant-table-content ${styles.tableContent}`}>
+            <div className={`${styles.tableWrapper}`}>
+                <div className={`${styles.tableSmall}`}>
+                    <div className={`${styles.tableContainer}`}>
+                        <div className={`${styles.tableContent}`}>
                             <table style={{width: table.getCenterTotalSize()}}>
                                 <thead className={`ant-table-thead ${styles.thead}`}>
                                 {table.getHeaderGroups().map(headerGroup => (
@@ -219,25 +219,23 @@ function DataGrid({loading = false, columns, data, initialState, hasFilters = tr
                                         {headerGroup.headers.map(header => (
                                             <th
                                                 key={header.id}
-                                                className={`ant-table-cell ${header.column.getCanSort() ? 'ant-table-column-has-sorters' : ''} ${hasFilters ? 'has-filter' : ''}`}
+                                                className={`${header.column.getCanSort() ? styles.tableColumnHasSorters : ''} ${hasFilters ? styles.hasFilter : ''}`}
                                                 style={{width: header.getSize()}}
                                             >
-                                                <div>
-                                                    <div className="ant-table-column-sorters" onClick={header.column.getToggleSortingHandler()}>
-                                                        <span className={`ant-table-column-title ${styles.tableColumnTitle}`}>
-                                                            {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                                                        </span>
-                                                        {header.column.getCanSort() && (
-                                                            <span className="ant-table-column-sorter ant-table-column-sorter-full">
-                                                                <span className="ant-table-column-sorter-inner">
-                                                                    <CaretUpFilled className={`ant-table-column-sorter-up ${header.column.getIsSorted() === 'asc' ? 'active' : ''}`}/>
-                                                                    <CaretDownFilled className={`ant-table-column-sorter-down ${header.column.getIsSorted() === 'desc' ? 'active' : ''}`}/>
-                                                                </span>
+                                                <div className={styles.tableColumnSorters} onClick={header.column.getToggleSortingHandler()}>
+                                                    <span className={styles.tableColumnTitle}>
+                                                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                                                    </span>
+                                                    {header.column.getCanSort() && (
+                                                        <span className={styles.tableColumnSorter}>
+                                                            <span className={styles.tableColumnSorterInner}>
+                                                                <CaretUpFilled className={`${styles.tableColumnSorterUp} ${header.column.getIsSorted() === 'asc' ? styles.active : ''}`}/>
+                                                                <CaretDownFilled className={`${styles.tableColumnSorterDown} ${header.column.getIsSorted() === 'desc' ? styles.active : ''}`}/>
                                                             </span>
-                                                        )}
-                                                    </div>
-                                                    {hasFilters && header.column.getCanFilter() ? <ColumnFilter column={header.column} onSubmit={() => handleFilterSubmit(header.id)}/> : null}
+                                                        </span>
+                                                    )}
                                                 </div>
+                                                {hasFilters && header.column.getCanFilter() ? <ColumnFilter column={header.column} onSubmit={() => handleFilterSubmit(header.id)}/> : null}
                                                 <div
                                                     className={`${styles.resizer} ${header.column.getIsResizing() ? styles.isResizing : ''}`}
                                                     style={{transform: header.column.getIsResizing() ? `translateX(${table.getState().columnSizingInfo.deltaOffset}px)` : '',}}
@@ -250,7 +248,7 @@ function DataGrid({loading = false, columns, data, initialState, hasFilters = tr
                                 ))}
                                 </thead>
 
-                                <tbody className={`ant-table-tbody data-grid ${styles.tbody}`}>
+                                <tbody className={styles.tbody}>
                                 {table.getRowModel().rows.map(row => {
                                     const rowContent = (
                                         <tr
@@ -260,11 +258,7 @@ function DataGrid({loading = false, columns, data, initialState, hasFilters = tr
                                             onDoubleClick={() => onRowDoubleClick(row)}
                                         >
                                             {row.getVisibleCells().map(cell => (
-                                                <td
-                                                    key={cell.id}
-                                                    className="ant-table-cell"
-                                                    style={{width: cell.column.getSize()}}
-                                                >
+                                                <td key={cell.id} style={{width: cell.column.getSize()}}>
                                                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                                 </td>
                                             ))}
@@ -272,7 +266,7 @@ function DataGrid({loading = false, columns, data, initialState, hasFilters = tr
                                     )
 
                                     return getRowContextMenu ? (
-                                        <Dropdown key={row.id} overlay={getRowContextMenu(row)} trigger={['contextMenu']}>
+                                        <Dropdown key={row.id} menu={{items: getRowContextMenu(row)}} trigger={['contextMenu']}>
                                             {rowContent}
                                         </Dropdown>
                                     ) : rowContent

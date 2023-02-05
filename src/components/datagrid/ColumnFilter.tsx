@@ -30,7 +30,7 @@ export default function ColumnFilter({column, onSubmit}: Props) {
     }
 
     return (
-        <div className={styles.columnFilter}>
+        <div className={styles.tableColumnFilter}>
             <Input
                 size="small"
                 value={columnFilterValue ?? ''}

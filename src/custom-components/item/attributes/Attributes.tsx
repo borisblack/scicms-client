@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {Row} from '@tanstack/react-table'
-import {Button, Form, Menu, Modal, Space} from 'antd'
+import {Button, Form, Modal, Space} from 'antd'
 import {useTranslation} from 'react-i18next'
 
 import {CustomComponentRenderContext} from '../../index'
@@ -159,7 +159,7 @@ export default function Attributes({me, item, buffer, data}: CustomComponentRend
             })
         }
 
-        return <Menu items={items}/>
+        return items
     }, [t, canEdit, openRow, deleteRow])
 
     return (
@@ -180,7 +180,7 @@ export default function Attributes({me, item, buffer, data}: CustomComponentRend
             />
             <Modal
                 title={t('Attribute')}
-                visible={isEditModalVisible}
+                open={isEditModalVisible}
                 destroyOnClose
                 width={EDIT_MODAL_WIDTH}
                 onOk={() => attributeForm.submit()}

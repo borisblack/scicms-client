@@ -14,10 +14,68 @@
     /*text-align: right;*/
 }
 
-.tableContent {
-    /*border: 1px solid #cccccc;*/
-    border-radius: 0;
-    overflow: auto hidden;
+.tableWrapper {
+    line-height: 1.5714285714285714;
+}
+
+.tableWrapper .tableSmall .tableTitle,
+.tableWrapper .tableSmall .tableFooter,
+.tableWrapper .tableSmall .thead>tr>th,
+.tableWrapper .tableSmall .tbody>tr>td,
+.tableWrapper .tableSmall tfoot>tr>th,
+.tableWrapper .tableSmall tfoot>tr>td {
+    padding: 8px;
+}
+
+.tableContainer table>thead>tr:first-child th:first-child {
+    border-top-left-radius: 0;
+}
+
+.tableContainer table>thead>tr:first-child th:last-child {
+    border-top-right-radius: 0;
+}
+
+.tableSmall .thead>tr>th.hasFilter,
+.tableMiddle .thead>tr>th.hasFilter {
+    padding-bottom: 0;
+}
+
+.tableSmall .thead>tr>th,
+.tableMiddle .thead>tr>th {
+    border-bottom: 1px solid #cccccc
+}
+
+.tableWrapper .thead>tr>th:not(:last-child):not([colspan]):before {
+    height: 0;
+}
+
+.tableWrapper .thead>tr>th:first-child {
+    border-left: 0 none;
+}
+
+.tableWrapper .thead>tr>th {
+    position: relative;
+    font-weight: 600;
+    text-align: start;
+    background: #fafafa;
+    border-left: 1px solid #cccccc;
+}
+
+.tableWrapper .thead th.tableColumnHasSorters {
+    outline: none;
+    cursor: pointer;
+    transition: all .3s;
+}
+
+.tableWrapper .thead th.tableColumnHasSorters:hover {
+    background: #f0f0f0;
+}
+
+.tableWrapper .tableColumnSorters {
+    display: flex;
+    flex: auto;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .tableColumnTitle {
@@ -26,12 +84,40 @@
     text-overflow: ellipsis;
 }
 
-.columnFilter {
+.tableWrapper .tableColumnSorter {
+    margin-inline-start: 4px;
+    color: rgba(0,0,0,.29);
+    font-size: 0;
+    transition: color .3s;
+}
+
+.tableWrapper .tableColumnSorterInner {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.tableWrapper .tableColumnSorterUp, .tableWrapper .tableColumnSorterDown {
+    font-size: 12px;
+    margin: -1px 0;
+}
+
+.tableWrapper .tableColumnSorterUp.active, .tableWrapper .tableColumnSorterDown.active {
+    color: #1677ff;
+}
+
+.tableColumnFilter {
     border-top: 1px solid #cccccc;
     /*border-bottom: 2px solid #cccccc;*/
     margin-top: 8px;
     margin-left: -8px;
     margin-right: -8px;
+}
+
+.tableContent {
+    /*border: 1px solid #cccccc;*/
+    border-radius: 0;
+    overflow: auto hidden;
 }
 
 .tr {

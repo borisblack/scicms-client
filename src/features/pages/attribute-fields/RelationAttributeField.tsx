@@ -136,7 +136,7 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({pageKey, form, item, a
             </FormItem>
             <Modal
                 title={t(attribute.displayName)}
-                visible={isRelationModalVisible}
+                open={isRelationModalVisible}
                 destroyOnClose
                 width={RELATION_MODAL_WIDTH}
                 footer={null}

@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import {Moment} from 'moment'
+import {Dayjs} from 'dayjs'
 import {DateTime} from 'luxon'
 
 import {Attribute, AttrType, Item, ItemData} from '../types'
@@ -62,7 +62,7 @@ async function parseValue(item: Item, attrName: string, attribute: Attribute, da
     const value = values[attrName]
     switch (attribute.type) {
         case AttrType.date:
-            return value ? DateTime.fromISO((value as Moment).toISOString()).toISODate() : null
+            return value ? DateTime.fromISO((value as Dayjs).toISOString()).toISODate() : null
         case AttrType.time:
             return parseTime(attrName, values)
         case AttrType.datetime:
@@ -86,7 +86,7 @@ function parseTime(attrName: string, values: any): string | null {
         return null
 
     const isChanged = values[`${attrName}.changed`]
-    const iso = (value as Moment).toISOString()
+    const iso = (value as Dayjs).toISOString()
     const dt = isChanged ? DateTime.fromISO(iso) : DateTime.fromISO(iso, {zone: UTC})
     return dt.toISOTime()
 }
@@ -97,7 +97,7 @@ function parseDateTime(attrName: string, values: any): string | null {
         return null
 
     const isChanged = values[`${attrName}.changed`]
-    const iso = (value as Moment).toISOString()
+    const iso = (value as Dayjs).toISOString()
     const dt = isChanged ? DateTime.fromISO(iso) : DateTime.fromISO(iso, {zone: UTC})
     return dt.setZone(timeZone, {keepLocalTime: true}).toISO()
 }

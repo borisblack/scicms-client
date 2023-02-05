@@ -1,7 +1,6 @@
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {Row} from '@tanstack/react-table'
-import {Button, Menu, message, Modal, Space} from 'antd'
-
+import {Button, message, Modal, Space} from 'antd'
 import appConfig from '../../config'
 import DataGrid, {RequestParams} from '../../components/datagrid/DataGrid'
 import {findAllRelated, getColumns, getHiddenColumns, getInitialData} from '../../util/datagrid'
@@ -227,7 +226,7 @@ export default function RelationsDataGridWrapper({me, pageKey, item, itemData, r
             }
         }
 
-        return <Menu items={items}/>
+        return items
     }, [t, permissionService, me, relAttribute.readOnly, openTarget, target.versioned, deleteTarget])
 
     const renderToolbar = useCallback(() => {
@@ -266,7 +265,7 @@ export default function RelationsDataGridWrapper({me, pageKey, item, itemData, r
 
             <Modal
                 title={`${t('Select')} ${target.displayName}`}
-                visible={isSelectionModalVisible}
+                open={isSelectionModalVisible}
                 destroyOnClose
                 width={SELECTION_MODAL_WIDTH}
                 footer={null}

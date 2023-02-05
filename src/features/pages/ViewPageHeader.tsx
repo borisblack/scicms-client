@@ -1,5 +1,6 @@
 import React, {MouseEvent, ReactNode, useMemo, useState} from 'react'
-import {Alert, Button, Dropdown, FormInstance, Menu, message, Modal, PageHeader, Popconfirm, Space} from 'antd'
+import {Alert, Button, Dropdown, FormInstance, message, Modal, Popconfirm, Space} from 'antd'
+import {PageHeader} from '@ant-design/pro-layout'
 import * as icons from '@ant-design/icons'
 import {
     CloseCircleOutlined,
@@ -237,34 +238,26 @@ export default function ViewPageHeader({
         })
     }
 
-    const renderPurgeMenu = () => (
-        <Menu
-            items={[{
-                key: 'delete',
-                label: t('Current Version'),
-                onClick: showDeleteConfirm
-            }, {
-                key: 'purge',
-                label: t('All Versions'),
-                onClick: showPurgeConfirm
-            }]}
-        />
-    )
+    const getPurgeMenu = () => [{
+        key: 'delete',
+        label: t('Current Version'),
+        onClick: showDeleteConfirm
+    }, {
+        key: 'purge',
+        label: t('All Versions'),
+        onClick: showPurgeConfirm
+    }]
 
-    const renderExportMenu = () => (
-        <Menu
-            items={[{
-                key: 'html',
-                label: (
-                    <Space>
-                        <Html5Outlined className="blue"/>
-                        HTML
-                    </Space>
-                ),
-                onClick: onHtmlExport
-            }]}
-        />
-    )
+    const getExportMenu = () => [{
+        key: 'html',
+        label: (
+            <Space>
+                <Html5Outlined className="blue"/>
+                HTML
+            </Space>
+        ),
+        onClick: onHtmlExport
+    }]
 
     const getVersionsExtraFiltersInput = (): ItemFiltersInput<ItemData> => {
         if (isNew)
@@ -313,7 +306,7 @@ export default function ViewPageHeader({
             if (canDelete) {
                 if (item.versioned) {
                     extra.push(
-                        <Dropdown key="purge" placement="bottomRight" overlay={renderPurgeMenu()}>
+                        <Dropdown key="purge" placement="bottomRight" menu={{items: getPurgeMenu()}}>
                             <Button type="primary" danger icon={<DownOutlined/>}>{t('Delete')}</Button>
                         </Dropdown>
                     )
@@ -332,7 +325,7 @@ export default function ViewPageHeader({
             }
 
             extra.push(
-                <Dropdown key="export" placement="bottomLeft" trigger={['click']} overlay={renderExportMenu()}>
+                <Dropdown key="export" placement="bottomLeft" trigger={['click']} menu={{items: getExportMenu()}}>
                     <Button icon={<ExportOutlined/>}>{t('Export')}</Button>
                 </Dropdown>
             )
@@ -357,7 +350,7 @@ export default function ViewPageHeader({
             />
             <Modal
                 title={t('Versions')}
-                visible={isVersionsModalVisible}
+                open={isVersionsModalVisible}
                 destroyOnClose
                 width={VERSIONS_MODAL_WIDTH}
                 footer={null}
@@ -375,7 +368,7 @@ export default function ViewPageHeader({
             {data?.lifecycle?.data && (
                 <Modal
                     title={t('Promotion')}
-                    visible={isPromoteModalVisible}
+                    open={isPromoteModalVisible}
                     destroyOnClose
                     footer={null}
                     onCancel={() => setPromoteModalVisible(false)}

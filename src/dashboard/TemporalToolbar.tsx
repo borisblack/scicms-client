@@ -1,7 +1,7 @@
 import {DatePicker, Space, TimePicker} from 'antd'
 import {AttrType, TemporalType} from '../types'
 import {useTranslation} from 'react-i18next'
-import moment, {Moment} from 'moment-timezone'
+import dayjs, {Dayjs} from 'dayjs'
 import {DateTime} from 'luxon'
 import appConfig from '../config'
 import {useCallback} from 'react'
@@ -17,7 +17,7 @@ interface Props {
 export default function TemporalToolbar({temporalType, startTemporal, endTemporal, onStartTemporalChange, onEndTemporalChange}: Props) {
     const {t} = useTranslation()
 
-    const parseTemporal = useCallback((temporal: Moment | null): string | null => {
+    const parseTemporal = useCallback((temporal: Dayjs | null): string | null => {
         if (!temporal)
             return null
 
@@ -32,12 +32,12 @@ export default function TemporalToolbar({temporalType, startTemporal, endTempora
     }, [temporalType])
 
     const handleStartTemporalChange = useCallback(
-        (startTemporal: Moment | null) => onStartTemporalChange(parseTemporal(startTemporal)),
+        (startTemporal: Dayjs | null) => onStartTemporalChange(parseTemporal(startTemporal)),
         [onStartTemporalChange, parseTemporal]
     )
 
     const handleEndTemporalChange = useCallback(
-        (endTemporal: Moment | null) => onEndTemporalChange(parseTemporal(endTemporal)),
+        (endTemporal: Dayjs | null) => onEndTemporalChange(parseTemporal(endTemporal)),
         [onEndTemporalChange, parseTemporal]
     )
 
@@ -49,7 +49,7 @@ export default function TemporalToolbar({temporalType, startTemporal, endTempora
                         {t('Begin')}:&nbsp;
                         <TimePicker
                             size="small"
-                            value={startTemporal == null ? null : moment(startTemporal)}
+                            value={startTemporal == null ? null : dayjs(startTemporal)}
                             onChange={(time) => handleStartTemporalChange(time)}
                         />
                     </span>
@@ -57,7 +57,7 @@ export default function TemporalToolbar({temporalType, startTemporal, endTempora
                         {t('End')}:&nbsp;
                         <TimePicker
                             size="small"
-                            value={endTemporal == null ? null : moment(endTemporal)}
+                            value={endTemporal == null ? null : dayjs(endTemporal)}
                             onChange={(time) => handleEndTemporalChange(time)}
                         />
                     </span>
@@ -69,7 +69,7 @@ export default function TemporalToolbar({temporalType, startTemporal, endTempora
                         <DatePicker
                             size="small"
                             showTime={temporalType === AttrType.datetime || temporalType === AttrType.timestamp}
-                            value={startTemporal == null ? null : moment(startTemporal)}
+                            value={startTemporal == null ? null : dayjs(startTemporal)}
                             onChange={(date) => handleStartTemporalChange(date)}
                         />
                     </span>
@@ -78,7 +78,7 @@ export default function TemporalToolbar({temporalType, startTemporal, endTempora
                         <DatePicker
                             size="small"
                             showTime={temporalType === AttrType.datetime || temporalType === AttrType.timestamp}
-                            value={endTemporal == null ? null : moment(endTemporal)}
+                            value={endTemporal == null ? null : dayjs(endTemporal)}
                             onChange={(date) => handleEndTemporalChange(date)}
                         />
                     </span>

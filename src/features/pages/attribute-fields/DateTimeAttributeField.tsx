@@ -1,13 +1,15 @@
 import {FC, useCallback, useMemo} from 'react'
 import {Checkbox, DatePicker, Form} from 'antd'
 import {useTranslation} from 'react-i18next'
-import moment, {Moment} from 'moment-timezone'
-
+import dayjs, {Dayjs} from 'dayjs'
+import timezone from 'dayjs/plugin/timezone'
 import {AttributeFieldProps} from '.'
 import appConfig from '../../../config'
 import {AttrType} from '../../../types'
 import styles from './AttributeField.module.css'
 import {UTC} from '../../../config/constants'
+
+dayjs.extend(timezone)
 
 const FormItem = Form.Item
 const {momentDisplayDateTimeFormatString} = appConfig.dateTime
@@ -26,12 +28,12 @@ const DateTimeAttributeField: FC<AttributeFieldProps> = ({pageKey, form, attrNam
         return additionalProps
     }, [isDisabled])
 
-    function getValueFromEvent(evt: Moment) {
+    function getValueFromEvent(evt: Dayjs) {
         form.setFieldValue(`${attrName}.changed`, true)
         return evt
     }
 
-    const parseValue = useCallback((val: string | null | undefined) => val == null ? null : moment.tz(val, UTC), [])
+    const parseValue = useCallback((val: string | null | undefined) => val == null ? null : dayjs.tz(val, UTC), [])
 
     return (
         <>

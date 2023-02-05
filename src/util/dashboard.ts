@@ -1,7 +1,6 @@
 import {AttrType, DashType, IDash, MetricType} from '../types'
 import {DateTime} from 'luxon'
 import appConfig from '../config'
-import {UTC} from '../config/constants'
 
 export const dashTypes = Object.keys(DashType).sort()
 export const numericTypes = [AttrType.int, AttrType.long, AttrType.float, AttrType.double, AttrType.decimal]

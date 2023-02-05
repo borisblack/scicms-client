@@ -118,7 +118,7 @@ const StringRelationAttributeField: FC<Props> = ({pageKey, form, item, attrName,
 
             <Modal
                 title={t(attribute.displayName)}
-                visible={isSearchModalVisible}
+                open={isSearchModalVisible}
                 destroyOnClose
                 width={RELATION_MODAL_WIDTH}
                 footer={null}

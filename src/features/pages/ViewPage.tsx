@@ -1,6 +1,6 @@
-import React, {ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {Col, Collapse, Form, message, Modal, Row, Spin, Tabs} from 'antd'
-
+import {Tab} from 'rc-tabs/lib/interface'
 import {Attribute, AttrType, IBuffer, Item, ItemData, RelType, UserInfo, ViewState} from '../../types'
 import PermissionService from '../../services/permission'
 import {useTranslation} from 'react-i18next'
@@ -43,7 +43,6 @@ interface Props {
     onLogout: () => void
 }
 
-const TabPane = Tabs.TabPane
 const {Panel} = Collapse
 const {info} = Modal
 
@@ -419,18 +418,65 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
         exportWin.document.body.innerHTML = exportWinHtml
     }, [data, filterVisibleAttributeNames, item.displayName, item.spec, t])
 
-    const renderTabComponents = useCallback((mountPoint: string): ReactNode[] =>
-        getComponents(mountPoint).map(it => {
-            const Icon = it.icon ? allIcons[it.icon] : null
-            const title = t(it.title ?? 'Untitled')
-            return (
-                <TabPane key={it.id} tab={Icon ? <span><Icon/>&nbsp;{title}</span> : title}>
-                    {it.render({context: customComponentContext})}
-                </TabPane>
-            )
+    const getComponentTabs = useCallback((mountPoint: string): Tab[] =>
+        getComponents(mountPoint).map(component => {
+            const Icon = component.icon ? allIcons[component.icon] : null
+            const title = t(component.title ?? 'Untitled')
+            return {
+                key: component.id,
+                label: Icon ? <span><Icon/>&nbsp;{title}</span> : title,
+                children: component.render({context: customComponentContext})
+            }
+
         }), [customComponentContext, t])
 
-    const renderCollectionRelations = useCallback(() => {
+    const getTabs = useCallback((collectionAttrNames: string[]): Tab[] => {
+        const tabs: Tab[] = []
+        if (hasComponents('tabs.begin'))
+            tabs.push(...getComponentTabs('tabs.begin'))
+
+        if (hasComponents(`${item.name}.tabs.begin`))
+            tabs.push(...getComponentTabs(`${item.name}.tabs.begin`))
+
+        if (!isNew) {
+            tabs.push(...collectionAttrNames.map(key => {
+                const attribute = item.spec.attributes[key]
+                if (!attribute.target)
+                    throw new Error('Illegal attribute target')
+
+                const target = itemService.getByName(attribute.target)
+                const TargetIcon = target.icon && allIcons[target.icon]
+                const title = t(attribute.displayName)
+                return {
+                    key: key,
+                    label: TargetIcon ? <span><TargetIcon/>{title}</span> : title,
+                    children: (
+                        <RelationsDataGridWrapper
+                            me={me}
+                            pageKey={page.key}
+                            item={item}
+                            itemData={data}
+                            relAttrName={key}
+                            relAttribute={attribute}
+                            onItemCreate={onItemCreate}
+                            onItemView={onItemView}
+                            onItemDelete={onItemDelete}
+                        />
+                    )
+                }
+            }))
+        }
+
+        if (hasComponents('tabs.end'))
+            tabs.push(...getComponentTabs('tabs.end'))
+
+        if (hasComponents(`${item.name}.tabs.end`))
+            tabs.push(...getComponentTabs(`${item.name}.tabs.end`))
+
+        return tabs
+    }, [data, getComponentTabs, isNew, item, itemService, me, onItemCreate, onItemDelete, onItemView, page.key, t])
+
+    const renderTabs = useCallback(() => {
         const hasTabsContentPlugins = hasPlugins('tabs.content', `${item.name}.tabs.content`)
         const hasTabsContentPluginsOrComponents =
             hasTabsContentPlugins || hasComponents('tabs.content', `${item.name}.tabs.content`)
@@ -457,44 +503,10 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
                 {hasComponents('tabs.content') && renderComponents('tabs.content', customComponentContext)}
                 {hasComponents(`${item.name}.tabs.content`) && renderComponents(`${item.name}.tabs.content`, customComponentContext)}
                 {hasTabsContentPlugins && <div ref={tabsContentRef}/>}
-
-                {hasTabs && (
-                    <Tabs>
-                        {hasComponents('tabs.begin') && renderTabComponents('tabs.begin')}
-                        {hasComponents(`${item.name}.tabs.begin`) && renderTabComponents(`${item.name}.tabs.begin`)}
-
-                        {!isNew && collectionAttrNames.map(key => {
-                            const attribute = item.spec.attributes[key]
-                            if (!attribute.target)
-                                throw new Error('Illegal attribute target')
-
-                            const target = itemService.getByName(attribute.target)
-                            const TargetIcon = target.icon && allIcons[target.icon]
-                            const title = t(attribute.displayName)
-                            return (
-                                <TabPane key={key} tab={TargetIcon ? <span><TargetIcon/>{title}</span> : title}>
-                                    <RelationsDataGridWrapper
-                                        me={me}
-                                        pageKey={page.key}
-                                        item={item}
-                                        itemData={data}
-                                        relAttrName={key}
-                                        relAttribute={attribute}
-                                        onItemCreate={onItemCreate}
-                                        onItemView={onItemView}
-                                        onItemDelete={onItemDelete}
-                                    />
-                                </TabPane>
-                            )
-                        })}
-
-                        {hasComponents('tabs.end') && renderTabComponents('tabs.end')}
-                        {hasComponents(`${item.name}.tabs.end`) && renderTabComponents(`${item.name}.tabs.end`)}
-                    </Tabs>
-                )}
+                {hasTabs && <Tabs items={getTabs(collectionAttrNames)}/>}
             </>
         )
-    }, [customComponentContext, data, isNew, item, itemService, me, onItemCreate, onItemDelete, onItemView, page.key, renderTabComponents, t])
+    }, [item.name, item.spec.attributes, isNew, customComponentContext, getTabs])
 
     const hasHeaderPlugins = hasPlugins('view.header', `${item.name}.view.header`)
     const hasContentPlugins = hasPlugins('view.content', `${item.name}.view.content`)
@@ -558,7 +570,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
             {hasComponents(`${item.name}.view.footer`) && renderComponents(`${item.name}.view.footer`, customComponentContext)}
             {hasPlugins('view.footer', `${item.name}.view.footer`) && <div ref={footerRef}/>}
 
-            {renderCollectionRelations()}
+            {renderTabs()}
         </Spin>
     )
 }

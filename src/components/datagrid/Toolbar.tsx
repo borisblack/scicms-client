@@ -1,5 +1,5 @@
 import React, {useCallback} from 'react'
-import {Checkbox, Dropdown, Menu, Popover, Space, Tooltip} from 'antd'
+import {Checkbox, Dropdown, Popover, Space, Tooltip} from 'antd'
 import {ClearOutlined, ExportOutlined, Html5Outlined, ReloadOutlined, SettingOutlined} from '@ant-design/icons'
 import {Table} from '@tanstack/react-table'
 import {useTranslation} from 'react-i18next'
@@ -17,20 +17,16 @@ interface Props {
 function Toolbar({table, hasFilters, onRefresh, onClearFilters, onHtmlExport}: Props) {
     const {t} = useTranslation()
 
-    const renderExportMenu = useCallback(() => (
-        <Menu
-            items={[{
-                key: 'html',
-                label: (
-                    <Space>
-                        <Html5Outlined className="blue"/>
-                        HTML
-                    </Space>
-                ),
-                onClick: onHtmlExport
-            }]}
-        />
-    ), [onHtmlExport])
+    const getExportMenu = useCallback(() => [{
+        key: 'html',
+        label: (
+            <Space>
+                <Html5Outlined className="blue"/>
+                HTML
+            </Space>
+        ),
+        onClick: onHtmlExport
+    }], [onHtmlExport])
 
     return (
         <div className={styles.toolbar}>
@@ -66,7 +62,7 @@ function Toolbar({table, hasFilters, onRefresh, onClearFilters, onHtmlExport}: P
             </Tooltip>
 
             <Tooltip title={t('Export')}>
-                <Dropdown placement="bottomLeft" trigger={['click']} overlay={renderExportMenu()}>
+                <Dropdown placement="bottomLeft" trigger={['click']} menu={{items: getExportMenu()}}>
                     <ExportOutlined className={styles.toolbarBtn} title={t('Export')}/>
                 </Dropdown>
             </Tooltip>

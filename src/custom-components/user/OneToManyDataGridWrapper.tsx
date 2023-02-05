@@ -1,6 +1,6 @@
 import {useCallback, useMemo, useState} from 'react'
 import {Row} from '@tanstack/react-table'
-import {Button, Menu, message, Space} from 'antd'
+import {Button, message, Space} from 'antd'
 
 import appConfig from '../../config'
 import DataGrid, {RequestParams} from '../../components/datagrid/DataGrid'
@@ -122,7 +122,7 @@ export default function OneToManyDataGridWrapper({me, pageKey, target, mappedBy,
             }
         }
 
-        return <Menu items={items}/>
+        return items
     }, [t, permissionService, me, openTarget, targetItem.versioned, deleteTarget])
 
     const renderToolbar = useCallback(() => {
