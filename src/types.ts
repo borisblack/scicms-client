@@ -354,6 +354,7 @@ export enum DashType {
     bar = 'bar',
     bubble = 'bubble',
     bubbleMap = 'bubbleMap',
+    column = 'column',
     doughnut = 'doughnut',
     line = 'line',
     pie = 'pie',

@@ -10,6 +10,7 @@ import DoughnutDash from './dashes/DoughnutDash'
 import PieDash from './dashes/PieDash'
 import LineDash from './dashes/LineDash'
 import BubbleDash from './dashes/BubbleDash'
+import ColumnDash from './dashes/ColumnDash'
 import PolarAreaDash from './dashes/PolarAreaDash'
 import RadarDash from './dashes/RadarDash'
 import ScatterDash from './dashes/ScatterDash'
@@ -38,6 +39,7 @@ const dashMap: DashMap = {
     [DashType.bar]: BarDash,
     [DashType.bubble]: BubbleDash,
     [DashType.bubbleMap]: BubbleMapDash,
+    [DashType.column]: ColumnDash,
     [DashType.doughnut]: DoughnutDash,
     [DashType.line]: LineDash,
     [DashType.pie]: PieDash,
