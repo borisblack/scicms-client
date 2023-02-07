@@ -211,7 +211,8 @@ export default function DashWrapper(props: DashProps) {
     }, [endTemporal, formatTemporal, startTemporal])
 
     return (
-        <FullScreen active={fullScreen} normalStyle={{display: isFullScreenComponentExist ? 'none' : 'block'}}>
+        <FullScreen active={fullScreen} normalStyle={{display: isFullScreenComponentExist ? 'none' : 'block'}}
+        >
             <PageHeader
                 className={styles.pageHeader}
                 title={(
@@ -285,7 +286,9 @@ export default function DashWrapper(props: DashProps) {
                 </>
             )}
 
-            <DashComponent {...props} fullScreen={fullScreen} data={filteredData}/>
+            <div style={{margin: fullScreen ? 16 : 0, height: fullScreen ? '90vh' : appConfig.dashboard.viewRowHeight}}>
+                <DashComponent {...props} fullScreen={fullScreen} data={filteredData}/>
+            </div>
         </FullScreen>
     )
 }

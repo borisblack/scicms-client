@@ -2,19 +2,23 @@ import _ from 'lodash'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {Alert, Col, Row} from 'antd'
 import {useTranslation} from 'react-i18next'
-
+import {registerLocale} from '@antv/g2plot'
 import {Dataset, IDash, IDashboardSpec, UserInfo} from '../types'
 import appConfig from '../config'
 import {hasRole} from '../util/acl'
 import {ROLE_ADMIN, ROLE_ANALYST} from '../config/constants'
 import DashWrapper from './DashWrapper'
 import DatasetService from '../services/dataset'
+import {RU_RU_LOCALE} from './locales/ru_RU'
 
 interface Props {
     me: UserInfo
     pageKey: string
     spec: IDashboardSpec
 }
+
+// Register additional locales
+registerLocale('ru-RU', RU_RU_LOCALE)
 
 const ANTD_GRID_COLS = 24
 const K = ANTD_GRID_COLS / appConfig.dashboard.cols

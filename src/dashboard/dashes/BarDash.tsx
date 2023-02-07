@@ -1,75 +1,34 @@
-// import _ from 'lodash'
-import {FC, useEffect, useMemo, useRef} from 'react'
-import Chart from 'chart.js/auto'
-
+import {FC} from 'react'
+import {Bar, BarConfig} from '@ant-design/charts'
 import {DashType} from '../../types'
 import {InnerDashProps} from '.'
-import {mapLabels, mapMetrics, temporalTypeSet, timeScaleProps} from '../../util/dashboard'
+import appConfig from '../../config'
 
 const BarDash: FC<InnerDashProps> = ({pageKey, dash, fullScreen, data, }) => {
     if (dash.type !== DashType.bar)
         throw new Error('Illegal dash type')
 
-    const {labelField} = dash
-    if (labelField == null)
+    const {metricField, labelField} = dash
+    if (metricField == null || labelField == null)
         throw new Error('Illegal argument')
 
-    const labels = useMemo(() => mapLabels(data, labelField), [labelField, data])
-    const preparedData = useMemo(() => mapMetrics(dash, data), [dash, data])
-    const canvasRef = useRef<HTMLCanvasElement>(null)
+    const config: BarConfig = {
+        data: data.map(it => ({...it, [labelField]: it[labelField]?.toString()?.trim()})),
+        xField: metricField,
+        yField: labelField,
+        seriesField: labelField,
+        // legend: {
+        //     position: 'top-left',
+        // },
+        // xAxis: {
+        //     label: {
+        //         autoRotate: false,
+        //     }
+        // },
+        locale: appConfig.dashboard.locale
+    }
 
-    useEffect(() => {
-        const canvas = canvasRef.current
-        if (!canvas)
-            return
-
-        const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
-        const scales: any = {}
-        if (dash.metricType && temporalTypeSet.has(dash.metricType)) {
-            scales.y = {
-                ...timeScaleProps,
-                // min: _.min(preparedData)?.toISOString()
-            }
-        }
-
-        const chart = new Chart(ctx, {
-            type: DashType.bar,
-            data: {
-                labels,
-                datasets: [{
-                    label: dash.name,
-                    data: preparedData,
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales,
-                maintainAspectRatio: !fullScreen
-            }
-        })
-
-        return () => { chart.destroy() }
-    }, [dash.name, dash.metricType, fullScreen, labels, preparedData])
-
-    return (
-        <canvas id={`${pageKey}#${dash.name}`} ref={canvasRef}/>
-    )
+    return <Bar {...config} />
 }
 
 export default BarDash

@@ -189,7 +189,7 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
                     className={styles.layout}
                     layout={layout}
                     cols={appConfig.dashboard.cols}
-                    rowHeight={appConfig.dashboard.rowHeight}
+                    rowHeight={appConfig.dashboard.specRowHeight}
                     isDraggable={canEdit}
                     isDroppable={canEdit}
                     isResizable={canEdit}

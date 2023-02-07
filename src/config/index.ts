@@ -33,8 +33,10 @@ interface AppConfig {
         deletingStrategy: DeletingStrategy
     }
     dashboard: {
+        locale: string
         cols: number
-        rowHeight: number
+        specRowHeight: number
+        viewRowHeight: number
         minRefreshIntervalSeconds: number
         defaultRefreshIntervalSeconds: number
         defaultDashType: DashType
@@ -75,8 +77,10 @@ const appConfig: AppConfig = {
         deletingStrategy: DeletingStrategy.CASCADE
     },
     dashboard: {
+        locale: 'ru-RU',
         cols: 24,
-        rowHeight: 100,
+        specRowHeight: 100,
+        viewRowHeight: 300,
         minRefreshIntervalSeconds: 5,
         defaultRefreshIntervalSeconds: 300,
         defaultDashType: DashType.bar,

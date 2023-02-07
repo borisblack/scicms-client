@@ -1,9 +1,8 @@
 import {FC} from 'react'
-import {Column} from '@ant-design/plots'
-
+import {Column, ColumnConfig} from '@ant-design/charts'
 import {DashType} from '../../types'
 import {InnerDashProps} from '.'
-import {ColumnConfig} from '@ant-design/charts'
+import appConfig from '../../config'
 
 const ColumnDash: FC<InnerDashProps> = ({pageKey, dash, fullScreen, data, }) => {
     if (dash.type !== DashType.column)
@@ -22,11 +21,12 @@ const ColumnDash: FC<InnerDashProps> = ({pageKey, dash, fullScreen, data, }) => 
         //     position: 'top-left',
         // },
         autoFit: true,
-        // xAxis: {
-        //     label: {
-        //         autoRotate: false,
-        //     }
-        // },
+        xAxis: {
+            label: {
+                autoRotate: false,
+            }
+        },
+        locale: appConfig.dashboard.locale
     }
 
     return <Column {...config} />

@@ -1,77 +1,29 @@
-import _ from 'lodash'
-import {FC, useEffect, useMemo, useRef} from 'react'
-import Chart from 'chart.js/auto'
+import {FC} from 'react'
+import {Line, LineConfig} from '@ant-design/charts'
 import {DashType} from '../../types'
 import {InnerDashProps} from '.'
-import {map2dMetrics, mapLabels, temporalTypeSet, timeScaleProps} from '../../util/dashboard'
+import appConfig from '../../config'
 
 const LineDash: FC<InnerDashProps> = ({pageKey, dash, fullScreen, data}) => {
     if (dash.type !== DashType.line)
         throw new Error('Illegal dash type')
 
-    const {labelField} = dash
-    if (labelField == null)
+    const {metricField, temporalField} = dash
+    if (metricField == null || temporalField == null)
         throw new Error('Illegal argument')
 
-    const labels = useMemo(() => mapLabels(data, labelField), [data, labelField])
-    const preparedData = useMemo(() => map2dMetrics(dash, data), [dash, data])
-    const canvasRef = useRef<HTMLCanvasElement>(null)
+    const config: LineConfig = {
+        data,
+        xField: temporalField,
+        yField: metricField,
+        // seriesField: 'category',
+        xAxis: {
+            type: 'time',
+        },
+        locale: appConfig.dashboard.locale
+    }
 
-    useEffect(() => {
-        const canvas = canvasRef.current
-        if (!canvas)
-            return
-
-        const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
-        const scales: any = {
-            x: {
-                ...timeScaleProps,
-                min: _.min(preparedData.map(it => it.x.toJSDate()))?.toISOString(),
-                max: _.max(preparedData.map(it => it.x.toJSDate()))?.toISOString()
-            }
-        }
-
-        if (dash.metricType != null && temporalTypeSet.has(dash.metricType)) {
-            scales.y = {
-                ...timeScaleProps,
-                // min: _.min(preparedData.map(it => it.y))?.toISOString()
-            }
-        }
-
-        const chart = new Chart(ctx, {
-            type: DashType.line,
-            data: {
-                labels,
-                datasets: [{
-                    label: dash.name,
-                    data: preparedData,
-                    fill: false,
-                    borderColor: 'rgb(75, 192, 192)',
-                    tension: 0.1
-                }]
-            },
-            options: {
-                scales,
-                // plugins: {
-                //     tooltip: {
-                //         callbacks: {
-                //             label: context => {
-                //                 const {label, dataIndex} = context
-                //                 return ` ${label}: ${labels[dataIndex]}`
-                //             }
-                //         }
-                //     }
-                // },
-                maintainAspectRatio: !fullScreen
-            }
-        })
-
-        return () => { chart.destroy() }
-    }, [dash.metricType, dash.name, fullScreen, labels, preparedData])
-
-    return (
-        <canvas id={`${pageKey}#${dash.name}`} ref={canvasRef}/>
-    )
+    return <Line {...config} />
 }
 
 export default LineDash

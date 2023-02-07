@@ -1,74 +1,56 @@
-// import _ from 'lodash'
-import {FC, useEffect, useMemo, useRef} from 'react'
-import Chart from 'chart.js/auto'
+import {FC} from 'react'
+import {Scatter, ScatterConfig} from '@ant-design/charts'
 import {DashType} from '../../types'
 import {InnerDashProps} from '.'
-import {map3dMetrics, mapLabels, temporalTypeSet, timeScaleProps} from '../../util/dashboard'
+import appConfig from '../../config'
 
 const BubbleDash: FC<InnerDashProps> = ({pageKey, dash, fullScreen, data}) => {
     if (dash.type !== DashType.bubble)
         throw new Error('Illegal dash type')
 
-    const {labelField} = dash
-    if (labelField == null)
+    const {metricField, temporalField, labelField} = dash
+    if (metricField == null || temporalField == null || labelField == null)
         throw new Error('Illegal argument')
 
-    const labels = useMemo(() => mapLabels(data, labelField), [labelField, data])
-    const preparedData = useMemo(() => map3dMetrics(dash, data), [data, dash])
-    const canvasRef = useRef<HTMLCanvasElement>(null)
-
-    useEffect(() => {
-        const canvas = canvasRef.current
-        if (!canvas)
-            return
-
-        const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
-        const scales: any = {
-            x: {
-                ...timeScaleProps,
-                // min: _.min(preparedData.map(it => it.x.toJSDate()))?.toISOString()
-            }
-        }
-
-        if (dash.metricType != null && temporalTypeSet.has(dash.metricType)) {
-            scales.y = {
-                ...timeScaleProps,
-                // min: _.min(preparedData.map(it => it.y))?.toISOString()
-            }
-        }
-
-        const chart = new Chart(ctx, {
-            type: DashType.bubble,
-            data: {
-                labels,
-                datasets: [{
-                    label: dash.name,
-                    data: preparedData,
-                    backgroundColor: 'rgb(255, 99, 132)'
-                }]
-            },
-            options: {
-                scales,
-                plugins: {
-                    tooltip: {
-                        callbacks: {
-                            label: context => {
-                                const {label, dataIndex} = context
-                                return ` ${label}: ${labels[dataIndex]}`
-                            }
-                        }
-                    }
+    const config: ScatterConfig = {
+        appendPadding: 30,
+        data: data.map(it => ({...it, [labelField]: it[labelField]?.toString()?.trim()})),
+        xField: temporalField,
+        yField: metricField,
+        sizeField: metricField,
+        colorField: labelField,
+        size: [4, 30],
+        shape: 'circle',
+        pointStyle: {
+            fillOpacity: 0.8,
+            stroke: '#bbb',
+        },
+        xAxis: {
+            grid: {
+                line: {
+                    style: {
+                        stroke: '#eee',
+                    },
                 },
-                maintainAspectRatio: !fullScreen
-            }
-        })
+            },
+            line: {
+                style: {
+                    stroke: '#aaa',
+                },
+            },
+            type: 'time'
+        },
+        yAxis: {
+            line: {
+                style: {
+                    stroke: '#aaa',
+                },
+            },
+        },
+        locale: appConfig.dashboard.locale
+    }
 
-        return () => { chart.destroy() }
-    }, [dash.name, dash.metricType, fullScreen, labels, preparedData])
-
-    return (
-        <canvas id={`${pageKey}#${dash.name}`} ref={canvasRef}/>
-    )
+    return <Scatter {...config} />
 }
 
 export default BubbleDash
