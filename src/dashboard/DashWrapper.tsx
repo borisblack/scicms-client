@@ -30,12 +30,14 @@ import FullScreen from '../components/fullscreen/FullScreen'
 import LabelToolbar from './LabelToolbar'
 import LocationToolbar from './LocationToolbar'
 import StatisticDash from './dashes/StatisticDash'
+import AreaDash from './dashes/AreaDash'
 import styles from './DashWrapper.module.css'
 import DatasetService, {DatasetInput} from '../services/dataset'
 import {DateTime} from 'luxon'
 import appConfig from '../config'
 
 const dashMap: DashMap = {
+    [DashType.area]: AreaDash,
     [DashType.bar]: BarDash,
     [DashType.bubble]: BubbleDash,
     [DashType.bubbleMap]: BubbleMapDash,

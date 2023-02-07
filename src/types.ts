@@ -351,6 +351,7 @@ export type TemporalType = AttrType.date | AttrType.time | AttrType.datetime | A
 export type MetricType = NumericType | TemporalType
 
 export enum DashType {
+    area = 'area',
     bar = 'bar',
     bubble = 'bubble',
     bubbleMap = 'bubbleMap',
