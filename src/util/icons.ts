@@ -6,7 +6,10 @@ export const allIcons: {[name: string]: any} = {...antdIcons, ...faIcons}
 
 export function getDashIcon(dashType: DashType) {
     switch (dashType) {
+        case DashType.area:
+            return antdIcons.AreaChartOutlined
         case DashType.bar:
+        case DashType.column:
             return antdIcons.BarChartOutlined
         case DashType.bubble:
         case DashType.bubbleMap:
