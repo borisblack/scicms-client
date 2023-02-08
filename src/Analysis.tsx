@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import React, {useCallback, useEffect, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Navigate} from 'react-router-dom'
 import {Layout, Menu, Spin, Tabs} from 'antd'
@@ -97,6 +97,8 @@ function Analysis() {
         }
     })
 
+    const tabs = getTabs()
+
     return (
         <Layout className="Analysis">
             <Sider collapsible collapsed={collapsed} onCollapse={handleToggle} width={250}>
@@ -132,15 +134,17 @@ function Analysis() {
             <Layout>
                 <Content className="Analysis-content-wrapper">
                     <div className="Analysis-content">
-                        <Tabs
-                            activeKey={activeKey}
-                            hideAdd
-                            type="editable-card"
-                            className="pages"
-                            items={getTabs()}
-                            onChange={handleTabsChange}
-                            onEdit={handleTabsEdit}
-                        />
+                        {(tabs.length > 0) && (
+                            <Tabs
+                                activeKey={activeKey}
+                                hideAdd
+                                type="editable-card"
+                                className="pages"
+                                items={getTabs()}
+                                onChange={handleTabsChange}
+                                onEdit={handleTabsEdit}
+                            />
+                        )}
                     </div>
                 </Content>
             </Layout>
