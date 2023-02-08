@@ -1,9 +1,10 @@
-import {FallbackProps} from 'react-error-boundary'
 import {useTranslation} from 'react-i18next'
 import {Divider} from 'antd'
 import styles from './ErrorFallback.module.css'
+import {useRouteError} from 'react-router-dom'
 
-export default function ErrorFallback({error}: FallbackProps) {
+export default function ErrorFallback() {
+    const error = useRouteError() as Error
     const {t} = useTranslation()
 
     return (

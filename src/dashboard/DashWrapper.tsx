@@ -286,7 +286,7 @@ export default function DashWrapper(props: DashProps) {
                 </>
             )}
 
-            <div style={{margin: fullScreen ? 16 : 0, height: fullScreen ? '90vh' : appConfig.dashboard.viewRowHeight}}>
+            <div style={{margin: fullScreen ? 16 : 0, height: fullScreen ? '90vh' : appConfig.dashboard.viewRowHeight * dash.h}}>
                 <DashComponent {...props} fullScreen={fullScreen} data={filteredData}/>
             </div>
         </FullScreen>

@@ -1,4 +1,4 @@
-import {ROLE_ADMIN, ROLE_DESIGNER, ROLE_USER} from './constants'
+import {ROLE_ADMIN, ROLE_ANALYST, ROLE_DESIGNER, ROLE_USER} from './constants'
 
 interface MenuConfig {
     items: (SubMenu | MenuItem)[]
@@ -61,7 +61,7 @@ const menuConfig: MenuConfig = {
         key: 'analysis',
         label: 'Analysis',
         icon: 'PieChartOutlined',
-        roles: [ROLE_ADMIN],
+        roles: [ROLE_ADMIN, ROLE_ANALYST],
         children: [{
             itemName: 'dataset'
         }, {

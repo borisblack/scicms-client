@@ -1,28 +1,32 @@
 import React from 'react'
 import {createRoot} from 'react-dom/client'
 import {Provider} from 'react-redux'
+import {createBrowserRouter, RouterProvider} from 'react-router-dom'
+import {I18nextProvider} from 'react-i18next'
+import {ConfigProvider} from 'antd'
 import {ApolloProvider} from '@apollo/client/react'
-
+import {store} from './store'
+import reportWebVitals from './reportWebVitals'
+import {apolloClient} from './services'
+import i18n from './i18n'
+import config from './config'
+import routes from './routes'
 import 'antd/dist/reset.css'
 import './index.css'
 
-import {store} from './store'
-import App from './App'
-import reportWebVitals from './reportWebVitals'
-import {apolloClient} from './services'
-import ErrorFallback from './ErrorFallback'
-import {ErrorBoundary} from 'react-error-boundary'
-
 const container = document.getElementById('root')
 const root = createRoot(container as HTMLElement)
+const router = createBrowserRouter(routes)
 root.render(
-    <ErrorBoundary FallbackComponent={ErrorFallback}>
-        <Provider store={store}>
-          <ApolloProvider client={apolloClient}>
-              <App />
-          </ApolloProvider>
-        </Provider>
-    </ErrorBoundary>
+    <Provider store={store}>
+        <ApolloProvider client={apolloClient}>
+            <I18nextProvider i18n={i18n}>
+                <ConfigProvider locale={config.antdLocale}>
+                    <RouterProvider router={router}/>
+                </ConfigProvider>
+            </I18nextProvider>
+        </ApolloProvider>
+    </Provider>
 )
 
 // If you want to start measuring performance in your app, pass a function

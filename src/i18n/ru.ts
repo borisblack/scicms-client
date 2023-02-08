@@ -167,6 +167,7 @@ const ru = {
         'Preview': 'Просмотр',
         'Principal': 'Пользователь',
         'Private': 'Приватный',
+        'Profile': 'Профиль',
         'Promote': 'Переместить',
         'Promotion': 'Перемещение',
         'Query': 'Запрос',

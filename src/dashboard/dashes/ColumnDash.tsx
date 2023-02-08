@@ -4,7 +4,7 @@ import {DashType} from '../../types'
 import {InnerDashProps} from '.'
 import appConfig from '../../config'
 
-const ColumnDash: FC<InnerDashProps> = ({pageKey, dash, fullScreen, data, }) => {
+const ColumnDash: FC<InnerDashProps> = ({dash, data, }) => {
     if (dash.type !== DashType.column)
         throw new Error('Illegal dash type')
 

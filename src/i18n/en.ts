@@ -167,6 +167,7 @@ const en = {
         'Preview': 'Preview',
         'Principal': 'Principal',
         'Private': 'Private',
+        'Profile': 'Profile',
         'Promote': 'Promote',
         'Promotion': 'Promotion',
         'Query': 'Query',

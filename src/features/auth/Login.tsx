@@ -7,6 +7,7 @@ import {fetchMeIfNeeded, login, selectIsExpired, selectJwt, selectLoading, selec
 import LoginForm from './LoginForm'
 import {useTranslation} from 'react-i18next'
 import {useAppDispatch, useAppSelector} from '../../util/hooks'
+import {Navigate, useSearchParams} from 'react-router-dom'
 
 const {Header, Content, Footer} = Layout
 
@@ -17,6 +18,8 @@ function Login() {
     const isExpired = useAppSelector(selectIsExpired)
     const me = useAppSelector(selectMe)
     const loading = useAppSelector(selectLoading)
+    const [searchParams,] = useSearchParams()
+    const targetUrl = searchParams.get('targetUrl') ?? '/'
 
     useEffect(() => {
         if (jwt && !isExpired && !me)
@@ -26,6 +29,9 @@ function Login() {
     const handleLogin = useCallback(async (credentials: {username: string, password: string}) => {
         dispatch(login(credentials))
     }, [dispatch])
+
+    if (me && !isExpired)
+        return <Navigate to={targetUrl}/>
 
     return (
         <Layout className="Login">
