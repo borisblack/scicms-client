@@ -6,7 +6,7 @@ import {Dashboard} from '../types'
 
 const FIND_ALL_QUERY = gql`
     query {
-        dashboards {
+        dashboards(sort: ["name:asc"]) {
             data {
                 id
                 name
