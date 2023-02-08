@@ -198,7 +198,7 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
             </Row>
 
             <Row gutter={10}>
-                <Col span={12}>
+                <Col span={8}>
                     <FormItem
                         className={styles.formItem}
                         name="isAggregate"
@@ -208,7 +208,7 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                         <Checkbox checked={isAggregate} onChange={handleAggregateChange} style={{marginTop: 24}}>{t('Aggregate')}</Checkbox>
                     </FormItem>
                 </Col>
-                <Col span={12}>
+                <Col span={8}>
                     {isAggregate &&
                         <FormItem
                             className={styles.formItem}
@@ -234,7 +234,7 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
             </Row>
 
             <Row gutter={10}>
-                <Col span={12}>
+                <Col span={8}>
                     <FormItem
                         className={styles.formItem}
                         name="labelField"
@@ -244,7 +244,7 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                         <Input/>
                     </FormItem>
                 </Col>
-                <Col span={12}>
+                <Col span={8}>
                     <FormItem
                         className={styles.formItem}
                         name="sortField"
@@ -252,6 +252,20 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                         initialValue={dash.sortField}
                     >
                         <Input/>
+                    </FormItem>
+                </Col>
+                <Col span={8}>
+                    <FormItem
+                        className={styles.formItem}
+                        name="sortDirection"
+                        label={t('Sort Direction')}
+                        initialValue={dash.sortDirection ?? 'asc'}
+                        rules={[{required: true, message: t('Required field')}]}
+                    >
+                        <Select>
+                            <SelectOption key="asc" value="asc">asc</SelectOption>
+                            <SelectOption key="desc" value="desc">desc</SelectOption>
+                        </Select>
                     </FormItem>
                 </Col>
             </Row>

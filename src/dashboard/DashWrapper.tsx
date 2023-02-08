@@ -121,7 +121,7 @@ export default function DashWrapper(props: DashProps) {
         }
 
         if (dash.sortField)
-            datasetInput.sort = [`${dash.sortField}:asc`]
+            datasetInput.sort = [`${dash.sortField}:${dash.sortDirection ?? 'asc'}`]
 
         let fetchedData: any[] | null = null
         setLoading(true)
