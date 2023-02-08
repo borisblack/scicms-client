@@ -201,6 +201,8 @@ const en = {
         'Server successfully returned the requested data': 'Server successfully returned the requested data',
         'Service is unavailable. Server is not ready to process the request': 'Service is unavailable. Server is not ready to process the request',
         'Settings': 'Settings',
+        'Sort Field': 'Sort Field',
+        'Sort Direction': 'Sort Direction',
         'Sort Order': 'Sort Order',
         'Source Item': 'Source Item',
         'Source Permission': 'Source Permission',

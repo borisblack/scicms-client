@@ -8,7 +8,7 @@ const AreaDash: FC<InnerDashProps> = ({pageKey, dash, fullScreen, data}) => {
     if (dash.type !== DashType.area)
         throw new Error('Illegal dash type')
 
-    const {metricField, temporalField} = dash
+    const {metricField, temporalField, labelField} = dash
     if (metricField == null || temporalField == null)
         throw new Error('Illegal argument')
 
@@ -16,7 +16,7 @@ const AreaDash: FC<InnerDashProps> = ({pageKey, dash, fullScreen, data}) => {
         data,
         xField: temporalField,
         yField: metricField,
-        // seriesField: 'category',
+        seriesField: labelField === temporalField ? undefined : labelField,
         xAxis: {
             type: 'time',
         },

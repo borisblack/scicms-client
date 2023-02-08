@@ -76,7 +76,8 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
                 const curDash = prevSpec.dashes[i]
                 const {
                     name, type, dataset, metricType, metricField, unit, labelField, temporalType, temporalField,
-                    latitudeField, longitudeField, locationField, isAggregate, aggregateType, refreshIntervalSeconds
+                    latitudeField, longitudeField, locationField, isAggregate, aggregateType, sortField, sortDirection,
+                    refreshIntervalSeconds
                 } = curDash
 
                 return {
@@ -98,6 +99,8 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
                     locationField,
                     isAggregate,
                     aggregateType,
+                    sortField,
+                    sortDirection,
                     refreshIntervalSeconds
                 }
             })
@@ -131,7 +134,8 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
 
         const {
             name, type, dataset, metricType, metricField, unit, labelField, temporalType, temporalField,
-            latitudeField, longitudeField, locationField, isAggregate, aggregateType, refreshIntervalSeconds
+            latitudeField, longitudeField, locationField, isAggregate, aggregateType, sortField, sortDirection,
+            refreshIntervalSeconds
         } = newActiveDash
 
         const dashToUpdate: IDash = {
@@ -150,6 +154,8 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
             locationField,
             isAggregate,
             aggregateType,
+            sortField,
+            sortDirection,
             refreshIntervalSeconds
         }
 

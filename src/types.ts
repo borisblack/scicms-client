@@ -341,6 +341,8 @@ export interface IDash {
     locationField?: string
     isAggregate: boolean
     aggregateType?: AggregateType
+    sortField?: string
+    sortDirection?: string
     refreshIntervalSeconds: number
 }
 

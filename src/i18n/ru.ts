@@ -201,6 +201,8 @@ const ru = {
         'Server successfully returned the requested data': 'Сервер успешно вернул запрошенные данные',
         'Service is unavailable. Server is not ready to process the request': 'Сервис недоступен. Сервер не готов обрабатывать запрос',
         'Settings': 'Настройки',
+        'Sort Field': 'Поле сортировки',
+        'Sort Direction': 'Направление сортировки',
         'Sort Order': 'Порядок сортировки',
         'Source Item': 'Исходная сущность',
         'Source Permission': 'Исходное разрешение',

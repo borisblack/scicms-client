@@ -30,6 +30,8 @@ export interface DashValues {
     locationField?: string
     isAggregate: boolean
     aggregateType?: AggregateType
+    sortField?: string
+    sortDirection?: string
     refreshIntervalSeconds: number
 }
 
@@ -196,7 +198,7 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
             </Row>
 
             <Row gutter={10}>
-                <Col span={8}>
+                <Col span={12}>
                     <FormItem
                         className={styles.formItem}
                         name="isAggregate"
@@ -206,7 +208,7 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                         <Checkbox checked={isAggregate} onChange={handleAggregateChange} style={{marginTop: 24}}>{t('Aggregate')}</Checkbox>
                     </FormItem>
                 </Col>
-                <Col span={8}>
+                <Col span={12}>
                     {isAggregate &&
                         <FormItem
                             className={styles.formItem}
@@ -229,12 +231,25 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                         </FormItem>
                     }
                 </Col>
-                <Col span={8}>
+            </Row>
+
+            <Row gutter={10}>
+                <Col span={12}>
                     <FormItem
                         className={styles.formItem}
                         name="labelField"
                         label={t('Label Field')}
                         initialValue={dash.labelField}
+                    >
+                        <Input/>
+                    </FormItem>
+                </Col>
+                <Col span={12}>
+                    <FormItem
+                        className={styles.formItem}
+                        name="sortField"
+                        label={t('Sort Field')}
+                        initialValue={dash.sortField}
                     >
                         <Input/>
                     </FormItem>
