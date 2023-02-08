@@ -1,16 +1,15 @@
 import React, {useCallback, useState} from 'react'
+import {Navigate} from 'react-router-dom'
 import {useTranslation} from 'react-i18next'
 import {Avatar, Layout, Menu} from 'antd'
 import {LogoutOutlined, MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined} from '@ant-design/icons'
-
-import {useAppDispatch, useAppSelector} from './util/hooks'
-import {logout, selectIsExpired, selectMe} from './features/auth/authSlice'
-import {reset as resetRegistry} from './features/registry/registrySlice'
-import {reset as resetPages} from './features/pages/pagesSlice'
-import Navbar from './features/registry/Navbar'
-import Pages from './features/pages/Pages'
+import {useAppDispatch, useAppSelector} from '../util/hooks'
+import {logout, selectIsExpired, selectMe} from '../features/auth/authSlice'
+import {reset as resetRegistry} from '../features/registry/registrySlice'
+import {reset as resetPages} from '../features/pages/pagesSlice'
+import Navbar from '../features/registry/Navbar'
+import Pages from '../features/pages/Pages'
 import './App.css'
-import {Navigate} from 'react-router-dom'
 
 const {Header, Content, Footer} = Layout
 

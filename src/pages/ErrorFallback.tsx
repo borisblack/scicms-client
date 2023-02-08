@@ -1,7 +1,7 @@
 import {useTranslation} from 'react-i18next'
+import {useRouteError} from 'react-router-dom'
 import {Divider} from 'antd'
 import styles from './ErrorFallback.module.css'
-import {useRouteError} from 'react-router-dom'
 
 export default function ErrorFallback() {
     const error = useRouteError() as Error

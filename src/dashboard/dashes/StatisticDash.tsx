@@ -15,7 +15,8 @@ const StatisticDash: FC<InnerDashProps> = ({dash, data}) => {
         <div>
             {data.length > 0 && (
                 <Statistic
-                    valueStyle={{fontSize: 48, fontWeight: 600, color: '#333'}}
+                    style={{padding: '0 12px'}}
+                    valueStyle={{fontSize: 48, fontWeight: 600, color: '#333366'}}
                     value={data[0][metricField]}
                     groupSeparator=" "
                 />
