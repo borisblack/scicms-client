@@ -34,8 +34,8 @@ export default class Mediator {
 
     runObservableCallbacks(key: string, operation: CallbackOperation, id: string) {
         const callbacks = this.observables[key]
-        callbacks?.forEach(it => {
-            it(operation, id)
+        callbacks?.forEach(cb => {
+            cb(operation, id)
         })
     }
 

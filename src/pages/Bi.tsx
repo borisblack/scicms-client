@@ -70,8 +70,13 @@ function Bi() {
         setTabPages(newTabPages)
 
         const keys = Object.keys(newTabPages)
-        setActiveKey(keys.length > 0 ? keys[keys.length - 1] : undefined)
-    }, [tabPages])
+        if (keys.length === 0) {
+            setActiveKey(undefined)
+        } else {
+            if (key === activeKey)
+                setActiveKey(keys[keys.length - 1])
+        }
+    }, [activeKey, tabPages])
 
     const handleTabsEdit = useCallback((e: React.MouseEvent | React.KeyboardEvent | string, action: 'add' | 'remove') => {
         if (action === 'remove')

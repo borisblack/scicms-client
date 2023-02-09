@@ -110,7 +110,6 @@ export function startTemporalFromPeriod(period: TemporalPeriod, temporalType: Te
         }
     }
 
-    console.log(period, temporalType)
     throw new Error('Illegal argument')
 }
 
