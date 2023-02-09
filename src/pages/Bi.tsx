@@ -18,8 +18,8 @@ import appConfig from '../config'
 
 const {Content, Sider} = Layout
 
-const isNavbarCollapsed = () => localStorage.getItem('analysisNavbarCollapsed') === '1'
-const setNavbarCollapsed = (collapsed: boolean) => localStorage.setItem('analysisNavbarCollapsed', collapsed ? '1' : '0')
+const isNavbarCollapsed = () => localStorage.getItem('biNavbarCollapsed') === '1'
+const setNavbarCollapsed = (collapsed: boolean) => localStorage.setItem('biNavbarCollapsed', collapsed ? '1' : '0')
 const dashboardService = DashboardService.getInstance()
 
 function Bi() {
@@ -115,7 +115,7 @@ function Bi() {
 
     return (
         <Layout className="Bi">
-            <Sider collapsible collapsed={collapsed} onCollapse={handleToggle} width={250}>
+            <Sider collapsible collapsed={collapsed} width={275} onCollapse={handleToggle}>
                 <div className="Bi-logo-wrapper">
                     <img src={logo} className="Bi-logo" alt="logo"/>
                     {!collapsed && <span className="Bi-logo-text">{t('SciCMS BI')}</span>}
@@ -129,7 +129,6 @@ function Bi() {
                             key: 'profile',
                             label: `${t('Profile')} (${me.username})`,
                             icon: <UserOutlined />,
-                            className: 'Analysis-profile-menu-item',
                             children: [{
                                 key: 'logout',
                                 label: t('Logout'),

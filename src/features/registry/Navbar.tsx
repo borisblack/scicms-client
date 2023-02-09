@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import React, {useCallback, useEffect, useMemo} from 'react'
+import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Layout, Menu, Spin} from 'antd'
 // import {gql, useQuery} from '@apollo/client'
@@ -14,25 +14,36 @@ import {initializeIfNeeded, selectIsInitialized, selectLoading} from './registry
 import {openPage, ViewType} from '../pages/pagesSlice'
 import ItemService from '../../services/item'
 import {allIcons} from '../../util/icons'
+import {LogoutOutlined, UserOutlined} from '@ant-design/icons'
 
 type Props = {
-    collapsed: boolean,
     me: UserInfo
+    onLogout: () => void
 }
 
 const {Sider} = Layout
 
-const Navbar = ({collapsed, me}: Props) => {
+const isNavbarCollapsed = () => localStorage.getItem('navbarCollapsed') === '1'
+
+const setNavbarCollapsed = (collapsed: boolean) => localStorage.setItem('navbarCollapsed', collapsed ? '1' : '0')
+
+const Navbar = ({me, onLogout}: Props) => {
     const {t} = useTranslation()
     const dispatch = useAppDispatch()
     const loading = useAppSelector(selectLoading)
     const isInitialized = useAppSelector(selectIsInitialized)
     const itemService = useMemo(() => ItemService.getInstance(), [])
+    const [collapsed, setCollapsed] = useState(isNavbarCollapsed())
     // const { loading, error, data } = useQuery(ME_QUERY, {errorPolicy: 'all'})
 
     useEffect(() => {
         dispatch(initializeIfNeeded(me))
     }, [isInitialized, me, dispatch])
+
+    const handleToggle = useCallback(() => {
+        setNavbarCollapsed(!collapsed)
+        setCollapsed(!collapsed)
+    }, [collapsed])
 
     const handleItemClick = useCallback((item: Item) => {
         dispatch(openPage({item, viewType: ViewType.default}))
@@ -63,16 +74,29 @@ const Navbar = ({collapsed, me}: Props) => {
         }), [me.roles, itemService, t, handleItemClick])
 
     return (
-        <Sider className="Navbar" trigger={null} collapsible collapsed={collapsed} width={250}>
+        <Sider className="Navbar" collapsible collapsed={collapsed} width={275} onCollapse={handleToggle}>
             <div className="Navbar-logo-wrapper">
                 <img src={logo} className="Navbar-logo" alt="logo"/>
-                {!collapsed && <span className="Navbar-logo-text">{t('Navigational panel')}</span>}
+                {!collapsed && <span className="Navbar-logo-text">{t('SciCMS Admin')}</span>}
             </div>
             <Spin spinning={loading}>
                 <Menu
                     mode="inline"
                     theme="dark"
-                    items={toAntdMenuItems(menuConfig.items)}
+                    items={[{
+                            key: 'profile',
+                            label: `${t('Profile')} (${me.username})`,
+                            icon: <UserOutlined />,
+                            className: 'Analysis-profile-menu-item',
+                            children: [{
+                                key: 'logout',
+                                label: t('Logout'),
+                                icon: <LogoutOutlined/>,
+                                onClick: onLogout
+                            }]
+                        },
+                        ...toAntdMenuItems(menuConfig.items)
+                    ]}
                 />
             </Spin>
         </Sider>

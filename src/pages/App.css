@@ -2,45 +2,12 @@
   min-height: 100vh;
 }
 
-#root .App-header {
-  background: #fff;
-  padding: 0;
-  padding-inline: 0;
-}
-
-.App-header-trigger {
-  padding: 0 24px;
-  font-size: 16px;
-  line-height: 64px;
-  transition: color .3s;
-  cursor: pointer;
-}
-
-.trigger:hover {
-  color: #1890ff;
-}
-
-.App-header-title {
-  font-size: 16px;
-}
-
-.App-header-menu {
-  line-height: 64px;
-  float: right;
-  width: 200px;
-  justify-content: flex-end;
-}
-
-.App-header-menu-avatar {
-  background-color: #87d068;
-}
-
 .App-content-wrapper {
   margin: 12px;
 }
 
 .App-content {
-  min-height: 80vh;
+  min-height: 95vh;
 }
 
 .App-footer {
