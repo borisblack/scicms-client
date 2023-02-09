@@ -3,7 +3,7 @@ import {notification} from 'antd'
 import {PageHeader} from '@ant-design/pro-layout'
 import {useTranslation} from 'react-i18next'
 import 'chartjs-adapter-luxon'
-import {AttrType, DashType} from '../types'
+import {DashType, TemporalPeriod, TemporalType} from '../types'
 import {DashMap, DashProps} from './dashes'
 import BarDash from './dashes/BarDash'
 import DoughnutDash from './dashes/DoughnutDash'
@@ -33,8 +33,8 @@ import StatisticDash from './dashes/StatisticDash'
 import AreaDash from './dashes/AreaDash'
 import styles from './DashWrapper.module.css'
 import DatasetService, {DatasetInput} from '../services/dataset'
-import {DateTime} from 'luxon'
 import appConfig from '../config'
+import {formatTemporal, parseTemporal, startTemporalFromPeriod, temporalPeriodTitles} from '../util/dashboard'
 
 const dashMap: DashMap = {
     [DashType.area]: AreaDash,
@@ -52,6 +52,8 @@ const dashMap: DashMap = {
     [DashType.statistic]: StatisticDash
 }
 
+const datasetService = DatasetService.getInstance()
+
 export default function DashWrapper(props: DashProps) {
     const {dataset, dash, isFullScreenComponentExist, onFullScreenComponentStateChange} = props
     const getDashComponent = useCallback(() => dashMap[dash.type], [dash.type])
@@ -60,7 +62,6 @@ export default function DashWrapper(props: DashProps) {
         throw new Error('Illegal argument')
 
     const {t} = useTranslation()
-    const datasetService = useMemo(() => DatasetService.getInstance(), [])
     const [datasetData, setDatasetData] = useState<any[]>([])
     const [checkedLabelSet, setCheckedLabelSet] = useState<Set<string> | null>(null)
     const isCheckedLabelSetTouched = useRef<boolean>(false)
@@ -76,14 +77,15 @@ export default function DashWrapper(props: DashProps) {
     }, [checkedLabelSet, checkedLocationLabelSet, dash, datasetData])
 
     const [fullScreen, setFullScreen] = useState<boolean>(false)
-    const [startTemporal, setStartTemporal] = useState<string | null>(null)
-    const [endTemporal, setEndTemporal] = useState<string | null>(null)
+    const [period, setPeriod] = useState<TemporalPeriod>(dash.defaultPeriod ?? TemporalPeriod.ARBITRARY)
+    const [startTemporal, setStartTemporal] = useState<string | null>(dash.defaultStartTemporal ?? null)
+    const [endTemporal, setEndTemporal] = useState<string | null>(dash.defaultEndTemporal ?? null)
     const [loading, setLoading] = useState<boolean>(false)
     const [fetchError, setFetchError] = useState<string | null>(null)
 
     useEffect(() => {
         fetchDatasetData()
-    }, [dataset, startTemporal, endTemporal])
+    }, [dataset, period, startTemporal, endTemporal])
 
     useEffect(() => {
         const interval = setInterval(fetchDatasetData, dash.refreshIntervalSeconds * 1000)
@@ -91,6 +93,9 @@ export default function DashWrapper(props: DashProps) {
     }, [dash.refreshIntervalSeconds])
 
     const fetchDatasetData = useCallback(async () => {
+        if (period !== TemporalPeriod.ARBITRARY && !dash.temporalType)
+            throw new Error('The temporalType must be specified')
+
         if ((startTemporal || endTemporal) && !dash.temporalField)
             throw new Error('The temporalField must be specified')
 
@@ -98,18 +103,27 @@ export default function DashWrapper(props: DashProps) {
             throw new Error('aggregateType and metricField must be specified')
 
         const datasetInput: DatasetInput<any> = {}
-        if (startTemporal) {
-            const temporalField = dash.temporalField as string
-            datasetInput.filters = datasetInput.filters ?? {}
-            datasetInput.filters[temporalField] = datasetInput.filters[temporalField] ?? {}
-            datasetInput.filters[temporalField]['$gte'] = startTemporal
-        }
 
-        if (endTemporal) {
+        if (period === TemporalPeriod.ARBITRARY) {
+            if (startTemporal) {
+                const temporalField = dash.temporalField as string
+                datasetInput.filters = datasetInput.filters ?? {}
+                datasetInput.filters[temporalField] = datasetInput.filters[temporalField] ?? {}
+                datasetInput.filters[temporalField]['$gte'] = startTemporal
+            }
+
+            if (endTemporal) {
+                const temporalField = dash.temporalField as string
+                datasetInput.filters = datasetInput.filters ?? {}
+                datasetInput.filters[temporalField] = datasetInput.filters[temporalField] ?? {}
+                datasetInput.filters[temporalField]['$lte'] = endTemporal
+            }
+        } else {
+            const temporalType = dash.temporalType as TemporalType
             const temporalField = dash.temporalField as string
             datasetInput.filters = datasetInput.filters ?? {}
             datasetInput.filters[temporalField] = datasetInput.filters[temporalField] ?? {}
-            datasetInput.filters[temporalField]['$lte'] = endTemporal
+            datasetInput.filters[temporalField]['$gte'] = parseTemporal(startTemporalFromPeriod(period, temporalType), temporalType) as string
         }
 
         if (dash.isAggregate) {
@@ -170,7 +184,7 @@ export default function DashWrapper(props: DashProps) {
             }
         }
 
-    }, [checkedLabelSet, checkedLocationLabelSet, dash, dataset.name, datasetService, endTemporal, startTemporal])
+    }, [checkedLabelSet, checkedLocationLabelSet, dash, dataset.name, period, endTemporal, startTemporal, t])
 
     const handleFullScreenChange = useCallback((fullScreen: boolean) => {
         setFullScreen(fullScreen)
@@ -187,28 +201,19 @@ export default function DashWrapper(props: DashProps) {
         setCheckedLocationLabelSet(checkedLocationLabelSet)
     }, [])
 
-    const formatTemporal = useCallback((temporal: string | null) => {
-        if (temporal == null)
-            return ''
-
-        const dt = DateTime.fromISO(temporal)
-        if (dash.temporalType === AttrType.date)
-            return dt.toFormat(appConfig.dateTime.luxonDisplayDateFormatString)
-        else if (dash.temporalType === AttrType.time)
-            return dt.toFormat(appConfig.dateTime.luxonDisplayTimeFormatString)
-        else
-            return dt.toFormat(appConfig.dateTime.luxonDisplayDateTimeFormatString)
-    }, [dash.temporalType])
-
     const renderSubTitle = useCallback(() => {
-        if (startTemporal == null && endTemporal == null)
-            return null
+        if (period === TemporalPeriod.ARBITRARY) {
+            if (startTemporal == null && endTemporal == null)
+                return null
 
-        const start = formatTemporal(startTemporal)
-        const end = formatTemporal(endTemporal)
+            const start = formatTemporal(startTemporal, dash.temporalType as TemporalType)
+            const end = formatTemporal(endTemporal, dash.temporalType as TemporalType)
 
-        return `${start} - ${end}`
-    }, [endTemporal, formatTemporal, startTemporal])
+            return `${start} - ${end}`
+        } else {
+            return temporalPeriodTitles[period]
+        }
+    }, [dash.temporalType, endTemporal, period, startTemporal])
 
     return (
         <FullScreen active={fullScreen} normalStyle={{display: isFullScreenComponentExist ? 'none' : 'block'}}
@@ -253,8 +258,10 @@ export default function DashWrapper(props: DashProps) {
                             <div style={{padding: '16px 8px'}}>
                                 <TemporalToolbar
                                     temporalType={dash.temporalType}
+                                    period={period}
                                     startTemporal={startTemporal}
                                     endTemporal={endTemporal}
+                                    onPeriodChange={setPeriod}
                                     onStartTemporalChange={setStartTemporal}
                                     onEndTemporalChange={setEndTemporal}
                                 />

@@ -3,7 +3,7 @@ import {AggregateType, AttrType, DashType, IDash, MetricType, TemporalPeriod, Te
 import styles from './DashboardSpec.module.css'
 import {useTranslation} from 'react-i18next'
 import appConfig from '../../../config'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import {
     allTemporalPeriods,
     dashTypes,
@@ -14,7 +14,7 @@ import {
 } from '../../../util/dashboard'
 import DatasetService from '../../../services/dataset'
 import {CheckboxChangeEvent} from 'antd/es/checkbox'
-import dayjs from 'dayjs'
+import dayjs, {Dayjs} from 'dayjs'
 
 interface Props {
     form: FormInstance
@@ -34,8 +34,8 @@ export interface DashValues {
     temporalType?: TemporalType
     temporalField?: string
     defaultPeriod: TemporalPeriod
-    defaultStartTemporal?: string
-    defaultEndTemporal?: string
+    defaultStartTemporal?: Dayjs
+    defaultEndTemporal?: Dayjs
     latitudeField?: string
     longitudeField?: string
     locationField?: string
@@ -48,10 +48,10 @@ export interface DashValues {
 
 const {Item: FormItem} = Form
 const {Option: SelectOption} = Select
+const datasetService = DatasetService.getInstance()
 
 export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
     const {t} = useTranslation()
-    const datasetService = useMemo(() => DatasetService.getInstance(), [])
     const [datasetNames, setDatasetNames] = useState<string[]>([])
     const [temporalType, setTemporalType] = useState<TemporalType | undefined>(dash.temporalType)
     const [defaultPeriod, setDefaultPeriod] = useState<TemporalPeriod | undefined>(dash.defaultPeriod ?? TemporalPeriod.ARBITRARY)
@@ -59,22 +59,21 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
 
     useEffect(() => {
         datasetService.findAll().then(datasets => setDatasetNames(datasets.map(it => it.name).sort()))
-    }, [datasetService, dash])
-
-    useEffect(() => {
-        form.resetFields()
-        setAggregate(dash.isAggregate)
-    }, [form, dash])
+    }, [dash])
 
     const handleTemporalType = useCallback((temporalType: TemporalType) => {
         setTemporalType(temporalType)
         setDefaultPeriod(TemporalPeriod.ARBITRARY)
         form.setFieldValue('defaultPeriod', TemporalPeriod.ARBITRARY)
+        form.setFieldValue('defaultStartTemporal', null)
+        form.setFieldValue('defaultEndTemporal', null)
     }, [form])
 
     const handleDefaultPeriod = useCallback((defaultPeriod: TemporalPeriod) => {
         setDefaultPeriod(defaultPeriod)
-    }, [])
+        form.setFieldValue('defaultStartTemporal', null)
+        form.setFieldValue('defaultEndTemporal', null)
+    }, [form])
 
     const handleAggregateChange = useCallback((evt: CheckboxChangeEvent) => {
         setAggregate(evt.target.checked)
@@ -199,67 +198,45 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                         </FormItem>
                     </Col>
 
-                    {temporalType === AttrType.time ? (
-                            <>
-                                <Col span={8}>
-                                    <FormItem
-                                        className={styles.formItem}
-                                        name="defaultStartTemporal"
-                                        label={t('Default Begin')}
-                                        initialValue={dash.defaultStartTemporal == null ? null : dayjs(dash.defaultStartTemporal)}
-                                    >
-                                        <TimePicker
-                                            style={{width: '100%'}}
-                                            disabled={defaultPeriod !== TemporalPeriod.ARBITRARY}
-                                        />
-                                    </FormItem>
-                                </Col>
-                                <Col span={8}>
-                                    <FormItem
-                                        className={styles.formItem}
-                                        name="defaultEndTemporal"
-                                        label={t('Default End')}
-                                        initialValue={dash.defaultEndTemporal == null ? null : dayjs(dash.defaultEndTemporal)}
-                                    >
-                                        <TimePicker
-                                            style={{width: '100%'}}
-                                            disabled={defaultPeriod !== TemporalPeriod.ARBITRARY}
-                                        />
-                                    </FormItem>
-                                </Col>
-                            </>
-                        ) : (
-                            <>
-                                <Col span={8}>
-                                    <FormItem
-                                        className={styles.formItem}
-                                        name="defaultStartTemporal"
-                                        label={t('Default Begin')}
-                                        initialValue={dash.defaultStartTemporal == null ? null : dayjs(dash.defaultStartTemporal)}
-                                    >
+                    {defaultPeriod === TemporalPeriod.ARBITRARY && (
+                        <>
+                            <Col span={8}>
+                                <FormItem
+                                    className={styles.formItem}
+                                    name="defaultStartTemporal"
+                                    label={t('Default Begin')}
+                                    initialValue={dash.defaultStartTemporal == null ? null : dayjs(dash.defaultStartTemporal)}
+                                >
+                                    {temporalType === AttrType.time ? (
+                                        <TimePicker style={{width: '100%'}}/>
+                                    ) : (
                                         <DatePicker
                                             style={{width: '100%'}}
                                             showTime={temporalType === AttrType.datetime || temporalType === AttrType.timestamp}
-                                            disabled={defaultPeriod !== TemporalPeriod.ARBITRARY}
                                         />
-                                    </FormItem>
-                                </Col>
-                                <Col span={8}>
-                                    <FormItem
-                                        className={styles.formItem}
-                                        name="defaultEndTemporal"
-                                        label={t('Default End')}
-                                        initialValue={dash.defaultEndTemporal == null ? null : dayjs(dash.defaultEndTemporal)}
-                                    >
+                                    )}
+                                </FormItem>
+                            </Col>
+                            <Col span={8}>
+                                <FormItem
+                                    className={styles.formItem}
+                                    name="defaultEndTemporal"
+                                    label={t('Default End')}
+                                    initialValue={dash.defaultEndTemporal == null ? null : dayjs(dash.defaultEndTemporal)}
+                                >
+                                    {temporalType === AttrType.time ? (
+                                        <TimePicker style={{width: '100%'}}/>
+                                    ) : (
                                         <DatePicker
                                             style={{width: '100%'}}
                                             showTime={temporalType === AttrType.datetime || temporalType === AttrType.timestamp}
-                                            disabled={defaultPeriod !== TemporalPeriod.ARBITRARY}
                                         />
-                                    </FormItem>
-                                </Col>
-                            </>
-                        )}
+                                    )}
+
+                                </FormItem>
+                            </Col>
+                        </>
+                    )}
                 </Row>
             )}
 

@@ -156,8 +156,8 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
             temporalType,
             temporalField,
             defaultPeriod,
-            defaultStartTemporal,
-            defaultEndTemporal,
+            defaultStartTemporal: defaultStartTemporal?.toISOString(),
+            defaultEndTemporal: defaultEndTemporal?.toISOString(),
             latitudeField,
             longitudeField,
             locationField,
@@ -218,6 +218,7 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
                 style={{top: 20}}
                 title={activeDash?.name}
                 open={isDashModalVisible}
+                destroyOnClose
                 width={800}
                 onOk={() => dashForm.submit()}
                 onCancel={() => setDashModalVisible(false)}

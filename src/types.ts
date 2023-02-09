@@ -386,7 +386,12 @@ export enum TemporalPeriod {
     LAST_MONTH = 'LAST_MONTH',
     LAST_3_MONTHS = 'LAST_3_MONTHS',
     LAST_6_MONTHS = 'LAST_6_MONTHS',
-    LAST_YEAR = 'LAST_YEAR'
+    LAST_YEAR = 'LAST_YEAR',
+    LAST_3_YEARS = 'LAST_3_YEARS',
+    LAST_5_YEARS = 'LAST_5_YEARS',
+    LAST_10_YEARS = 'LAST_10_YEARS',
+    LAST_20_YEARS = 'LAST_20_YEARS',
+    LAST_30_YEARS = 'LAST_30_YEARS'
 }
 
 export interface ItemData extends DefaultItemTemplate {
