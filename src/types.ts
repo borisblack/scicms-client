@@ -336,6 +336,9 @@ export interface IDash {
     labelField?: string
     temporalType?: TemporalType
     temporalField?: string
+    defaultPeriod: TemporalPeriod
+    defaultStartTemporal?: string
+    defaultEndTemporal?: string
     latitudeField?: string
     longitudeField?: string
     locationField?: string
@@ -365,6 +368,25 @@ export enum DashType {
     radar = 'radar',
     scatter = 'scatter',
     statistic = 'statistic'
+}
+
+export enum TemporalPeriod {
+    ARBITRARY = 'ARBITRARY',
+    LAST_5_MINUTES = 'LAST_5_MINUTES',
+    LAST_15_MINUTES = 'LAST_15_MINUTES',
+    LAST_30_MINUTES = 'LAST_30_MINUTES',
+    LAST_HOUR = 'LAST_HOUR',
+    LAST_3_HOURS = 'LAST_3_HOURS',
+    LAST_6_HOURS = 'LAST_6_HOURS',
+    LAST_12_HOURS = 'LAST_12_HOURS',
+    LAST_DAY = 'LAST_DAY',
+    LAST_3_DAYS = 'LAST_3_DAYS',
+    LAST_WEEK = 'LAST_WEEK',
+    LAST_2_WEEKS = 'LAST_2_WEEKS',
+    LAST_MONTH = 'LAST_MONTH',
+    LAST_3_MONTHS = 'LAST_3_MONTHS',
+    LAST_6_MONTHS = 'LAST_6_MONTHS',
+    LAST_YEAR = 'LAST_YEAR'
 }
 
 export interface ItemData extends DefaultItemTemplate {

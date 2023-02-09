@@ -8,7 +8,7 @@ import 'react-resizable/css/styles.css'
 import {CustomComponentRenderContext} from '../../index'
 import {DASHBOARD_ITEM_NAME} from '../../../config/constants'
 import PermissionService from '../../../services/permission'
-import {IDash, IDashboardSpec} from '../../../types'
+import {IDash, IDashboardSpec, TemporalPeriod} from '../../../types'
 import DashForm, {DashValues} from './DashForm'
 import {DeleteOutlined} from '@ant-design/icons'
 import {getDashIcon} from '../../../util/icons'
@@ -61,6 +61,7 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
                         y: 0,
                         w: appConfig.dashboard.cols / 2,
                         h: 1,
+                        defaultPeriod: TemporalPeriod.ARBITRARY,
                         isAggregate: false,
                         refreshIntervalSeconds: appConfig.dashboard.defaultRefreshIntervalSeconds
                     },
@@ -75,7 +76,8 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
             dashes: layouts.map((it, i) => {
                 const curDash = prevSpec.dashes[i]
                 const {
-                    name, type, dataset, metricType, metricField, unit, labelField, temporalType, temporalField,
+                    name, type, dataset, metricType, metricField, unit, labelField,
+                    temporalType, temporalField, defaultPeriod, defaultStartTemporal, defaultEndTemporal,
                     latitudeField, longitudeField, locationField, isAggregate, aggregateType, sortField, sortDirection,
                     refreshIntervalSeconds
                 } = curDash
@@ -94,6 +96,9 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
                     labelField,
                     temporalField,
                     temporalType,
+                    defaultPeriod,
+                    defaultStartTemporal,
+                    defaultEndTemporal,
                     latitudeField,
                     longitudeField,
                     locationField,
@@ -133,7 +138,8 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
             return
 
         const {
-            name, type, dataset, metricType, metricField, unit, labelField, temporalType, temporalField,
+            name, type, dataset, metricType, metricField, unit, labelField,
+            temporalType, temporalField, defaultPeriod, defaultStartTemporal, defaultEndTemporal,
             latitudeField, longitudeField, locationField, isAggregate, aggregateType, sortField, sortDirection,
             refreshIntervalSeconds
         } = newActiveDash
@@ -149,6 +155,9 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
             labelField,
             temporalType,
             temporalField,
+            defaultPeriod,
+            defaultStartTemporal,
+            defaultEndTemporal,
             latitudeField,
             longitudeField,
             locationField,

@@ -1,12 +1,20 @@
-import {Checkbox, Col, Form, FormInstance, Input, InputNumber, Row, Select} from 'antd'
-import {AggregateType, AttrType, DashType, IDash, MetricType, NumericType, TemporalType} from '../../../types'
+import {Checkbox, Col, DatePicker, Form, FormInstance, Input, InputNumber, Row, Select, TimePicker} from 'antd'
+import {AggregateType, AttrType, DashType, IDash, MetricType, TemporalPeriod, TemporalType} from '../../../types'
 import styles from './DashboardSpec.module.css'
 import {useTranslation} from 'react-i18next'
 import appConfig from '../../../config'
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import {dashTypes} from '../../../util/dashboard'
+import {
+    allTemporalPeriods,
+    dashTypes,
+    metricTypes,
+    temporalPeriodTitles,
+    temporalTypes,
+    timeTemporalPeriods
+} from '../../../util/dashboard'
 import DatasetService from '../../../services/dataset'
 import {CheckboxChangeEvent} from 'antd/es/checkbox'
+import dayjs from 'dayjs'
 
 interface Props {
     form: FormInstance
@@ -25,6 +33,9 @@ export interface DashValues {
     labelField?: string
     temporalType?: TemporalType
     temporalField?: string
+    defaultPeriod: TemporalPeriod
+    defaultStartTemporal?: string
+    defaultEndTemporal?: string
     latitudeField?: string
     longitudeField?: string
     locationField?: string
@@ -38,15 +49,12 @@ export interface DashValues {
 const {Item: FormItem} = Form
 const {Option: SelectOption} = Select
 
-const numericTypes: NumericType[] = [AttrType.int, AttrType.long, AttrType.float, AttrType.double, AttrType.decimal]
-const temporalTypes: TemporalType[] = [AttrType.date, AttrType.time, AttrType.datetime, AttrType.timestamp]
-const metricTypes: MetricType[] = [...numericTypes, ...temporalTypes]
-
-
 export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
     const {t} = useTranslation()
     const datasetService = useMemo(() => DatasetService.getInstance(), [])
     const [datasetNames, setDatasetNames] = useState<string[]>([])
+    const [temporalType, setTemporalType] = useState<TemporalType | undefined>(dash.temporalType)
+    const [defaultPeriod, setDefaultPeriod] = useState<TemporalPeriod | undefined>(dash.defaultPeriod ?? TemporalPeriod.ARBITRARY)
     const [isAggregate, setAggregate] = useState<boolean>(dash.isAggregate)
 
     useEffect(() => {
@@ -57,6 +65,16 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
         form.resetFields()
         setAggregate(dash.isAggregate)
     }, [form, dash])
+
+    const handleTemporalType = useCallback((temporalType: TemporalType) => {
+        setTemporalType(temporalType)
+        setDefaultPeriod(TemporalPeriod.ARBITRARY)
+        form.setFieldValue('defaultPeriod', TemporalPeriod.ARBITRARY)
+    }, [form])
+
+    const handleDefaultPeriod = useCallback((defaultPeriod: TemporalPeriod) => {
+        setDefaultPeriod(defaultPeriod)
+    }, [])
 
     const handleAggregateChange = useCallback((evt: CheckboxChangeEvent) => {
         setAggregate(evt.target.checked)
@@ -127,7 +145,7 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                         <Input/>
                     </FormItem>
                 </Col>
-                <Col span={4}>
+                <Col span={8}>
                     <FormItem
                         className={styles.formItem}
                         name="unit"
@@ -145,9 +163,9 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                         className={styles.formItem}
                         name="temporalType"
                         label={t('Temporal Type')}
-                        initialValue={dash.temporalType}
+                        initialValue={temporalType}
                     >
-                        <Select>
+                        <Select onSelect={handleTemporalType}>
                             {temporalTypes.map(it => <SelectOption key={it} value={it}>{it}</SelectOption>)}
                         </Select>
                     </FormItem>
@@ -163,6 +181,87 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                     </FormItem>
                 </Col>
             </Row>
+
+            {temporalType && (
+                <Row gutter={10}>
+                    <Col span={8}>
+                        <FormItem
+                            className={styles.formItem}
+                            name="defaultPeriod"
+                            label={t('Default Period')}
+                            initialValue={defaultPeriod}
+                        >
+                            <Select onSelect={handleDefaultPeriod}>
+                                {(temporalType === AttrType.time ? timeTemporalPeriods : allTemporalPeriods)
+                                    .map(k => <SelectOption key={k} value={k}>{temporalPeriodTitles[k]}</SelectOption>)
+                                }
+                            </Select>
+                        </FormItem>
+                    </Col>
+
+                    {temporalType === AttrType.time ? (
+                            <>
+                                <Col span={8}>
+                                    <FormItem
+                                        className={styles.formItem}
+                                        name="defaultStartTemporal"
+                                        label={t('Default Begin')}
+                                        initialValue={dash.defaultStartTemporal == null ? null : dayjs(dash.defaultStartTemporal)}
+                                    >
+                                        <TimePicker
+                                            style={{width: '100%'}}
+                                            disabled={defaultPeriod !== TemporalPeriod.ARBITRARY}
+                                        />
+                                    </FormItem>
+                                </Col>
+                                <Col span={8}>
+                                    <FormItem
+                                        className={styles.formItem}
+                                        name="defaultEndTemporal"
+                                        label={t('Default End')}
+                                        initialValue={dash.defaultEndTemporal == null ? null : dayjs(dash.defaultEndTemporal)}
+                                    >
+                                        <TimePicker
+                                            style={{width: '100%'}}
+                                            disabled={defaultPeriod !== TemporalPeriod.ARBITRARY}
+                                        />
+                                    </FormItem>
+                                </Col>
+                            </>
+                        ) : (
+                            <>
+                                <Col span={8}>
+                                    <FormItem
+                                        className={styles.formItem}
+                                        name="defaultStartTemporal"
+                                        label={t('Default Begin')}
+                                        initialValue={dash.defaultStartTemporal == null ? null : dayjs(dash.defaultStartTemporal)}
+                                    >
+                                        <DatePicker
+                                            style={{width: '100%'}}
+                                            showTime={temporalType === AttrType.datetime || temporalType === AttrType.timestamp}
+                                            disabled={defaultPeriod !== TemporalPeriod.ARBITRARY}
+                                        />
+                                    </FormItem>
+                                </Col>
+                                <Col span={8}>
+                                    <FormItem
+                                        className={styles.formItem}
+                                        name="defaultEndTemporal"
+                                        label={t('Default End')}
+                                        initialValue={dash.defaultEndTemporal == null ? null : dayjs(dash.defaultEndTemporal)}
+                                    >
+                                        <DatePicker
+                                            style={{width: '100%'}}
+                                            showTime={temporalType === AttrType.datetime || temporalType === AttrType.timestamp}
+                                            disabled={defaultPeriod !== TemporalPeriod.ARBITRARY}
+                                        />
+                                    </FormItem>
+                                </Col>
+                            </>
+                        )}
+                </Row>
+            )}
 
             <Row gutter={10}>
                 <Col span={8}>
@@ -209,7 +308,7 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                     </FormItem>
                 </Col>
                 <Col span={8}>
-                    {isAggregate &&
+                    {isAggregate && (
                         <FormItem
                             className={styles.formItem}
                             name="aggregateType"
@@ -229,7 +328,7 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                                 {Object.keys(AggregateType).map(it => <SelectOption key={it} value={it}>{it}</SelectOption>)}
                             </Select>
                         </FormItem>
-                    }
+                    )}
                 </Col>
             </Row>
 
