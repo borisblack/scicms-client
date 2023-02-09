@@ -87,7 +87,6 @@ const Navbar = ({me, onLogout}: Props) => {
                             key: 'profile',
                             label: `${t('Profile')} (${me.username})`,
                             icon: <UserOutlined />,
-                            className: 'Analysis-profile-menu-item',
                             children: [{
                                 key: 'logout',
                                 label: t('Logout'),
