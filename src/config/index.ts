@@ -55,8 +55,7 @@ interface AppConfig {
 }
 
 const appConfig: AppConfig = {
-    coreUrl: 'https://sandbox-712.iss-reshetnev.ru:24202',
-    // coreUrl: 'http://localhost:8079',
+    coreUrl: 'http://localhost:8079',
     i18nLng: 'ru',
     antdLocale: ruRU,
     diagramTranslation: 'ru',
