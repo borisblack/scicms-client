@@ -1,5 +1,5 @@
 import App from './pages/App'
-import Analysis from './pages/Analysis'
+import Bi from './pages/Bi'
 import Login from './features/auth/Login'
 import {RouteObject} from 'react-router-dom'
 import ErrorFallback from './pages/ErrorFallback'
@@ -9,8 +9,8 @@ const routes: RouteObject[] = [{
     element: <App/>,
     errorElement: <ErrorFallback/>
 }, {
-    path: '/analysis',
-    element: <Analysis/>,
+    path: '/bi',
+    element: <Bi/>,
     errorElement: <ErrorFallback/>
 }, {
     path: '/login',

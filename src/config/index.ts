@@ -42,6 +42,7 @@ interface AppConfig {
         defaultDashType: DashType
         defaultPageSize: number
         maxPageSize: number
+        openFirstDashboard: boolean
     }
     ui: {
         dataGrid: {
@@ -54,7 +55,8 @@ interface AppConfig {
 }
 
 const appConfig: AppConfig = {
-    coreUrl: 'http://localhost:8079',
+    coreUrl: 'https://sandbox-712.iss-reshetnev.ru:24202',
+    // coreUrl: 'http://localhost:8079',
     i18nLng: 'ru',
     antdLocale: ruRU,
     diagramTranslation: 'ru',
@@ -85,7 +87,8 @@ const appConfig: AppConfig = {
         defaultRefreshIntervalSeconds: 300,
         defaultDashType: DashType.bar,
         defaultPageSize: 100,
-        maxPageSize: 1000
+        maxPageSize: 1000,
+        openFirstDashboard: true
     },
     ui: {
         dataGrid: {

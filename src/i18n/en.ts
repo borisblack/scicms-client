@@ -192,6 +192,7 @@ const en = {
         'Save': 'Save',
         'Scale': 'Scale',
         'SciCMS': 'SciCMS',
+        'SciCMS BI': 'SciCMS BI',
         'SciSolutions': 'SciSolutions',
         'Security': 'Security',
         'Select': 'Select',

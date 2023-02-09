@@ -12,7 +12,9 @@ import {reset as resetPages} from '../features/pages/pagesSlice'
 import DashboardService from '../services/dashboard'
 import {Dashboard} from '../types'
 import DashboardPanel from '../dashboard/DashboardPanel'
-import './Analysis.css'
+import './Bi.css'
+import logo from '../logo.svg'
+import appConfig from '../config'
 
 const {Content, Sider} = Layout
 
@@ -20,7 +22,7 @@ const isNavbarCollapsed = () => localStorage.getItem('analysisNavbarCollapsed') 
 const setNavbarCollapsed = (collapsed: boolean) => localStorage.setItem('analysisNavbarCollapsed', collapsed ? '1' : '0')
 const dashboardService = DashboardService.getInstance()
 
-function Analysis() {
+function Bi() {
     const {t} = useTranslation()
     const dispatch = useAppDispatch()
     const me = useAppSelector(selectMe)
@@ -34,7 +36,14 @@ function Analysis() {
     useEffect(() => {
         setLoading(true)
         dashboardService.findAll()
-            .then(data => setDashboards(data))
+            .then(data => {
+                setDashboards(data)
+                return data
+            })
+            .then(data => {
+                if (data.length > 0 && appConfig.dashboard.openFirstDashboard)
+                    openDashboard(data[0])
+            })
             .finally(() => {
                 setLoading(false)
             })
@@ -81,7 +90,7 @@ function Analysis() {
     }, [tabPages])
 
     if (!me || isExpired)
-        return <Navigate to="/login?targetUrl=/analysis"/>
+        return <Navigate to="/login?targetUrl=/bi"/>
 
     const getTabs = (): Tab[] => Object.keys(tabPages).map(key => {
         const dashboard = tabPages[key]
@@ -90,7 +99,7 @@ function Analysis() {
             label: dashboard.name,
             style: {background: '#fff'},
             children: (
-                <div className="Analysis-page-content">
+                <div className="Bi-page-content">
                     <DashboardPanel me={me} pageKey={key} spec={dashboard.spec}/>
                 </div>
             )
@@ -100,8 +109,12 @@ function Analysis() {
     const tabs = getTabs()
 
     return (
-        <Layout className="Analysis">
+        <Layout className="Bi">
             <Sider collapsible collapsed={collapsed} onCollapse={handleToggle} width={250}>
+                <div className="Bi-logo-wrapper">
+                    <img src={logo} className="Bi-logo" alt="logo"/>
+                    {!collapsed && <span className="Bi-logo-text">{t('SciCMS BI')}</span>}
+                </div>
                 <Spin spinning={loading}>
                     <Menu
                         mode="inline"
@@ -132,8 +145,8 @@ function Analysis() {
                 </Spin>
             </Sider>
             <Layout>
-                <Content className="Analysis-content-wrapper">
-                    <div className="Analysis-content">
+                <Content className="Bi-content-wrapper">
+                    <div className="Bi-content">
                         {(tabs.length > 0) && (
                             <Tabs
                                 activeKey={activeKey}
@@ -152,4 +165,4 @@ function Analysis() {
     )
 }
 
-export default Analysis
+export default Bi

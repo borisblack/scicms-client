@@ -192,6 +192,7 @@ const ru = {
         'Save': 'Сохранить',
         'Scale': 'Точность',
         'SciCMS': 'SciCMS',
+        'SciCMS BI': 'SciCMS BI',
         'SciSolutions': 'SciSolutions',
         'Security': 'Безопасность',
         'Select': 'Выбрать',
