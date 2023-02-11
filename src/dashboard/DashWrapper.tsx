@@ -148,7 +148,9 @@ export default function DashWrapper(props: DashProps) {
             setFetchError(e.message)
             notification.error({
                 message: t('Loading error'),
-                description: e.message
+                description: e.message,
+                duration: appConfig.ui.notificationDuration,
+                placement: appConfig.ui.notificationPlacement
             })
         } finally {
             setLoading(false)

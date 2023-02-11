@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {Col, Collapse, Form, message, Modal, Row, Spin, Tabs} from 'antd'
+import {Col, Collapse, Form, Modal, notification, Row, Spin, Tabs} from 'antd'
 import {Tab} from 'rc-tabs/lib/interface'
 import {Attribute, AttrType, IBuffer, Item, ItemData, RelType, UserInfo, ViewState} from '../../types'
 import PermissionService from '../../services/permission'
@@ -152,7 +152,12 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
                 console.log('Parsed values', parsedValues)
         } catch (e: any) {
             console.error(e.message)
-            message.error(e.message)
+            notification.error({
+                message: t('Parsing error'),
+                description: e.message,
+                duration: appConfig.ui.notificationDuration,
+                placement: appConfig.ui.notificationPlacement
+            })
             return
         }
 
@@ -202,7 +207,12 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
             logoutIfNeed()
         } catch (e: any) {
             console.error(e.message)
-            message.error(e.message)
+            notification.error({
+                message: t('Creation error'),
+                description: e.message,
+                duration: appConfig.ui.notificationDuration,
+                placement: appConfig.ui.notificationPlacement
+            })
         } finally {
             setLoading(false)
         }
@@ -233,7 +243,12 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
             setViewState(ViewState.VIEW)
         } catch (e: any) {
             console.error(e.message)
-            message.error(e.message)
+            notification.error({
+                message: t('Version creation error'),
+                description: e.message,
+                duration: appConfig.ui.notificationDuration,
+                placement: appConfig.ui.notificationPlacement
+            })
         } finally {
             setLoading(false)
         }
@@ -264,7 +279,12 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
             setViewState(ViewState.VIEW)
         } catch (e: any) {
             console.error(e.message)
-            message.error(e.message)
+            notification.error({
+                message: t('Localization creation error'),
+                description: e.message,
+                duration: appConfig.ui.notificationDuration,
+                placement: appConfig.ui.notificationPlacement
+            })
         } finally {
             setLoading(false)
         }
@@ -293,7 +313,12 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
             logoutIfNeed()
         } catch (e: any) {
             console.error(e.message)
-            message.error(e.message)
+            notification.error({
+                message: t('Update error'),
+                description: e.message,
+                duration: appConfig.ui.notificationDuration,
+                placement: appConfig.ui.notificationPlacement
+            })
         } finally {
             setLoading(false)
         }
@@ -359,7 +384,12 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
                 }
             } catch (e: any) {
                 console.error(e.message)
-                message.error(e.message)
+                notification.error({
+                    message: t('Localization search error'),
+                    description: e.message,
+                    duration: appConfig.ui.notificationDuration,
+                    placement: appConfig.ui.notificationPlacement
+                })
             } finally {
                 setLoading(false)
             }

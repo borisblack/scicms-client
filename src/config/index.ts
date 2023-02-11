@@ -51,6 +51,8 @@ interface AppConfig {
         textArea: {
             rows: number
         }
+        notificationDuration: number,
+        notificationPlacement?: 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight'
     }
 }
 
@@ -95,7 +97,9 @@ const appConfig: AppConfig = {
         },
         textArea: {
             rows: 4
-        }
+        },
+        notificationDuration: 10,
+        notificationPlacement: 'topRight'
     }
 }
 
