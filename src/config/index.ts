@@ -10,6 +10,7 @@ import {DashType, DeletingStrategy} from '../types'
 // dayjs.tz.setDefault(UTC)
 
 interface AppConfig {
+    coreVersion: string
     coreUrl: string
     i18nLng: string
     antdLocale: Locale
@@ -48,8 +49,9 @@ interface AppConfig {
         dataGrid: {
             colWidth: number
         }
-        textArea: {
-            rows: number
+        form: {
+            fieldWidth: number
+            textAreaRows: number
         }
         notificationDuration: number,
         notificationPlacement?: 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight'
@@ -57,6 +59,7 @@ interface AppConfig {
 }
 
 const appConfig: AppConfig = {
+    coreVersion: 'v1',
     coreUrl: 'http://localhost:8079',
     i18nLng: 'ru',
     antdLocale: ruRU,
@@ -95,8 +98,9 @@ const appConfig: AppConfig = {
         dataGrid: {
             colWidth: 140
         },
-        textArea: {
-            rows: 4
+        form: {
+            fieldWidth: 6,
+            textAreaRows: 4
         },
         notificationDuration: 10,
         notificationPlacement: 'topRight'

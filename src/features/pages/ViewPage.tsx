@@ -16,6 +16,7 @@ import MutationService from '../../services/mutation'
 import appConfig from '../../config'
 import ViewPageHeader from './ViewPageHeader'
 import {
+    ANTD_GRID_COLS,
     CONFIG_ID_ATTR_NAME,
     CURRENT_ATTR_NAME,
     DEBUG,
@@ -337,9 +338,10 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
             {filterVisibleAttributeNames(attributes)
                 .map(attrName => {
                     const attr = attributes[attrName]
-                    console.log(attr.fieldWidth)
+                    const {fieldWidth} = attr
+                    const span = (fieldWidth == null || fieldWidth <= 0 || fieldWidth > ANTD_GRID_COLS) ? appConfig.ui.form.fieldWidth : fieldWidth
                     return (
-                        <Col span={6 * (attr.fieldWidth ?? 1)} key={attrName}>
+                        <Col span={span} key={attrName}>
                             <AttributeFieldWrapper
                                 pageKey={page.key}
                                 form={form}

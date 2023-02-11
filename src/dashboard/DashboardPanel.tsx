@@ -6,7 +6,7 @@ import {registerLocale} from '@antv/g2plot'
 import {Dataset, IDash, IDashboardSpec, UserInfo} from '../types'
 import appConfig from '../config'
 import {hasRole} from '../util/acl'
-import {ROLE_ADMIN, ROLE_ANALYST} from '../config/constants'
+import {ANTD_GRID_COLS, ROLE_ADMIN, ROLE_ANALYST} from '../config/constants'
 import DashWrapper from './DashWrapper'
 import DatasetService from '../services/dataset'
 import {RU_RU_LOCALE} from './locales/ru_RU'
@@ -20,18 +20,16 @@ interface Props {
 // Register additional locales
 registerLocale('ru-RU', RU_RU_LOCALE)
 
-const ANTD_GRID_COLS = 24
 const K = ANTD_GRID_COLS / appConfig.dashboard.cols
 const ROW_VERTICAL_SPACE = 16
 
 const intCompareFn = (a: string, b: string) => parseInt(a) - parseInt(b)
-
 const dashColCompareFn = (a: IDash, b: IDash) => a.x - b.x
+const datasetService = DatasetService.getInstance()
 
 export default function DashboardPanel({me, pageKey, spec}: Props) {
     const {dashes} = spec
     const {t} = useTranslation()
-    const datasetService = useMemo(() => DatasetService.getInstance(), [])
     const [datasets, setDatasets] = useState<{[name: string]: Dataset} | null>(null)
     const [isFullScreenComponentExist, setFullScreenComponentExist] = useState<boolean>(false)
     const canPreview = useMemo(() => hasRole(me, ROLE_ANALYST) || hasRole(me, ROLE_ADMIN), [me])

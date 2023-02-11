@@ -53,7 +53,7 @@ const ArrayAttributeField: FC<AttributeFieldProps> = ({pageKey, attrName, attrib
         >
             <TextArea
                 id={`${pageKey}#${attrName}`}
-                rows={appConfig.ui.textArea.rows}
+                rows={appConfig.ui.form.textAreaRows}
                 {...additionalProps}
             />
         </FormItem>

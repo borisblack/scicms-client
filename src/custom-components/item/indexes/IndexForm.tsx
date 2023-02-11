@@ -18,7 +18,7 @@ const {TextArea} = Input
 
 export default function IndexForm({form, index, canEdit, onFormFinish}: Props) {
     const {t} = useTranslation()
-    
+
     useEffect(() => {
         form.resetFields()
     }, [form, index])
@@ -42,7 +42,7 @@ export default function IndexForm({form, index, canEdit, onFormFinish}: Props) {
                 initialValue={index?.columns?.join('\n')}
                 rules={[{required: true, message: t('Required field')}]}
             >
-                <TextArea style={{maxWidth: 180}} rows={appConfig.ui.textArea.rows}/>
+                <TextArea style={{maxWidth: 180}} rows={appConfig.ui.form.textAreaRows}/>
             </FormItem>
 
             <FormItem

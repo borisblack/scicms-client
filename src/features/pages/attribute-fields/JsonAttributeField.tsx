@@ -36,7 +36,7 @@ const JsonAttributeField: FC<AttributeFieldProps> = ({pageKey, attrName, attribu
         >
             <TextArea
                 id={`${pageKey}#${attrName}`}
-                rows={appConfig.ui.textArea.rows}
+                rows={appConfig.ui.form.textAreaRows}
                 {...additionalProps}
             />
         </FormItem>

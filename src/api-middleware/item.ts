@@ -1,10 +1,11 @@
 import axios from 'axios'
 
 import {ApiMiddleware, ApiMiddlewareContext, ApiOperation} from './index'
-import {CORE_VERSION, ITEM_ITEM_NAME, ITEM_MODEL_KIND} from '../config/constants'
+import {ITEM_ITEM_NAME, ITEM_MODEL_KIND} from '../config/constants'
 import QueryService from '../services/query'
 import {extractAxiosErrorMessage} from '../services'
 import {FlaggedResponse, Item, ItemData, ItemModel} from '../types'
+import appConfig from '../config'
 
 const queryService = QueryService.getInstance()
 
@@ -53,7 +54,7 @@ async function apply({item, values}: ApiMiddlewareContext): Promise<ItemData> {
 }
 
 const mapItem = (item: Item): ItemModel => ({
-    coreVersion: CORE_VERSION,
+    coreVersion: appConfig.coreVersion,
     kind: ITEM_MODEL_KIND,
     includeTemplates: item.includeTemplates,
     metadata: {

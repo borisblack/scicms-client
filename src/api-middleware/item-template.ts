@@ -1,9 +1,10 @@
 import {ApiMiddleware, ApiMiddlewareContext, ApiOperation} from './index'
-import {CORE_VERSION, ITEM_TEMPLATE_ITEM_NAME, ITEM_TEMPLATE_MODEL_KIND} from '../config/constants'
+import {ITEM_TEMPLATE_ITEM_NAME, ITEM_TEMPLATE_MODEL_KIND} from '../config/constants'
 import {FlaggedResponse, ItemData, ItemTemplate, ItemTemplateModel} from '../types'
 import axios from 'axios'
 import {extractAxiosErrorMessage} from '../services'
 import QueryService from '../services/query'
+import appConfig from '../config'
 
 const queryService = QueryService.getInstance()
 
@@ -52,7 +53,7 @@ async function apply({item, values}: ApiMiddlewareContext): Promise<ItemData> {
 }
 
 const mapItemTemplate = (item: ItemTemplate): ItemTemplateModel => ({
-    coreVersion: CORE_VERSION,
+    coreVersion: appConfig.coreVersion,
     kind: ITEM_TEMPLATE_MODEL_KIND,
     metadata: {
         name: item.name,

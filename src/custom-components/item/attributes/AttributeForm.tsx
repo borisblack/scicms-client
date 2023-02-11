@@ -275,7 +275,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
                             initialValue={attribute?.enumSet?.join('\n')}
                             rules={[{required: true, message: t('Required field')}]}
                         >
-                            <TextArea style={{maxWidth: 180}} rows={appConfig.ui.textArea.rows}/>
+                            <TextArea style={{maxWidth: 180}} rows={appConfig.ui.form.textAreaRows}/>
                         </FormItem>
                     )}
 
