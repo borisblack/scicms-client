@@ -2,7 +2,7 @@ import {gql} from '@apollo/client'
 
 import i18n from '../i18n'
 import {apolloClient, extractGraphQLErrorMessages} from '.'
-import {AttrType, Item, RelType} from '../types'
+import {FieldType, Item, RelType} from '../types'
 import {FILENAME_ATTR_NAME, ID_ATTR_NAME} from '../config/constants'
 
 interface ItemCache {
@@ -124,36 +124,36 @@ export default class ItemService {
             }
 
             const attr = attributes[attrName]
-            if (attr.private || (attr.type === AttrType.relation && (attr.relType === RelType.oneToMany || attr.relType === RelType.manyToMany)))
+            if (attr.private || (attr.type === FieldType.relation && (attr.relType === RelType.oneToMany || attr.relType === RelType.manyToMany)))
                 continue
 
             switch (attr.type) {
-                case AttrType.string:
-                case AttrType.text:
-                case AttrType.uuid:
-                case AttrType.email:
-                case AttrType.password:
-                case AttrType.sequence:
-                case AttrType.enum:
-                case AttrType.int:
-                case AttrType.long:
-                case AttrType.float:
-                case AttrType.double:
-                case AttrType.decimal:
-                case AttrType.bool:
-                case AttrType.date:
-                case AttrType.time:
-                case AttrType.datetime:
-                case AttrType.timestamp:
-                case AttrType.json:
-                case AttrType.array:
+                case FieldType.string:
+                case FieldType.text:
+                case FieldType.uuid:
+                case FieldType.email:
+                case FieldType.password:
+                case FieldType.sequence:
+                case FieldType.enum:
+                case FieldType.int:
+                case FieldType.long:
+                case FieldType.float:
+                case FieldType.double:
+                case FieldType.decimal:
+                case FieldType.bool:
+                case FieldType.date:
+                case FieldType.time:
+                case FieldType.datetime:
+                case FieldType.timestamp:
+                case FieldType.json:
+                case FieldType.array:
                     result.push(attrName)
                     break
-                case AttrType.media:
+                case FieldType.media:
                     const media = this.getMedia()
                     result.push(`${attrName} { data { id ${media.titleAttribute === ID_ATTR_NAME ? '' : media.titleAttribute} ${media.titleAttribute === FILENAME_ATTR_NAME ? '' : FILENAME_ATTR_NAME} } }`)
                     break
-                case AttrType.relation:
+                case FieldType.relation:
                     if (!attr.target)
                         throw new Error('Illegal attribute')
 

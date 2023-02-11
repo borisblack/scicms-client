@@ -4,7 +4,7 @@ import {useTranslation} from 'react-i18next'
 import {Form, Input} from 'antd'
 
 import {AttributeFieldProps} from '.'
-import {AttrType} from '../../../types'
+import {FieldType} from '../../../types'
 import styles from './AttributeField.module.css'
 import appConfig from '../../../config'
 
@@ -12,7 +12,7 @@ const FormItem = Form.Item
 const {TextArea} = Input
 
 const ArrayAttributeField: FC<AttributeFieldProps> = ({pageKey, attrName, attribute, value}) => {
-    if (attribute.type !== AttrType.array)
+    if (attribute.type !== FieldType.array)
         throw new Error('Illegal attribute')
 
     const {t} = useTranslation()
@@ -53,7 +53,6 @@ const ArrayAttributeField: FC<AttributeFieldProps> = ({pageKey, attrName, attrib
         >
             <TextArea
                 id={`${pageKey}#${attrName}`}
-                style={{maxWidth: attribute.fieldWidth}}
                 rows={appConfig.ui.textArea.rows}
                 {...additionalProps}
             />

@@ -4,7 +4,7 @@ import {ColumnDef, ColumnFiltersState, createColumnHelper, SortingState} from '@
 import {Button, Checkbox, Tag} from 'antd'
 import {DateTime} from 'luxon'
 
-import {Attribute, AttrType, Item, ItemData, Media, NamedAttribute, NamedIndex, RelType} from '../types'
+import {Attribute, FieldType, Item, ItemData, Media, NamedAttribute, NamedIndex, RelType} from '../types'
 import appConfig from '../config'
 import ItemService from '../services/item'
 import {DataWithPagination, RequestParams} from '../components/datagrid/DataGrid'
@@ -37,14 +37,14 @@ export function getColumns(item: Item): ColumnDef<any, any>[] {
             continue
 
         const attr = attributes[attrName]
-        if (attr.private || (attr.type === AttrType.relation && (attr.relType === RelType.oneToMany || attr.relType === RelType.manyToMany)))
+        if (attr.private || (attr.type === FieldType.relation && (attr.relType === RelType.oneToMany || attr.relType === RelType.manyToMany)))
             continue
 
         const column = columnHelper.accessor(attrName, {
             header: i18n.t(attr.displayName) as string,
             cell: info => renderCell(item, info.row.original, attrName, attr, info.getValue()),
             size: attr.colWidth ?? appConfig.ui.dataGrid.colWidth,
-            enableSorting: attr.type !== AttrType.text && attr.type !== AttrType.json && attr.type !== AttrType.array,
+            enableSorting: attr.type !== FieldType.text && attr.type !== FieldType.json && attr.type !== FieldType.array,
             enableColumnFilter: item.name !== ACCESS_ITEM_NAME || attrName !== MASK_ATTR_NAME
         })
 
@@ -56,7 +56,7 @@ export function getColumns(item: Item): ColumnDef<any, any>[] {
 
 const renderCell = (item: Item, data: ItemData, attrName: string, attribute: Attribute, value: any): ReactElement | string | null => {
     switch (attribute.type) {
-        case AttrType.string:
+        case FieldType.string:
             if (item.name === MEDIA_ITEM_NAME && attrName === FILENAME_ATTR_NAME && value != null) {
                 return (
                     <Button type="link" size="small" style={{margin: 0, padding: 0}} onClick={() => mediaService.download(data.id, value)}>
@@ -65,14 +65,14 @@ const renderCell = (item: Item, data: ItemData, attrName: string, attribute: Att
                 )
             }
             return value
-        case AttrType.text:
-        case AttrType.uuid:
-        case AttrType.email:
-        case AttrType.password:
-        case AttrType.sequence:
-        case AttrType.enum:
+        case FieldType.text:
+        case FieldType.uuid:
+        case FieldType.email:
+        case FieldType.password:
+        case FieldType.sequence:
+        case FieldType.enum:
             return value
-        case AttrType.int:
+        case FieldType.int:
             if (item.name === ACCESS_ITEM_NAME && attrName === MASK_ATTR_NAME && value != null) {
                 const r = getBit(value, 0) ? 'R' : '-'
                 const w = getBit(value, 1) ? 'W' : '-'
@@ -83,24 +83,24 @@ const renderCell = (item: Item, data: ItemData, attrName: string, attribute: Att
                 return <Tag style={{fontFamily: 'monospace', fontWeight: 600}}>{`${a} ${d} ${c} ${w} ${r}`}</Tag>
             }
             return value
-        case AttrType.long:
-        case AttrType.float:
-        case AttrType.double:
-        case AttrType.decimal:
+        case FieldType.long:
+        case FieldType.float:
+        case FieldType.double:
+        case FieldType.decimal:
             return value
-        case AttrType.json:
-        case AttrType.array:
+        case FieldType.json:
+        case FieldType.array:
             return value ? JSON.stringify(value) : null
-        case AttrType.bool:
+        case FieldType.bool:
             return <Checkbox checked={value}/>
-        case AttrType.date:
+        case FieldType.date:
             return value ? DateTime.fromISO(value, {zone: UTC}).toFormat(luxonDisplayDateFormatString) : null
-        case AttrType.time:
+        case FieldType.time:
             return value ? DateTime.fromISO(value, {zone: UTC}).toFormat(luxonDisplayTimeFormatString) : null
-        case AttrType.datetime:
-        case AttrType.timestamp:
+        case FieldType.datetime:
+        case FieldType.timestamp:
             return value ? DateTime.fromISO(value, {zone: UTC}).toFormat(luxonDisplayDateTimeFormatString) : null
-        case AttrType.media:
+        case FieldType.media:
             const media = itemService.getMedia()
             const mediaData: Media | null = value?.data
             if (!mediaData)
@@ -111,7 +111,7 @@ const renderCell = (item: Item, data: ItemData, attrName: string, attribute: Att
                     {(mediaData as any)[media.titleAttribute] ?? mediaData.filename}
                 </Button>
             )
-        case AttrType.relation:
+        case FieldType.relation:
             if (attribute.relType === RelType.oneToMany || attribute.relType === RelType.manyToMany)
                 throw new Error('Cannot render oneToMany or manyToMany relation')
 
@@ -182,7 +182,7 @@ export const getAttributeColumns = (): ColumnDef<NamedAttribute, any>[] =>
             cell: info => <Tag color="processing">{info.getValue()}</Tag>,
             size: appConfig.ui.dataGrid.colWidth,
             enableSorting: true
-        }) as ColumnDef<NamedAttribute, AttrType>,
+        }) as ColumnDef<NamedAttribute, FieldType>,
         columnHelper.accessor('columnName', {
             header: i18n.t('Column Name'),
             cell: info => info.getValue(),

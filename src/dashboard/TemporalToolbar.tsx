@@ -1,5 +1,5 @@
 import {DatePicker, Select, Space, TimePicker} from 'antd'
-import {AttrType, TemporalPeriod, TemporalType} from '../types'
+import {FieldType, TemporalPeriod, TemporalType} from '../types'
 import {useTranslation} from 'react-i18next'
 import dayjs, {Dayjs} from 'dayjs'
 import {useCallback} from 'react'
@@ -35,7 +35,7 @@ export default function TemporalToolbar({temporalType, period, startTemporal, en
             <span>
                 {t('Period')}:&nbsp;
                 <Select size="small" value={period} style={{width: 200}} onSelect={onPeriodChange}>
-                    {(temporalType === AttrType.time ? timeTemporalPeriods : allTemporalPeriods)
+                    {(temporalType === FieldType.time ? timeTemporalPeriods : allTemporalPeriods)
                         .map(k => <SelectOption key={k} value={k}>{temporalPeriodTitles[k]}</SelectOption>)
                     }
                 </Select>
@@ -44,7 +44,7 @@ export default function TemporalToolbar({temporalType, period, startTemporal, en
                 <>
                     <span>
                         {t('Begin')}:&nbsp;
-                        {temporalType === AttrType.time ? (
+                        {temporalType === FieldType.time ? (
                             <TimePicker
                                 size="small"
                                 value={startTemporal == null ? null : dayjs(startTemporal)}
@@ -53,7 +53,7 @@ export default function TemporalToolbar({temporalType, period, startTemporal, en
                         ) : (
                             <DatePicker
                                 size="small"
-                                showTime={temporalType === AttrType.datetime || temporalType === AttrType.timestamp}
+                                showTime={temporalType === FieldType.datetime || temporalType === FieldType.timestamp}
                                 value={startTemporal == null ? null : dayjs(startTemporal)}
                                 onChange={(date) => handleStartTemporalChange(date)}
                             />
@@ -61,7 +61,7 @@ export default function TemporalToolbar({temporalType, period, startTemporal, en
                     </span>
                     <span>
                         {t('End')}:&nbsp;
-                        {temporalType === AttrType.time ? (
+                        {temporalType === FieldType.time ? (
                             <TimePicker
                                 size="small"
                                 value={endTemporal == null ? null : dayjs(endTemporal)}
@@ -70,7 +70,7 @@ export default function TemporalToolbar({temporalType, period, startTemporal, en
                         ) : (
                             <DatePicker
                                 size="small"
-                                showTime={temporalType === AttrType.datetime || temporalType === AttrType.timestamp}
+                                showTime={temporalType === FieldType.datetime || temporalType === FieldType.timestamp}
                                 value={endTemporal == null ? null : dayjs(endTemporal)}
                                 onChange={(date) => handleEndTemporalChange(date)}
                             />

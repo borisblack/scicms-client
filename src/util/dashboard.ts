@@ -1,4 +1,4 @@
-import {AttrType, DashType, IDash, MetricType, TemporalPeriod, TemporalType} from '../types'
+import {FieldType, DashType, IDash, MetricType, TemporalPeriod, TemporalType} from '../types'
 import {DateTime} from 'luxon'
 import util from 'util'
 import i18n from '../i18n'
@@ -6,14 +6,14 @@ import appConfig from '../config'
 import dayjs, {Dayjs} from 'dayjs'
 
 export const dashTypes = Object.keys(DashType).sort()
-export const numericTypes = [AttrType.int, AttrType.long, AttrType.float, AttrType.double, AttrType.decimal]
-export const temporalTypes = [AttrType.date, AttrType.time, AttrType.datetime, AttrType.timestamp]
+export const numericTypes = [FieldType.int, FieldType.long, FieldType.float, FieldType.double, FieldType.decimal]
+export const temporalTypes = [FieldType.date, FieldType.time, FieldType.datetime, FieldType.timestamp]
 export const metricTypes = [...numericTypes, ...temporalTypes]
 export const labelTypes = [
-    AttrType.uuid, AttrType.string, AttrType.text, AttrType.sequence, AttrType.email, AttrType.enum,
+    FieldType.uuid, FieldType.string, FieldType.text, FieldType.sequence, FieldType.email, FieldType.enum,
     ...numericTypes,
     ...temporalTypes,
-    AttrType.bool, AttrType.media, AttrType.relation
+    FieldType.bool, FieldType.media, FieldType.relation
 ]
 export const temporalTypeSet = new Set(temporalTypes)
 export const labelTypeSet = new Set([...labelTypes])
@@ -77,7 +77,7 @@ export function startTemporalFromPeriod(period: TemporalPeriod, temporalType: Te
             break
     }
 
-    if (temporalType !== AttrType.time) {
+    if (temporalType !== FieldType.time) {
         switch (period) {
             case TemporalPeriod.LAST_DAY:
                 return dayjs().subtract(1, 'day')
@@ -118,10 +118,10 @@ export const parseTemporal = (temporal: Dayjs | null, temporalType: TemporalType
         return null
 
     const dt = DateTime.fromISO(temporal.toISOString())
-    if (temporalType === AttrType.date)
+    if (temporalType === FieldType.date)
         return dt.toISODate()
 
-    if (temporalType === AttrType.time)
+    if (temporalType === FieldType.time)
         return dt.toISOTime()
 
     return dt.setZone(appConfig.dateTime.timeZone, {keepLocalTime: true}).toISO()
@@ -132,9 +132,9 @@ export const formatTemporal = (temporal: string | null, temporalType: TemporalTy
         return ''
 
     const dt = DateTime.fromISO(temporal)
-    if (temporalType === AttrType.date)
+    if (temporalType === FieldType.date)
         return dt.toFormat(appConfig.dateTime.luxonDisplayDateFormatString)
-    else if (temporalType === AttrType.time)
+    else if (temporalType === FieldType.time)
         return dt.toFormat(appConfig.dateTime.luxonDisplayTimeFormatString)
     else
         return dt.toFormat(appConfig.dateTime.luxonDisplayDateTimeFormatString)

@@ -1,4 +1,4 @@
-import {AttrType} from '../../types'
+import {FieldType} from '../../types'
 import {AttributeFieldProps, AttributeFields} from './attribute-fields'
 import RelationAttributeField from './attribute-fields/RelationAttributeField'
 import DateTimeAttributeField from './attribute-fields/DateTimeAttributeField'
@@ -32,34 +32,34 @@ import AccessMaskAttributeField from './attribute-fields/AccessMaskAttributeFiel
 import MediaFileAttributeField from './attribute-fields/MediaFileAttributeField'
 
 const attributeFields: AttributeFields = {
-    [AttrType.string]: StringAttributeField,
-    [AttrType.uuid]: StringAttributeField,
-    [AttrType.sequence]: StringAttributeField,
-    [AttrType.email]: StringAttributeField,
-    [AttrType.enum]: EnumAttributeField,
-    [AttrType.password]: PasswordAttributeField,
-    [AttrType.bool]: BoolAttributeField,
-    [AttrType.text]: TextAttributeField,
-    [AttrType.json]: JsonAttributeField,
-    [AttrType.array]: ArrayAttributeField,
-    [AttrType.int]: NumberAttributeField,
-    [AttrType.long]: NumberAttributeField,
-    [AttrType.float]: NumberAttributeField,
-    [AttrType.double]: NumberAttributeField,
-    [AttrType.decimal]: NumberAttributeField,
-    [AttrType.date]: DateAttributeField,
-    [AttrType.time]: TimeAttributeField,
-    [AttrType.datetime]: DateTimeAttributeField,
-    [AttrType.timestamp]: DateTimeAttributeField,
-    [AttrType.media]: MediaAttributeField,
-    [AttrType.relation]: RelationAttributeField
+    [FieldType.string]: StringAttributeField,
+    [FieldType.uuid]: StringAttributeField,
+    [FieldType.sequence]: StringAttributeField,
+    [FieldType.email]: StringAttributeField,
+    [FieldType.enum]: EnumAttributeField,
+    [FieldType.password]: PasswordAttributeField,
+    [FieldType.bool]: BoolAttributeField,
+    [FieldType.text]: TextAttributeField,
+    [FieldType.json]: JsonAttributeField,
+    [FieldType.array]: ArrayAttributeField,
+    [FieldType.int]: NumberAttributeField,
+    [FieldType.long]: NumberAttributeField,
+    [FieldType.float]: NumberAttributeField,
+    [FieldType.double]: NumberAttributeField,
+    [FieldType.decimal]: NumberAttributeField,
+    [FieldType.date]: DateAttributeField,
+    [FieldType.time]: TimeAttributeField,
+    [FieldType.datetime]: DateTimeAttributeField,
+    [FieldType.timestamp]: DateTimeAttributeField,
+    [FieldType.media]: MediaAttributeField,
+    [FieldType.relation]: RelationAttributeField
 }
 
 export default function AttributeFieldWrapper(props: AttributeFieldProps) {
     const {item, attrName, attribute} = props
 
     const getAttributeFieldComponent = useCallback(() => {
-        if (attrName === LOCALE_ATTR_NAME && attribute.type === AttrType.string)
+        if (attrName === LOCALE_ATTR_NAME && attribute.type === FieldType.string)
             return LocaleAttributeField
 
         if (attrName === FILENAME_ATTR_NAME && item.name === MEDIA_ITEM_NAME)

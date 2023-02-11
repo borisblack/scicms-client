@@ -2,7 +2,7 @@ import {Form, Input} from 'antd'
 import {useTranslation} from 'react-i18next'
 
 import {AttributeFieldProps} from '.'
-import {AttrType} from '../../../types'
+import {FieldType} from '../../../types'
 import styles from './AttributeField.module.css'
 import {FC, useMemo} from 'react'
 
@@ -10,7 +10,7 @@ const FormItem = Form.Item
 const {Password} = Input
 
 const PasswordAttributeField: FC<AttributeFieldProps> = ({pageKey, attrName, attribute, value}) => {
-    if (attribute.type !== AttrType.password)
+    if (attribute.type !== FieldType.password)
         throw new Error('Illegal attribute')
 
     const {t} = useTranslation()
@@ -36,7 +36,6 @@ const PasswordAttributeField: FC<AttributeFieldProps> = ({pageKey, attrName, att
             >
                 <Password
                     id={`${pageKey}#${attrName}`}
-                    style={{maxWidth: attribute.fieldWidth}}
                     maxLength={attribute.length}
                     {...additionalProps}
                 />
@@ -66,7 +65,6 @@ const PasswordAttributeField: FC<AttributeFieldProps> = ({pageKey, attrName, att
                 >
                     <Password
                         id={`${pageKey}#${attrName}.confirm`}
-                        style={{maxWidth: attribute.fieldWidth}}
                         maxLength={attribute.length}
                         {...additionalProps}
                     />

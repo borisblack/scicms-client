@@ -32,7 +32,6 @@ export interface Lifecycle extends DefaultItemTemplate {
     icon: string | null
     implementation: string | null
     spec: string
-    checksum: string | null
 }
 
 export interface LifecycleSpec {
@@ -84,7 +83,6 @@ export interface ItemTemplate extends DefaultItemTemplate {
     name: string
     core: boolean | null
     spec: ItemSpec
-    checksum: string | null
     hash: string | null
 }
 
@@ -92,7 +90,6 @@ interface AbstractModel {
     coreVersion: string
     kind: 'ItemTemplate' | 'Item'
     metadata: BaseMetadata
-    checksum?: string | null
 }
 
 interface BaseMetadata {
@@ -185,7 +182,7 @@ export interface ItemSpec {
 }
 
 export interface Attribute {
-    type: AttrType
+    type: FieldType
     columnName?: string
     displayName: string
     description?: string
@@ -220,7 +217,7 @@ export interface NamedAttribute extends Attribute {
     name: string
 }
 
-export enum AttrType {
+export enum FieldType {
     uuid = 'uuid',
     string = 'string',
     text = 'text',
@@ -300,22 +297,31 @@ export interface MediaInfo {
     createdAt: string
 }
 
-export interface Dataset extends DefaultItemTemplate {
-    name: string
-    dataSource: string
-    tableName: string | null
-    query: string | null
-}
-
 export interface Locale extends DefaultItemTemplate {
     name: string
     displayName: string | null
 }
 
+export interface Dataset extends DefaultItemTemplate {
+    name: string
+    dataSource: string
+    tableName: string | null
+    query: string | null
+    spec: DatasetSpec
+    hash: string | null
+}
+
+export interface DatasetSpec {
+    columns: {[name: string]: Column}
+}
+
+export interface Column {
+    type: FieldType
+}
+
 export interface Dashboard extends DefaultItemTemplate {
     name: string
     spec: IDashboardSpec
-    checksum: string | null
 }
 
 export interface IDashboardSpec {
@@ -349,9 +355,9 @@ export interface IDash {
     refreshIntervalSeconds: number
 }
 
-export type NumericType = AttrType.int | AttrType.long | AttrType.float | AttrType.double | AttrType.decimal
+export type NumericType = FieldType.int | FieldType.long | FieldType.float | FieldType.double | FieldType.decimal
 
-export type TemporalType = AttrType.date | AttrType.time | AttrType.datetime | AttrType.timestamp
+export type TemporalType = FieldType.date | FieldType.time | FieldType.datetime | FieldType.timestamp
 
 export type MetricType = NumericType | TemporalType
 

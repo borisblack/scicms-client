@@ -2,7 +2,7 @@ import _ from 'lodash'
 import {Dayjs} from 'dayjs'
 import {DateTime} from 'luxon'
 
-import {Attribute, AttrType, Item, ItemData} from '../types'
+import {Attribute, FieldType, Item, ItemData} from '../types'
 import MediaService from '../services/media'
 import {
     LOWERCASE_NO_WHITESPACE_MESSAGE,
@@ -39,17 +39,17 @@ export async function parseValues(item: Item, data: ItemData | null | undefined,
             continue
 
         const attribute = attributes[key]
-        if (attribute.keyed || attribute.readOnly || attribute.type === AttrType.sequence)
+        if (attribute.keyed || attribute.readOnly || attribute.type === FieldType.sequence)
             continue
 
         const value = values[key]
-        if (attribute.type === AttrType.password && value === PASSWORD_PLACEHOLDER)
+        if (attribute.type === FieldType.password && value === PASSWORD_PLACEHOLDER)
             continue
 
-        if (attribute.type === AttrType.string && key === STATE_ATTR_NAME)
+        if (attribute.type === FieldType.string && key === STATE_ATTR_NAME)
             continue
 
-        if (value === undefined && attribute.type !== AttrType.media)
+        if (value === undefined && attribute.type !== FieldType.media)
             continue
 
         parsedValues[key] = await parseValue(item, key, attribute, data, values)
@@ -61,19 +61,19 @@ export async function parseValues(item: Item, data: ItemData | null | undefined,
 async function parseValue(item: Item, attrName: string, attribute: Attribute, data: ItemData | null | undefined, values: any): Promise<any> {
     const value = values[attrName]
     switch (attribute.type) {
-        case AttrType.date:
+        case FieldType.date:
             return value ? DateTime.fromISO((value as Dayjs).toISOString()).toISODate() : null
-        case AttrType.time:
+        case FieldType.time:
             return parseTime(attrName, values)
-        case AttrType.datetime:
+        case FieldType.datetime:
             return parseDateTime(attrName, values)
-        case AttrType.media:
+        case FieldType.media:
             return await parseMedia(attrName, data, values)
-        case AttrType.array:
+        case FieldType.array:
             return _.isString(value) ? value.split('\n').map(it => tryParseJson(it)) : value
-        case AttrType.json:
+        case FieldType.json:
             return _.isString(value) ? JSON.parse(value) : value
-        case AttrType.relation:
+        case FieldType.relation:
             return values[`${attrName}.id`]
         default:
             return value

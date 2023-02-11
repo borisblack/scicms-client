@@ -3,7 +3,7 @@ import {useTranslation} from 'react-i18next'
 import {Form, FormRule, Input} from 'antd'
 
 import {AttributeFieldProps} from '.'
-import {AttrType} from '../../../types'
+import {FieldType} from '../../../types'
 import styles from './AttributeField.module.css'
 import {MAJOR_REV_ATTR_NAME, STATE_ATTR_NAME} from '../../../config/constants'
 import {regExpRule} from '../../../util/form'
@@ -11,8 +11,8 @@ import {regExpRule} from '../../../util/form'
 const FormItem = Form.Item
 
 const StringAttributeField: FC<AttributeFieldProps> = ({pageKey, item, attrName, attribute, value}) => {
-    if (attribute.type !== AttrType.string && attribute.type !== AttrType.uuid
-        && attribute.type !== AttrType.email && attribute.type !== AttrType.sequence)
+    if (attribute.type !== FieldType.string && attribute.type !== FieldType.uuid
+        && attribute.type !== FieldType.email && attribute.type !== FieldType.sequence)
         throw new Error('Illegal attribute')
 
     const {t} = useTranslation()
@@ -21,7 +21,7 @@ const StringAttributeField: FC<AttributeFieldProps> = ({pageKey, item, attrName,
         if (attribute.keyed || attribute.readOnly)
             return false
 
-        if (attribute.type === AttrType.sequence)
+        if (attribute.type === FieldType.sequence)
             return false
 
         if (attrName === MAJOR_REV_ATTR_NAME) {
@@ -51,13 +51,13 @@ const StringAttributeField: FC<AttributeFieldProps> = ({pageKey, item, attrName,
         }]
 
         switch (attribute.type) {
-            case AttrType.uuid:
+            case FieldType.uuid:
                 rules.push(regExpRule(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/, 'String must contain UUID'))
                 break
-            case AttrType.email:
+            case FieldType.email:
                 rules.push({type: 'email'})
                 break
-            case AttrType.string:
+            case FieldType.string:
                 if (attribute.pattern) {
                     rules.push(regExpRule(new RegExp(attribute.pattern)))
                 }
@@ -80,7 +80,6 @@ const StringAttributeField: FC<AttributeFieldProps> = ({pageKey, item, attrName,
         >
             <Input
                 id={`${pageKey}#${attrName}`}
-                style={{maxWidth: attribute.fieldWidth}}
                 maxLength={attribute.length}
                 {...additionalProps}
             />

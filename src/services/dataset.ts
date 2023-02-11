@@ -62,6 +62,8 @@ const FIND_ALL_QUERY = gql`
                 dataSource
                 tableName
                 query
+                spec
+                hash
             }
         }
     }

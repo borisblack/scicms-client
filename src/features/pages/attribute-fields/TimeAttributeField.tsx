@@ -5,7 +5,7 @@ import dayjs, {Dayjs} from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import {AttributeFieldProps} from '.'
 import appConfig from '../../../config'
-import {AttrType} from '../../../types'
+import {FieldType} from '../../../types'
 import styles from './AttributeField.module.css'
 import {MOMENT_ISO_TIME_FORMAT_STRING, UTC} from '../../../config/constants'
 
@@ -15,7 +15,7 @@ const FormItem = Form.Item
 const {momentDisplayTimeFormatString} = appConfig.dateTime
 
 const TimeAttributeField: FC<AttributeFieldProps> = ({pageKey, form, attrName, attribute, value}) => {
-    if (attribute.type !== AttrType.time)
+    if (attribute.type !== FieldType.time)
         throw new Error('Illegal attribute')
 
     const {t} = useTranslation()
@@ -48,6 +48,7 @@ const TimeAttributeField: FC<AttributeFieldProps> = ({pageKey, form, attrName, a
             >
                 <TimePicker
                     id={`${pageKey}#${attrName}`}
+                    style={{width: '100%'}}
                     format={momentDisplayTimeFormatString}
                     showSecond={false}
                     {...additionalProps}

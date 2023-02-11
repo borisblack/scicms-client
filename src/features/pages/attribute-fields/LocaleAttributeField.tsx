@@ -2,7 +2,7 @@ import {FC, useMemo} from 'react'
 import {Form, Select} from 'antd'
 
 import {AttributeFieldProps} from '.'
-import {AttrType} from '../../../types'
+import {FieldType} from '../../../types'
 import styles from './AttributeField.module.css'
 import LocaleService from '../../../services/locale'
 import {useTranslation} from 'react-i18next'
@@ -13,7 +13,7 @@ const FormItem = Form.Item
 const {Option: SelectOption} = Select
 
 const LocaleAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, value, onChange}) => {
-    if (attribute.type !== AttrType.string || attrName !== LOCALE_ATTR_NAME)
+    if (attribute.type !== FieldType.string || attrName !== LOCALE_ATTR_NAME)
         throw new Error('Illegal attribute')
 
     const {t} = useTranslation()
@@ -37,7 +37,7 @@ const LocaleAttributeField: FC<AttributeFieldProps> = ({attrName, attribute, val
             initialValue={value ?? attribute.defaultValue}
             rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
         >
-            <Select style={{maxWidth: attribute.fieldWidth}} onSelect={(val: string) => onChange(val)} {...additionalProps}>
+            <Select onSelect={(val: string) => onChange(val)} {...additionalProps}>
                 {locales.map(it => <SelectOption key={it.name} value={it.name}>{it.displayName}</SelectOption>)}
             </Select>
         </FormItem>

@@ -5,7 +5,7 @@ import dayjs, {Dayjs} from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import {AttributeFieldProps} from '.'
 import appConfig from '../../../config'
-import {AttrType} from '../../../types'
+import {FieldType} from '../../../types'
 import styles from './AttributeField.module.css'
 import {UTC} from '../../../config/constants'
 
@@ -15,7 +15,7 @@ const FormItem = Form.Item
 const {momentDisplayDateTimeFormatString} = appConfig.dateTime
 
 const DateTimeAttributeField: FC<AttributeFieldProps> = ({pageKey, form, attrName, attribute, value}) => {
-    if (attribute.type !== AttrType.datetime && attribute.type !== AttrType.timestamp)
+    if (attribute.type !== FieldType.datetime && attribute.type !== FieldType.timestamp)
         throw new Error('Illegal attribute')
 
     const {t} = useTranslation()
@@ -46,7 +46,13 @@ const DateTimeAttributeField: FC<AttributeFieldProps> = ({pageKey, form, attrNam
                 getValueFromEvent={getValueFromEvent}
                 rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
             >
-                <DatePicker id={`${pageKey}#${attrName}`} showTime showSecond={false} format={momentDisplayDateTimeFormatString} {...additionalProps}/>
+                <DatePicker
+                    id={`${pageKey}#${attrName}`}
+                    style={{width: '100%'}}
+                    showTime showSecond={false}
+                    format={momentDisplayDateTimeFormatString}
+                    {...additionalProps}
+                />
             </FormItem>
             <FormItem name={`${attrName}.changed`} valuePropName="checked" hidden>
                 <Checkbox id={`${pageKey}#${attrName}.changed`}/>

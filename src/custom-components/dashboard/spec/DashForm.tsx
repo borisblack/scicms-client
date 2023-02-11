@@ -1,5 +1,5 @@
 import {Checkbox, Col, DatePicker, Form, FormInstance, Input, InputNumber, Row, Select, TimePicker} from 'antd'
-import {AggregateType, AttrType, DashType, IDash, MetricType, TemporalPeriod, TemporalType} from '../../../types'
+import {AggregateType, FieldType, DashType, IDash, MetricType, TemporalPeriod, TemporalType} from '../../../types'
 import styles from './DashboardSpec.module.css'
 import {useTranslation} from 'react-i18next'
 import appConfig from '../../../config'
@@ -191,7 +191,7 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                             initialValue={defaultPeriod}
                         >
                             <Select onSelect={handleDefaultPeriod}>
-                                {(temporalType === AttrType.time ? timeTemporalPeriods : allTemporalPeriods)
+                                {(temporalType === FieldType.time ? timeTemporalPeriods : allTemporalPeriods)
                                     .map(k => <SelectOption key={k} value={k}>{temporalPeriodTitles[k]}</SelectOption>)
                                 }
                             </Select>
@@ -207,12 +207,12 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                                     label={t('Default Begin')}
                                     initialValue={dash.defaultStartTemporal == null ? null : dayjs(dash.defaultStartTemporal)}
                                 >
-                                    {temporalType === AttrType.time ? (
+                                    {temporalType === FieldType.time ? (
                                         <TimePicker style={{width: '100%'}}/>
                                     ) : (
                                         <DatePicker
                                             style={{width: '100%'}}
-                                            showTime={temporalType === AttrType.datetime || temporalType === AttrType.timestamp}
+                                            showTime={temporalType === FieldType.datetime || temporalType === FieldType.timestamp}
                                         />
                                     )}
                                 </FormItem>
@@ -224,12 +224,12 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                                     label={t('Default End')}
                                     initialValue={dash.defaultEndTemporal == null ? null : dayjs(dash.defaultEndTemporal)}
                                 >
-                                    {temporalType === AttrType.time ? (
+                                    {temporalType === FieldType.time ? (
                                         <TimePicker style={{width: '100%'}}/>
                                     ) : (
                                         <DatePicker
                                             style={{width: '100%'}}
-                                            showTime={temporalType === AttrType.datetime || temporalType === AttrType.timestamp}
+                                            showTime={temporalType === FieldType.datetime || temporalType === FieldType.timestamp}
                                         />
                                     )}
 

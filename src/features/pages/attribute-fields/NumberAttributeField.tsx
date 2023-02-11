@@ -4,14 +4,14 @@ import {Form, InputNumber} from 'antd'
 
 import {AttributeFieldProps} from '.'
 import styles from './AttributeField.module.css'
-import {AttrType} from '../../../types'
+import {FieldType} from '../../../types'
 
 const FormItem = Form.Item
 
 const NumberAttributeField: FC<AttributeFieldProps> = ({pageKey, attrName, attribute, value}) => {
-    if (attribute.type !== AttrType.int && attribute.type !== AttrType.long
-        && attribute.type !== AttrType.float && attribute.type !== AttrType.double
-        && attribute.type !== AttrType.decimal)
+    if (attribute.type !== FieldType.int && attribute.type !== FieldType.long
+        && attribute.type !== FieldType.float && attribute.type !== FieldType.double
+        && attribute.type !== FieldType.decimal)
         throw new Error('Illegal attribute')
 
     const {t} = useTranslation()
@@ -38,7 +38,7 @@ const NumberAttributeField: FC<AttributeFieldProps> = ({pageKey, attrName, attri
         >
             <InputNumber
                 id={`${pageKey}#${attrName}`}
-                style={{width: attribute.fieldWidth}}
+                style={{width: '50%'}}
                 min={attribute.minRange}
                 max={attribute.maxRange}
                 {...additionalProps}

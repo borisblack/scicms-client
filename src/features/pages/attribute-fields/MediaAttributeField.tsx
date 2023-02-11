@@ -4,7 +4,7 @@ import {Button, Form, Input, message, Upload} from 'antd'
 import {UploadOutlined} from '@ant-design/icons'
 import {RcFile, UploadFile} from 'antd/es/upload/interface'
 
-import {AttrType, Media, MediaInfo} from '../../../types'
+import {FieldType, Media, MediaInfo} from '../../../types'
 import {AttributeFieldProps} from '.'
 import MediaService from '../../../services/media'
 import styles from './AttributeField.module.css'
@@ -12,7 +12,7 @@ import styles from './AttributeField.module.css'
 const {Item: FormItem} = Form
 
 const MediaAttributeField: FC<AttributeFieldProps> = ({pageKey, form, item, attrName, attribute, value, setLoading}) => {
-    if (attribute.type !== AttrType.media)
+    if (attribute.type !== FieldType.media)
         throw new Error('Illegal attribute')
 
     const mediaData = (value?.data ?? attribute.defaultValue) as Media | null | undefined

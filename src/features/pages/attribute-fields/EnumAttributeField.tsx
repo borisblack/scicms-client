@@ -2,7 +2,7 @@ import {FC, useMemo} from 'react'
 import {Form, Select} from 'antd'
 
 import {AttributeFieldProps} from '.'
-import {AttrType} from '../../../types'
+import {FieldType} from '../../../types'
 import styles from './AttributeField.module.css'
 import {useTranslation} from 'react-i18next'
 
@@ -10,7 +10,7 @@ const FormItem = Form.Item
 const {Option: SelectOption} = Select
 
 const EnumAttributeField: FC<AttributeFieldProps> = ({pageKey, attrName, attribute, value}) => {
-    if (attribute.type !== AttrType.enum || !attribute.enumSet)
+    if (attribute.type !== FieldType.enum || !attribute.enumSet)
         throw new Error('Illegal attribute')
 
     const {t} = useTranslation()
@@ -32,7 +32,7 @@ const EnumAttributeField: FC<AttributeFieldProps> = ({pageKey, attrName, attribu
             initialValue={value ?? attribute.defaultValue}
             rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
         >
-            <Select id={`${pageKey}#${attrName}`} style={{maxWidth: attribute.fieldWidth}} {...additionalProps}>
+            <Select id={`${pageKey}#${attrName}`} {...additionalProps}>
                 {attribute.enumSet.map(it => <SelectOption key={it} value={it}>{it}</SelectOption>)}
             </Select>
         </FormItem>

@@ -3,7 +3,7 @@ import {useCallback, useEffect, useMemo, useState} from 'react'
 import {AutoComplete, Checkbox, Col, Form, FormInstance, Input, InputNumber, message, Row, Select} from 'antd'
 
 import {useTranslation} from 'react-i18next'
-import {AttrType, NamedAttribute, RelType} from '../../../types'
+import {FieldType, NamedAttribute, RelType} from '../../../types'
 import styles from './Attributes.module.css'
 import SequenceService from '../../../services/sequence'
 import ItemService from '../../../services/item'
@@ -32,7 +32,7 @@ const {TextArea} = Input
 
 export default function AttributeForm({form, attribute, canEdit, onFormFinish}: Props) {
     const {t} = useTranslation()
-    const [attrType, setAttrType] = useState<AttrType | undefined>(attribute?.type)
+    const [attrType, setAttrType] = useState<FieldType | undefined>(attribute?.type)
     const [relType, setRelType] = useState<RelType | undefined>(attribute?.relType)
     const [target, setTarget] = useState<string | undefined>(attribute?.target)
     const [seqNameOptions, setSeqNameOptions] = useState<OptionType[]>([])
@@ -43,8 +43,8 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
     const sequenceService = useMemo(() => SequenceService.getInstance(), [])
     const itemService = useMemo(() => ItemService.getInstance(), [])
     const itemNames = useMemo(() => itemService.getNames(), [itemService])
-    const isCollectionRelation = attrType === AttrType.relation && (relType === RelType.oneToMany || relType === RelType.manyToMany)
-    
+    const isCollectionRelation = attrType === FieldType.relation && (relType === RelType.oneToMany || relType === RelType.manyToMany)
+
     useEffect(() => {
         form.resetFields()
     }, [form, attribute])
@@ -81,7 +81,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
         const intermediates = itemNames.filter(it => it.match(regExp))
         setIntermediateOptions(intermediates.map(it => ({label: it, value: it})))
     }, DEBOUNCE_WAIT_INTERVAL)
-    
+
     const getTargetRelationAttributes = useCallback(() => {
         if (!target)
             return []
@@ -146,8 +146,8 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
                         initialValue={attribute?.type}
                         rules={[{required: true, message: t('Required field')}]}
                     >
-                        <Select style={{maxWidth: 200}} onSelect={(val: AttrType) => setAttrType(val)}>
-                            {Object.keys(AttrType).sort().map(it => <SelectOption key={it} value={it}>{it}</SelectOption>)}
+                        <Select style={{maxWidth: 200}} onSelect={(val: FieldType) => setAttrType(val)}>
+                            {Object.keys(FieldType).sort().map(it => <SelectOption key={it} value={it}>{it}</SelectOption>)}
                         </Select>
                     </FormItem>
 
@@ -254,7 +254,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
                         <Checkbox>{t('Read Only')}</Checkbox>
                     </FormItem>
 
-                    {attrType === AttrType.password && (
+                    {attrType === FieldType.password && (
                         <FormItem
                             className={styles.formItem}
                             name="confirm"
@@ -267,7 +267,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
                 </Col>
 
                 <Col span={12}>
-                    {attrType === AttrType.enum && (
+                    {attrType === FieldType.enum && (
                         <FormItem
                             className={styles.formItem}
                             name="enumSet"
@@ -279,7 +279,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
                         </FormItem>
                     )}
 
-                    {attrType === AttrType.sequence && (
+                    {attrType === FieldType.sequence && (
                         <FormItem
                             className={styles.formItem}
                             name="seqName"
@@ -296,7 +296,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
                         </FormItem>
                     )}
 
-                    {attrType === AttrType.relation && (
+                    {attrType === FieldType.relation && (
                         <>
                             <FormItem
                                 className={styles.formItem}
@@ -377,7 +377,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
                         </>
                     )}
 
-                    {attrType === AttrType.string && (
+                    {attrType === FieldType.string && (
                         <>
                             <FormItem
                                 className={styles.formItem}
@@ -403,7 +403,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
                         </>
                     )}
 
-                    {attrType === AttrType.decimal && (
+                    {attrType === FieldType.decimal && (
                         <>
                             <FormItem
                                 className={styles.formItem}
@@ -427,7 +427,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
                         </>
                     )}
 
-                    {(attrType === AttrType.int || attrType === AttrType.long || attrType === AttrType.float || attrType === AttrType.double || attrType === AttrType.decimal) && (
+                    {(attrType === FieldType.int || attrType === FieldType.long || attrType === FieldType.float || attrType === FieldType.double || attrType === FieldType.decimal) && (
                         <>
                             <FormItem
                                 className={styles.formItem}

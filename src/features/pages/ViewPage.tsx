@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {Col, Collapse, Form, Modal, notification, Row, Spin, Tabs} from 'antd'
 import {Tab} from 'rc-tabs/lib/interface'
-import {Attribute, AttrType, IBuffer, Item, ItemData, RelType, UserInfo, ViewState} from '../../types'
+import {Attribute, FieldType, IBuffer, Item, ItemData, RelType, UserInfo, ViewState} from '../../types'
 import PermissionService from '../../services/permission'
 import {useTranslation} from 'react-i18next'
 import {IPage} from './pagesSlice'
@@ -324,21 +324,22 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
         }
     }
 
-    const filterVisibleAttributeNames = (attributes: {[name: string]: Attribute}): string[] => Object.keys(attributes).filter(attrName => {
+    const filterVisibleAttributeNames = useCallback((attributes: {[name: string]: Attribute}): string[] => Object.keys(attributes).filter(attrName => {
         const attr = attributes[attrName]
         return !attr.private && !attr.fieldHidden
-            && (attr.type !== AttrType.relation || (attr.relType !== RelType.oneToMany && attr.relType !== RelType.manyToMany))
+            && (attr.type !== FieldType.relation || (attr.relType !== RelType.oneToMany && attr.relType !== RelType.manyToMany))
             && (item.versioned || (attrName !== CONFIG_ID_ATTR_NAME && attrName !== MAJOR_REV_ATTR_NAME && attrName !== MINOR_REV_ATTR_NAME && attrName !== CURRENT_ATTR_NAME))
             && (item.localized || attrName !== LOCALE_ATTR_NAME)
-    })
+    }), [item.localized, item.versioned])
 
     const renderAttributes = (attributes: {[name: string]: Attribute}) => (
         <Row gutter={16}>
             {filterVisibleAttributeNames(attributes)
                 .map(attrName => {
                     const attr = attributes[attrName]
+                    console.log(attr.fieldWidth)
                     return (
-                        <Col span={6} key={attrName}>
+                        <Col span={6 * (attr.fieldWidth ?? 1)} key={attrName}>
                             <AttributeFieldWrapper
                                 pageKey={page.key}
                                 form={form}
@@ -520,7 +521,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
         const collectionAttrNames =
             Object.keys(item.spec.attributes).filter(key => {
                 const attribute = item.spec.attributes[key]
-                return attribute.type === AttrType.relation
+                return attribute.type === FieldType.relation
                     && (attribute.relType === RelType.oneToMany || attribute.relType === RelType.manyToMany)
                     && !attribute.private && !attribute.fieldHidden
             })

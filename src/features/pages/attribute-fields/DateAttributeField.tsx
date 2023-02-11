@@ -4,7 +4,7 @@ import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import {DatePicker, Form} from 'antd'
 import appConfig from '../../../config'
-import {AttrType} from '../../../types'
+import {FieldType} from '../../../types'
 import {AttributeFieldProps} from '.'
 import styles from './AttributeField.module.css'
 
@@ -14,7 +14,7 @@ const FormItem = Form.Item
 const {momentDisplayDateFormatString} = appConfig.dateTime
 
 const DateAttributeField: FC<AttributeFieldProps> = ({pageKey, attrName, attribute, value}) => {
-    if (attribute.type !== AttrType.date)
+    if (attribute.type !== FieldType.date)
         throw new Error('Illegal attribute')
 
     const {t} = useTranslation()
@@ -38,7 +38,12 @@ const DateAttributeField: FC<AttributeFieldProps> = ({pageKey, attrName, attribu
             initialValue={parseValue(value) ?? parseValue(attribute.defaultValue)}
             rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
         >
-            <DatePicker id={`${pageKey}#${attrName}`} format={momentDisplayDateFormatString} {...additionalProps}/>
+            <DatePicker
+                id={`${pageKey}#${attrName}`}
+                style={{width: '100%'}}
+                format={momentDisplayDateFormatString}
+                {...additionalProps}
+            />
         </FormItem>
     )
 }

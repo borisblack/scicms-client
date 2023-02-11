@@ -1,7 +1,7 @@
 import {Button, Form, Input, message, Modal, Tooltip} from 'antd'
 import {FC, useMemo, useState} from 'react'
 
-import {AttrType, ItemData} from '../../../types'
+import {FieldType, ItemData} from '../../../types'
 import ItemService from '../../../services/item'
 import SearchDataGridWrapper from '../SearchDataGridWrapper'
 import {useTranslation} from 'react-i18next'
@@ -22,7 +22,7 @@ interface Props extends AttributeFieldProps {
 }
 
 const StringRelationAttributeField: FC<Props> = ({pageKey, form, item, attrName, attribute, target, value, forceVisible, onItemView}) => {
-    if (attribute.type !== AttrType.string)
+    if (attribute.type !== FieldType.string)
         throw new Error('Illegal attribute')
 
     const {t} = useTranslation()
@@ -90,7 +90,6 @@ const StringRelationAttributeField: FC<Props> = ({pageKey, form, item, attrName,
             >
                 <Search
                     id={`${pageKey}#${attrName}`}
-                    style={{maxWidth: attribute.fieldWidth ? attribute.fieldWidth + (currentValue ? (SUFFIX_BUTTON_WIDTH * 2 + 4) : 0) : undefined}}
                     readOnly
                     onSearch={() => setSearchModalVisible(true)}
                     addonAfter={currentValue && [

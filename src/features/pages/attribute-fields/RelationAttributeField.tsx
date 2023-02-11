@@ -1,7 +1,7 @@
 import {Button, Form, Input, Modal, Tooltip} from 'antd'
 import {FC, useMemo, useState} from 'react'
 
-import {AttrType, ItemData, Lifecycle, Permission, RelType} from '../../../types'
+import {FieldType, ItemData, Lifecycle, Permission, RelType} from '../../../types'
 import ItemService from '../../../services/item'
 import SearchDataGridWrapper from '../SearchDataGridWrapper'
 import {useTranslation} from 'react-i18next'
@@ -20,7 +20,7 @@ const {Item: FormItem} = Form
 const {Search} = Input
 
 const RelationAttributeField: FC<AttributeFieldProps> = ({pageKey, form, item, attrName, attribute, value, onItemView}) => {
-    if (attribute.type !== AttrType.relation || attribute.relType === RelType.oneToMany || attribute.relType === RelType.manyToMany)
+    if (attribute.type !== FieldType.relation || attribute.relType === RelType.oneToMany || attribute.relType === RelType.manyToMany)
         throw new Error('Illegal attribute')
 
     const {target} = attribute
@@ -106,7 +106,6 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({pageKey, form, item, a
             >
                 <Search
                     id={`${pageKey}#${attrName}`}
-                    style={{maxWidth: attribute.fieldWidth ? attribute.fieldWidth + (currentId ? (SUFFIX_BUTTON_WIDTH * 2 + 4) : 0) : undefined}}
                     readOnly
                     onSearch={() => setRelationModalVisible(true)}
                     addonAfter={currentId && [

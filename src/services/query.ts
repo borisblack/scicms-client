@@ -4,7 +4,7 @@ import {ColumnFiltersState, SortingState} from '@tanstack/react-table'
 
 import i18n from '../i18n'
 import {apolloClient, extractGraphQLErrorMessages} from './index'
-import {Attribute, AttrType, Item, ItemData, RelType, Response, ResponseCollection} from '../types'
+import {Attribute, FieldType, Item, ItemData, RelType, Response, ResponseCollection} from '../types'
 import {DateTime} from 'luxon'
 import {
     LUXON_DATE_FORMAT_STRING,
@@ -280,10 +280,10 @@ export default class QueryService {
         if (nestedAttrName == null) {
             const attr = item.spec.attributes[attrName]
             switch (attr.type) {
-                case AttrType.relation:
+                case FieldType.relation:
                     const target = this.itemService.getByName(attr.target as string)
                     return `${attrName}.${target.titleAttribute}:${dir}`
-                case AttrType.media:
+                case FieldType.media:
                     const media = this.itemService.getMedia()
                     return `${attrName}.${media.titleAttribute}:${dir}`
                 default:
@@ -388,7 +388,7 @@ export default class QueryService {
         const filtersInput: ItemFiltersInput<ItemData> = {}
         for (const filter of filters) {
             const attr = attributes[filter.id]
-            if (attr.private || (attr.type === AttrType.relation && (attr.relType === RelType.oneToMany || attr.relType === RelType.manyToMany)))
+            if (attr.private || (attr.type === FieldType.relation && (attr.relType === RelType.oneToMany || attr.relType === RelType.manyToMany)))
                 continue
 
             filtersInput[filter.id] = this.buildAttributeFiltersInput(attr, filter.value)
@@ -398,27 +398,27 @@ export default class QueryService {
     }
 
     private buildAttributeFiltersInput(attr: Attribute, filterValue: any): ItemFiltersInput<ItemData> | ItemFilterInput<ItemData, any> {
-        if (attr.private || (attr.type === AttrType.relation && (attr.relType === RelType.oneToMany || attr.relType === RelType.manyToMany)))
+        if (attr.private || (attr.type === FieldType.relation && (attr.relType === RelType.oneToMany || attr.relType === RelType.manyToMany)))
             throw Error('Illegal attribute')
 
         switch (attr.type) {
-            case AttrType.string:
-            case AttrType.text:
-            case AttrType.uuid:
-            case AttrType.email:
-            case AttrType.password:
-            case AttrType.sequence:
-            case AttrType.enum:
-            case AttrType.json:
-            case AttrType.array:
+            case FieldType.string:
+            case FieldType.text:
+            case FieldType.uuid:
+            case FieldType.email:
+            case FieldType.password:
+            case FieldType.sequence:
+            case FieldType.enum:
+            case FieldType.json:
+            case FieldType.array:
                 return {containsi: filterValue}
-            case AttrType.int:
-            case AttrType.long:
-            case AttrType.float:
-            case AttrType.double:
-            case AttrType.decimal:
+            case FieldType.int:
+            case FieldType.long:
+            case FieldType.float:
+            case FieldType.double:
+            case FieldType.decimal:
                 return {eq: filterValue}
-            case AttrType.bool:
+            case FieldType.bool:
                 const lowerStrValue = (filterValue as string).toLowerCase()
                 if (lowerStrValue === '1' || lowerStrValue === 'true' || lowerStrValue === 'yes' || lowerStrValue === 'y')
                     return  {eq: true}
@@ -426,16 +426,16 @@ export default class QueryService {
                     return {eq: false}
                 else
                     break
-            case AttrType.date:
+            case FieldType.date:
                 return buildDateFilter(filterValue)
-            case AttrType.time:
+            case FieldType.time:
                 return buildTimeFilter(filterValue)
-            case AttrType.datetime:
-            case AttrType.timestamp:
+            case FieldType.datetime:
+            case FieldType.timestamp:
                 return buildDateTimeFilter(filterValue)
-            case AttrType.media:
+            case FieldType.media:
                 return {filename: {containsi: filterValue}}
-            case AttrType.relation:
+            case FieldType.relation:
                 if (!attr.target)
                     throw new Error('Illegal attribute')
 
