@@ -5,9 +5,10 @@ import {itemIndexes} from '../custom-components/item/indexes/item-indexes'
 import {itemTemplateIndexes} from '../custom-components/item/indexes/item-template-indexes'
 import {userRoles} from '../custom-components/user/user-roles/user-roles'
 import {lifecycleSpec} from '../custom-components/lifecycle/spec/lifecycle-spec'
+import {datasetColumns} from '../custom-components/dataset/columns/dataset-columns'
 import {dashboardSpec} from '../custom-components/dashboard/spec/dashboard-spec'
 import {dashboardPreview} from '../custom-components/dashboard/preview/dashboard-preview'
-// import {userGroups} from '../custom-components/user/user-groups/user-groups'
+import {userGroups} from '../custom-components/user/user-groups/user-groups'
 
 interface CustomComponentConfig {
     components: CustomComponent[]
@@ -22,9 +23,10 @@ const customComponentConfig: CustomComponentConfig = {
         itemTemplateIndexes,
         userRoles,
         lifecycleSpec,
+        datasetColumns,
         dashboardSpec,
         dashboardPreview,
-        // userGroups, // owner is a group
+        userGroups // owner is a group
     ]
 }
 

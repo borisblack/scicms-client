@@ -319,6 +319,10 @@ export interface Column {
     type: FieldType
 }
 
+export interface NamedColumn extends Column {
+    name: string
+}
+
 export interface Dashboard extends DefaultItemTemplate {
     name: string
     spec: IDashboardSpec

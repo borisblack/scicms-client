@@ -4,7 +4,7 @@ import {ColumnDef, ColumnFiltersState, createColumnHelper, SortingState} from '@
 import {Button, Checkbox, Tag} from 'antd'
 import {DateTime} from 'luxon'
 
-import {Attribute, FieldType, Item, ItemData, Media, NamedAttribute, NamedIndex, RelType} from '../types'
+import {Attribute, FieldType, Item, ItemData, Media, NamedAttribute, NamedColumn, NamedIndex, RelType} from '../types'
 import appConfig from '../config'
 import ItemService from '../services/item'
 import {DataWithPagination, RequestParams} from '../components/datagrid/DataGrid'
@@ -378,6 +378,24 @@ export const getIndexColumns = (): ColumnDef<NamedIndex, any>[] =>
     ]
 
 export const getHiddenIndexColumns = () => []
+
+export const getColumnColumns = (): ColumnDef<NamedColumn, any>[] =>
+    [
+        columnHelper.accessor('name', {
+            header: i18n.t('Name'),
+            cell: info => info.getValue(),
+            size: appConfig.ui.dataGrid.colWidth,
+            enableSorting: true
+        }) as ColumnDef<NamedColumn, string>,
+        columnHelper.accessor('type', {
+            header: i18n.t('Type'),
+            cell: info => <Tag color="processing">{info.getValue()}</Tag>,
+            size: appConfig.ui.dataGrid.colWidth,
+            enableSorting: true
+        }) as ColumnDef<NamedColumn, FieldType>
+    ]
+
+export const getHiddenColumnColumns = () => []
 
 export function processLocal(data: any[], params: RequestParams): DataWithPagination<any> {
     const {sorting, filters, pagination} = params

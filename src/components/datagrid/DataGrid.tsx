@@ -26,7 +26,7 @@ interface Props {
     title?: string
     getRowContextMenu?: (row: any) => MenuProps['items']
     onRequest: (params: RequestParams) => void
-    onRowDoubleClick: (row: Row<any>) => void
+    onRowDoubleClick?: (row: Row<any>) => void
 }
 
 export interface DataWithPagination<T> {
@@ -53,7 +53,7 @@ interface RequestPagination {
     pageSize: number
 }
 
-function DataGrid({loading = false, columns, data, initialState, hasFilters = true, version = 0, toolbar = null, title = '', getRowContextMenu, onRequest, onRowDoubleClick}: Props) {
+function DataGrid({loading = false, columns, data, initialState, hasFilters = true, version = 0, toolbar = null, title = '', getRowContextMenu, onRequest, onRowDoubleClick = () => {}}: Props) {
     const initialColumnVisibilityMemoized = useMemo((): ColumnVisibility => {
         const initialColumnVisibility: ColumnVisibility = {}
         initialState.hiddenColumns.forEach(it => {
