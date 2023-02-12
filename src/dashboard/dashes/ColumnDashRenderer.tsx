@@ -41,7 +41,7 @@ export class ColumnDashRenderer implements DashRenderer {
             return <Alert message="yField attribute not specified" type="error"/>
 
         const config: ColumnConfig = {
-            data: data.map(it => ({...it, [xField]: it[xField]?.toString()?.trim()})),
+            data,
             xField,
             yField,
             seriesField,
