@@ -1,9 +1,9 @@
 import {FC} from 'react'
 import {Statistic} from 'antd'
 import {DashType} from '../../types'
-import {InnerDashProps} from '.'
+import {InnerDashRenderProps} from '.'
 
-const StatisticDash: FC<InnerDashProps> = ({dash, data}) => {
+const StatisticDash: FC<InnerDashRenderProps> = ({dash, data}) => {
     if (dash.type !== DashType.statistic)
         throw new Error('Illegal dash type')
 

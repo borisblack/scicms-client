@@ -3,10 +3,15 @@ import {useTranslation} from 'react-i18next'
 
 import {CustomComponentRenderContext} from '../../index'
 import {DATASET_ITEM_NAME} from '../../../config/constants'
-import {NamedAttribute, NamedColumn} from '../../../types'
 import DataGrid, {DataWithPagination, RequestParams} from '../../../components/datagrid/DataGrid'
 import appConfig from '../../../config'
-import {getColumnColumns, getHiddenColumnColumns, getInitialData, processLocal} from '../../../util/datagrid'
+import {
+    getColumnColumns,
+    getHiddenColumnColumns,
+    getInitialData,
+    NamedColumn,
+    processLocal
+} from '../../../util/datagrid'
 
 export default function Columns({me, item, buffer, data}: CustomComponentRenderContext) {
     if (item.name !== DATASET_ITEM_NAME)
@@ -20,7 +25,7 @@ export default function Columns({me, item, buffer, data}: CustomComponentRenderC
         const columns = data?.spec?.columns ?? {}
         return Object.keys(columns).map(attrName => ({name: attrName, ...columns[attrName]}))
     }, [data?.spec?.columns])
-    const [filteredData, setFilteredData] = useState<DataWithPagination<NamedAttribute>>(getInitialData())
+    const [filteredData, setFilteredData] = useState<DataWithPagination<NamedColumn>>(getInitialData())
 
     useEffect(() => {
         setVersion(prevVersion => prevVersion + 1)

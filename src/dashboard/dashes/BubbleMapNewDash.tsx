@@ -3,12 +3,12 @@ import {FC, useEffect, useState} from 'react'
 import Chart from 'chart.js/auto'
 import {BubbleMapController, ColorScale, GeoFeature, ProjectionScale, SizeScale} from 'chartjs-chart-geo'
 import {DashType} from '../../types'
-import {InnerDashProps} from '.'
+import {InnerDashRenderProps} from '.'
 import {AreaMap, AreaMapConfig} from '@ant-design/charts'
 
 Chart.register(BubbleMapController, GeoFeature, ColorScale, ProjectionScale, SizeScale)
 
-const BubbleMapNewDash: FC<InnerDashProps> = ({dash}) => {
+const BubbleMapNewDash: FC<InnerDashRenderProps> = ({dash}) => {
     if (dash.type !== DashType.bubbleMap)
         throw new Error('Illegal dash type')
 

@@ -1,10 +1,10 @@
 import {FC} from 'react'
 import {Scatter, ScatterConfig} from '@ant-design/charts'
 import {DashType} from '../../types'
-import {InnerDashProps} from '.'
+import {InnerDashRenderProps} from '.'
 import appConfig from '../../config'
 
-const ScatterDash: FC<InnerDashProps> = ({pageKey, dash, fullScreen, data}) => {
+const ScatterDash: FC<InnerDashRenderProps> = ({pageKey, dash, fullScreen, data}) => {
     if (dash.type !== DashType.scatter)
         throw new Error('Illegal dash type')
 

@@ -4,7 +4,7 @@ import {PageHeader} from '@ant-design/pro-layout'
 import {useTranslation} from 'react-i18next'
 import 'chartjs-adapter-luxon'
 import {DashType, TemporalPeriod, TemporalType} from '../types'
-import {DashMap, DashProps} from './dashes'
+import {DashMap, DashRenderProps} from './dashes'
 import BarDash from './dashes/BarDash'
 import DoughnutDash from './dashes/DoughnutDash'
 import PieDash from './dashes/PieDash'
@@ -54,7 +54,7 @@ const dashMap: DashMap = {
 
 const datasetService = DatasetService.getInstance()
 
-export default function DashWrapper(props: DashProps) {
+export default function DashWrapper(props: DashRenderProps) {
     const {dataset, dash, isFullScreenComponentExist, onFullScreenComponentStateChange} = props
     const getDashComponent = useCallback(() => dashMap[dash.type], [dash.type])
     const DashComponent = getDashComponent()

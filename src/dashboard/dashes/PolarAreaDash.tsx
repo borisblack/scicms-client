@@ -2,9 +2,9 @@ import {FC} from 'react'
 import {Rose, RoseConfig} from '@ant-design/charts'
 
 import {DashType} from '../../types'
-import {InnerDashProps} from '.'
+import {InnerDashRenderProps} from '.'
 
-const PolarAreaDash: FC<InnerDashProps> = ({pageKey, dash, fullScreen, data}) => {
+const PolarAreaDash: FC<InnerDashRenderProps> = ({pageKey, dash, fullScreen, data}) => {
     if (dash.type !== DashType.polarArea)
         throw new Error('Illegal dash type')
 

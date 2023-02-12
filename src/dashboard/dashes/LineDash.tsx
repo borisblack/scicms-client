@@ -1,10 +1,10 @@
 import {FC} from 'react'
 import {Line, LineConfig} from '@ant-design/charts'
 import {DashType} from '../../types'
-import {InnerDashProps} from '.'
+import {InnerDashRenderProps} from '.'
 import appConfig from '../../config'
 
-const LineDash: FC<InnerDashProps> = ({pageKey, dash, fullScreen, data}) => {
+const LineDash: FC<InnerDashRenderProps> = ({pageKey, dash, fullScreen, data}) => {
     if (dash.type !== DashType.line)
         throw new Error('Illegal dash type')
 

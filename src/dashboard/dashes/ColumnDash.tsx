@@ -1,10 +1,10 @@
 import {FC} from 'react'
 import {Column, ColumnConfig} from '@ant-design/charts'
 import {DashType} from '../../types'
-import {InnerDashProps} from '.'
+import {InnerDashRenderProps} from '.'
 import appConfig from '../../config'
 
-const ColumnDash: FC<InnerDashProps> = ({dash, data, }) => {
+const ColumnDash: FC<InnerDashRenderProps> = ({dash, data, }) => {
     if (dash.type !== DashType.column)
         throw new Error('Illegal dash type')
 

@@ -1,10 +1,10 @@
 import {FC} from 'react'
 import {Pie, PieConfig} from '@ant-design/charts'
 import {DashType} from '../../types'
-import {InnerDashProps} from '.'
+import {InnerDashRenderProps} from '.'
 import appConfig from '../../config'
 
-const PieDash: FC<InnerDashProps> = ({pageKey, dash, fullScreen, data}) => {
+const PieDash: FC<InnerDashRenderProps> = ({pageKey, dash, fullScreen, data}) => {
     if (dash.type !== DashType.pie)
         throw new Error('Illegal dash type')
 

@@ -4,7 +4,7 @@ import {ColumnDef, ColumnFiltersState, createColumnHelper, SortingState} from '@
 import {Button, Checkbox, Tag} from 'antd'
 import {DateTime} from 'luxon'
 
-import {Attribute, FieldType, Item, ItemData, Media, NamedAttribute, NamedColumn, NamedIndex, RelType} from '../types'
+import {Attribute, Column, FieldType, Index, Item, ItemData, Media, RelType} from '../types'
 import appConfig from '../config'
 import ItemService from '../services/item'
 import {DataWithPagination, RequestParams} from '../components/datagrid/DataGrid'
@@ -13,6 +13,18 @@ import MediaService from '../services/media'
 import {ACCESS_ITEM_NAME, FILENAME_ATTR_NAME, MASK_ATTR_NAME, MEDIA_ITEM_NAME, UTC} from '../config/constants'
 import i18n from '../i18n'
 import {getBit} from './index'
+
+export interface NamedAttribute extends Attribute {
+    name: string
+}
+
+export interface NamedIndex extends Index {
+    name: string
+}
+
+export interface NamedColumn extends Column {
+    name: string
+}
 
 const {luxonDisplayDateFormatString, luxonDisplayTimeFormatString, luxonDisplayDateTimeFormatString} = appConfig.dateTime
 const columnHelper = createColumnHelper<any>()

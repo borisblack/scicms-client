@@ -1,10 +1,10 @@
 import {FC} from 'react'
 import {Area, AreaConfig} from '@ant-design/charts'
 import {DashType} from '../../types'
-import {InnerDashProps} from '.'
+import {InnerDashRenderProps} from '.'
 import appConfig from '../../config'
 
-const AreaDash: FC<InnerDashProps> = ({pageKey, dash, fullScreen, data}) => {
+const AreaDash: FC<InnerDashRenderProps> = ({pageKey, dash, fullScreen, data}) => {
     if (dash.type !== DashType.area)
         throw new Error('Illegal dash type')
 

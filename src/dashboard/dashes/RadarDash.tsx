@@ -2,10 +2,10 @@ import {FC} from 'react'
 import {Radar, RadarConfig} from '@ant-design/charts'
 
 import {DashType} from '../../types'
-import {InnerDashProps} from '.'
+import {InnerDashRenderProps} from '.'
 import appConfig from '../../config'
 
-const RadarDash: FC<InnerDashProps> = ({pageKey, dash, fullScreen, data}) => {
+const RadarDash: FC<InnerDashRenderProps> = ({pageKey, dash, fullScreen, data}) => {
     if (dash.type !== DashType.radar)
         throw new Error('Illegal dash type')
 

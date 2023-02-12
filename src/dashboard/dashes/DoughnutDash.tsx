@@ -1,10 +1,10 @@
 import {FC} from 'react'
 import {Pie, PieConfig} from '@ant-design/charts'
 import {DashType} from '../../types'
-import {InnerDashProps} from '.'
+import {InnerDashRenderProps} from '.'
 import appConfig from '../../config'
 
-const DoughnutDash: FC<InnerDashProps> = ({pageKey, fullScreen, dash, data}) => {
+const DoughnutDash: FC<InnerDashRenderProps> = ({pageKey, fullScreen, dash, data}) => {
     if (dash.type !== DashType.doughnut)
         throw new Error('Illegal dash type')
 

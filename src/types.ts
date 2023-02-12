@@ -213,10 +213,6 @@ export interface Attribute {
     fieldWidth?: number
 }
 
-export interface NamedAttribute extends Attribute {
-    name: string
-}
-
 export enum FieldType {
     uuid = 'uuid',
     string = 'string',
@@ -260,10 +256,6 @@ export enum AggregateType {
 export interface Index {
     columns: string[]
     unique: boolean
-}
-
-export interface NamedIndex extends Index {
-    name: string
 }
 
 interface AllowedLifecycle extends DefaultItemTemplate, IntermediateItemTemplate {
@@ -317,10 +309,6 @@ export interface DatasetSpec {
 
 export interface Column {
     type: FieldType
-}
-
-export interface NamedColumn extends Column {
-    name: string
 }
 
 export interface Dashboard extends DefaultItemTemplate {

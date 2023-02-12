@@ -1,10 +1,10 @@
 import {FC} from 'react'
 import {Bar, BarConfig} from '@ant-design/charts'
 import {DashType} from '../../types'
-import {InnerDashProps} from '.'
+import {InnerDashRenderProps} from '.'
 import appConfig from '../../config'
 
-const BarDash: FC<InnerDashProps> = ({pageKey, dash, fullScreen, data, }) => {
+const BarDash: FC<InnerDashRenderProps> = ({pageKey, dash, fullScreen, data, }) => {
     if (dash.type !== DashType.bar)
         throw new Error('Illegal dash type')
 

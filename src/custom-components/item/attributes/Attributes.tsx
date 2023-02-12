@@ -7,11 +7,17 @@ import {useTranslation} from 'react-i18next'
 import {CustomComponentRenderContext} from '../../index'
 import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME} from '../../../config/constants'
 import ItemTemplateService from '../../../services/item-template'
-import {Attribute, ItemSpec, NamedAttribute} from '../../../types'
+import {Attribute, ItemSpec} from '../../../types'
 import PermissionService from '../../../services/permission'
 import DataGrid, {DataWithPagination, RequestParams} from '../../../components/datagrid/DataGrid'
 import appConfig from '../../../config'
-import {getAttributeColumns, getHiddenAttributeColumns, getInitialData, processLocal} from '../../../util/datagrid'
+import {
+    getAttributeColumns,
+    getHiddenAttributeColumns,
+    getInitialData,
+    NamedAttribute,
+    processLocal
+} from '../../../util/datagrid'
 import AttributeForm from './AttributeForm'
 import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design/icons'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
