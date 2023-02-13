@@ -84,7 +84,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
         buffer,
         data,
         onBufferChange: handleBufferChange,
-    }), [buffer, data, item, me])
+    }), [buffer, data, handleBufferChange, item, me])
 
     const customComponentContext: CustomComponentRenderContext = useMemo(() => ({
         me,
@@ -97,7 +97,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
         onItemCreate,
         onItemView,
         onItemDelete
-    }), [buffer, data, form, item, me, onItemCreate, onItemDelete, onItemView, page.key])
+    }), [buffer, data, form, handleBufferChange, item, me, onItemCreate, onItemDelete, onItemView, page.key])
 
     useEffect(() => {
         if (DEBUG)
