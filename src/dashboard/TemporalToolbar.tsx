@@ -3,7 +3,7 @@ import {FieldType, TemporalPeriod, TemporalType} from '../types'
 import {useTranslation} from 'react-i18next'
 import dayjs, {Dayjs} from 'dayjs'
 import {useCallback} from 'react'
-import {allTemporalPeriods, parseTemporal, temporalPeriodTitles, timeTemporalPeriods} from '../util/dashboard'
+import {allTemporalPeriods, formatTemporalIso, temporalPeriodTitles, timeTemporalPeriods} from '../util/dashboard'
 
 interface Props {
     temporalType: TemporalType
@@ -21,12 +21,12 @@ export default function TemporalToolbar({temporalType, period, startTemporal, en
     const {t} = useTranslation()
 
     const handleStartTemporalChange = useCallback(
-        (startTemporal: Dayjs | null) => onStartTemporalChange(parseTemporal(startTemporal, temporalType)),
+        (startTemporal: Dayjs | null) => onStartTemporalChange(formatTemporalIso(startTemporal, temporalType)),
         [onStartTemporalChange, temporalType]
     )
 
     const handleEndTemporalChange = useCallback(
-        (endTemporal: Dayjs | null) => onEndTemporalChange(parseTemporal(endTemporal, temporalType)),
+        (endTemporal: Dayjs | null) => onEndTemporalChange(formatTemporalIso(endTemporal, temporalType)),
         [onEndTemporalChange, temporalType]
     )
 

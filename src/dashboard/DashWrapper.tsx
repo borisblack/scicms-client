@@ -34,7 +34,8 @@ import AreaDash from './dashes/AreaDash'
 import styles from './DashWrapper.module.css'
 import DatasetService, {DatasetInput} from '../services/dataset'
 import appConfig from '../config'
-import {formatTemporal, parseTemporal, startTemporalFromPeriod, temporalPeriodTitles} from '../util/dashboard'
+import {formatTemporalDisplay, formatTemporalIso, startTemporalFromPeriod, temporalPeriodTitles} from '../util/dashboard'
+import dayjs from 'dayjs'
 
 const dashMap: DashMap = {
     [DashType.area]: AreaDash,
@@ -123,7 +124,8 @@ export default function DashWrapper(props: DashRenderProps) {
             const temporalField = dash.temporalField as string
             datasetInput.filters = datasetInput.filters ?? {}
             datasetInput.filters[temporalField] = datasetInput.filters[temporalField] ?? {}
-            datasetInput.filters[temporalField]['$gte'] = parseTemporal(startTemporalFromPeriod(period, temporalType), temporalType) as string
+            datasetInput.filters[temporalField]['$gte'] = formatTemporalIso(startTemporalFromPeriod(period, temporalType), temporalType) as string
+            datasetInput.filters[temporalField]['$lte'] = formatTemporalIso(dayjs(), temporalType) as string
         }
 
         if (dash.isAggregate) {
@@ -208,8 +210,8 @@ export default function DashWrapper(props: DashRenderProps) {
             if (startTemporal == null && endTemporal == null)
                 return null
 
-            const start = formatTemporal(startTemporal, dash.temporalType as TemporalType)
-            const end = formatTemporal(endTemporal, dash.temporalType as TemporalType)
+            const start = formatTemporalDisplay(startTemporal, dash.temporalType as TemporalType)
+            const end = formatTemporalDisplay(endTemporal, dash.temporalType as TemporalType)
 
             return `${start} - ${end}`
         } else {

@@ -113,7 +113,7 @@ export function startTemporalFromPeriod(period: TemporalPeriod, temporalType: Te
     throw new Error('Illegal argument')
 }
 
-export const parseTemporal = (temporal: Dayjs | null, temporalType: TemporalType): string | null => {
+export const formatTemporalIso = (temporal: Dayjs | null, temporalType: TemporalType): string | null => {
     if (!temporal)
         return null
 
@@ -127,7 +127,7 @@ export const parseTemporal = (temporal: Dayjs | null, temporalType: TemporalType
     return dt.setZone(appConfig.dateTime.timeZone, {keepLocalTime: true}).toISO()
 }
 
-export const formatTemporal = (temporal: string | null, temporalType: TemporalType): string => {
+export const formatTemporalDisplay = (temporal: string | null, temporalType: TemporalType): string => {
     if (temporal == null)
         return ''
 
