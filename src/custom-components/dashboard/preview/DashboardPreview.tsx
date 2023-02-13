@@ -8,11 +8,11 @@ const initialSpec: IDashboardSpec = {
     dashes: []
 }
 
-export default function DashboardPreview({me, pageKey, item, buffer, data}: CustomComponentRenderContext) {
+export default function DashboardPreview({me, pageKey, item, data}: CustomComponentRenderContext) {
     if (item.name !== DASHBOARD_ITEM_NAME)
         throw new Error('Illegal item')
 
-    const spec: IDashboardSpec = useMemo(() => buffer.form.spec ?? {...(data?.spec ?? initialSpec)}, [buffer.form.spec, data?.spec])
+    const spec: IDashboardSpec = useMemo(() => data ? {...data.spec} : initialSpec, [data])
 
     return <DashboardPanel me={me} pageKey={pageKey} spec={spec}/>
 }

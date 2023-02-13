@@ -24,7 +24,7 @@ const initialSpec: IDashboardSpec = {
 
 let tempId = 0
 
-export default function DashboardSpec({me, item, buffer, data}: CustomComponentRenderContext) {
+export default function DashboardSpec({me, item, data, onBufferChange}: CustomComponentRenderContext) {
     if (item.name !== DASHBOARD_ITEM_NAME)
         throw new Error('Illegal attribute')
 
@@ -38,14 +38,14 @@ export default function DashboardSpec({me, item, buffer, data}: CustomComponentR
         return [canEdit]
     }, [data, isLockedByMe, isNew, item, me, permissionService])
     const [canEdit] = permissions
-    const [spec, setSpec] = useState<IDashboardSpec>(buffer.form.spec ?? {...(data?.spec ?? initialSpec)})
+    const [spec, setSpec] = useState<IDashboardSpec>(data ? {...data.spec} : initialSpec)
     const [activeDash, setActiveDash] = useState<IDash | null>(null)
     const [isDashModalVisible, setDashModalVisible] = useState(false)
     const [dashForm] = Form.useForm()
 
     useEffect(() => {
-        buffer.form.spec = spec
-    }, [buffer.form, spec])
+        onBufferChange({spec})
+    }, [spec])
 
     function handleDashAdd() {
         setSpec(prevSpec => {

@@ -57,6 +57,8 @@ export const temporalPeriodTitles: {[key: string]: string} = {
     [TemporalPeriod.LAST_30_YEARS]: util.format(i18n.t('Last %d years'), 30)
 }
 
+export const isTemporal = (fieldType: FieldType) => temporalTypeSet.has(fieldType)
+
 export function startTemporalFromPeriod(period: TemporalPeriod, temporalType: TemporalType): Dayjs {
     switch (period) {
         case TemporalPeriod.LAST_5_MINUTES:
@@ -163,7 +165,7 @@ export const map3dMapMetrics = (dash: IDash, data: any[]): {longitude: number, l
 }
 
 function parseMetric(metric: any, metricType?: MetricType): any {
-    if (metricType != null && temporalTypeSet.has(metricType))
+    if (metricType != null && isTemporal(metricType))
         return DateTime.fromISO(metric).toJSDate()
 
     return metric

@@ -8,12 +8,12 @@ const renderers: DashRenderer[] = []
 
 const addRenderer = (renderer: DashRenderer) => renderers.push(renderer)
 
-export function getRenderer(dashType: DashType): DashRenderer {
+export function getRenderer(dashType: DashType): DashRenderer | null {
     let renderer: DashRenderer | undefined = rendererCache[dashType]
     if (renderer == null) {
         renderer = renderers.find(r => r.supports(dashType))
         if (renderer == null)
-            throw new Error(`No renderer for ${dashType} dash`)
+            return null
 
         rendererCache[dashType] = renderer
     }

@@ -4,7 +4,7 @@ import Chart from 'chart.js/auto'
 import {BubbleMapController, ColorScale, GeoFeature, ProjectionScale, SizeScale, topojson} from 'chartjs-chart-geo'
 import {DashType} from '../../types'
 import {InnerDashRenderProps} from '.'
-import {map3dMapMetrics, mapLabels, temporalTypeSet, timeScaleProps} from '../../util/dashboard'
+import {isTemporal, map3dMapMetrics, mapLabels, temporalTypeSet, timeScaleProps} from '../../util/dashboard'
 
 Chart.register(BubbleMapController, GeoFeature, ColorScale, ProjectionScale, SizeScale)
 
@@ -38,7 +38,7 @@ const BubbleMapDash: FC<InnerDashRenderProps> = ({pageKey, fullScreen, dash, dat
         const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
         const scales: any = {}
 
-        if (dash.metricType != null && temporalTypeSet.has(dash.metricType)) {
+        if (dash.metricType != null && isTemporal(dash.metricType)) {
             scales.r = {
                 ...timeScaleProps,
                 // min: _.min(preparedData.map(it => it.y))?.toISOString()

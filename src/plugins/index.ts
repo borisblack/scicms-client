@@ -37,6 +37,7 @@ export interface CustomPluginRenderContext {
     item: Item
     buffer: IBuffer
     data?: ItemData | null
+    onBufferChange: (buffer: IBuffer) => void
 }
 
 const plugins: CustomPlugin[] = pluginConfig.plugins.sort((a, b) => a.priority - b.priority)

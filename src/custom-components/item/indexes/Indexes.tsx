@@ -16,7 +16,7 @@ import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design
 import {ItemType} from 'antd/es/menu/hooks/useItems'
 import IndexForm from './IndexForm'
 
-export default function Indexes({me, item, buffer, data}: CustomComponentRenderContext) {
+export default function Indexes({me, item, buffer, data, onBufferChange}: CustomComponentRenderContext) {
     if (item.name !== ITEM_TEMPLATE_ITEM_NAME && item.name !== ITEM_ITEM_NAME)
         throw new Error('Illegal attribute')
 
@@ -35,7 +35,7 @@ export default function Indexes({me, item, buffer, data}: CustomComponentRenderC
     const [canEdit] = permissions
     const columns = useMemo(() => getIndexColumns(), [])
     const hiddenColumns = useMemo(() => getHiddenIndexColumns(), [])
-    const spec: ItemSpec = useMemo(() => buffer.form.spec ?? {...(data?.spec ?? {})}, [buffer.form.spec, data?.spec])
+    const spec: ItemSpec = useMemo(() => data ? {...data.spec} : {}, [data])
 
     const initialNamedIndexes = useMemo((): NamedIndex[] => {
         const indexes = spec.indexes ?? {}
@@ -69,8 +69,8 @@ export default function Indexes({me, item, buffer, data}: CustomComponentRenderC
             delete newIndex.name
         })
         spec.indexes = newIndexes
-        buffer.form.spec = spec
-    }, [buffer.form, namedIndexes, spec])
+        onBufferChange({spec})
+    }, [namedIndexes, spec])
 
     const handleRequest = useCallback(async (params: RequestParams) => {
         setFilteredData(processLocal(namedIndexes, params))

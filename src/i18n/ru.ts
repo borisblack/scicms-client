@@ -97,6 +97,7 @@ const ru = {
         'Group Roles': 'Роли группы',
         'Groups': 'Группы',
         'Help': 'Справка',
+        'Hide legend': 'Скрыть легенду',
         'Icon': 'Значок',
         'Identities': 'Субъекты',
         'Identity': 'Субъект',

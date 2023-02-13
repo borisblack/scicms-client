@@ -55,12 +55,12 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
     const [loading, setLoading] = useState<boolean>(false)
     const [isLockedByMe, setLockedByMe] = useState<boolean>(data?.lockedBy?.data?.id === me.id)
     const [viewState, setViewState] = useState<ViewState>(isNew ? ViewState.CREATE : (isLockedByMe ? (item.versioned ? ViewState.CREATE_VERSION : ViewState.UPDATE) : ViewState.VIEW))
+    const [buffer, setBuffer] = useState<IBuffer>({})
     const headerRef = useRef<HTMLDivElement>(null)
     const contentRef = useRef<HTMLDivElement>(null)
     const contentFormRef = useRef<HTMLDivElement>(null)
     const tabsContentRef = useRef<HTMLDivElement>(null)
     const footerRef = useRef<HTMLDivElement>(null)
-    const bufferRef = useRef<IBuffer>({form: {}})
     const [form] = Form.useForm()
 
     const coreConfigService = useMemo(() => CoreConfigService.getInstance(), [])
@@ -77,19 +77,27 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
         return [acl.canCreate, canEdit, canDelete]
     }, [data, isSystemItem, item, me, permissionService])
     const [canCreate, canEdit, canDelete] = permissions
+    const handleBufferChange = useCallback((bufferChanges: IBuffer) => setBuffer({...buffer, ...bufferChanges}), [buffer])
+    const pluginContext: CustomPluginRenderContext = useMemo(() => ({
+        me,
+        item,
+        buffer,
+        data,
+        onBufferChange: handleBufferChange,
+    }), [buffer, data, item, me])
 
-    const pluginContext: CustomPluginRenderContext = useMemo(() => ({me, item, buffer: bufferRef.current, data}), [data, item, me])
     const customComponentContext: CustomComponentRenderContext = useMemo(() => ({
         me,
         pageKey: page.key,
         item,
-        buffer: bufferRef.current,
+        buffer,
         data,
         form,
+        onBufferChange: handleBufferChange,
         onItemCreate,
         onItemView,
         onItemDelete
-    }), [data, form, item, me, onItemCreate, onItemDelete, onItemView, page.key])
+    }), [buffer, data, form, item, me, onItemCreate, onItemDelete, onItemView, page.key])
 
     useEffect(() => {
         if (DEBUG)
@@ -143,12 +151,12 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
     async function handleFormFinish(values: any) {
         if (DEBUG) {
             console.log('Values', values)
-            console.log('Buffer', bufferRef.current)
+            console.log('Buffer', buffer)
         }
 
         let parsedValues: ItemData
         try {
-            parsedValues = await parseValues(item, data, {...values, ...bufferRef.current.form})
+            parsedValues = await parseValues(item, data, {...values, ...buffer})
             if (DEBUG)
                 console.log('Parsed values', parsedValues)
         } catch (e: any) {
@@ -197,7 +205,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
             const doCreate = async () => await mutationService.create(item, values, majorRev, locale)
             let created: ItemData
             if (hasApiMiddleware(item.name)) {
-                const apiMiddlewareContext: ApiMiddlewareContext = {me, item, buffer: bufferRef.current, values}
+                const apiMiddlewareContext: ApiMiddlewareContext = {me, item, buffer, values}
                 created = await handleApiMiddleware(item.name, ApiOperation.CREATE, apiMiddlewareContext, doCreate)
             } else {
                 created = await doCreate()
@@ -234,7 +242,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
             const doCreateVersion = async () => await mutationService.createVersion(item, data.id, values, majorRev, locale, appConfig.mutation.copyCollectionRelations)
             let createdVersion: ItemData
             if (hasApiMiddleware(item.name)) {
-                const apiMiddlewareContext: ApiMiddlewareContext = {me, item, buffer: bufferRef.current, values}
+                const apiMiddlewareContext: ApiMiddlewareContext = {me, item, buffer, values}
                 createdVersion = await handleApiMiddleware(item.name, ApiOperation.CREATE_VERSION, apiMiddlewareContext, doCreateVersion)
             } else {
                 createdVersion = await doCreateVersion()
@@ -270,7 +278,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
             const doCreateLocalization = async () => await mutationService.createLocalization(item, data.id, values, locale, appConfig.mutation.copyCollectionRelations)
             let createdLocalization: ItemData
             if (hasApiMiddleware(item.name)) {
-                const apiMiddlewareContext: ApiMiddlewareContext = {me, item, buffer: bufferRef.current, values}
+                const apiMiddlewareContext: ApiMiddlewareContext = {me, item, buffer, values}
                 createdLocalization = await handleApiMiddleware(item.name, ApiOperation.CREATE_LOCALIZATION, apiMiddlewareContext, doCreateLocalization)
             } else {
                 createdLocalization = await doCreateLocalization()
@@ -303,7 +311,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
             const doUpdate = async () => await mutationService.update(item, data.id, values)
             let updated: ItemData
             if (hasApiMiddleware(item.name)) {
-                const apiMiddlewareContext: ApiMiddlewareContext = {me, item, buffer: bufferRef.current, values}
+                const apiMiddlewareContext: ApiMiddlewareContext = {me, item, buffer, values}
                 updated = await handleApiMiddleware(item.name, ApiOperation.UPDATE, apiMiddlewareContext, doUpdate)
             } else {
                 updated = await doUpdate()
@@ -554,7 +562,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
                     me={me}
                     page={page}
                     form={form}
-                    buffer={bufferRef.current}
+                    buffer={buffer}
                     canCreate={canCreate}
                     canEdit={canEdit}
                     canDelete={canDelete}

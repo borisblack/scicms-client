@@ -24,7 +24,7 @@ import {ItemType} from 'antd/es/menu/hooks/useItems'
 
 const EDIT_MODAL_WIDTH = 800
 
-export default function Attributes({me, item, buffer, data}: CustomComponentRenderContext) {
+export default function Attributes({me, item, buffer, data, onBufferChange}: CustomComponentRenderContext) {
     if (item.name !== ITEM_TEMPLATE_ITEM_NAME && item.name !== ITEM_ITEM_NAME)
         throw new Error('Illegal attribute')
 
@@ -43,7 +43,7 @@ export default function Attributes({me, item, buffer, data}: CustomComponentRend
     const [canEdit] = permissions
     const columns = useMemo(() => getAttributeColumns(), [])
     const hiddenColumns = useMemo(() => getHiddenAttributeColumns(), [])
-    const spec: ItemSpec = useMemo(() => buffer.form.spec ?? {...(data?.spec ?? {})}, [buffer.form.spec, data?.spec])
+    const spec: ItemSpec = useMemo(() => data ? {...data.spec} : {}, [data])
 
     const initialNamedAttributes = useMemo((): NamedAttribute[] => {
         const attributes = spec.attributes ?? {}
@@ -77,8 +77,8 @@ export default function Attributes({me, item, buffer, data}: CustomComponentRend
             delete newAttribute.name
         })
         spec.attributes = newAttributes
-        buffer.form.spec = spec
-    }, [buffer.form, namedAttributes, spec])
+        onBufferChange({spec})
+    }, [namedAttributes, spec])
 
     const handleRequest = useCallback(async (params: RequestParams) => {
         setFilteredData(processLocal(namedAttributes, params))

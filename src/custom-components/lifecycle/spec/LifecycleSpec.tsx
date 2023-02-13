@@ -15,7 +15,7 @@ const customTranslateModule = {
     translate: [ 'value', customTranslate ]
 }
 
-export default function LifecycleSpec({me, item, buffer, data}: CustomComponentRenderContext) {
+export default function LifecycleSpec({me, item, data, onBufferChange}: CustomComponentRenderContext) {
     if (item.name !== LIFECYCLE_ITEM_NAME)
         throw new Error('Illegal attribute')
 
@@ -45,7 +45,7 @@ export default function LifecycleSpec({me, item, buffer, data}: CustomComponentR
             eventBus.on('elements.changed', (context: any) => {
                 m.saveXML({format: true})
                     .then((xml: any) => {
-                        buffer.form.spec = xml.xml
+                        onBufferChange({spec: xml.xml})
                     })
             })
         } else {
@@ -64,7 +64,7 @@ export default function LifecycleSpec({me, item, buffer, data}: CustomComponentR
             m = null
             modeler.current = null
         }
-    }, [buffer.form, canEdit, data?.spec])
+    }, [canEdit, data?.spec])
 
     return (
         <div className={styles.bpmnDiagramWrapper}>

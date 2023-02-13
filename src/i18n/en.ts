@@ -97,6 +97,7 @@ const en = {
         'Group Roles': 'Group Roles',
         'Groups': 'Groups',
         'Help': 'Help',
+        'Hide legend': 'Hide legend',
         'Icon': 'Icon',
         'Identities': 'Identities',
         'Identity': 'Identity',

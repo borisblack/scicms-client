@@ -8,8 +8,8 @@ import appConfig from '../../config'
 import {IBuffer, Item, ItemData, UserInfo} from '../../types'
 import DataGrid, {RequestParams} from '../../components/datagrid/DataGrid'
 import {getLabel, IPage} from './pagesSlice'
-import {hasPlugins, renderPlugins} from '../../plugins'
-import {hasComponents, renderComponents} from '../../custom-components'
+import {CustomPluginRenderContext, hasPlugins, renderPlugins} from '../../plugins'
+import {CustomComponentRenderContext, hasComponents, renderComponents} from '../../custom-components'
 import * as icons from '@ant-design/icons'
 import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design/icons'
 import PermissionService from '../../services/permission'
@@ -44,7 +44,7 @@ function DefaultPage({me, page, onItemCreate, onItemView, onItemDelete, onLogout
     const headerRef = useRef<HTMLDivElement>(null)
     const contentRef = useRef<HTMLDivElement>(null)
     const footerRef = useRef<HTMLDivElement>(null)
-    const bufferRef = useRef<IBuffer>({form: {}})
+    const [buffer, setBuffer] = useState<IBuffer>({})
     const {item} = page
     const isSystemItem = item.name === ITEM_TEMPLATE_ITEM_NAME || item.name === ITEM_ITEM_NAME
 
@@ -52,16 +52,24 @@ function DefaultPage({me, page, onItemCreate, onItemView, onItemDelete, onLogout
     const mutationService = useMemo(() => MutationService.getInstance(), [])
     const columnsMemoized = useMemo(() => getColumns(item), [item])
     const hiddenColumnsMemoized = useMemo(() => getHiddenColumns(item), [item])
-    const pluginContext = useMemo(() => ({me, item, buffer: bufferRef.current}), [item, me])
-    const customComponentContext = useMemo(() => ({
+    const handleBufferChange = useCallback((bufferChanges: IBuffer) => setBuffer({...buffer, ...bufferChanges}), [buffer])
+    const pluginContext: CustomPluginRenderContext = useMemo(() => ({
+        me,
+        item,
+        buffer,
+        onBufferChange: handleBufferChange,
+    }), [buffer, handleBufferChange, item, me])
+
+    const customComponentContext: CustomComponentRenderContext = useMemo(() => ({
         me,
         pageKey: page.key,
         item,
-        buffer: bufferRef.current,
+        buffer,
+        onBufferChange: handleBufferChange,
         onItemCreate,
         onItemView,
         onItemDelete
-    }), [item, me, onItemCreate, onItemDelete, onItemView, page.key])
+    }), [buffer, handleBufferChange, item, me, onItemCreate, onItemDelete, onItemView, page.key])
 
     useEffect(() => {
         const headerNode = headerRef.current
@@ -125,7 +133,7 @@ function DefaultPage({me, page, onItemCreate, onItemView, onItemDelete, onLogout
             } else {
                 const doDelete = async () => await mutationService.delete(item, id, appConfig.mutation.deletingStrategy)
                 if (hasApiMiddleware(item.name)) {
-                    const apiMiddlewareContext: ApiMiddlewareContext = {me, item, buffer: bufferRef.current, values: {id}}
+                    const apiMiddlewareContext: ApiMiddlewareContext = {me, item, buffer, values: {id}}
                     await handleApiMiddleware(item.name, ApiOperation.DELETE, apiMiddlewareContext, doDelete)
                 } else {
                     await doDelete()

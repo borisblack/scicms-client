@@ -53,6 +53,7 @@ export interface CustomComponentRenderContext {
     buffer: IBuffer
     data?: ItemData | null
     form?: FormInstance | null
+    onBufferChange: (buffer: IBuffer) => void
     onItemCreate: (item: Item, initialData?: ItemData | null, cb?: Callback, observerKey?: string) => void
     onItemView: (item: Item, id: string, cb?: Callback, observerKey?: string) => void
     onItemDelete: (itemName: string, id: string) => void

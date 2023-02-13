@@ -38,7 +38,7 @@ const BubbleMapNewDash: FC<InnerDashRenderProps> = ({dash}) => {
     //     const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
     //     const scales: any = {}
     //
-    //     if (dash.metricType != null && temporalTypeSet.has(dash.metricType)) {
+    //     if (dash.metricType != null && isTemporal(dash.metricType)) {
     //         scales.r = {
     //             ...timeScaleProps,
     //             // min: _.min(preparedData.map(it => it.y))?.toISOString()
