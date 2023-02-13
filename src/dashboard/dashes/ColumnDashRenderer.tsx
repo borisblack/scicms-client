@@ -7,6 +7,8 @@ import {Alert} from 'antd'
 interface ColumnDashProps {
     xField?: string
     yField?: string
+    xFieldAlias?: string
+    yFieldAlias?: string
     seriesField?: string
     legendPosition?: LegendPosition
 }
@@ -20,6 +22,8 @@ export class ColumnDashRenderer implements DashRenderer {
         return [
             {name: 'xField', type: DashPropType.string, label: 'x-axis field', required: true, fromDataset: true},
             {name: 'yField', type: DashPropType.string, label: 'y-axis field', required: true, fromDataset: true},
+            {name: 'xFieldAlias', type: DashPropType.string, label: 'x-axis field alias'},
+            {name: 'yFieldAlias', type: DashPropType.string, label: 'y-axis field alias'},
             {name: 'seriesField', type: DashPropType.string, label: 'Series field', fromDataset: true},
             {name: 'legendPosition', type: DashPropType.string, label: 'Legend position', opts: [...legendPositions]}
         ]
@@ -33,7 +37,7 @@ export class ColumnDashRenderer implements DashRenderer {
         if (!this.supports(dash.type))
             return <Alert message="Unsupported dash type" type="error"/>
 
-        const {xField, yField, seriesField, legendPosition} = this.props
+        const {xField, yField, xFieldAlias, yFieldAlias, seriesField, legendPosition} = this.props
         if (!xField)
             return <Alert message="xField attribute not specified" type="error"/>
 
@@ -52,6 +56,14 @@ export class ColumnDashRenderer implements DashRenderer {
             xAxis: {
                 label: {
                     autoRotate: false,
+                }
+            },
+            meta: {
+                [xField]: {
+                    alias: xFieldAlias
+                },
+                [yField]: {
+                    alias: yFieldAlias
                 }
             },
             locale: appConfig.dashboard.locale

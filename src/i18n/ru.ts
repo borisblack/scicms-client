@@ -274,7 +274,9 @@ const ru = {
         'Versions': 'Версии',
         'Welcome': 'Добро пожаловать',
         'x-axis field': 'Поле оси x',
+        'x-axis field alias': 'Псевдоним для поля оси x',
         'y-axis field': 'Поле оси y',
+        'y-axis field alias': 'Псевдоним для поля оси y',
         'You do not have permission to access this content': 'У вас нет разрешения на доступ к этому контенту',
         'You must sign in again to apply the changes': 'Для применения изменений необходимо выполнить повторный вход',
         ...customRu

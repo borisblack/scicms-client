@@ -274,7 +274,9 @@ const en = {
         'Versions': 'Versions',
         'Welcome': 'Welcome',
         'x-axis field': 'x-axis field',
+        'x-axis field alias': 'x-axis field alias',
         'y-axis field': 'y-axis field',
+        'y-axis field alias': 'y-axis field alias',
         'You do not have permission to access this content': 'You do not have permission to access this content',
         'You must sign in again to apply the changes': 'You must sign in again to apply the changes',
         ...customEn
