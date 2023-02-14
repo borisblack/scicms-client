@@ -12,7 +12,7 @@ export default function DashboardPreview({me, pageKey, item, data}: CustomCompon
     if (item.name !== DASHBOARD_ITEM_NAME)
         throw new Error('Illegal item')
 
-    const spec: IDashboardSpec = useMemo(() => data ? {...data.spec} : initialSpec, [data])
+    const spec: IDashboardSpec = useMemo(() => data?.spec ?? initialSpec, [data?.spec])
 
     return <DashboardPanel me={me} pageKey={pageKey} spec={spec}/>
 }

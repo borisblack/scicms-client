@@ -24,7 +24,7 @@ const initialSpec: IDashboardSpec = {
 
 let tempId = 0
 
-export default function DashboardSpec({me, item, data, onBufferChange}: CustomComponentRenderContext) {
+export default function DashboardSpec({me, item, data, buffer, onBufferChange}: CustomComponentRenderContext) {
     if (item.name !== DASHBOARD_ITEM_NAME)
         throw new Error('Illegal attribute')
 
@@ -38,7 +38,7 @@ export default function DashboardSpec({me, item, data, onBufferChange}: CustomCo
         return [canEdit]
     }, [data, isLockedByMe, isNew, item, me, permissionService])
     const [canEdit] = permissions
-    const [spec, setSpec] = useState<IDashboardSpec>(data ? {...data.spec} : initialSpec)
+    const spec = useMemo<IDashboardSpec>(() => buffer.spec ?? data?.spec ?? initialSpec, [buffer.spec, data?.spec])
     const [activeDash, setActiveDash] = useState<IDash | null>(null)
     const [isDashModalVisible, setDashModalVisible] = useState(false)
     const [dashForm] = Form.useForm()
@@ -48,33 +48,32 @@ export default function DashboardSpec({me, item, data, onBufferChange}: CustomCo
     }, [spec])
 
     function handleDashAdd() {
-        setSpec(prevSpec => {
-            const {dashes} = prevSpec
-            const id = (++tempId).toString()
-            return {
-                dashes: [
-                    {
-                        name: id,
-                        displayName: id,
-                        type: appConfig.dashboard.defaultDashType,
-                        x: 0,
-                        y: 0,
-                        w: appConfig.dashboard.cols / 2,
-                        h: 1,
-                        defaultPeriod: TemporalPeriod.ARBITRARY,
-                        isAggregate: false,
-                        refreshIntervalSeconds: appConfig.dashboard.defaultRefreshIntervalSeconds
-                    },
-                    ...dashes
-                ]
-            }
-        })
+        const id = (++tempId).toString()
+        const newSpec = {
+            dashes: [
+                {
+                    name: id,
+                    displayName: id,
+                    type: appConfig.dashboard.defaultDashType,
+                    x: 0,
+                    y: 0,
+                    w: appConfig.dashboard.cols / 2,
+                    h: 1,
+                    defaultPeriod: TemporalPeriod.ARBITRARY,
+                    isAggregate: false,
+                    refreshIntervalSeconds: appConfig.dashboard.defaultRefreshIntervalSeconds
+                },
+                ...spec.dashes
+            ]
+        }
+
+        onBufferChange({spec: newSpec})
     }
 
     function handleLayoutChange(layouts: Layout[]) {
-        setSpec(prevSpec => ({
+        const newSpec = {
             dashes: layouts.map((it, i) => {
-                const curDash = prevSpec.dashes[i]
+                const curDash = spec.dashes[i]
                 const {
                     name, type, dataset, metricType, metricField, unit, labelField,
                     temporalType, temporalField, defaultPeriod, defaultStartTemporal, defaultEndTemporal,
@@ -109,7 +108,9 @@ export default function DashboardSpec({me, item, data, onBufferChange}: CustomCo
                     refreshIntervalSeconds
                 }
             })
-        }))
+        }
+
+        onBufferChange({spec: newSpec})
     }
 
     function selectDash(dash: IDash) {
@@ -128,9 +129,11 @@ export default function DashboardSpec({me, item, data, onBufferChange}: CustomCo
             setActiveDash(null)
         }
 
-        setSpec(prevSpec => ({
-            dashes: prevSpec.dashes.filter(it => it.name !== name)
-        }))
+        const newSpec = {
+            dashes: spec.dashes.filter(it => it.name !== name)
+        }
+
+        onBufferChange({spec: newSpec})
     }
 
     function handleActiveDashChange(newActiveDash: DashValues) {
@@ -168,10 +171,11 @@ export default function DashboardSpec({me, item, data, onBufferChange}: CustomCo
             refreshIntervalSeconds
         }
 
-        setSpec(prevSpec => ({
-            dashes: prevSpec.dashes.map(it => it.name === activeDash.name ? dashToUpdate : it)
-        }))
+        const newSpec = {
+            dashes: spec.dashes.map(it => it.name === activeDash.name ? dashToUpdate : it)
+        }
 
+        onBufferChange({spec: newSpec})
         setActiveDash(dashToUpdate)
     }
 

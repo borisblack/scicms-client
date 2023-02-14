@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 import {Row} from '@tanstack/react-table'
 import {Button, Form, Modal, Space} from 'antd'
 import {useTranslation} from 'react-i18next'
@@ -24,7 +24,7 @@ import {ItemType} from 'antd/es/menu/hooks/useItems'
 
 const EDIT_MODAL_WIDTH = 800
 
-export default function Attributes({me, item, buffer, data, onBufferChange}: CustomComponentRenderContext) {
+export default function Attributes({me, item, data, buffer, onBufferChange}: CustomComponentRenderContext) {
     if (item.name !== ITEM_TEMPLATE_ITEM_NAME && item.name !== ITEM_ITEM_NAME)
         throw new Error('Illegal attribute')
 
@@ -43,7 +43,7 @@ export default function Attributes({me, item, buffer, data, onBufferChange}: Cus
     const [canEdit] = permissions
     const columns = useMemo(() => getAttributeColumns(), [])
     const hiddenColumns = useMemo(() => getHiddenAttributeColumns(), [])
-    const spec: ItemSpec = useMemo(() => data ? {...data.spec} : {}, [data])
+    const spec: ItemSpec = useMemo(() => buffer.spec ?? data?.spec ?? {}, [buffer.spec, data?.spec])
 
     const initialNamedAttributes = useMemo((): NamedAttribute[] => {
         const attributes = spec.attributes ?? {}
@@ -68,17 +68,22 @@ export default function Attributes({me, item, buffer, data, onBufferChange}: Cus
     const [selectedAttribute, setSelectedAttribute] = useState<NamedAttribute | null>(null)
     const [isEditModalVisible, setEditModalVisible] = useState<boolean>(false)
     const [attributeForm] = Form.useForm()
-
-    useEffect(() => {
+    
+    const handleNamedAttributesChange = useCallback((newNamedAttributes: NamedAttribute[]) => {
+        setNamedAttributes(newNamedAttributes)
         const newAttributes: {[name: string]: Attribute} = {}
-        namedAttributes.forEach(it => {
+        newNamedAttributes.forEach(it => {
             const newAttribute: any = {...it}
             newAttributes[it.name] = newAttribute
             delete newAttribute.name
         })
-        spec.attributes = newAttributes
-        onBufferChange({spec})
-    }, [namedAttributes, spec])
+        
+        const newSpec = {
+            attributes: newAttributes
+        }
+        
+        onBufferChange({spec: newSpec})
+    }, [onBufferChange])
 
     const handleRequest = useCallback(async (params: RequestParams) => {
         setFilteredData(processLocal(namedAttributes, params))
@@ -122,13 +127,13 @@ export default function Attributes({me, item, buffer, data, onBufferChange}: Cus
             throw new Error('Illegal attribute')
 
         if (name in (spec.attributes ?? {}))
-            setNamedAttributes(prevNamedAttributes => prevNamedAttributes.map(it => it.name === name ? {...parsedValues} : it))
+            handleNamedAttributesChange(namedAttributes.map(it => it.name === name ? {...parsedValues} : it))
         else
-            setNamedAttributes([...namedAttributes, {...parsedValues}])
+            handleNamedAttributesChange([...namedAttributes, {...parsedValues}])
 
         refresh()
         setEditModalVisible(false)
-    }, [canEdit, namedAttributes, parseValues, spec.attributes])
+    }, [canEdit, handleNamedAttributesChange, namedAttributes, parseValues, spec.attributes])
 
     const handleCreate = useCallback(() => {
         setSelectedAttribute(null)
@@ -144,9 +149,9 @@ export default function Attributes({me, item, buffer, data, onBufferChange}: Cus
     }, [canEdit, handleCreate, t])
 
     const deleteRow = useCallback((row: Row<NamedAttribute>) => {
-        setNamedAttributes(prevNamedAttributes => prevNamedAttributes.filter(it => it.name !== row.original.name))
+        handleNamedAttributesChange(namedAttributes.filter(it => it.name !== row.original.name))
         refresh()
-    }, [])
+    }, [handleNamedAttributesChange, namedAttributes])
 
     const getRowContextMenu = useCallback((row: Row<NamedAttribute>) => {
         const items: ItemType[] = [{

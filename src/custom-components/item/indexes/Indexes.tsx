@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 import {Row} from '@tanstack/react-table'
 import {Button, Form, Modal, Space} from 'antd'
 import {useTranslation} from 'react-i18next'
@@ -16,7 +16,7 @@ import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design
 import {ItemType} from 'antd/es/menu/hooks/useItems'
 import IndexForm from './IndexForm'
 
-export default function Indexes({me, item, buffer, data, onBufferChange}: CustomComponentRenderContext) {
+export default function Indexes({me, item, data, buffer, onBufferChange}: CustomComponentRenderContext) {
     if (item.name !== ITEM_TEMPLATE_ITEM_NAME && item.name !== ITEM_ITEM_NAME)
         throw new Error('Illegal attribute')
 
@@ -35,7 +35,7 @@ export default function Indexes({me, item, buffer, data, onBufferChange}: Custom
     const [canEdit] = permissions
     const columns = useMemo(() => getIndexColumns(), [])
     const hiddenColumns = useMemo(() => getHiddenIndexColumns(), [])
-    const spec: ItemSpec = useMemo(() => data ? {...data.spec} : {}, [data])
+    const spec: ItemSpec = useMemo(() => buffer.spec ?? data?.spec ?? {}, [data])
 
     const initialNamedIndexes = useMemo((): NamedIndex[] => {
         const indexes = spec.indexes ?? {}
@@ -61,16 +61,21 @@ export default function Indexes({me, item, buffer, data, onBufferChange}: Custom
     const [isEditModalVisible, setEditModalVisible] = useState<boolean>(false)
     const [indexForm] = Form.useForm()
 
-    useEffect(() => {
+    const handleNamedIndexesChange = useCallback((newNamedIndexes: NamedIndex[]) => {
+        setNamedIndexes(newNamedIndexes)
         const newIndexes: {[name: string]: Index} = {}
-        namedIndexes.forEach(it => {
+        newNamedIndexes.forEach(it => {
             const newIndex: any = {...it}
             newIndexes[it.name] = newIndex
             delete newIndex.name
         })
-        spec.indexes = newIndexes
-        onBufferChange({spec})
-    }, [namedIndexes, spec])
+
+        const newSpec = {
+            indexes: newIndexes
+        }
+
+        onBufferChange({spec: newSpec})
+    }, [onBufferChange])
 
     const handleRequest = useCallback(async (params: RequestParams) => {
         setFilteredData(processLocal(namedIndexes, params))
@@ -114,13 +119,13 @@ export default function Indexes({me, item, buffer, data, onBufferChange}: Custom
             throw new Error('Illegal attribute')
 
         if (name in (spec.indexes ?? {}))
-            setNamedIndexes(prevNamedIndexes => prevNamedIndexes.map(it => it.name === name ? {...parsedValues} : it))
+            handleNamedIndexesChange(namedIndexes.map(it => it.name === name ? {...parsedValues} : it))
         else
-            setNamedIndexes([...namedIndexes, {...parsedValues}])
+            handleNamedIndexesChange([...namedIndexes, {...parsedValues}])
 
         refresh()
         setEditModalVisible(false)
-    }, [canEdit, namedIndexes, parseValues, spec.indexes])
+    }, [canEdit, handleNamedIndexesChange, namedIndexes, parseValues, spec.indexes])
 
     const handleCreate = useCallback(() => {
         setSelectedIndex(null)
@@ -136,9 +141,9 @@ export default function Indexes({me, item, buffer, data, onBufferChange}: Custom
     }, [canEdit, handleCreate, t])
 
     const deleteRow = useCallback((row: Row<NamedIndex>) => {
-        setNamedIndexes(prevNamedIndexes => prevNamedIndexes.filter(it => it.name !== row.original.name))
+        handleNamedIndexesChange(namedIndexes.filter(it => it.name !== row.original.name))
         refresh()
-    }, [])
+    }, [handleNamedIndexesChange, namedIndexes])
 
     const getRowContextMenu = useCallback((row: Row<NamedIndex>) => {
         const items: ItemType[] = [{
