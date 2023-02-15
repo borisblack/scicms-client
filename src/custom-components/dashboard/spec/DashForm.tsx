@@ -114,7 +114,7 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
     return (
         <Form form={form} size="small" layout="vertical" disabled={!canEdit} onFinish={onFormFinish}>
             <Row gutter={10}>
-                <Col span={8}>
+                <Col span={12}>
                     <FormItem
                         className={styles.formItem}
                         name="name"
@@ -125,7 +125,7 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                         <Input/>
                     </FormItem>
                 </Col>
-                <Col span={8}>
+                <Col span={6}>
                     <FormItem
                         className={styles.formItem}
                         name="dataset"
@@ -138,7 +138,7 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                         </Select>
                     </FormItem>
                 </Col>
-                <Col span={8}>
+                <Col span={6}>
                     <FormItem
                         className={styles.formItem}
                         name="type"
