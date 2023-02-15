@@ -128,19 +128,6 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                 <Col span={8}>
                     <FormItem
                         className={styles.formItem}
-                        name="type"
-                        label={t('Type')}
-                        initialValue={dash.type}
-                        rules={[{required: true, message: t('Required field')}]}
-                    >
-                        <Select>
-                            {dashTypes.map(it => <SelectOption key={it} value={it}>{it}</SelectOption>)}
-                        </Select>
-                    </FormItem>
-                </Col>
-                <Col span={8}>
-                    <FormItem
-                        className={styles.formItem}
                         name="dataset"
                         label={t('Dataset')}
                         initialValue={dash.dataset}
@@ -151,6 +138,19 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                         </Select>
                     </FormItem>
                 </Col>
+                <Col span={8}>
+                    <FormItem
+                        className={styles.formItem}
+                        name="type"
+                        label={t('Type')}
+                        initialValue={dash.type}
+                        rules={[{required: true, message: t('Required field')}]}
+                    >
+                        <Select>
+                            {dashTypes.map(it => <SelectOption key={it} value={it}>{it}</SelectOption>)}
+                        </Select>
+                    </FormItem>
+                </Col>
             </Row>
 
             {USE_RENDERER && dashRenderer && dataset && (
@@ -158,7 +158,7 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                     <Panel header={t('Dash Options')} key="dashOptions">
                         <Row gutter={10}>
                             {dashRenderer.listOpts().map(p => (
-                                <Col key={p.name} span={8}>
+                                <Col key={p.name} span={6}>
                                     <DashOptFieldWrapper dataset={dataset} dash={dash} dashOpt={p}/>
                                 </Col>
                             ))}

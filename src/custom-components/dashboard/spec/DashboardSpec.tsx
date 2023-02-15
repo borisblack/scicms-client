@@ -225,7 +225,7 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
                 title={activeDash?.name}
                 open={isDashModalVisible}
                 destroyOnClose
-                width={800}
+                width={1024}
                 onOk={() => dashForm.submit()}
                 onCancel={() => setDashModalVisible(false)}
             >
