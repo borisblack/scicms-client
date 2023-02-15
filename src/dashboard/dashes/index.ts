@@ -20,21 +20,21 @@ export interface DashMap {
 
 export interface DashRenderer {
     supports: (dashType: DashType) => boolean
-    listProps: () => DashProp[]
-    setProps: (props: any) => void
+    listOpts: () => DashOpt[]
+    setOptValues: (optValues: any) => void
     render: FC<InnerDashRenderProps>
 }
 
-export interface DashProp {
+export interface DashOpt {
     name: string
     label: string
-    type: DashPropType
+    type: DashOptType
     required?: boolean
     fromDataset?: boolean
-    opts?: any[]
+    enumSet?: any[]
 }
 
-export enum DashPropType {
+export enum DashOptType {
     string = 'string',
     number = 'number',
     boolean = 'boolean'

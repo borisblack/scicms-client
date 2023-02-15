@@ -1,9 +1,30 @@
-import {Checkbox, Col, DatePicker, Form, FormInstance, Input, InputNumber, Row, Select, TimePicker} from 'antd'
-import {AggregateType, FieldType, DashType, IDash, MetricType, TemporalPeriod, TemporalType} from '../../../types'
+import {
+    Checkbox,
+    Col,
+    Collapse,
+    DatePicker,
+    Form,
+    FormInstance,
+    Input,
+    InputNumber,
+    Row,
+    Select,
+    TimePicker
+} from 'antd'
+import {
+    AggregateType,
+    DashType,
+    Dataset,
+    FieldType,
+    IDash,
+    MetricType,
+    TemporalPeriod,
+    TemporalType
+} from '../../../types'
 import styles from './DashboardSpec.module.css'
 import {useTranslation} from 'react-i18next'
 import appConfig from '../../../config'
-import {useCallback, useEffect, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {
     allTemporalPeriods,
     dashTypes,
@@ -15,6 +36,8 @@ import {
 import DatasetService from '../../../services/dataset'
 import {CheckboxChangeEvent} from 'antd/es/checkbox'
 import dayjs, {Dayjs} from 'dayjs'
+import {getRenderer} from '../../../dashboard/DashRenderers'
+import DashOptFieldWrapper from './DashOptFieldWrapper'
 
 interface Props {
     form: FormInstance
@@ -27,6 +50,7 @@ export interface DashValues {
     name: string
     type: DashType
     dataset: string
+    optValues: any
     metricType?: MetricType
     metricField?: string
     unit?: string
@@ -48,17 +72,25 @@ export interface DashValues {
 
 const {Item: FormItem} = Form
 const {Option: SelectOption} = Select
+const {Panel} = Collapse
 const datasetService = DatasetService.getInstance()
+const USE_RENDERER: boolean = true // TODO: Remove after development
 
 export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
     const {t} = useTranslation()
-    const [datasetNames, setDatasetNames] = useState<string[]>([])
+    const [datasets, setDatasets] = useState<Dataset[]>([])
+    const [dataset, setDataset] = useState<Dataset | undefined>()
     const [temporalType, setTemporalType] = useState<TemporalType | undefined>(dash.temporalType)
     const [defaultPeriod, setDefaultPeriod] = useState<TemporalPeriod | undefined>(dash.defaultPeriod ?? TemporalPeriod.ARBITRARY)
     const [isAggregate, setAggregate] = useState<boolean>(dash.isAggregate)
+    const dashRenderer = useMemo(() => getRenderer(dash.type), [dash.type])
 
     useEffect(() => {
-        datasetService.findAll().then(datasets => setDatasetNames(datasets.map(it => it.name).sort()))
+        datasetService.findAll()
+            .then(datasets => {
+                setDatasets(datasets)
+                setDataset(datasets.find(d => d.name === dash.dataset))
+            })
     }, [dash])
 
     const handleTemporalType = useCallback((temporalType: TemporalType) => {
@@ -114,12 +146,29 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                         initialValue={dash.dataset}
                         rules={[{required: true, message: t('Required field')}]}
                     >
-                        <Select>
-                            {datasetNames.map(it => <SelectOption key={it} value={it}>{it}</SelectOption>)}
+                        <Select onSelect={setDataset}>
+                            {datasets.map(d => <SelectOption key={d.name} value={d.name}>{d.name}</SelectOption>)}
                         </Select>
                     </FormItem>
                 </Col>
             </Row>
+
+            {USE_RENDERER && dashRenderer && dataset && (
+                <Collapse defaultActiveKey={['dashOptions']}>
+                    <Panel header={t('Dash Options')} key="dashOptions">
+                        <Row gutter={10}>
+                            {dashRenderer.listOpts().map(p => (
+                                <Col key={p.name} span={8}>
+                                    <DashOptFieldWrapper dataset={dataset} dash={dash} dashOpt={p}/>
+                                </Col>
+                            ))}
+                        </Row>
+                    </Panel>
+                    <Panel header={t('Default Filters')} key="defaultFilters">
+
+                    </Panel>
+                </Collapse>
+            )}
 
             <Row gutter={10}>
                 <Col span={8}>

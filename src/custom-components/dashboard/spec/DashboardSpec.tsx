@@ -49,16 +49,16 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
 
     function handleDashAdd() {
         const id = (++tempId).toString()
-        const newSpec = {
+        const newSpec: IDashboardSpec = {
             dashes: [
                 {
                     name: id,
-                    displayName: id,
                     type: appConfig.dashboard.defaultDashType,
                     x: 0,
                     y: 0,
                     w: appConfig.dashboard.cols / 2,
                     h: 1,
+                    optValues: {},
                     defaultPeriod: TemporalPeriod.ARBITRARY,
                     isAggregate: false,
                     refreshIntervalSeconds: appConfig.dashboard.defaultRefreshIntervalSeconds
@@ -71,11 +71,11 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
     }
 
     function handleLayoutChange(layouts: Layout[]) {
-        const newSpec = {
+        const newSpec: IDashboardSpec = {
             dashes: layouts.map((it, i) => {
                 const curDash = spec.dashes[i]
                 const {
-                    name, type, dataset, metricType, metricField, unit, labelField,
+                    name, type, dataset, optValues, metricType, metricField, unit, labelField,
                     temporalType, temporalField, defaultPeriod, defaultStartTemporal, defaultEndTemporal,
                     latitudeField, longitudeField, locationField, isAggregate, aggregateType, sortField, sortDirection,
                     refreshIntervalSeconds
@@ -89,6 +89,7 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
                     w: it.w,
                     h: it.h,
                     dataset,
+                    optValues,
                     metricType,
                     metricField,
                     unit,
@@ -141,7 +142,7 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
             return
 
         const {
-            name, type, dataset, metricType, metricField, unit, labelField,
+            name, type, dataset, optValues, metricType, metricField, unit, labelField,
             temporalType, temporalField, defaultPeriod, defaultStartTemporal, defaultEndTemporal,
             latitudeField, longitudeField, locationField, isAggregate, aggregateType, sortField, sortDirection,
             refreshIntervalSeconds
@@ -152,6 +153,7 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
             name,
             type,
             dataset,
+            optValues,
             metricType,
             metricField,
             unit,

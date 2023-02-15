@@ -1,11 +1,11 @@
 import {Column, ColumnConfig} from '@ant-design/charts'
 import {DashType} from '../../types'
-import {DashProp, DashPropType, DashRenderer, InnerDashRenderProps, LegendPosition, legendPositions} from '.'
+import {DashOpt, DashOptType, DashRenderer, InnerDashRenderProps, LegendPosition, legendPositions} from '.'
 import appConfig from '../../config'
 import {Alert} from 'antd'
 import {isTemporal} from '../../util/dashboard'
 
-interface ColumnDashProps {
+interface ColumnDashOpts {
     xField?: string
     yField?: string
     xFieldAlias?: string
@@ -16,31 +16,31 @@ interface ColumnDashProps {
 }
 
 export class ColumnDashRenderer implements DashRenderer {
-    private props: ColumnDashProps = {}
+    private optValues: ColumnDashOpts = {}
 
     supports = (dashType: DashType) => dashType === DashType.column
 
-    listProps(): DashProp[] {
+    listOpts(): DashOpt[] {
         return [
-            {name: 'xField', type: DashPropType.string, label: 'x-axis field', required: true, fromDataset: true},
-            {name: 'yField', type: DashPropType.string, label: 'y-axis field', required: true, fromDataset: true},
-            {name: 'xFieldAlias', type: DashPropType.string, label: 'x-axis field alias'},
-            {name: 'yFieldAlias', type: DashPropType.string, label: 'y-axis field alias'},
-            {name: 'seriesField', type: DashPropType.string, label: 'Series field', fromDataset: true},
-            {name: 'hideLegend', type: DashPropType.boolean, label: 'Hide legend'},
-            {name: 'legendPosition', type: DashPropType.string, label: 'Legend position', opts: [...legendPositions]}
+            {name: 'xField', type: DashOptType.string, label: 'x-axis field', required: true, fromDataset: true},
+            {name: 'yField', type: DashOptType.string, label: 'y-axis field', required: true, fromDataset: true},
+            {name: 'xFieldAlias', type: DashOptType.string, label: 'x-axis field alias'},
+            {name: 'yFieldAlias', type: DashOptType.string, label: 'y-axis field alias'},
+            {name: 'seriesField', type: DashOptType.string, label: 'Series field', fromDataset: true},
+            {name: 'hideLegend', type: DashOptType.boolean, label: 'Hide legend'},
+            {name: 'legendPosition', type: DashOptType.string, label: 'Legend position', enumSet: [...legendPositions]}
         ]
     }
 
-    setProps(props: ColumnDashProps): void {
-        this.props = props
+    setOptValues(props: ColumnDashOpts): void {
+        this.optValues = props
     }
 
     render({dataset, dash, data}: InnerDashRenderProps) {
         if (!this.supports(dash.type))
             return <Alert message="Unsupported dash type" type="error"/>
 
-        const {xField, yField, xFieldAlias, yFieldAlias, seriesField, hideLegend, legendPosition} = this.props
+        const {xField, yField, xFieldAlias, yFieldAlias, seriesField, hideLegend, legendPosition} = this.optValues
         if (!xField)
             return <Alert message="xField attribute not specified" type="error"/>
 

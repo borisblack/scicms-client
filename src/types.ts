@@ -328,6 +328,7 @@ export interface IDash {
     w: number
     h: number
     dataset?: string
+    optValues: any
     metricType?: MetricType
     metricField?: string
     unit?: string
