@@ -1,4 +1,4 @@
-import {FieldType, DashType, IDash, MetricType, TemporalPeriod, TemporalType} from '../types'
+import {DashType, FieldType, IDash, TemporalPeriod, TemporalType} from '../types'
 import {DateTime} from 'luxon'
 import util from 'util'
 import i18n from '../i18n'
@@ -146,27 +146,5 @@ export const mapLabels = (data: any[], labelField: string): string[] =>
     data.map(it => it[labelField]?.toString()?.trim())
 
 export const map3dMapMetrics = (dash: IDash, data: any[]): {longitude: number, latitude: number, value: any}[] => {
-    const {metricType, metricField, latitudeField, longitudeField} = dash
-    if (latitudeField == null || longitudeField == null)
-        return []
-
-    if (metricField == null)
-        throw new Error("Illegal argument")
-
-    return data.map(it => {
-        const latitude = it[latitudeField]
-        const longitude = it[longitudeField]
-        return {
-            longitude,
-            latitude,
-            value: parseMetric(it[metricField], metricType)
-        }
-    })
-}
-
-function parseMetric(metric: any, metricType?: MetricType): any {
-    if (metricType != null && isTemporal(metricType))
-        return DateTime.fromISO(metric).toJSDate()
-
-    return metric
+    return []
 }

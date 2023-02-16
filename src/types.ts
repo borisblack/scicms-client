@@ -322,12 +322,18 @@ export interface IDashboardSpec {
 
 export interface IDash {
     name: string
-    type: DashType
     x: number
     y: number
     w: number
     h: number
     dataset?: string
+    type: DashType
+    isAggregate: boolean
+    aggregateType?: AggregateType
+    aggregateField?: string
+    groupField?: string
+    sortField?: string
+    sortDirection?: string
     optValues: any
     metricType?: MetricType
     metricField?: string
@@ -338,13 +344,6 @@ export interface IDash {
     defaultPeriod: TemporalPeriod
     defaultStartTemporal?: string
     defaultEndTemporal?: string
-    latitudeField?: string
-    longitudeField?: string
-    locationField?: string
-    isAggregate: boolean
-    aggregateType?: AggregateType
-    sortField?: string
-    sortDirection?: string
     refreshIntervalSeconds: number
 }
 

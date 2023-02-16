@@ -53,11 +53,11 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
             dashes: [
                 {
                     name: id,
-                    type: appConfig.dashboard.defaultDashType,
                     x: 0,
                     y: 0,
                     w: appConfig.dashboard.cols / 2,
                     h: 1,
+                    type: appConfig.dashboard.defaultDashType,
                     optValues: {},
                     defaultPeriod: TemporalPeriod.ARBITRARY,
                     isAggregate: false,
@@ -75,20 +75,27 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
             dashes: layouts.map((it, i) => {
                 const curDash = spec.dashes[i]
                 const {
-                    name, type, dataset, optValues, metricType, metricField, unit, labelField,
+                    name, dataset, type, isAggregate, aggregateType, aggregateField, groupField,
+                    sortField, sortDirection, optValues,
+                    metricType, metricField, unit, labelField,
                     temporalType, temporalField, defaultPeriod, defaultStartTemporal, defaultEndTemporal,
-                    latitudeField, longitudeField, locationField, isAggregate, aggregateType, sortField, sortDirection,
                     refreshIntervalSeconds
                 } = curDash
 
                 return {
-                    name,
-                    type,
                     x: it.x,
                     y: it.y,
                     w: it.w,
                     h: it.h,
+                    name,
                     dataset,
+                    type,
+                    isAggregate,
+                    aggregateType,
+                    aggregateField,
+                    groupField,
+                    sortField,
+                    sortDirection,
                     optValues,
                     metricType,
                     metricField,
@@ -99,13 +106,6 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
                     defaultPeriod,
                     defaultStartTemporal,
                     defaultEndTemporal,
-                    latitudeField,
-                    longitudeField,
-                    locationField,
-                    isAggregate,
-                    aggregateType,
-                    sortField,
-                    sortDirection,
                     refreshIntervalSeconds
                 }
             })
@@ -142,17 +142,24 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
             return
 
         const {
-            name, type, dataset, optValues, metricType, metricField, unit, labelField,
+            name, dataset, type, isAggregate, aggregateType, aggregateField, groupField,
+            sortField, sortDirection, optValues,
+            metricType, metricField, unit, labelField,
             temporalType, temporalField, defaultPeriod, defaultStartTemporal, defaultEndTemporal,
-            latitudeField, longitudeField, locationField, isAggregate, aggregateType, sortField, sortDirection,
             refreshIntervalSeconds
         } = newActiveDash
 
         const dashToUpdate: IDash = {
             ...activeDash,
             name,
-            type,
             dataset,
+            type,
+            isAggregate,
+            aggregateType,
+            aggregateField,
+            groupField,
+            sortField,
+            sortDirection,
             optValues,
             metricType,
             metricField,
@@ -163,13 +170,6 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
             defaultPeriod,
             defaultStartTemporal: defaultStartTemporal?.toISOString(),
             defaultEndTemporal: defaultEndTemporal?.toISOString(),
-            latitudeField,
-            longitudeField,
-            locationField,
-            isAggregate,
-            aggregateType,
-            sortField,
-            sortDirection,
             refreshIntervalSeconds
         }
 

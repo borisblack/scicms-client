@@ -22,19 +22,22 @@ import {
     ReloadOutlined,
     SyncOutlined
 } from '@ant-design/icons'
-import RightPanel from '../components/panel/RightPanel'
 import LeftPanel from '../components/panel/LeftPanel'
 import TopPanel from '../components/panel/TopPanel'
 import TemporalToolbar from './TemporalToolbar'
 import FullScreen from '../components/fullscreen/FullScreen'
 import LabelToolbar from './LabelToolbar'
-import LocationToolbar from './LocationToolbar'
 import StatisticDash from './dashes/StatisticDash'
 import AreaDash from './dashes/AreaDash'
 import styles from './DashWrapper.module.css'
 import DatasetService, {DatasetInput} from '../services/dataset'
 import appConfig from '../config'
-import {formatTemporalDisplay, formatTemporalIso, startTemporalFromPeriod, temporalPeriodTitles} from '../util/dashboard'
+import {
+    formatTemporalDisplay,
+    formatTemporalIso,
+    startTemporalFromPeriod,
+    temporalPeriodTitles
+} from '../util/dashboard'
 import dayjs from 'dayjs'
 
 const dashMap: DashMap = {
@@ -66,16 +69,13 @@ export default function DashWrapper(props: DashRenderProps) {
     const [datasetData, setDatasetData] = useState<any[]>([])
     const [checkedLabelSet, setCheckedLabelSet] = useState<Set<string> | null>(null)
     const isCheckedLabelSetTouched = useRef<boolean>(false)
-    const [checkedLocationLabelSet, setCheckedLocationLabelSet] = useState<Set<string> | null>(null)
-    const isCheckedLocationLabelSetTouched = useRef<boolean>(false)
     const filteredData = useMemo((): any[] => {
-        const {labelField, locationField} = dash
+        const {labelField} = dash
         return datasetData.filter(it => {
             const hasLabel = checkedLabelSet == null || labelField == null || checkedLabelSet.has(it[labelField])
-            const hasLocationLabel = checkedLocationLabelSet == null || locationField == null || checkedLocationLabelSet.has(it[locationField])
-            return hasLabel && hasLocationLabel
+            return hasLabel
         })
-    }, [checkedLabelSet, checkedLocationLabelSet, dash, datasetData])
+    }, [checkedLabelSet, dash, datasetData])
 
     const [fullScreen, setFullScreen] = useState<boolean>(false)
     const [period, setPeriod] = useState<TemporalPeriod>(dash.defaultPeriod ?? TemporalPeriod.ARBITRARY)
@@ -162,8 +162,8 @@ export default function DashWrapper(props: DashRenderProps) {
             return
         }
 
-        // Update checked labels and locations
-        const {labelField, locationField} = dash
+        // Update checked labels
+        const {labelField} = dash
         if (labelField) {
             const fetchedLabels = fetchedData.map(it => it[labelField])
             const fetchedLabelSet = new Set(fetchedLabels)
@@ -176,19 +176,7 @@ export default function DashWrapper(props: DashRenderProps) {
             }
         }
 
-        // Update checked location labels
-        if (locationField) {
-            const fetchedLocationLabels = fetchedData.map(it => it[locationField])
-            const fetchedLocationLabelSet = new Set(fetchedLocationLabels)
-            if (checkedLocationLabelSet == null || !isCheckedLocationLabelSetTouched.current) {
-                setCheckedLocationLabelSet(fetchedLocationLabelSet)
-            } else {
-                const newCheckedLocationLabels = Array.from(checkedLocationLabelSet).filter(it => fetchedLocationLabelSet.has(it))
-                setCheckedLabelSet(new Set(newCheckedLocationLabels))
-            }
-        }
-
-    }, [checkedLabelSet, checkedLocationLabelSet, dash, dataset.name, period, endTemporal, startTemporal, t])
+    }, [checkedLabelSet, dash, dataset.name, period, endTemporal, startTemporal, t])
 
     const handleFullScreenChange = useCallback((fullScreen: boolean) => {
         setFullScreen(fullScreen)
@@ -198,11 +186,6 @@ export default function DashWrapper(props: DashRenderProps) {
     const handleCheckedLabelSetChange = useCallback((checkedLabelSet: Set<string>) => {
         isCheckedLabelSetTouched.current = true
         setCheckedLabelSet(checkedLabelSet)
-    }, [])
-
-    const handleCheckedLocationLabelSetChange = useCallback((checkedLocationLabelSet: Set<string>) => {
-        isCheckedLocationLabelSetTouched.current = true
-        setCheckedLocationLabelSet(checkedLocationLabelSet)
     }, [])
 
     const renderSubTitle = useCallback(() => {
@@ -283,17 +266,6 @@ export default function DashWrapper(props: DashRenderProps) {
                             />
                         </div>
                     </LeftPanel>
-                    <RightPanel title={t('Locations')} width={250}>
-                        <div style={{padding: 8}}>
-                            <LocationToolbar
-                                dataset={dataset}
-                                data={datasetData}
-                                dash={dash}
-                                checkedLocationLabelSet={checkedLocationLabelSet}
-                                onChange={handleCheckedLocationLabelSetChange}
-                            />
-                        </div>
-                    </RightPanel>
                 </>
             )}
 
