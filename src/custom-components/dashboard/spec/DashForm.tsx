@@ -74,7 +74,6 @@ const {Item: FormItem} = Form
 const {Option: SelectOption} = Select
 const {Panel} = Collapse
 const datasetService = DatasetService.getInstance()
-const USE_RENDERER: boolean = true // TODO: Remove after development
 
 export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
     const {t} = useTranslation()
@@ -85,8 +84,15 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
     const [groupField, setGroupField] = useState<string | undefined>(dash.groupField)
     const [temporalType, setTemporalType] = useState<TemporalType | undefined>(dash.temporalType)
     const [defaultPeriod, setDefaultPeriod] = useState<TemporalPeriod | undefined>(dash.defaultPeriod ?? TemporalPeriod.ARBITRARY)
-    const allColumns: string[] = useMemo(() => Object.keys(dataset?.spec?.columns ?? {}), [dataset?.spec?.columns])
-    const dashRenderer: DashRenderer | null = useMemo(() => getRenderer(dash.type), [dash.type])
+    const [allColumns, setAllColumns] = useState<string[]>([])
+    const availableColumns: string[] = useMemo(() => {
+        if (!isAggregate || !aggregateField)
+            return allColumns
+
+        return (groupField && groupField !== aggregateField) ? [aggregateField, groupField] : [aggregateField]
+    }, [aggregateField, allColumns, groupField, isAggregate])
+    const [dashType, setDashType] = useState<DashType>(dash.type)
+    const dashRenderer: DashRenderer | null = useMemo(() => getRenderer(dashType), [dashType])
 
     useEffect(() => {
         datasetService.findAll()
@@ -94,19 +100,38 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                 setDatasets(datasets)
                 setDataset(datasets.find(d => d.name === dash.dataset))
             })
-    }, [dash])
+    }, [dash.dataset])
+
+    useEffect(() => {
+        setAllColumns(Object.keys(dataset?.spec?.columns ?? {}))
+    }, [dataset?.spec?.columns])
+
+    const resetFormFields = useCallback(() => {
+        form.setFieldValue('sortField', undefined)
+        form.setFieldValue('optValues', {})
+    }, [form])
 
     const handleAggregateChange = useCallback((evt: CheckboxChangeEvent) => {
+        form.setFieldValue('aggregateType', undefined)
+        form.setFieldValue('aggregateField', undefined)
+        form.setFieldValue('groupField', undefined)
+        resetFormFields()
         setAggregate(evt.target.checked)
-    }, [])
+        setAggregateField(undefined)
+        setGroupField(undefined)
+    }, [form, resetFormFields])
 
-    const handleAggregateFieldChange = useCallback((aggregateField: string | undefined) => {
-        setAggregateField(aggregateField)
-    }, [])
+    const handleAggregateFieldChange = useCallback((newAggregateField: string | undefined) => {
+        form.setFieldValue('groupField', undefined)
+        resetFormFields()
+        setAggregateField(newAggregateField)
+        setGroupField(undefined)
+    }, [form, resetFormFields])
 
-    const handleGroupFieldChange = useCallback((groupField: string | undefined) => {
-        setGroupField(groupField)
-    }, [])
+    const handleGroupFieldChange = useCallback((newGroupField: string | undefined) => {
+        resetFormFields()
+        setGroupField(newGroupField)
+    }, [resetFormFields])
 
     const handleTemporalType = useCallback((temporalType: TemporalType) => {
         setTemporalType(temporalType)
@@ -157,14 +182,14 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                         initialValue={dash.type}
                         rules={[{required: true, message: t('Required field')}]}
                     >
-                        <Select>
+                        <Select onSelect={setDashType}>
                             {dashTypes.map(it => <SelectOption key={it} value={it}>{it}</SelectOption>)}
                         </Select>
                     </FormItem>
                 </Col>
             </Row>
 
-            <Collapse defaultActiveKey={['queryOptions']}>
+            <Collapse defaultActiveKey={dashRenderer ? ['queryOptions', 'dashOptions'] : ['queryOptions']}>
                 <Panel header={t('Query Options')} key="queryOptions">
                     <Row gutter={10}>
                         <Col span={6}>
@@ -181,51 +206,50 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                                 </Checkbox>
                             </FormItem>
                         </Col>
+                        <Col span={6}>
+                            <FormItem
+                                className={styles.formItem}
+                                name="aggregateType"
+                                label={t('Aggregate Type')}
+                                dependencies={['isAggregate']}
+                                initialValue={dash.aggregateType}
+                                rules={[{required: isAggregate, message: t('Required field')}]}
+                            >
+                                <Select disabled={!isAggregate}>
+                                    {Object.keys(AggregateType).map(it => <SelectOption key={it} value={it}>{it}</SelectOption>)}
+                                </Select>
+                            </FormItem>
+                        </Col>
+                        <Col span={6}>
+                            <FormItem
+                                className={styles.formItem}
+                                name="aggregateField"
+                                label={t('Aggregate Field')}
+                                dependencies={['isAggregate']}
+                                initialValue={dash.aggregateField}
+                                rules={[{required: isAggregate, message: t('Required field')}]}
+                            >
+                                <Select allowClear disabled={!isAggregate} onSelect={handleAggregateFieldChange} onClear={() => handleAggregateFieldChange(undefined)}>
+                                    {allColumns.map(c => <SelectOption key={c} value={c}>{c}</SelectOption>)}
+                                </Select>
+                            </FormItem>
+                        </Col>
+                        <Col span={6}>
+                            <FormItem
+                                className={styles.formItem}
+                                name="groupField"
+                                label={t('Group Field')}
+                                dependencies={['isAggregate']}
+                                initialValue={dash.groupField}
+                            >
+                                <Select allowClear disabled={!isAggregate} onSelect={handleGroupFieldChange} onClear={() => handleGroupFieldChange(undefined)}>
+                                    {allColumns.filter(c => c !== aggregateField).map(c => <SelectOption key={c} value={c}>{c}</SelectOption>)}
+                                </Select>
+                            </FormItem>
+                        </Col>
+                    </Row>
 
-                        {isAggregate && (
-                            <>
-                                <Col span={6}>
-                                    <FormItem
-                                        className={styles.formItem}
-                                        name="aggregateType"
-                                        label={t('Aggregate Type')}
-                                        dependencies={['isAggregate']}
-                                        initialValue={dash.aggregateType}
-                                        rules={[{required: true, message: t('Required field')}]}
-                                    >
-                                        <Select>
-                                            {Object.keys(AggregateType).map(it => <SelectOption key={it} value={it}>{it}</SelectOption>)}
-                                        </Select>
-                                    </FormItem>
-                                </Col>
-                                <Col span={6}>
-                                    <FormItem
-                                        className={styles.formItem}
-                                        name="aggregateField"
-                                        label={t('Aggregate Field')}
-                                        initialValue={aggregateField}
-                                        rules={[{required: true, message: t('Required field')}]}
-                                    >
-                                        <Select allowClear onSelect={handleAggregateFieldChange} onClear={() => handleAggregateFieldChange(undefined)}>
-                                            {allColumns.map(c => <SelectOption key={c} value={c}>{c}</SelectOption>)}
-                                        </Select>
-                                    </FormItem>
-                                </Col>
-                                <Col span={6}>
-                                    <FormItem
-                                        className={styles.formItem}
-                                        name="groupField"
-                                        label={t('Group Field')}
-                                        initialValue={groupField}
-                                    >
-                                        <Select allowClear onSelect={handleGroupFieldChange} onClear={() => handleGroupFieldChange(undefined)}>
-                                            {allColumns.map(c => <SelectOption key={c} value={c}>{c}</SelectOption>)}
-                                        </Select>
-                                    </FormItem>
-                                </Col>
-                            </>
-                        )}
-
+                    <Row gutter={10}>
                         <Col span={6}>
                             <FormItem
                                 className={styles.formItem}
@@ -233,7 +257,9 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                                 label={t('Sort Field')}
                                 initialValue={dash.sortField}
                             >
-                                <Input/>
+                                <Select allowClear>
+                                    {availableColumns.map(c => <SelectOption key={c} value={c}>{c}</SelectOption>)}
+                                </Select>
                             </FormItem>
                         </Col>
                         <Col span={6}>
@@ -253,13 +279,17 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                     </Row>
                 </Panel>
 
-                {USE_RENDERER && dashRenderer && dataset && (
+                {dashRenderer && (
                     <>
                         <Panel header={t('Dash Options')} key="dashOptions">
                             <Row gutter={10}>
                                 {dashRenderer.listOpts().map(p => (
                                     <Col key={p.name} span={6}>
-                                        <DashOptFieldWrapper dataset={dataset} dash={dash} dashOpt={p}/>
+                                        <DashOptFieldWrapper
+                                            dashOpt={p}
+                                            availableColumns={availableColumns}
+                                            initialValue={dash.optValues ? dash.optValues[p.name] : undefined}
+                                        />
                                     </Col>
                                 ))}
                             </Row>
@@ -271,7 +301,7 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                 )}
             </Collapse>
 
-            <Row gutter={10}>
+            <Row gutter={10} style={{marginTop: 16}}>
                 <Col span={8}>
                     <FormItem
                         className={styles.formItem}

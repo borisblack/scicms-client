@@ -1,15 +1,14 @@
 import React, {FC} from 'react'
 import {DashOptFieldProps} from './index'
 import {useTranslation} from 'react-i18next'
-import {Form, Input, Select} from 'antd'
+import {Form, InputNumber} from 'antd'
 import {DashOptType} from '../../../../dashboard/dashes'
 import styles from './DashOptField.module.css'
 
 const {Item: FormItem} = Form
-const {Option: SelectOption} = Select
 
-const StringDashOptField: FC<DashOptFieldProps> = ({dashOpt, availableColumns, initialValue}) => {
-    if (dashOpt.type !== DashOptType.string)
+const NumberDashOptField: FC<DashOptFieldProps> = ({dashOpt, availableColumns, initialValue}) => {
+    if (dashOpt.type !== DashOptType.number)
         throw new Error('Illegal attribute')
 
     const {t} = useTranslation()
@@ -22,15 +21,9 @@ const StringDashOptField: FC<DashOptFieldProps> = ({dashOpt, availableColumns, i
             initialValue={initialValue}
             rules={[{required: dashOpt.required, message: t('Required field')}]}
         >
-            {dashOpt.fromDataset || dashOpt.enumSet ? (
-                <Select>
-                    {(dashOpt.enumSet ?? availableColumns).map(e => <SelectOption key={e} value={e}>{e}</SelectOption>)}
-                </Select>
-            ) : (
-                <Input/>
-            )}
+            <InputNumber style={{width: '50%'}}/>
         </FormItem>
     )
 }
 
-export default StringDashOptField
+export default NumberDashOptField

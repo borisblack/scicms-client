@@ -27,8 +27,8 @@ export class ColumnDashRenderer implements DashRenderer {
             {name: 'xFieldAlias', type: DashOptType.string, label: 'x-axis field alias'},
             {name: 'yFieldAlias', type: DashOptType.string, label: 'y-axis field alias'},
             {name: 'seriesField', type: DashOptType.string, label: 'Series field', fromDataset: true},
-            {name: 'hideLegend', type: DashOptType.boolean, label: 'Hide legend'},
-            {name: 'legendPosition', type: DashOptType.string, label: 'Legend position', enumSet: [...legendPositions]}
+            {name: 'legendPosition', type: DashOptType.string, label: 'Legend position', enumSet: [...legendPositions]},
+            {name: 'hideLegend', type: DashOptType.boolean, label: 'Hide legend'}
         ]
     }
 
