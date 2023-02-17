@@ -1,11 +1,11 @@
-import {Column, ColumnConfig} from '@ant-design/charts'
+import {Bar, BarConfig} from '@ant-design/charts'
 import {DashType} from '../../types'
 import {DashOpt, DashOptType, DashRenderer, InnerDashRenderProps, LegendPosition, legendPositions} from '.'
 import appConfig from '../../config'
 import {Alert} from 'antd'
 import {isTemporal} from '../../util/dashboard'
 
-interface ColumnDashOpts {
+interface BarDashOpts {
     xField?: string
     yField?: string
     xFieldAlias?: string
@@ -15,8 +15,8 @@ interface ColumnDashOpts {
     legendPosition?: LegendPosition
 }
 
-export class ColumnDashRenderer implements DashRenderer {
-    supports = (dashType: DashType) => dashType === DashType.column
+export class BarDashRenderer implements DashRenderer {
+    supports = (dashType: DashType) => dashType === DashType.bar
 
     listOpts(): DashOpt[] {
         return [
@@ -25,7 +25,7 @@ export class ColumnDashRenderer implements DashRenderer {
             {name: 'xFieldAlias', type: DashOptType.string, label: 'x-axis field alias'},
             {name: 'yFieldAlias', type: DashOptType.string, label: 'y-axis field alias'},
             {name: 'seriesField', type: DashOptType.string, label: 'Series field', fromDataset: true},
-            {name: 'legendPosition', type: DashOptType.string, label: 'Legend position', enumSet: [...legendPositions], defaultValue: 'top-left'},
+            {name: 'legendPosition', type: DashOptType.string, label: 'Legend position', enumSet: [...legendPositions], defaultValue: 'right'},
             {name: 'hideLegend', type: DashOptType.boolean, label: 'Hide legend'}
         ]
     }
@@ -34,12 +34,12 @@ export class ColumnDashRenderer implements DashRenderer {
         if (!this.supports(props.dash.type))
             return <Alert message="Unsupported dash type" type="error"/>
 
-        return <ColumnDash {...props}/>
+        return <BarDash {...props}/>
     }
 }
 
-function ColumnDash({dataset, dash, data}: InnerDashRenderProps) {
-    const {xField, yField, xFieldAlias, yFieldAlias, seriesField, hideLegend, legendPosition} = dash.optValues as ColumnDashOpts
+function BarDash({dataset, dash, data}: InnerDashRenderProps) {
+    const {xField, yField, xFieldAlias, yFieldAlias, seriesField, hideLegend, legendPosition} = dash.optValues as BarDashOpts
     if (!xField)
         return <Alert message="xField attribute not specified" type="error"/>
 
@@ -49,7 +49,7 @@ function ColumnDash({dataset, dash, data}: InnerDashRenderProps) {
     const {columns} = dataset.spec
     const xFieldType = columns[xField].type
     const yFieldType = columns[yField].type
-    const config: ColumnConfig = {
+    const config: BarConfig = {
         data,
         xField,
         yField,
@@ -78,5 +78,5 @@ function ColumnDash({dataset, dash, data}: InnerDashRenderProps) {
         locale: appConfig.dashboard.locale
     }
 
-    return <Column {...config} />
+    return <Bar {...config} />
 }

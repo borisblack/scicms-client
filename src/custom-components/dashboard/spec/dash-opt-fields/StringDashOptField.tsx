@@ -23,7 +23,7 @@ const StringDashOptField: FC<DashOptFieldProps> = ({dashOpt, availableColumns, i
             rules={[{required: dashOpt.required, message: t('Required field')}]}
         >
             {dashOpt.fromDataset || dashOpt.enumSet ? (
-                <Select>
+                <Select allowClear>
                     {(dashOpt.enumSet ?? availableColumns).map(e => <SelectOption key={e} value={e}>{e}</SelectOption>)}
                 </Select>
             ) : (

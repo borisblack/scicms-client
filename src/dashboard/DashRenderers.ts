@@ -1,6 +1,7 @@
 import {DashRenderer} from './dashes'
 import {DashType} from '../types'
 import {ColumnDashRenderer} from './dashes/ColumnDashRenderer'
+import {BarDashRenderer} from './dashes/BarDashRenderer'
 
 const rendererCache: {[dashType: string]: DashRenderer} = {}
 
@@ -21,4 +22,5 @@ export function getRenderer(dashType: DashType): DashRenderer | null {
     return renderer
 }
 
+addRenderer(new BarDashRenderer())
 addRenderer(new ColumnDashRenderer())

@@ -3,14 +3,12 @@ import {notification} from 'antd'
 import {PageHeader} from '@ant-design/pro-layout'
 import {useTranslation} from 'react-i18next'
 import 'chartjs-adapter-luxon'
-import {DashType, TemporalPeriod, TemporalType} from '../types'
+import {Column, DashType, TemporalPeriod, TemporalType} from '../types'
 import {DashMap, DashRenderer, DashRenderProps} from './dashes'
-import BarDash from './dashes/BarDash'
 import DoughnutDash from './dashes/DoughnutDash'
 import PieDash from './dashes/PieDash'
 import LineDash from './dashes/LineDash'
 import BubbleDash from './dashes/BubbleDash'
-import ColumnDash from './dashes/ColumnDash'
 import PolarAreaDash from './dashes/PolarAreaDash'
 import RadarDash from './dashes/RadarDash'
 import ScatterDash from './dashes/ScatterDash'
@@ -43,10 +41,8 @@ import {getRenderer} from './DashRenderers'
 
 const dashMap: DashMap = {
     [DashType.area]: AreaDash,
-    [DashType.bar]: BarDash,
     [DashType.bubble]: BubbleDash,
     [DashType.bubbleMap]: BubbleMapDash,
-    [DashType.column]: ColumnDash,
     [DashType.doughnut]: DoughnutDash,
     [DashType.line]: LineDash,
     [DashType.pie]: PieDash,
@@ -62,11 +58,16 @@ const datasetService = DatasetService.getInstance()
 export default function DashWrapper(props: DashRenderProps) {
     const {dataset, dash, isFullScreenComponentExist, onFullScreenComponentStateChange} = props
     const getDashComponent = useCallback(() => dashMap[dash.type], [dash.type])
+    const dashRenderer: DashRenderer | null = useMemo(() => getRenderer(dash.type), [dash.type])
     const DashComponent = getDashComponent()
-    if (DashComponent == null)
+    if (DashComponent == null && dashRenderer == null)
         throw new Error('Illegal argument')
 
     const {t} = useTranslation()
+    const datasetColumns: {[name: string]: Column} = useMemo(() => dataset?.spec?.columns ?? {}, [dataset?.spec?.columns])
+    const temporalType: TemporalType | undefined = useMemo(
+        () => dash.temporalField ? datasetColumns[dash.temporalField]?.type as TemporalType | undefined : undefined,
+        [dash.temporalField, datasetColumns])
     const [datasetData, setDatasetData] = useState<any[]>([])
     const [checkedLabelSet, setCheckedLabelSet] = useState<Set<string> | null>(null)
     const isCheckedLabelSetTouched = useRef<boolean>(false)
@@ -84,7 +85,6 @@ export default function DashWrapper(props: DashRenderProps) {
     const [endTemporal, setEndTemporal] = useState<string | null>(dash.defaultEndTemporal ?? null)
     const [loading, setLoading] = useState<boolean>(false)
     const [fetchError, setFetchError] = useState<string | null>(null)
-    const dashRenderer: DashRenderer | null = useMemo(() => getRenderer(dash.type), [dash.type])
 
     useEffect(() => {
         fetchDatasetData()
@@ -96,7 +96,7 @@ export default function DashWrapper(props: DashRenderProps) {
     }, [dash.refreshIntervalSeconds])
 
     const fetchDatasetData = useCallback(async () => {
-        if (period !== TemporalPeriod.ARBITRARY && !dash.temporalType)
+        if (period !== TemporalPeriod.ARBITRARY && !temporalType)
             throw new Error('The temporalType must be specified')
 
         if ((startTemporal || endTemporal) && !dash.temporalField)
@@ -122,12 +122,11 @@ export default function DashWrapper(props: DashRenderProps) {
                 datasetInput.filters[temporalField]['$lte'] = endTemporal
             }
         } else {
-            const temporalType = dash.temporalType as TemporalType
             const temporalField = dash.temporalField as string
             datasetInput.filters = datasetInput.filters ?? {}
             datasetInput.filters[temporalField] = datasetInput.filters[temporalField] ?? {}
-            datasetInput.filters[temporalField]['$gte'] = formatTemporalIso(startTemporalFromPeriod(period, temporalType), temporalType) as string
-            datasetInput.filters[temporalField]['$lte'] = formatTemporalIso(dayjs(), temporalType) as string
+            datasetInput.filters[temporalField]['$gte'] = formatTemporalIso(startTemporalFromPeriod(period, temporalType as TemporalType), temporalType as TemporalType) as string
+            datasetInput.filters[temporalField]['$lte'] = formatTemporalIso(dayjs(), temporalType as TemporalType) as string
         }
 
         if (dash.isAggregate) {
@@ -178,7 +177,7 @@ export default function DashWrapper(props: DashRenderProps) {
             }
         }
 
-    }, [checkedLabelSet, dash, dataset.name, period, endTemporal, startTemporal, t])
+    }, [period, temporalType, startTemporal, endTemporal, dash, dataset.name, t, checkedLabelSet])
 
     const handleFullScreenChange = useCallback((fullScreen: boolean) => {
         setFullScreen(fullScreen)
@@ -191,18 +190,18 @@ export default function DashWrapper(props: DashRenderProps) {
     }, [])
 
     const renderSubTitle = useCallback(() => {
-        if (period === TemporalPeriod.ARBITRARY) {
+        if (temporalType && period === TemporalPeriod.ARBITRARY) {
             if (startTemporal == null && endTemporal == null)
                 return null
 
-            const start = formatTemporalDisplay(startTemporal, dash.temporalType as TemporalType)
-            const end = formatTemporalDisplay(endTemporal, dash.temporalType as TemporalType)
+            const start = formatTemporalDisplay(startTemporal, temporalType )
+            const end = formatTemporalDisplay(endTemporal, temporalType)
 
             return `${start} - ${end}`
         } else {
             return temporalPeriodTitles[period]
         }
-    }, [dash.temporalType, endTemporal, period, startTemporal])
+    }, [temporalType, endTemporal, period, startTemporal])
 
     return (
         <FullScreen active={fullScreen} normalStyle={{display: isFullScreenComponentExist ? 'none' : 'block'}}
@@ -242,11 +241,11 @@ export default function DashWrapper(props: DashRenderProps) {
 
             {fullScreen && (
                 <>
-                    {dash.temporalType && (
+                    {temporalType && (
                         <TopPanel title={t('Temporal')} height={60}>
                             <div style={{padding: '16px 8px'}}>
                                 <TemporalToolbar
-                                    temporalType={dash.temporalType}
+                                    temporalType={temporalType}
                                     period={period}
                                     startTemporal={startTemporal}
                                     endTemporal={endTemporal}
