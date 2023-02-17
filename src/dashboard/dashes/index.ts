@@ -21,7 +21,6 @@ export interface DashMap {
 export interface DashRenderer {
     supports: (dashType: DashType) => boolean
     listOpts: () => DashOpt[]
-    setOptValues: (optValues: any) => void
     render: FC<InnerDashRenderProps>
 }
 
@@ -32,6 +31,7 @@ export interface DashOpt {
     required?: boolean
     fromDataset?: boolean
     enumSet?: any[]
+    defaultValue?: any
 }
 
 export enum DashOptType {

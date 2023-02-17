@@ -18,7 +18,7 @@ const NumberDashOptField: FC<DashOptFieldProps> = ({dashOpt, availableColumns, i
             className={styles.formItem}
             name={['optValues', dashOpt.name]}
             label={t(dashOpt.label)}
-            initialValue={initialValue}
+            initialValue={initialValue == null ? dashOpt.defaultValue : initialValue}
             rules={[{required: dashOpt.required, message: t('Required field')}]}
         >
             <InputNumber style={{width: '50%'}}/>

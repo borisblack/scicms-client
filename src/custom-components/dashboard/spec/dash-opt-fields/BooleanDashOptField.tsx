@@ -18,7 +18,7 @@ const BooleanDashOptField: FC<DashOptFieldProps> = ({dashOpt, initialValue}) => 
             className={styles.formItem}
             name={['optValues', dashOpt.name]}
             valuePropName="checked"
-            initialValue={initialValue}
+            initialValue={initialValue == null ? dashOpt.defaultValue : initialValue}
         >
             <Checkbox style={{marginTop: 24}}>{t(dashOpt.label)}</Checkbox>
         </FormItem>

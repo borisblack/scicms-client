@@ -4,7 +4,7 @@ import {PageHeader} from '@ant-design/pro-layout'
 import {useTranslation} from 'react-i18next'
 import 'chartjs-adapter-luxon'
 import {DashType, TemporalPeriod, TemporalType} from '../types'
-import {DashMap, DashRenderProps} from './dashes'
+import {DashMap, DashRenderer, DashRenderProps} from './dashes'
 import BarDash from './dashes/BarDash'
 import DoughnutDash from './dashes/DoughnutDash'
 import PieDash from './dashes/PieDash'
@@ -39,6 +39,7 @@ import {
     temporalPeriodTitles
 } from '../util/dashboard'
 import dayjs from 'dayjs'
+import {getRenderer} from './DashRenderers'
 
 const dashMap: DashMap = {
     [DashType.area]: AreaDash,
@@ -83,6 +84,7 @@ export default function DashWrapper(props: DashRenderProps) {
     const [endTemporal, setEndTemporal] = useState<string | null>(dash.defaultEndTemporal ?? null)
     const [loading, setLoading] = useState<boolean>(false)
     const [fetchError, setFetchError] = useState<string | null>(null)
+    const dashRenderer: DashRenderer | null = useMemo(() => getRenderer(dash.type), [dash.type])
 
     useEffect(() => {
         fetchDatasetData()
@@ -270,7 +272,11 @@ export default function DashWrapper(props: DashRenderProps) {
             )}
 
             <div style={{margin: fullScreen ? 16 : 0, height: fullScreen ? '90vh' : appConfig.dashboard.viewRowHeight * dash.h}}>
-                <DashComponent {...props} fullScreen={fullScreen} data={filteredData}/>
+                {dashRenderer ? (
+                    dashRenderer.render({fullScreen, data: filteredData, ...props})
+                ) : (
+                    <DashComponent {...props} fullScreen={fullScreen} data={filteredData}/>
+                )}
             </div>
         </FullScreen>
     )

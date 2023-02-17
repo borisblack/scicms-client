@@ -27,20 +27,16 @@ export class ColumnDashRenderer implements DashRenderer {
             {name: 'xFieldAlias', type: DashOptType.string, label: 'x-axis field alias'},
             {name: 'yFieldAlias', type: DashOptType.string, label: 'y-axis field alias'},
             {name: 'seriesField', type: DashOptType.string, label: 'Series field', fromDataset: true},
-            {name: 'legendPosition', type: DashOptType.string, label: 'Legend position', enumSet: [...legendPositions]},
+            {name: 'legendPosition', type: DashOptType.string, label: 'Legend position', enumSet: [...legendPositions], defaultValue: 'top-left'},
             {name: 'hideLegend', type: DashOptType.boolean, label: 'Hide legend'}
         ]
-    }
-
-    setOptValues(props: ColumnDashOpts): void {
-        this.optValues = props
     }
 
     render({dataset, dash, data}: InnerDashRenderProps) {
         if (!this.supports(dash.type))
             return <Alert message="Unsupported dash type" type="error"/>
 
-        const {xField, yField, xFieldAlias, yFieldAlias, seriesField, hideLegend, legendPosition} = this.optValues
+        const {xField, yField, xFieldAlias, yFieldAlias, seriesField, hideLegend, legendPosition} = dash.optValues as ColumnDashOpts
         if (!xField)
             return <Alert message="xField attribute not specified" type="error"/>
 
@@ -56,7 +52,7 @@ export class ColumnDashRenderer implements DashRenderer {
             yField,
             seriesField,
             legend: hideLegend ? false : {
-                position: legendPosition
+                position: legendPosition ?? 'top-left'
             },
             autoFit: true,
             xAxis: {
