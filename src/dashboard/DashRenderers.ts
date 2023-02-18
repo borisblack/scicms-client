@@ -1,13 +1,16 @@
 import {DashRenderer} from './dashes'
 import {DashType} from '../types'
-import {ColumnDashRenderer} from './dashes/ColumnDashRenderer'
-import {BarDashRenderer} from './dashes/BarDashRenderer'
+import ColumnDashRenderer from './dashes/ColumnDashRenderer'
+import BarDashRenderer from './dashes/BarDashRenderer'
+import AreaDashRenderer from './dashes/AreaDashRenderer'
+import LineDashRenderer from './dashes/LineDashRenderer'
+import StatisticDashRenderer from './dashes/StatisticDashRenderer'
 
 const rendererCache: {[dashType: string]: DashRenderer} = {}
 
 const renderers: DashRenderer[] = []
 
-const addRenderer = (renderer: DashRenderer) => renderers.push(renderer)
+export const addRenderer = (renderer: DashRenderer) => renderers.push(renderer)
 
 export function getRenderer(dashType: DashType): DashRenderer | null {
     let renderer: DashRenderer | undefined = rendererCache[dashType]
@@ -22,5 +25,8 @@ export function getRenderer(dashType: DashType): DashRenderer | null {
     return renderer
 }
 
+addRenderer(new AreaDashRenderer())
 addRenderer(new BarDashRenderer())
 addRenderer(new ColumnDashRenderer())
+addRenderer(new LineDashRenderer())
+addRenderer(new StatisticDashRenderer())

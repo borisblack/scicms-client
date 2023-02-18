@@ -7,7 +7,6 @@ import {Column, DashType, TemporalPeriod, TemporalType} from '../types'
 import {DashMap, DashRenderer, DashRenderProps} from './dashes'
 import DoughnutDash from './dashes/DoughnutDash'
 import PieDash from './dashes/PieDash'
-import LineDash from './dashes/LineDash'
 import BubbleDash from './dashes/BubbleDash'
 import PolarAreaDash from './dashes/PolarAreaDash'
 import RadarDash from './dashes/RadarDash'
@@ -25,8 +24,6 @@ import TopPanel from '../components/panel/TopPanel'
 import TemporalToolbar from './TemporalToolbar'
 import FullScreen from '../components/fullscreen/FullScreen'
 import LabelToolbar from './LabelToolbar'
-import StatisticDash from './dashes/StatisticDash'
-import AreaDash from './dashes/AreaDash'
 import styles from './DashWrapper.module.css'
 import DatasetService, {DatasetInput} from '../services/dataset'
 import appConfig from '../config'
@@ -40,17 +37,13 @@ import dayjs from 'dayjs'
 import {getRenderer} from './DashRenderers'
 
 const dashMap: DashMap = {
-    [DashType.area]: AreaDash,
     [DashType.bubble]: BubbleDash,
     [DashType.bubbleMap]: BubbleMapDash,
     [DashType.doughnut]: DoughnutDash,
-    [DashType.line]: LineDash,
     [DashType.pie]: PieDash,
     [DashType.polarArea]: PolarAreaDash,
     [DashType.radar]: RadarDash,
-    [DashType.radar]: RadarDash,
-    [DashType.scatter]: ScatterDash,
-    [DashType.statistic]: StatisticDash
+    [DashType.scatter]: ScatterDash
 }
 
 const datasetService = DatasetService.getInstance()

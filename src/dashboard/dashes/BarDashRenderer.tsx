@@ -1,34 +1,21 @@
 import {Bar, BarConfig} from '@ant-design/charts'
 import {DashType} from '../../types'
-import {DashOpt, DashOptType, DashRenderer, InnerDashRenderProps, LegendPosition, legendPositions} from '.'
+import {DashOpt, DashOptType, DashRenderer, InnerDashRenderProps, XYDashOpts, xyDashOpts} from '.'
 import appConfig from '../../config'
 import {Alert} from 'antd'
 import {isTemporal} from '../../util/dashboard'
 
-interface BarDashOpts {
-    xField?: string
-    yField?: string
-    xFieldAlias?: string
-    yFieldAlias?: string
-    seriesField?: string
-    hideLegend?: boolean
-    legendPosition?: LegendPosition
+interface BarDashOpts extends XYDashOpts {
+    xAxisLabelAutoRotate?: boolean
 }
 
-export class BarDashRenderer implements DashRenderer {
+export default class BarDashRenderer implements DashRenderer {
     supports = (dashType: DashType) => dashType === DashType.bar
 
-    listOpts(): DashOpt[] {
-        return [
-            {name: 'xField', type: DashOptType.string, label: 'x-axis field', required: true, fromDataset: true},
-            {name: 'yField', type: DashOptType.string, label: 'y-axis field', required: true, fromDataset: true},
-            {name: 'xFieldAlias', type: DashOptType.string, label: 'x-axis field alias'},
-            {name: 'yFieldAlias', type: DashOptType.string, label: 'y-axis field alias'},
-            {name: 'seriesField', type: DashOptType.string, label: 'Series field', fromDataset: true},
-            {name: 'legendPosition', type: DashOptType.string, label: 'Legend position', enumSet: [...legendPositions], defaultValue: 'right'},
-            {name: 'hideLegend', type: DashOptType.boolean, label: 'Hide legend'}
-        ]
-    }
+    listOpts = (): DashOpt[] => [
+        ...xyDashOpts,
+        {name: 'xAxisLabelAutoRotate', type: DashOptType.boolean, label: 'Auto rotate x-axis label'}
+    ]
 
     render(props: InnerDashRenderProps) {
         if (!this.supports(props.dash.type))
@@ -39,7 +26,7 @@ export class BarDashRenderer implements DashRenderer {
 }
 
 function BarDash({dataset, dash, data}: InnerDashRenderProps) {
-    const {xField, yField, xFieldAlias, yFieldAlias, seriesField, hideLegend, legendPosition} = dash.optValues as BarDashOpts
+    const {xField, yField, xFieldAlias, yFieldAlias, seriesField, hideLegend, legendPosition, xAxisLabelAutoRotate} = dash.optValues as BarDashOpts
     if (!xField)
         return <Alert message="xField attribute not specified" type="error"/>
 
@@ -59,9 +46,9 @@ function BarDash({dataset, dash, data}: InnerDashRenderProps) {
         },
         autoFit: true,
         xAxis: {
-            // label: {
-            //     autoRotate: false,
-            // },
+            label: {
+                autoRotate: xAxisLabelAutoRotate
+            },
             type: isTemporal(xFieldType) ? 'time' : undefined
         },
         yAxis: {

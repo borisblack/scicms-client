@@ -1,16 +1,16 @@
-import {Column, ColumnConfig} from '@ant-design/charts'
+import {Line, LineConfig} from '@ant-design/charts'
 import {DashType} from '../../types'
 import {DashOpt, DashOptType, DashRenderer, InnerDashRenderProps, XYDashOpts, xyDashOpts} from '.'
 import appConfig from '../../config'
 import {Alert} from 'antd'
 import {isTemporal} from '../../util/dashboard'
 
-interface ColumnDashOpts extends XYDashOpts {
+interface LineDashOpts extends XYDashOpts {
     xAxisLabelAutoRotate?: boolean
 }
 
-export default class ColumnDashRenderer implements DashRenderer {
-    supports = (dashType: DashType) => dashType === DashType.column
+export default class LineDashRenderer implements DashRenderer {
+    supports = (dashType: DashType) => dashType === DashType.line
 
     listOpts = (): DashOpt[] => [
         ...xyDashOpts,
@@ -21,12 +21,12 @@ export default class ColumnDashRenderer implements DashRenderer {
         if (!this.supports(props.dash.type))
             return <Alert message="Unsupported dash type" type="error"/>
 
-        return <ColumnDash {...props}/>
+        return <LineDash {...props}/>
     }
 }
 
-function ColumnDash({dataset, dash, data}: InnerDashRenderProps) {
-    const {xField, yField, xFieldAlias, yFieldAlias, seriesField, hideLegend, legendPosition, xAxisLabelAutoRotate} = dash.optValues as ColumnDashOpts
+function LineDash({dataset, dash, data}: InnerDashRenderProps) {
+    const {xField, yField, xFieldAlias, yFieldAlias, seriesField, hideLegend, legendPosition, xAxisLabelAutoRotate} = dash.optValues as LineDashOpts
     if (!xField)
         return <Alert message="xField attribute not specified" type="error"/>
 
@@ -36,7 +36,7 @@ function ColumnDash({dataset, dash, data}: InnerDashRenderProps) {
     const {columns} = dataset.spec
     const xFieldType = columns[xField].type
     const yFieldType = columns[yField].type
-    const config: ColumnConfig = {
+    const config: LineConfig = {
         data,
         xField,
         yField,
@@ -65,5 +65,5 @@ function ColumnDash({dataset, dash, data}: InnerDashRenderProps) {
         locale: appConfig.dashboard.locale
     }
 
-    return <Column {...config} />
+    return <Line {...config} />
 }
