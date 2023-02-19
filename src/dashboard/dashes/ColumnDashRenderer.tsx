@@ -17,6 +17,8 @@ export default class ColumnDashRenderer implements DashRenderer {
         {name: 'xAxisLabelAutoRotate', type: DashOptType.boolean, label: 'Auto rotate x-axis label'}
     ]
 
+    getMetricField = () => 'xField'
+
     render(props: InnerDashRenderProps) {
         if (!this.supports(props.dash.type))
             return <Alert message="Unsupported dash type" type="error"/>

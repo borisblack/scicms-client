@@ -21,6 +21,7 @@ export interface DashMap {
 export interface DashRenderer {
     supports: (dashType: DashType) => boolean
     listOpts: () => DashOpt[]
+    getMetricField: () => string
     render: FC<InnerDashRenderProps>
 }
 
@@ -31,6 +32,8 @@ export interface DashOpt {
     required?: boolean
     fromDataset?: boolean
     enumSet?: any[]
+    min?: number
+    max?: number
     defaultValue?: any
 }
 
@@ -43,11 +46,35 @@ export enum DashOptType {
 export interface XYDashOpts {
     xField?: string
     yField?: string
+    seriesField?: string
     xFieldAlias?: string
     yFieldAlias?: string
-    seriesField?: string
-    hideLegend?: boolean
     legendPosition?: LegendPosition
+    hideLegend?: boolean
+}
+
+export interface DoughnutDashOpts {
+    angleField?: string
+    colorField?: string
+    angleFieldAlias?: string
+    colorFieldAlias?: string
+    radius?: number
+    innerRadius?: number
+    legendPosition?: LegendPosition
+    hideLegend?: boolean
+}
+
+export interface BubbleDashOpts {
+    xField?: string
+    yField?: string
+    sizeField?: string
+    colorField?: string
+    xFieldAlias?: string
+    yFieldAlias?: string
+    sizeFieldAlias?: string
+    legendPosition?: LegendPosition
+    hideLegend?: boolean
+    xAxisLabelAutoRotate?: boolean
 }
 
 export type LegendPosition = 'top' | 'top-left' | 'top-right' | 'right' | 'right-top' | 'right-bottom' | 'left' | 'left-top' | 'left-bottom' | 'bottom' | 'bottom-left' | 'bottom-right'
@@ -75,4 +102,27 @@ export const xyDashOpts: DashOpt[] = [
     {name: 'seriesField', type: DashOptType.string, label: 'Series field', fromDataset: true},
     {name: 'legendPosition', type: DashOptType.string, label: 'Legend position', enumSet: [...legendPositions], defaultValue: 'top-left'},
     {name: 'hideLegend', type: DashOptType.boolean, label: 'Hide legend'}
+]
+
+export const doughnutDashOpts: DashOpt[] = [
+    {name: 'angleField', type: DashOptType.string, label: 'Angle field', required: true, fromDataset: true},
+    {name: 'colorField', type: DashOptType.string, label: 'Color field', required: true, fromDataset: true},
+    {name: 'angleFieldAlias', type: DashOptType.string, label: 'Angle field alias'},
+    {name: 'colorFieldAlias', type: DashOptType.string, label: 'Color field alias'},
+    {name: 'radius', type: DashOptType.number, label: 'Radius', min: 0, max: 1},
+    {name: 'innerRadius', type: DashOptType.number, label: 'Inner radius', min: 0, max: 1},
+    {name: 'legendPosition', type: DashOptType.string, label: 'Legend position', enumSet: [...legendPositions], defaultValue: 'top-left'},
+    {name: 'hideLegend', type: DashOptType.boolean, label: 'Hide legend'}
+]
+
+export const bubbleDashOpts: DashOpt[] = [
+    {name: 'xField', type: DashOptType.string, label: 'x-axis field', required: true, fromDataset: true},
+    {name: 'yField', type: DashOptType.string, label: 'y-axis field', required: true, fromDataset: true},
+    {name: 'sizeField', type: DashOptType.string, label: 'Size field', required: true, fromDataset: true},
+    {name: 'colorField', type: DashOptType.string, label: 'Color field', fromDataset: true},
+    {name: 'xFieldAlias', type: DashOptType.string, label: 'x-axis field alias'},
+    {name: 'yFieldAlias', type: DashOptType.string, label: 'y-axis field alias'},
+    {name: 'legendPosition', type: DashOptType.string, label: 'Legend position', enumSet: [...legendPositions], defaultValue: 'top-left'},
+    {name: 'hideLegend', type: DashOptType.boolean, label: 'Hide legend'},
+    {name: 'xAxisLabelAutoRotate', type: DashOptType.boolean, label: 'Auto rotate x-axis label'}
 ]

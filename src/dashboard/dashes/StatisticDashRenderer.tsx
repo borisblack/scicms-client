@@ -13,6 +13,8 @@ export default class StatisticDashRenderer implements DashRenderer {
         {name: 'statisticField', type: DashOptType.string, label: 'Statistic field', required: true, fromDataset: true}
     ]
 
+    getMetricField = () => 'statisticField'
+
     render(props: InnerDashRenderProps) {
         if (!this.supports(props.dash.type))
             return <Alert message="Unsupported dash type" type="error"/>

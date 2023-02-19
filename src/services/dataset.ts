@@ -12,7 +12,7 @@ export interface DatasetInput<T> {
     sort?: string[]
     aggregate?: AggregateType
     aggregateField?: string
-    groupField?: string
+    groupFields?: string[]
 }
 
 export type DatasetFiltersInput<T> = {

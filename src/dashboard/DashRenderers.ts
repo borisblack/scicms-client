@@ -5,6 +5,10 @@ import BarDashRenderer from './dashes/BarDashRenderer'
 import AreaDashRenderer from './dashes/AreaDashRenderer'
 import LineDashRenderer from './dashes/LineDashRenderer'
 import StatisticDashRenderer from './dashes/StatisticDashRenderer'
+import PieDashRenderer from './dashes/PieDashRenderer'
+import DoughnutDashRenderer from './dashes/DoughnutDashRenderer'
+import BubbleDashRenderer from './dashes/BubbleDashRenderer'
+import ScatterDashRenderer from './dashes/ScatterDashRenderer'
 
 const rendererCache: {[dashType: string]: DashRenderer} = {}
 
@@ -27,6 +31,10 @@ export function getRenderer(dashType: DashType): DashRenderer | null {
 
 addRenderer(new AreaDashRenderer())
 addRenderer(new BarDashRenderer())
+addRenderer(new BubbleDashRenderer())
 addRenderer(new ColumnDashRenderer())
+addRenderer(new DoughnutDashRenderer())
 addRenderer(new LineDashRenderer())
+addRenderer(new PieDashRenderer())
+addRenderer(new ScatterDashRenderer())
 addRenderer(new StatisticDashRenderer())

@@ -12,6 +12,8 @@ export default class AreaDashRenderer implements DashRenderer {
 
     listOpts = (): DashOpt[] => [...xyDashOpts]
 
+    getMetricField = () => 'xField'
+
     render(props: InnerDashRenderProps) {
         if (!this.supports(props.dash.type))
             return <Alert message="Unsupported dash type" type="error"/>

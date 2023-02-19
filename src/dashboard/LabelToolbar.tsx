@@ -1,17 +1,17 @@
 import {Tree, TreeDataNode, TreeProps} from 'antd'
 import {useCallback} from 'react'
-import {Dataset, IDash} from '../types'
+import {IDash} from '../types'
 import {FolderOutlined} from '@ant-design/icons'
 
 interface Props {
-    dataset: Dataset
     data: any[]
     dash: IDash
+    rootLabel: string
     checkedLabelSet: Set<string> | null
     onChange: (checkedLabelSet: Set<string>) => void
 }
 
-export default function LabelToolbar({dataset, data, dash, checkedLabelSet, onChange}: Props) {
+export default function LabelToolbar({data, dash, rootLabel, checkedLabelSet, onChange}: Props) {
     const {labelField} = dash
     if (labelField == null)
         throw new Error('Illegal argument')
@@ -20,15 +20,15 @@ export default function LabelToolbar({dataset, data, dash, checkedLabelSet, onCh
         const labels = data.map(it => it[labelField]).filter(it => it != null)
         const labelSet = new Set(labels)
         return {
-            key: dataset.name,
-            title: dataset.name,
+            key: rootLabel,
+            title: rootLabel,
             icon: <FolderOutlined/>,
             children: Array.from(labelSet).map(label => ({
                 key: label,
                 title: label
             }))
         }
-    }, [data, dataset.name, labelField])
+    }, [data, labelField, rootLabel])
 
     const handleLabelTreeCheck: TreeProps['onCheck'] = useCallback((checkedKeys: any) => {
         onChange(new Set(checkedKeys as string[]))
@@ -39,7 +39,7 @@ export default function LabelToolbar({dataset, data, dash, checkedLabelSet, onCh
             checkable
             showIcon
             treeData={[getLabelTreeNode()]}
-            defaultExpandedKeys={[dataset.name]}
+            defaultExpandedKeys={[rootLabel]}
             checkedKeys={checkedLabelSet == null ? [] : Array.from(checkedLabelSet)}
             onCheck={handleLabelTreeCheck}
         />

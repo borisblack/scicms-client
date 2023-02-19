@@ -4,13 +4,9 @@ import {PageHeader} from '@ant-design/pro-layout'
 import {useTranslation} from 'react-i18next'
 import 'chartjs-adapter-luxon'
 import {Column, DashType, TemporalPeriod, TemporalType} from '../types'
-import {DashMap, DashRenderer, DashRenderProps} from './dashes'
-import DoughnutDash from './dashes/DoughnutDash'
-import PieDash from './dashes/PieDash'
-import BubbleDash from './dashes/BubbleDash'
+import {DashMap, DashOpt, DashRenderer, DashRenderProps} from './dashes'
 import PolarAreaDash from './dashes/PolarAreaDash'
 import RadarDash from './dashes/RadarDash'
-import ScatterDash from './dashes/ScatterDash'
 import BubbleMapDash from './dashes/BubbleMapDash'
 import {
     ExclamationCircleOutlined,
@@ -37,13 +33,9 @@ import dayjs from 'dayjs'
 import {getRenderer} from './DashRenderers'
 
 const dashMap: DashMap = {
-    [DashType.bubble]: BubbleDash,
     [DashType.bubbleMap]: BubbleMapDash,
-    [DashType.doughnut]: DoughnutDash,
-    [DashType.pie]: PieDash,
     [DashType.polarArea]: PolarAreaDash,
-    [DashType.radar]: RadarDash,
-    [DashType.scatter]: ScatterDash
+    [DashType.radar]: RadarDash
 }
 
 const datasetService = DatasetService.getInstance()
@@ -52,6 +44,10 @@ export default function DashWrapper(props: DashRenderProps) {
     const {dataset, dash, isFullScreenComponentExist, onFullScreenComponentStateChange} = props
     const getDashComponent = useCallback(() => dashMap[dash.type], [dash.type])
     const dashRenderer: DashRenderer | null = useMemo(() => getRenderer(dash.type), [dash.type])
+    const metricDashOpt: DashOpt | undefined = useMemo(
+        () => dashRenderer ? dashRenderer.listOpts().find(o => o.name === dashRenderer.getMetricField()) : undefined,
+        [dashRenderer]
+    )
     const DashComponent = getDashComponent()
     if (DashComponent == null && dashRenderer == null)
         throw new Error('Illegal argument')
@@ -126,8 +122,8 @@ export default function DashWrapper(props: DashRenderProps) {
             datasetInput.aggregate = dash.aggregateType
             datasetInput.aggregateField = dash.metricField
 
-            if (dash.labelField)
-                datasetInput.groupField = dash.labelField
+            if (dash.groupField)
+                datasetInput.groupFields = [dash.groupField]
         }
 
         if (dash.sortField)
@@ -157,20 +153,32 @@ export default function DashWrapper(props: DashRenderProps) {
         }
 
         // Update checked labels
-        const {labelField} = dash
-        if (labelField) {
-            const fetchedLabels = fetchedData.map(it => it[labelField])
-            const fetchedLabelSet = new Set(fetchedLabels)
-            if (checkedLabelSet == null || !isCheckedLabelSetTouched.current) {
-                setCheckedLabelSet(fetchedLabelSet)
-            } else {
-                const newCheckedLabels = Array.from(checkedLabelSet).filter(it => fetchedLabelSet.has(it))
-
-                setCheckedLabelSet(new Set(newCheckedLabels))
+        if (dashRenderer == null) {
+            const {labelField} = dash
+            if (labelField) {
+                const fetchedLabels = fetchedData.map(it => it[labelField])
+                const fetchedLabelSet = new Set(fetchedLabels)
+                if (checkedLabelSet == null || !isCheckedLabelSetTouched.current) {
+                    setCheckedLabelSet(fetchedLabelSet)
+                } else {
+                    const newCheckedLabels = Array.from(checkedLabelSet).filter(it => fetchedLabelSet.has(it))
+                    setCheckedLabelSet(new Set(newCheckedLabels))
+                }
             }
+        } else {
+            // if (metricDashOpt) {
+            //     const fetchedMetrics = fetchedData.map(it => it[metricDashOpt.name])
+            //     const fetchedMetricSet = new Set(fetchedMetrics)
+            //     if (checkedLabelSet == null || !isCheckedLabelSetTouched.current) {
+            //         setCheckedLabelSet(fetchedMetricSet)
+            //     } else {
+            //         const newCheckedLabels = Array.from(checkedLabelSet).filter(it => fetchedMetricSet.has(it))
+            //         setCheckedLabelSet(new Set(newCheckedLabels))
+            //     }
+            // }
         }
 
-    }, [period, temporalType, startTemporal, endTemporal, dash, dataset.name, t, checkedLabelSet])
+    }, [period, temporalType, startTemporal, endTemporal, dash, dashRenderer, dataset.name, t, checkedLabelSet])
 
     const handleFullScreenChange = useCallback((fullScreen: boolean) => {
         setFullScreen(fullScreen)
@@ -252,9 +260,9 @@ export default function DashWrapper(props: DashRenderProps) {
                     <LeftPanel title={t('Labels')} width={250}>
                         <div style={{padding: 8}}>
                             <LabelToolbar
-                                dataset={dataset}
                                 data={datasetData}
                                 dash={dash}
+                                rootLabel={(metricDashOpt ? t(metricDashOpt.label) : dash.labelField) ?? dataset.name}
                                 checkedLabelSet={checkedLabelSet}
                                 onChange={handleCheckedLabelSetChange}
                             />
