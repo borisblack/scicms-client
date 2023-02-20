@@ -32,8 +32,8 @@ export interface DashOpt {
     required?: boolean
     fromDataset?: boolean
     enumSet?: any[]
-    min?: number
-    max?: number
+    min?: number // for number type
+    max?: number // for number type
     defaultValue?: any
 }
 
@@ -119,8 +119,8 @@ export const doughnutDashOpts: DashOpt[] = [
     {name: 'colorField', type: DashOptType.string, label: 'Color field', required: true, fromDataset: true},
     {name: 'angleFieldAlias', type: DashOptType.string, label: 'Angle field alias'},
     {name: 'colorFieldAlias', type: DashOptType.string, label: 'Color field alias'},
-    {name: 'radius', type: DashOptType.number, label: 'Radius', min: 0, max: 1},
-    {name: 'innerRadius', type: DashOptType.number, label: 'Inner radius', min: 0, max: 1},
+    {name: 'radius', type: DashOptType.number, label: 'Radius', min: 0, max: 1, defaultValue: 1},
+    {name: 'innerRadius', type: DashOptType.number, label: 'Inner radius', min: 0, max: 1, defaultValue: 0},
     {name: 'legendPosition', type: DashOptType.string, label: 'Legend position', enumSet: [...legendPositions], defaultValue: 'top-left'},
     {name: 'hideLegend', type: DashOptType.boolean, label: 'Hide legend'}
 ]

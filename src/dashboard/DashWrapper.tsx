@@ -142,17 +142,17 @@ export default function DashWrapper(props: DashRenderProps) {
         }
 
         // TODO: Fix labels rendering
-        // Update checked labels
-        if (metricDashOpt) {
-            const fetchedMetrics = fetchedData.map(it => it[metricDashOpt.name])
-            const fetchedMetricSet = new Set(fetchedMetrics)
-            if (checkedLabelSet == null || !isCheckedLabelSetTouched.current) {
-                setCheckedLabelSet(fetchedMetricSet)
-            } else {
-                const newCheckedLabels = Array.from(checkedLabelSet).filter(it => fetchedMetricSet.has(it))
-                setCheckedLabelSet(new Set(newCheckedLabels))
-            }
-        }
+        // // Update checked labels
+        // if (metricDashOpt) {
+        //     const fetchedMetrics = fetchedData.map(it => it[metricDashOpt.name])
+        //     const fetchedMetricSet = new Set(fetchedMetrics)
+        //     if (checkedLabelSet == null || !isCheckedLabelSetTouched.current) {
+        //         setCheckedLabelSet(fetchedMetricSet)
+        //     } else {
+        //         const newCheckedLabels = Array.from(checkedLabelSet).filter(it => fetchedMetricSet.has(it))
+        //         setCheckedLabelSet(new Set(newCheckedLabels))
+        //     }
+        // }
 
     }, [checkedLabelSet, dash, dataset.name, endTemporal, metricDashOpt, period, startTemporal, t, temporalType])
 
@@ -238,7 +238,7 @@ export default function DashWrapper(props: DashRenderProps) {
                             <LabelToolbar
                                 data={datasetData}
                                 dash={dash}
-                                rootLabel={(metricDashOpt ? t(metricDashOpt.label) : dash.labelField) ?? dataset.name}
+                                rootLabel={metricDashOpt ? t(metricDashOpt.label) : dataset.name}
                                 checkedLabelSet={checkedLabelSet}
                                 onChange={handleCheckedLabelSetChange}
                             />
