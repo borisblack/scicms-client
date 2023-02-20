@@ -238,7 +238,7 @@ export default function DashWrapper(props: DashRenderProps) {
                             <LabelToolbar
                                 data={datasetData}
                                 dash={dash}
-                                rootLabel={metricDashOpt ? t(metricDashOpt.label) : dataset.name}
+                                rootLabel={metricDashOpt ? t(metricDashOpt.label) : dash.name}
                                 checkedLabelSet={checkedLabelSet}
                                 onChange={handleCheckedLabelSetChange}
                             />
