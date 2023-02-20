@@ -21,7 +21,7 @@ export default class BubbleDashRenderer implements DashRenderer {
 }
 
 function BubbleDash({dataset, dash, data}: InnerDashRenderProps) {
-    const {xField, yField, sizeField, colorField, xFieldAlias, yFieldAlias, hideLegend, legendPosition, xAxisLabelAutoRotate} = dash.optValues as BubbleDashOpts
+    const {xField, yField, sizeField, colorField, xFieldAlias, yFieldAlias, sizeFieldAlias, hideLegend, legendPosition, xAxisLabelAutoRotate} = dash.optValues as BubbleDashOpts
     if (!xField)
         return <Alert message="xField attribute not specified" type="error"/>
 
@@ -74,6 +74,9 @@ function BubbleDash({dataset, dash, data}: InnerDashRenderProps) {
             },
             [yField]: {
                 alias: yFieldAlias
+            },
+            [sizeField]: {
+                alias: sizeFieldAlias
             }
         },
         locale: appConfig.dashboard.locale

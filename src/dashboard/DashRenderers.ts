@@ -9,6 +9,8 @@ import PieDashRenderer from './dashes/PieDashRenderer'
 import DoughnutDashRenderer from './dashes/DoughnutDashRenderer'
 import BubbleDashRenderer from './dashes/BubbleDashRenderer'
 import ScatterDashRenderer from './dashes/ScatterDashRenderer'
+import PolarAreaDashRenderer from './dashes/PolarAreaDashRenderer'
+import RadarDashRenderer from './dashes/RadarDashRenderer'
 
 const rendererCache: {[dashType: string]: DashRenderer} = {}
 
@@ -36,5 +38,7 @@ addRenderer(new ColumnDashRenderer())
 addRenderer(new DoughnutDashRenderer())
 addRenderer(new LineDashRenderer())
 addRenderer(new PieDashRenderer())
+addRenderer(new PolarAreaDashRenderer())
+addRenderer(new RadarDashRenderer())
 addRenderer(new ScatterDashRenderer())
 addRenderer(new StatisticDashRenderer())

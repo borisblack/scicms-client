@@ -3,11 +3,8 @@ import {notification} from 'antd'
 import {PageHeader} from '@ant-design/pro-layout'
 import {useTranslation} from 'react-i18next'
 import 'chartjs-adapter-luxon'
-import {Column, DashType, TemporalPeriod, TemporalType} from '../types'
-import {DashMap, DashOpt, DashRenderer, DashRenderProps} from './dashes'
-import PolarAreaDash from './dashes/PolarAreaDash'
-import RadarDash from './dashes/RadarDash'
-import BubbleMapDash from './dashes/BubbleMapDash'
+import {Column, TemporalPeriod, TemporalType} from '../types'
+import {DashOpt, DashRenderer, DashRenderProps} from './dashes'
 import {
     ExclamationCircleOutlined,
     FullscreenExitOutlined,
@@ -32,26 +29,18 @@ import {
 import dayjs from 'dayjs'
 import {getRenderer} from './DashRenderers'
 
-const dashMap: DashMap = {
-    [DashType.bubbleMap]: BubbleMapDash,
-    [DashType.polarArea]: PolarAreaDash,
-    [DashType.radar]: RadarDash
-}
-
 const datasetService = DatasetService.getInstance()
 
 export default function DashWrapper(props: DashRenderProps) {
     const {dataset, dash, isFullScreenComponentExist, onFullScreenComponentStateChange} = props
-    const getDashComponent = useCallback(() => dashMap[dash.type], [dash.type])
     const dashRenderer: DashRenderer | null = useMemo(() => getRenderer(dash.type), [dash.type])
+    if (dashRenderer == null)
+        throw new Error('Illegal argument')
+
     const metricDashOpt: DashOpt | undefined = useMemo(
         () => dashRenderer ? dashRenderer.listOpts().find(o => o.name === dashRenderer.getMetricField()) : undefined,
         [dashRenderer]
     )
-    const DashComponent = getDashComponent()
-    if (DashComponent == null && dashRenderer == null)
-        throw new Error('Illegal argument')
-
     const {t} = useTranslation()
     const datasetColumns: {[name: string]: Column} = useMemo(() => dataset?.spec?.columns ?? {}, [dataset?.spec?.columns])
     const temporalType: TemporalType | undefined = useMemo(
@@ -152,33 +141,20 @@ export default function DashWrapper(props: DashRenderProps) {
             return
         }
 
+        // TODO: Fix labels rendering
         // Update checked labels
-        if (dashRenderer == null) {
-            const {labelField} = dash
-            if (labelField) {
-                const fetchedLabels = fetchedData.map(it => it[labelField])
-                const fetchedLabelSet = new Set(fetchedLabels)
-                if (checkedLabelSet == null || !isCheckedLabelSetTouched.current) {
-                    setCheckedLabelSet(fetchedLabelSet)
-                } else {
-                    const newCheckedLabels = Array.from(checkedLabelSet).filter(it => fetchedLabelSet.has(it))
-                    setCheckedLabelSet(new Set(newCheckedLabels))
-                }
+        if (metricDashOpt) {
+            const fetchedMetrics = fetchedData.map(it => it[metricDashOpt.name])
+            const fetchedMetricSet = new Set(fetchedMetrics)
+            if (checkedLabelSet == null || !isCheckedLabelSetTouched.current) {
+                setCheckedLabelSet(fetchedMetricSet)
+            } else {
+                const newCheckedLabels = Array.from(checkedLabelSet).filter(it => fetchedMetricSet.has(it))
+                setCheckedLabelSet(new Set(newCheckedLabels))
             }
-        } else {
-            // if (metricDashOpt) {
-            //     const fetchedMetrics = fetchedData.map(it => it[metricDashOpt.name])
-            //     const fetchedMetricSet = new Set(fetchedMetrics)
-            //     if (checkedLabelSet == null || !isCheckedLabelSetTouched.current) {
-            //         setCheckedLabelSet(fetchedMetricSet)
-            //     } else {
-            //         const newCheckedLabels = Array.from(checkedLabelSet).filter(it => fetchedMetricSet.has(it))
-            //         setCheckedLabelSet(new Set(newCheckedLabels))
-            //     }
-            // }
         }
 
-    }, [period, temporalType, startTemporal, endTemporal, dash, dashRenderer, dataset.name, t, checkedLabelSet])
+    }, [checkedLabelSet, dash, dataset.name, endTemporal, metricDashOpt, period, startTemporal, t, temporalType])
 
     const handleFullScreenChange = useCallback((fullScreen: boolean) => {
         setFullScreen(fullScreen)
@@ -272,11 +248,7 @@ export default function DashWrapper(props: DashRenderProps) {
             )}
 
             <div style={{margin: fullScreen ? 16 : 0, height: fullScreen ? '90vh' : appConfig.dashboard.viewRowHeight * dash.h}}>
-                {dashRenderer ? (
-                    dashRenderer.render({fullScreen, data: filteredData, ...props})
-                ) : (
-                    <DashComponent {...props} fullScreen={fullScreen} data={filteredData}/>
-                )}
+                {dashRenderer.render({fullScreen, data: filteredData, ...props})}
             </div>
         </FullScreen>
     )

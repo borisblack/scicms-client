@@ -77,6 +77,16 @@ export interface BubbleDashOpts {
     xAxisLabelAutoRotate?: boolean
 }
 
+export interface BubbleMapDashOpts {
+    latitudeField?: string
+    longitudeField?: string
+    locationField?: string
+    sizeField?: string
+    colorField?: string
+    legendPosition?: LegendPosition
+    hideLegend?: boolean
+}
+
 export type LegendPosition = 'top' | 'top-left' | 'top-right' | 'right' | 'right-top' | 'right-bottom' | 'left' | 'left-top' | 'left-bottom' | 'bottom' | 'bottom-left' | 'bottom-right'
 
 export const legendPositions: LegendPosition[] = [
@@ -122,7 +132,18 @@ export const bubbleDashOpts: DashOpt[] = [
     {name: 'colorField', type: DashOptType.string, label: 'Color field', fromDataset: true},
     {name: 'xFieldAlias', type: DashOptType.string, label: 'x-axis field alias'},
     {name: 'yFieldAlias', type: DashOptType.string, label: 'y-axis field alias'},
+    {name: 'sizeFieldAlias', type: DashOptType.string, label: 'Size field alias'},
     {name: 'legendPosition', type: DashOptType.string, label: 'Legend position', enumSet: [...legendPositions], defaultValue: 'top-left'},
     {name: 'hideLegend', type: DashOptType.boolean, label: 'Hide legend'},
     {name: 'xAxisLabelAutoRotate', type: DashOptType.boolean, label: 'Auto rotate x-axis label'}
+]
+
+export const bubbleMapDashOpts: DashOpt[] = [
+    {name: 'latitudeField', type: DashOptType.string, label: 'Latitude field', required: true, fromDataset: true},
+    {name: 'longitudeField', type: DashOptType.string, label: 'Longitude field', required: true, fromDataset: true},
+    {name: 'locationField', type: DashOptType.string, label: 'Location field', fromDataset: true},
+    {name: 'sizeField', type: DashOptType.string, label: 'Size field', required: true, fromDataset: true},
+    {name: 'colorField', type: DashOptType.string, label: 'Color field', fromDataset: true},
+    {name: 'legendPosition', type: DashOptType.string, label: 'Legend position', enumSet: [...legendPositions], defaultValue: 'top-left'},
+    {name: 'hideLegend', type: DashOptType.boolean, label: 'Hide legend'}
 ]
