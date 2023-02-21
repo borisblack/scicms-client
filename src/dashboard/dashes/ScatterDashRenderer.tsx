@@ -13,8 +13,8 @@ export default class ScatterDashRenderer implements DashRenderer {
     listOpts = (): DashOpt[] => bubbleDashOpts.filter(o => o.name !== 'sizeField')
 
     getLabelField = () => ({
-        name: 'xField',
-        alias: 'xFieldAlias',
+        name: 'yField',
+        alias: 'yFieldAlias',
     })
 
     render(props: InnerDashRenderProps) {

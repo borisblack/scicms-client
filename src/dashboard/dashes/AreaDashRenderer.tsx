@@ -13,8 +13,8 @@ export default class AreaDashRenderer implements DashRenderer {
     listOpts = (): DashOpt[] => [...xyDashOpts]
 
     getLabelField = () => ({
-        name: 'xField',
-        alias: 'xFieldAlias',
+        name: 'yField',
+        alias: 'yFieldAlias',
     })
 
     render(props: InnerDashRenderProps) {

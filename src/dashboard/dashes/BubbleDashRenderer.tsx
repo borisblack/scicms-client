@@ -11,8 +11,8 @@ export default class BubbleDashRenderer implements DashRenderer {
     listOpts = (): DashOpt[] => [...bubbleDashOpts]
 
     getLabelField = () => ({
-        name: 'sizeField',
-        alias: 'sizeFieldAlias',
+        name: 'yField',
+        alias: 'yFieldAlias',
     })
 
     render(props: InnerDashRenderProps) {

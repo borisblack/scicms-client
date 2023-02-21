@@ -18,8 +18,8 @@ export default class LineDashRenderer implements DashRenderer {
     ]
 
     getLabelField = () => ({
-        name: 'xField',
-        alias: 'xFieldAlias',
+        name: 'yField',
+        alias: 'yFieldAlias',
     })
 
     render(props: InnerDashRenderProps) {
