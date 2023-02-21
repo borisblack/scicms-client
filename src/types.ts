@@ -245,7 +245,6 @@ export enum RelType {
 }
 
 export enum AggregateType {
-    countAll = 'countAll',
     count = 'count',
     sum = 'sum',
     avg = 'avg',
