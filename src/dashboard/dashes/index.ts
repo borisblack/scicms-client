@@ -121,7 +121,7 @@ export const doughnutDashOpts: DashOpt[] = [
     {name: 'colorFieldAlias', type: DashOptType.string, label: 'Color field alias'},
     {name: 'radius', type: DashOptType.number, label: 'Radius', min: 0, max: 1, defaultValue: 1},
     {name: 'innerRadius', type: DashOptType.number, label: 'Inner radius', min: 0, max: 1, defaultValue: 0},
-    {name: 'legendPosition', type: DashOptType.string, label: 'Legend position', enumSet: [...legendPositions], defaultValue: 'top-left'},
+    {name: 'legendPosition', type: DashOptType.string, label: 'Legend position', enumSet: [...legendPositions], defaultValue: 'right'},
     {name: 'hideLegend', type: DashOptType.boolean, label: 'Hide legend'}
 ]
 
