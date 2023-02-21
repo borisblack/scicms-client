@@ -21,7 +21,10 @@ export interface DashMap {
 export interface DashRenderer {
     supports: (dashType: DashType) => boolean
     listOpts: () => DashOpt[]
-    getMetricField: () => string
+    getLabelField: () => {
+        name: string,
+        alias: string
+    }
     render: FC<InnerDashRenderProps>
 }
 

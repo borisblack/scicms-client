@@ -4,7 +4,7 @@ import {PageHeader} from '@ant-design/pro-layout'
 import {useTranslation} from 'react-i18next'
 import 'chartjs-adapter-luxon'
 import {Column, TemporalPeriod, TemporalType} from '../types'
-import {DashOpt, DashRenderer, DashRenderProps} from './dashes'
+import {DashRenderer, DashRenderProps} from './dashes'
 import {
     ExclamationCircleOutlined,
     FullscreenExitOutlined,
@@ -16,7 +16,7 @@ import LeftPanel from '../components/panel/LeftPanel'
 import TopPanel from '../components/panel/TopPanel'
 import TemporalToolbar from './TemporalToolbar'
 import FullScreen from '../components/fullscreen/FullScreen'
-import MetricToolbar from './MetricToolbar'
+import LabelToolbar from './LabelToolbar'
 import styles from './DashWrapper.module.css'
 import DatasetService, {DatasetInput} from '../services/dataset'
 import appConfig from '../config'
@@ -37,25 +37,20 @@ export default function DashWrapper(props: DashRenderProps) {
     if (dashRenderer == null)
         throw new Error('Illegal argument')
 
-    const metricDashOpt: DashOpt | undefined = useMemo(
-        () => dashRenderer.listOpts().find(o => o.name === dashRenderer.getMetricField()),
-        [dashRenderer]
-    )
+    const labelField = useMemo(() => dashRenderer.getLabelField(), [dashRenderer])
     const {t} = useTranslation()
     const datasetColumns: {[name: string]: Column} = useMemo(() => dataset?.spec?.columns ?? {}, [dataset?.spec?.columns])
     const temporalType: TemporalType | undefined = useMemo(
         () => dash.temporalField ? datasetColumns[dash.temporalField]?.type as TemporalType | undefined : undefined,
         [dash.temporalField, datasetColumns])
     const [datasetData, setDatasetData] = useState<any[]>([])
-    const [checkedMetricSet, setCheckedMetricSet] = useState<Set<string> | null>(null)
+    const [checkedLabelSet, setCheckedLabelSet] = useState<Set<string> | null>(null)
     const isCheckedMetricSetTouched = useRef<boolean>(false)
     const filteredData = useMemo((): any[] => {
-        const metricField = dashRenderer.getMetricField()
-        return datasetData.filter(it => {
-            const hasMetric = checkedMetricSet == null || checkedMetricSet.has(it[metricField])
-            return hasMetric
-        })
-    }, [checkedMetricSet, dashRenderer, datasetData])
+        const labelField = dashRenderer.getLabelField()
+        const label = dash.optValues[labelField.name]
+        return datasetData.filter(it => checkedLabelSet == null || label == null || checkedLabelSet.has(it[label]))
+    }, [checkedLabelSet, dash.optValues, dashRenderer, datasetData])
 
     const [fullScreen, setFullScreen] = useState<boolean>(false)
     const [period, setPeriod] = useState<TemporalPeriod>(dash.defaultPeriod ?? TemporalPeriod.ARBITRARY)
@@ -141,19 +136,20 @@ export default function DashWrapper(props: DashRenderProps) {
             return
         }
 
-        // Update checked metrics
-        // if (metricDashOpt) {
-        //     const fetchedMetrics = fetchedData.map(it => it[metricDashOpt.name])
-        //     const fetchedMetricSet = new Set(fetchedMetrics)
-        //     if (checkedMetricSet == null || !isCheckedMetricSetTouched.current) {
-        //         setCheckedMetricSet(fetchedMetricSet)
-        //     } else {
-        //         const newCheckedLabels = Array.from(checkedMetricSet).filter(it => fetchedMetricSet.has(it))
-        //         setCheckedMetricSet(new Set(newCheckedLabels))
-        //     }
-        // }
+        // Update checked labels
+        const labelName = dash.optValues[labelField.name]
+        if (labelName) {
+            const fetchedLabels = fetchedData.map(it => it[labelName])
+            const fetchedLabelSet = new Set(fetchedLabels)
+            if (checkedLabelSet == null || !isCheckedMetricSetTouched.current) {
+                setCheckedLabelSet(fetchedLabelSet)
+            } else {
+                const newCheckedLabels = Array.from(checkedLabelSet).filter(it => fetchedLabelSet.has(it))
+                setCheckedLabelSet(new Set(newCheckedLabels))
+            }
+        }
 
-    }, [checkedMetricSet, dash, dataset.name, endTemporal, metricDashOpt, period, startTemporal, t, temporalType])
+    }, [checkedLabelSet, dash, dataset.name, labelField, endTemporal, period, startTemporal, t, temporalType])
 
     const handleFullScreenChange = useCallback((fullScreen: boolean) => {
         setFullScreen(fullScreen)
@@ -162,7 +158,7 @@ export default function DashWrapper(props: DashRenderProps) {
 
     const handleCheckedLabelSetChange = useCallback((checkedLabelSet: Set<string>) => {
         isCheckedMetricSetTouched.current = true
-        setCheckedMetricSet(checkedLabelSet)
+        setCheckedLabelSet(checkedLabelSet)
     }, [])
 
     const renderSubTitle = useCallback(() => {
@@ -233,19 +229,17 @@ export default function DashWrapper(props: DashRenderProps) {
                         </TopPanel>
                     )}
 
-                    {metricDashOpt && (
-                        <LeftPanel title={t('Metrics')} width={250}>
-                            <div style={{padding: 8}}>
-                                <MetricToolbar
-                                    data={datasetData}
-                                    dash={dash}
-                                    metricDashOpt={metricDashOpt}
-                                    checkedMetricSet={checkedMetricSet}
-                                    onChange={handleCheckedLabelSetChange}
-                                />
-                            </div>
-                        </LeftPanel>
-                    )}
+                    <LeftPanel title={t('Labels')} width={250}>
+                        <div style={{padding: 8}}>
+                            <LabelToolbar
+                                data={datasetData}
+                                dash={dash}
+                                labelField={labelField}
+                                checkedLabelSet={checkedLabelSet}
+                                onChange={handleCheckedLabelSetChange}
+                            />
+                        </div>
+                    </LeftPanel>
                 </>
             )}
 

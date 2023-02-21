@@ -128,6 +128,7 @@ const en = {
         'Item Templates': 'Item Templates',
         'Items': 'Items',
         'Label': 'Label',
+        'Labels': 'Labels',
         'Last %d minutes': 'Last %d minutes',
         'Last hour': 'Last hour',
         'Last 3 hours': 'Last 3 hours',

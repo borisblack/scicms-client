@@ -11,7 +11,10 @@ export default class PieDashRenderer implements DashRenderer {
 
     listOpts = (): DashOpt[] => [...doughnutDashOpts.filter(o => o.name !== 'innerRadius')]
 
-    getMetricField = () => 'colorField'
+    getLabelField = () => ({
+        name: 'colorField',
+        alias: 'colorFieldAlias',
+    })
 
     render(props: InnerDashRenderProps) {
         if (!this.supports(props.dash.type))

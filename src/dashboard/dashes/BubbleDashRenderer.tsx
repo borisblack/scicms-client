@@ -10,7 +10,10 @@ export default class BubbleDashRenderer implements DashRenderer {
 
     listOpts = (): DashOpt[] => [...bubbleDashOpts]
 
-    getMetricField = () => 'sizeField'
+    getLabelField = () => ({
+        name: 'sizeField',
+        alias: 'sizeFieldAlias',
+    })
 
     render(props: InnerDashRenderProps) {
         if (!this.supports(props.dash.type))

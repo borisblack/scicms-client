@@ -12,7 +12,10 @@ export default class RadarDashRenderer implements DashRenderer {
 
     listOpts = (): DashOpt[] => [...xyDashOpts]
 
-    getMetricField = () => 'xField'
+    getLabelField = () => ({
+        name: 'xField',
+        alias: 'xFieldAlias',
+    })
 
     render(props: InnerDashRenderProps) {
         if (!this.supports(props.dash.type))

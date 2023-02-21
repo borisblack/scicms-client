@@ -17,7 +17,10 @@ export default class BarDashRenderer implements DashRenderer {
         {name: 'xAxisLabelAutoRotate', type: DashOptType.boolean, label: 'Auto rotate x-axis label'}
     ]
 
-    getMetricField = () => 'yField'
+    getLabelField = () => ({
+        name: 'yField',
+        alias: 'yFieldAlias',
+    })
 
     render(props: InnerDashRenderProps) {
         if (!this.supports(props.dash.type))

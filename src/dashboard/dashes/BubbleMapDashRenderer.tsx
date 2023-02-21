@@ -13,7 +13,10 @@ export default class BubbleMapDashRenderer implements DashRenderer {
 
     listOpts = (): DashOpt[] => [...bubbleMapDashOpts]
 
-    getMetricField = () => 'colorField'
+    getLabelField = () => ({
+        name: 'colorField',
+        alias: 'colorField',
+    })
 
     render(props: InnerDashRenderProps) {
         if (!this.supports(props.dash.type))

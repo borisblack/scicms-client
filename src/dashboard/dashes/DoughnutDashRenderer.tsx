@@ -9,7 +9,10 @@ export default class DoughnutDashRenderer implements DashRenderer {
 
     listOpts = (): DashOpt[] => [...doughnutDashOpts]
 
-    getMetricField = () => 'colorField'
+    getLabelField = () => ({
+        name: 'colorField',
+        alias: 'colorFieldAlias',
+    })
 
     render(props: InnerDashRenderProps) {
         if (!this.supports(props.dash.type))

@@ -17,7 +17,10 @@ export default class LineDashRenderer implements DashRenderer {
         {name: 'xAxisLabelAutoRotate', type: DashOptType.boolean, label: 'Auto rotate x-axis label'}
     ]
 
-    getMetricField = () => 'xField'
+    getLabelField = () => ({
+        name: 'xField',
+        alias: 'xFieldAlias',
+    })
 
     render(props: InnerDashRenderProps) {
         if (!this.supports(props.dash.type))
