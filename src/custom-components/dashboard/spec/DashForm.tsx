@@ -11,17 +11,7 @@ import {
     Select,
     TimePicker
 } from 'antd'
-import {
-    AggregateType,
-    Column,
-    DashType,
-    Dataset,
-    FieldType,
-    IDash,
-    MetricType,
-    TemporalPeriod,
-    TemporalType
-} from '../../../types'
+import {AggregateType, Column, DashType, Dataset, FieldType, IDash, TemporalPeriod, TemporalType} from '../../../types'
 import styles from './DashboardSpec.module.css'
 import {useTranslation} from 'react-i18next'
 import appConfig from '../../../config'
@@ -30,7 +20,6 @@ import {
     allTemporalPeriods,
     dashTypes,
     isTemporal,
-    metricTypes,
     temporalPeriodTitles,
     timeTemporalPeriods
 } from '../../../util/dashboard'
@@ -59,11 +48,7 @@ export interface DashValues {
     sortDirection?: string
     aggregateField?: string
     groupField?: string
-    metricType?: MetricType
-    metricField?: string
     unit?: string
-    labelField?: string
-    temporalType?: TemporalType
     temporalField?: string
     defaultPeriod: TemporalPeriod
     defaultStartTemporal?: Dayjs
@@ -405,41 +390,6 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
             </Collapse>
 
             <Row gutter={10} style={{marginTop: 16}}>
-                <Col span={6}>
-                    <FormItem
-                        className={styles.formItem}
-                        name="metricType"
-                        label={t('Metric Type')}
-                        initialValue={dash.metricType}
-                    >
-                        <Select>
-                            {metricTypes.map(it => <SelectOption key={it} value={it}>{it}</SelectOption>)}
-                        </Select>
-                    </FormItem>
-                </Col>
-                <Col span={6}>
-                    <FormItem
-                        className={styles.formItem}
-                        name="metricField"
-                        label={t('Metric Field')}
-                        initialValue={dash.metricField}
-                    >
-                        <Input/>
-                    </FormItem>
-                </Col>
-                <Col span={6}>
-                    <FormItem
-                        className={styles.formItem}
-                        name="labelField"
-                        label={t('Label Field')}
-                        initialValue={dash.labelField}
-                    >
-                        <Input/>
-                    </FormItem>
-                </Col>
-            </Row>
-
-            <Row gutter={10}>
                 <Col span={6}>
                     <FormItem
                         className={styles.formItem}

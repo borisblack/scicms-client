@@ -16,7 +16,7 @@ import LeftPanel from '../components/panel/LeftPanel'
 import TopPanel from '../components/panel/TopPanel'
 import TemporalToolbar from './TemporalToolbar'
 import FullScreen from '../components/fullscreen/FullScreen'
-import LabelToolbar from './LabelToolbar'
+import MetricToolbar from './MetricToolbar'
 import styles from './DashWrapper.module.css'
 import DatasetService, {DatasetInput} from '../services/dataset'
 import appConfig from '../config'
@@ -38,7 +38,7 @@ export default function DashWrapper(props: DashRenderProps) {
         throw new Error('Illegal argument')
 
     const metricDashOpt: DashOpt | undefined = useMemo(
-        () => dashRenderer ? dashRenderer.listOpts().find(o => o.name === dashRenderer.getMetricField()) : undefined,
+        () => dashRenderer.listOpts().find(o => o.name === dashRenderer.getMetricField()),
         [dashRenderer]
     )
     const {t} = useTranslation()
@@ -47,15 +47,15 @@ export default function DashWrapper(props: DashRenderProps) {
         () => dash.temporalField ? datasetColumns[dash.temporalField]?.type as TemporalType | undefined : undefined,
         [dash.temporalField, datasetColumns])
     const [datasetData, setDatasetData] = useState<any[]>([])
-    const [checkedLabelSet, setCheckedLabelSet] = useState<Set<string> | null>(null)
-    const isCheckedLabelSetTouched = useRef<boolean>(false)
+    const [checkedMetricSet, setCheckedMetricSet] = useState<Set<string> | null>(null)
+    const isCheckedMetricSetTouched = useRef<boolean>(false)
     const filteredData = useMemo((): any[] => {
-        const {labelField} = dash
+        const metricField = dashRenderer.getMetricField()
         return datasetData.filter(it => {
-            const hasLabel = checkedLabelSet == null || labelField == null || checkedLabelSet.has(it[labelField])
-            return hasLabel
+            const hasMetric = checkedMetricSet == null || checkedMetricSet.has(it[metricField])
+            return hasMetric
         })
-    }, [checkedLabelSet, dash, datasetData])
+    }, [checkedMetricSet, dashRenderer, datasetData])
 
     const [fullScreen, setFullScreen] = useState<boolean>(false)
     const [period, setPeriod] = useState<TemporalPeriod>(dash.defaultPeriod ?? TemporalPeriod.ARBITRARY)
@@ -80,8 +80,8 @@ export default function DashWrapper(props: DashRenderProps) {
         if ((startTemporal || endTemporal) && !dash.temporalField)
             throw new Error('The temporalField must be specified')
 
-        if (dash.isAggregate && (!dash.aggregateType || !dash.metricField))
-            throw new Error('aggregateType and metricField must be specified')
+        if (dash.isAggregate && !dash.aggregateType)
+            throw new Error('aggregateType must be specified')
 
         const datasetInput: DatasetInput<any> = {}
 
@@ -109,7 +109,7 @@ export default function DashWrapper(props: DashRenderProps) {
 
         if (dash.isAggregate) {
             datasetInput.aggregate = dash.aggregateType
-            datasetInput.aggregateField = dash.metricField
+            datasetInput.aggregateField = dash.aggregateField
 
             if (dash.groupField)
                 datasetInput.groupFields = [dash.groupField]
@@ -141,20 +141,19 @@ export default function DashWrapper(props: DashRenderProps) {
             return
         }
 
-        // TODO: Fix labels rendering
-        // // Update checked labels
+        // Update checked metrics
         // if (metricDashOpt) {
         //     const fetchedMetrics = fetchedData.map(it => it[metricDashOpt.name])
         //     const fetchedMetricSet = new Set(fetchedMetrics)
-        //     if (checkedLabelSet == null || !isCheckedLabelSetTouched.current) {
-        //         setCheckedLabelSet(fetchedMetricSet)
+        //     if (checkedMetricSet == null || !isCheckedMetricSetTouched.current) {
+        //         setCheckedMetricSet(fetchedMetricSet)
         //     } else {
-        //         const newCheckedLabels = Array.from(checkedLabelSet).filter(it => fetchedMetricSet.has(it))
-        //         setCheckedLabelSet(new Set(newCheckedLabels))
+        //         const newCheckedLabels = Array.from(checkedMetricSet).filter(it => fetchedMetricSet.has(it))
+        //         setCheckedMetricSet(new Set(newCheckedLabels))
         //     }
         // }
 
-    }, [checkedLabelSet, dash, dataset.name, endTemporal, metricDashOpt, period, startTemporal, t, temporalType])
+    }, [checkedMetricSet, dash, dataset.name, endTemporal, metricDashOpt, period, startTemporal, t, temporalType])
 
     const handleFullScreenChange = useCallback((fullScreen: boolean) => {
         setFullScreen(fullScreen)
@@ -162,8 +161,8 @@ export default function DashWrapper(props: DashRenderProps) {
     }, [onFullScreenComponentStateChange])
 
     const handleCheckedLabelSetChange = useCallback((checkedLabelSet: Set<string>) => {
-        isCheckedLabelSetTouched.current = true
-        setCheckedLabelSet(checkedLabelSet)
+        isCheckedMetricSetTouched.current = true
+        setCheckedMetricSet(checkedLabelSet)
     }, [])
 
     const renderSubTitle = useCallback(() => {
@@ -233,17 +232,20 @@ export default function DashWrapper(props: DashRenderProps) {
                             </div>
                         </TopPanel>
                     )}
-                    <LeftPanel title={t('Labels')} width={250}>
-                        <div style={{padding: 8}}>
-                            <LabelToolbar
-                                data={datasetData}
-                                dash={dash}
-                                rootLabel={metricDashOpt ? t(metricDashOpt.label) : dash.name}
-                                checkedLabelSet={checkedLabelSet}
-                                onChange={handleCheckedLabelSetChange}
-                            />
-                        </div>
-                    </LeftPanel>
+
+                    {metricDashOpt && (
+                        <LeftPanel title={t('Metrics')} width={250}>
+                            <div style={{padding: 8}}>
+                                <MetricToolbar
+                                    data={datasetData}
+                                    dash={dash}
+                                    metricDashOpt={metricDashOpt}
+                                    checkedMetricSet={checkedMetricSet}
+                                    onChange={handleCheckedLabelSetChange}
+                                />
+                            </div>
+                        </LeftPanel>
+                    )}
                 </>
             )}
 

@@ -75,10 +75,9 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
             dashes: layouts.map((it, i) => {
                 const curDash = spec.dashes[i]
                 const {
-                    name, dataset, type, isAggregate, aggregateType, aggregateField, groupField,
-                    sortField, sortDirection, optValues,
-                    metricType, metricField, unit, labelField,
-                    temporalType, temporalField, defaultPeriod, defaultStartTemporal, defaultEndTemporal,
+                    name, dataset, type, unit,
+                    isAggregate, aggregateType, aggregateField, groupField, sortField, sortDirection, optValues,
+                    temporalField, defaultPeriod, defaultStartTemporal, defaultEndTemporal,
                     refreshIntervalSeconds
                 } = curDash
 
@@ -90,6 +89,7 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
                     name,
                     dataset,
                     type,
+                    unit,
                     isAggregate,
                     aggregateType,
                     aggregateField,
@@ -97,12 +97,7 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
                     sortField,
                     sortDirection,
                     optValues,
-                    metricType,
-                    metricField,
-                    unit,
-                    labelField,
                     temporalField,
-                    temporalType,
                     defaultPeriod,
                     defaultStartTemporal,
                     defaultEndTemporal,
@@ -142,10 +137,9 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
             return
 
         const {
-            name, dataset, type, isAggregate, aggregateType, aggregateField, groupField,
-            sortField, sortDirection, optValues,
-            metricType, metricField, unit, labelField,
-            temporalType, temporalField, defaultPeriod, defaultStartTemporal, defaultEndTemporal,
+            name, dataset, type, unit,
+            isAggregate, aggregateType, aggregateField, groupField, sortField, sortDirection, optValues,
+            temporalField, defaultPeriod, defaultStartTemporal, defaultEndTemporal,
             refreshIntervalSeconds
         } = newActiveDash
 
@@ -154,6 +148,7 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
             name,
             dataset,
             type,
+            unit,
             isAggregate,
             aggregateType,
             aggregateField,
@@ -161,11 +156,6 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
             sortField,
             sortDirection,
             optValues,
-            metricType,
-            metricField,
-            unit,
-            labelField,
-            temporalType,
             temporalField,
             defaultPeriod,
             defaultStartTemporal: defaultStartTemporal?.toISOString(),

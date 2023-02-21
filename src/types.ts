@@ -335,11 +335,7 @@ export interface IDash {
     sortField?: string
     sortDirection?: string
     optValues: any
-    metricType?: MetricType
-    metricField?: string
     unit?: string
-    labelField?: string
-    temporalType?: TemporalType
     temporalField?: string
     defaultPeriod: TemporalPeriod
     defaultStartTemporal?: string
