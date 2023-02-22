@@ -5,6 +5,15 @@ import i18n from '../i18n'
 import appConfig from '../config'
 import dayjs, {Dayjs} from 'dayjs'
 
+const {
+    luxonDisplayDateFormatString,
+    luxonDisplayTimeFormatString,
+    luxonDisplayDateTimeFormatString,
+    momentDisplayDateFormatString,
+    momentDisplayTimeFormatString,
+    momentDisplayDateTimeFormatString
+} = appConfig.dateTime
+
 export const dashTypes = Object.keys(DashType).sort()
 export const numericTypes = [FieldType.int, FieldType.long, FieldType.float, FieldType.double, FieldType.decimal]
 export const temporalTypes = [FieldType.date, FieldType.time, FieldType.datetime, FieldType.timestamp]
@@ -135,11 +144,11 @@ export const formatTemporalDisplay = (temporal: string | null, temporalType: Tem
 
     const dt = DateTime.fromISO(temporal)
     if (temporalType === FieldType.date)
-        return dt.toFormat(appConfig.dateTime.luxonDisplayDateFormatString)
+        return dt.toFormat(luxonDisplayDateFormatString)
     else if (temporalType === FieldType.time)
-        return dt.toFormat(appConfig.dateTime.luxonDisplayTimeFormatString)
+        return dt.toFormat(luxonDisplayTimeFormatString)
     else
-        return dt.toFormat(appConfig.dateTime.luxonDisplayDateTimeFormatString)
+        return dt.toFormat(luxonDisplayDateTimeFormatString)
 }
 
 export const mapLabels = (data: any[], labelField: string): string[] =>
@@ -147,4 +156,22 @@ export const mapLabels = (data: any[], labelField: string): string[] =>
 
 export const map3dMapMetrics = (dash: IDash, data: any[]): {longitude: number, latitude: number, value: any}[] => {
     return []
+}
+
+export const formatValue = (value: any, type: FieldType) => {
+    if (!value)
+        return value
+
+    switch (type) {
+        case FieldType.date:
+            return dayjs(value).format(momentDisplayDateFormatString)
+        case FieldType.time:
+            return dayjs(value).format(momentDisplayTimeFormatString)
+        case FieldType.datetime:
+        case FieldType.timestamp:
+            const dt = dayjs(value)
+            return dt.format((dt.hour() === 0 && dt.minute() === 0) ? momentDisplayDateFormatString : momentDisplayDateTimeFormatString)
+        default:
+            return value
+    }
 }

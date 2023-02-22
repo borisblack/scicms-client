@@ -3,7 +3,7 @@ import {DashType} from '../../types'
 import {DashOpt, DashRenderer, InnerDashRenderProps, XYDashOpts, xyDashOpts} from '.'
 import appConfig from '../../config'
 import {Alert} from 'antd'
-import {isTemporal} from '../../util/dashboard'
+import {formatValue, isTemporal} from '../../util/dashboard'
 
 interface AreaDashOpts extends XYDashOpts {}
 
@@ -13,8 +13,8 @@ export default class AreaDashRenderer implements DashRenderer {
     listOpts = (): DashOpt[] => [...xyDashOpts]
 
     getLabelField = () => ({
-        name: 'yField',
-        alias: 'yFieldAlias',
+        name: 'xField',
+        alias: 'xFieldAlias',
     })
 
     render(props: InnerDashRenderProps) {
@@ -56,7 +56,8 @@ function AreaDash({dataset, dash, data}: InnerDashRenderProps) {
                 alias: xFieldAlias
             },
             [yField]: {
-                alias: yFieldAlias
+                alias: yFieldAlias,
+                formatter: (value: any) => formatValue(value, xFieldType)
             }
         },
         locale: appConfig.dashboard.locale

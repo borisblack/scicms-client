@@ -3,7 +3,7 @@ import {DashType} from '../../types'
 import {DashOpt, DashRenderer, InnerDashRenderProps, XYDashOpts, xyDashOpts} from '.'
 import appConfig from '../../config'
 import {Alert} from 'antd'
-import {isTemporal} from '../../util/dashboard'
+import {formatValue, isTemporal} from '../../util/dashboard'
 
 interface PolarAreaDashOpts extends XYDashOpts {}
 
@@ -13,8 +13,8 @@ export default class RadarDashRenderer implements DashRenderer {
     listOpts = (): DashOpt[] => [...xyDashOpts]
 
     getLabelField = () => ({
-        name: 'yField',
-        alias: 'yFieldAlias',
+        name: 'xField',
+        alias: 'xFieldAlias',
     })
 
     render(props: InnerDashRenderProps) {
@@ -59,8 +59,13 @@ function RadarDash({dataset, dash, data}: InnerDashRenderProps) {
         point: {size: 2},
         area: {},
         meta: {
-            [xField]: { alias: xFieldAlias },
-            [yField]: { alias: yFieldAlias }
+            [xField]: {
+                alias: xFieldAlias,
+                formatter: (value: any) => formatValue(value, xFieldType)
+            },
+            [yField]: {
+                alias: yFieldAlias
+            }
         },
         locale: appConfig.dashboard.locale
     }

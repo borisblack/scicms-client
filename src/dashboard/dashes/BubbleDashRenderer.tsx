@@ -3,7 +3,7 @@ import {DashType} from '../../types'
 import {bubbleDashOpts, BubbleDashOpts, DashOpt, DashRenderer, InnerDashRenderProps} from '.'
 import appConfig from '../../config'
 import {Alert} from 'antd'
-import {isTemporal} from '../../util/dashboard'
+import {formatValue, isTemporal} from '../../util/dashboard'
 
 export default class BubbleDashRenderer implements DashRenderer {
     supports = (dashType: DashType) => dashType === DashType.bubble
@@ -11,8 +11,8 @@ export default class BubbleDashRenderer implements DashRenderer {
     listOpts = (): DashOpt[] => [...bubbleDashOpts]
 
     getLabelField = () => ({
-        name: 'yField',
-        alias: 'yFieldAlias',
+        name: 'xField',
+        alias: 'xFieldAlias',
     })
 
     render(props: InnerDashRenderProps) {
@@ -73,7 +73,8 @@ function BubbleDash({dataset, dash, data}: InnerDashRenderProps) {
         },
         meta: {
             [xField]: {
-                alias: xFieldAlias
+                alias: xFieldAlias,
+                formatter: (value: any) => formatValue(value, xFieldType)
             },
             [yField]: {
                 alias: yFieldAlias

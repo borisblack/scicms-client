@@ -3,7 +3,7 @@ import {DashType} from '../../types'
 import {bubbleDashOpts, BubbleDashOpts, DashOpt, DashRenderer, InnerDashRenderProps} from '.'
 import appConfig from '../../config'
 import {Alert} from 'antd'
-import {isTemporal} from '../../util/dashboard'
+import {formatValue, isTemporal} from '../../util/dashboard'
 
 type ScatterDashOpts = Omit<BubbleDashOpts, 'sizeField'>
 
@@ -13,8 +13,8 @@ export default class ScatterDashRenderer implements DashRenderer {
     listOpts = (): DashOpt[] => bubbleDashOpts.filter(o => o.name !== 'sizeField')
 
     getLabelField = () => ({
-        name: 'yField',
-        alias: 'yFieldAlias',
+        name: 'xField',
+        alias: 'xFieldAlias',
     })
 
     render(props: InnerDashRenderProps) {
@@ -75,7 +75,8 @@ function ScatterDash({dataset, dash, data}: InnerDashRenderProps) {
         },
         meta: {
             [xField]: {
-                alias: xFieldAlias
+                alias: xFieldAlias,
+                formatter: (value: any) => formatValue(value, xFieldType)
             },
             [yField]: {
                 alias: yFieldAlias

@@ -3,7 +3,7 @@ import {DashType} from '../../types'
 import {DashOpt, DashOptType, DashRenderer, InnerDashRenderProps, XYDashOpts, xyDashOpts} from '.'
 import appConfig from '../../config'
 import {Alert} from 'antd'
-import {isTemporal} from '../../util/dashboard'
+import {formatValue, isTemporal} from '../../util/dashboard'
 
 interface LineDashOpts extends XYDashOpts {
     xAxisLabelAutoRotate?: boolean
@@ -18,8 +18,8 @@ export default class LineDashRenderer implements DashRenderer {
     ]
 
     getLabelField = () => ({
-        name: 'yField',
-        alias: 'yFieldAlias',
+        name: 'xField',
+        alias: 'xFieldAlias',
     })
 
     render(props: InnerDashRenderProps) {
@@ -61,7 +61,8 @@ function LineDash({dataset, dash, data}: InnerDashRenderProps) {
         },
         meta: {
             [xField]: {
-                alias: xFieldAlias
+                alias: xFieldAlias,
+                formatter: (value: any) => formatValue(value, xFieldType)
             },
             [yField]: {
                 alias: yFieldAlias

@@ -3,7 +3,7 @@ import {notification} from 'antd'
 import {PageHeader} from '@ant-design/pro-layout'
 import {useTranslation} from 'react-i18next'
 import 'chartjs-adapter-luxon'
-import {Column, TemporalPeriod, TemporalType} from '../types'
+import {TemporalPeriod, TemporalType} from '../types'
 import {DashRenderer, DashRenderProps} from './dashes'
 import {
     ExclamationCircleOutlined,
@@ -39,10 +39,9 @@ export default function DashWrapper(props: DashRenderProps) {
 
     const labelField = useMemo(() => dashRenderer.getLabelField(), [dashRenderer])
     const {t} = useTranslation()
-    const datasetColumns: {[name: string]: Column} = useMemo(() => dataset?.spec?.columns ?? {}, [dataset?.spec?.columns])
     const temporalType: TemporalType | undefined = useMemo(
-        () => dash.temporalField ? datasetColumns[dash.temporalField]?.type as TemporalType | undefined : undefined,
-        [dash.temporalField, datasetColumns])
+        () => dash.temporalField ? dataset.spec.columns[dash.temporalField]?.type as TemporalType | undefined : undefined,
+        [dash.temporalField, dataset.spec.columns])
     const [datasetData, setDatasetData] = useState<any[]>([])
     const [checkedLabelSet, setCheckedLabelSet] = useState<Set<string> | null>(null)
     const isCheckedMetricSetTouched = useRef<boolean>(false)
@@ -232,8 +231,9 @@ export default function DashWrapper(props: DashRenderProps) {
                     <LeftPanel title={t('Labels')} width={250}>
                         <div style={{padding: 8}}>
                             <LabelToolbar
-                                data={datasetData}
+                                dataset={dataset}
                                 dash={dash}
+                                data={datasetData}
                                 labelField={labelField}
                                 checkedLabelSet={checkedLabelSet}
                                 onChange={handleCheckedLabelSetChange}

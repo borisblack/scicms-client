@@ -1,11 +1,13 @@
 import {Empty, Tree, TreeDataNode, TreeProps} from 'antd'
-import {useCallback} from 'react'
-import {IDash} from '../types'
+import {useCallback, useMemo} from 'react'
+import {Dataset, FieldType, IDash} from '../types'
 import {FolderOutlined} from '@ant-design/icons'
+import {formatValue} from '../util/dashboard'
 
 interface Props {
-    data: any[]
+    dataset: Dataset
     dash: IDash
+    data: any[]
     labelField: {
         name: string,
         alias: string
@@ -14,23 +16,21 @@ interface Props {
     onChange: (checkedLabelSet: Set<string>) => void
 }
 
-export default function LabelToolbar({data, dash, labelField, checkedLabelSet, onChange}: Props) {
-    const labelName = dash.optValues[labelField.name]
-    const labelAlias = dash.optValues[labelField.alias]
+export default function LabelToolbar({dataset, dash, data, labelField, checkedLabelSet, onChange}: Props) {
+    const labelName = useMemo(() => dash.optValues[labelField.name], [dash.optValues, labelField.name])
+    const labelAlias = useMemo(() => dash.optValues[labelField.alias], [dash.optValues, labelField.alias])
+    const labelType: FieldType = useMemo(() => dataset.spec.columns[labelName].type, [dataset.spec.columns, labelName])
 
     const getMetricTreeNode = useCallback((): TreeDataNode => {
-        const metrics = data.map(it => it[labelName]).filter(it => it != null)
-        const metricSet = new Set(metrics)
+        const labels = data.map(it => it[labelName]).filter(it => it != null)
+        const labelSet = new Set(labels)
         return {
             key: labelName,
             title: labelAlias,
             icon: <FolderOutlined/>,
-            children: Array.from(metricSet).map(label => ({
-                key: label,
-                title: label
-            }))
+            children: Array.from(labelSet).map(label => ({key: label, title: formatValue(label, labelType)}))
         }
-    }, [data, labelAlias, labelName])
+    }, [data, labelAlias, labelName, labelType])
 
     const handleLabelTreeCheck: TreeProps['onCheck'] = useCallback((checkedKeys: any) => {
         onChange(new Set(checkedKeys as string[]))
