@@ -161,7 +161,10 @@ export default function DashWrapper(props: DashRenderProps) {
     }, [])
 
     const renderSubTitle = useCallback(() => {
-        if (temporalType && period === TemporalPeriod.ARBITRARY) {
+        if (!temporalType)
+            return null
+
+        if (period === TemporalPeriod.ARBITRARY) {
             if (startTemporal == null && endTemporal == null)
                 return null
 
