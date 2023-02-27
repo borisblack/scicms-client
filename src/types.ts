@@ -327,6 +327,7 @@ export interface IDash {
     h: number
     dataset?: string
     type: DashType
+    unit?: string
     isAggregate: boolean
     aggregateType?: AggregateType
     aggregateField?: string
@@ -334,7 +335,7 @@ export interface IDash {
     sortField?: string
     sortDirection?: string
     optValues: any
-    unit?: string
+    defaultFilters: DatasetFiltersInput<any>
     temporalField?: string
     defaultPeriod: TemporalPeriod
     defaultStartTemporal?: string
@@ -389,6 +390,35 @@ export enum TemporalPeriod {
 
 export interface ItemData extends DefaultItemTemplate {
     [name: string]: any
+}
+
+export type DatasetFiltersInput<T> = {
+    $and?: [T]
+    $or?: [T]
+    $not?: T
+} & {[name: string]: PrimitiveFilterInput<string | boolean | number>}
+
+interface PrimitiveFilterInput<T extends string | boolean | number> {
+    $eq?: T
+    $ne?: T
+    $gt?: T
+    $gte?: T
+    $lt?: T
+    $lte?: T
+    $between?: T[]
+    $startsWith?: T
+    $endsWith?: T
+    $contains?: T
+    $containsi?: T
+    $notContains?: T
+    $notContainsi?: T
+    $in?: T[]
+    $notIn?: T[]
+    $null?: boolean
+    $notNull?: boolean
+    $and?: [T]
+    $or?: [T]
+    $not?: T
 }
 
 export enum DeletingStrategy {

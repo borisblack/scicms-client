@@ -3,7 +3,7 @@ import qs from 'qs'
 import {gql} from '@apollo/client'
 import i18n from '../i18n'
 import {apolloClient, extractAxiosErrorMessage, extractGraphQLErrorMessages} from '.'
-import {AggregateType, Dataset, Pagination, PaginationInput} from '../types'
+import {AggregateType, Dataset, DatasetFiltersInput, Pagination, PaginationInput} from '../types'
 
 export interface DatasetInput<T> {
     filters?: DatasetFiltersInput<T>
@@ -13,35 +13,6 @@ export interface DatasetInput<T> {
     aggregate?: AggregateType
     aggregateField?: string
     groupFields?: string[]
-}
-
-export type DatasetFiltersInput<T> = {
-    $and?: [T]
-    $or?: [T]
-    $not?: T
-} & {[name: string]: PrimitiveFilterInput<string | boolean | number>}
-
-interface PrimitiveFilterInput<T extends string | boolean | number> {
-    $eq?: T
-    $ne?: T
-    $gt?: T
-    $gte?: T
-    $lt?: T
-    $lte?: T
-    $between?: T[]
-    $startsWith?: T
-    $endsWith?: T
-    $contains?: T
-    $containsi?: T
-    $notContains?: T
-    $notContainsi?: T
-    $in?: T[]
-    $notIn?: T[]
-    $null?: boolean
-    $notNull?: boolean
-    $and?: [T]
-    $or?: [T]
-    $not?: T
 }
 
 interface DatasetResponse<T> {

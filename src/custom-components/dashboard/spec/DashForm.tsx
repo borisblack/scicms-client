@@ -11,7 +11,17 @@ import {
     Select,
     TimePicker
 } from 'antd'
-import {AggregateType, Column, DashType, Dataset, FieldType, IDash, TemporalPeriod, TemporalType} from '../../../types'
+import {
+    AggregateType,
+    Column,
+    DashType,
+    Dataset,
+    DatasetFiltersInput,
+    FieldType,
+    IDash,
+    TemporalPeriod,
+    TemporalType
+} from '../../../types'
 import styles from './DashboardSpec.module.css'
 import {useTranslation} from 'react-i18next'
 import appConfig from '../../../config'
@@ -41,14 +51,15 @@ export interface DashValues {
     name: string
     dataset: string
     type: DashType
-    optValues: any
+    unit?: string
     isAggregate: boolean
     aggregateType?: AggregateType
     sortField?: string
     sortDirection?: string
     aggregateField?: string
     groupField?: string
-    unit?: string
+    optValues: any
+    defaultFilters: DatasetFiltersInput<any>
     temporalField?: string
     defaultPeriod: TemporalPeriod
     defaultStartTemporal?: Dayjs
