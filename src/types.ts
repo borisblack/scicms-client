@@ -393,32 +393,78 @@ export interface ItemData extends DefaultItemTemplate {
 }
 
 export type DatasetFiltersInput<T> = {
-    $and?: [T]
-    $or?: [T]
-    $not?: T
-} & {[name: string]: PrimitiveFilterInput<string | boolean | number>}
+    $and?: DatasetFiltersInput<T>[]
+    $or?: DatasetFiltersInput<T>[]
+    $not?: DatasetFiltersInput<T>
+} & {[name: string]: PrimitiveFilterInput<string | number | boolean>}
 
-interface PrimitiveFilterInput<T extends string | boolean | number> {
+interface PrimitiveFilterInput<T extends string | number | boolean> extends BoolFilterInput, UnaryFilterInput<T>, BinaryFilterInput<T>, ListFilterInput<T> {
+    $and?: PrimitiveFilterInput<T>[]
+    $or?: PrimitiveFilterInput<T>[]
+    $not?: PrimitiveFilterInput<T>
+}
+
+interface BoolFilterInput {
+    $null?: boolean
+    $notNull?: boolean
+}
+
+interface UnaryFilterInput<T extends string | number | boolean> {
     $eq?: T
     $ne?: T
     $gt?: T
     $gte?: T
     $lt?: T
     $lte?: T
-    $between?: T[]
     $startsWith?: T
     $endsWith?: T
     $contains?: T
     $containsi?: T
     $notContains?: T
     $notContainsi?: T
+}
+
+interface BinaryFilterInput<T extends string | number | boolean> {
+    $between?: T[]
+}
+
+interface ListFilterInput<T extends string | number | boolean> {
     $in?: T[]
     $notIn?: T[]
-    $null?: boolean
-    $notNull?: boolean
-    $and?: [T]
-    $or?: [T]
-    $not?: T
+}
+
+export type BoolQueryOp = '$null' | '$notNull'
+
+export type UnaryQueryOp = '$eq' | '$ne' | '$gt' | '$gte' | '$lt' | '$lte' | '$startsWith' | '$endsWith' | '$contains' | '$containsi' | '$notContains' | '$notContainsi'
+
+export type BinaryQueryOp = '$between'
+
+export type ListQueryOp = '$in' | '$notIn'
+
+export enum QueryOp {
+    $eq = '$eq',
+    $ne = '$ne',
+    $gt = '$gt',
+    $gte = '$gte',
+    $lt = '$lt',
+    $lte = '$lte',
+    $between = '$between',
+    $startsWith = '$startsWith',
+    $endsWith = '$endsWith',
+    $contains = '$contains',
+    $containsi = '$containsi',
+    $notContains = '$notContains',
+    $notContainsi = '$notContainsi',
+    $in = '$in',
+    $notIn = '$notIn',
+    $null = '$null',
+    $notNull = '$notNull'
+}
+
+export enum QueryPredicate {
+    $and = '$and',
+    $or = '$or',
+    $not = '$not'
 }
 
 export enum DeletingStrategy {
