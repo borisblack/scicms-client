@@ -35,6 +35,9 @@ function BubbleDash({dataset, dash, data}: InnerDashRenderProps) {
         return <Alert message="sizeField attribute not specified" type="error"/>
 
     const {columns} = dataset.spec
+    if (!columns)
+        return <Alert message="Dataset has no columns" type="error"/>
+
     const xFieldType = columns[xField].type
     const yFieldType = columns[yField].type
     const config: ScatterConfig = {

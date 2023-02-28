@@ -42,6 +42,10 @@ function BubbleMapDash({pageKey, fullScreen, dataset, dash, data}: InnerDashRend
     if (!sizeField)
         return <Alert message="sizeField attribute not specified" type="error"/>
 
+    const {columns} = dataset.spec
+    if (!columns)
+        return <Alert message="Dataset has no columns" type="error"/>
+
     // useEffect(() => {
     //     fetch('/countries-50m.json')
     //         .then((r) => r.json())
