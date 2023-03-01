@@ -67,10 +67,10 @@ export default function DashboardPanel({me, pageKey, spec}: Props) {
     const rowKeys = Object.keys(rows).sort(intCompareFn)
     return (canPreview ? (
         <>
-            {datasets && rowKeys.map((rowIndex, i) => {
+            {datasets && rowKeys.map((rowIndex) => {
                 const colDashes = rows[rowIndex]
                 return(
-                    <Row key={rowIndex} gutter={16} style={{marginBottom: (i < rowKeys.length - 1) ? ROW_VERTICAL_SPACE : 0}}>
+                    <Row key={rowIndex} gutter={16}>
                         {colDashes.sort(dashColCompareFn).map(colDash => (
                             <Col key={colDash.name} span={colDash.w * K}>
                                 {renderDash(colDash)}

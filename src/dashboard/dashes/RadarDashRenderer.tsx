@@ -34,7 +34,7 @@ function RadarDash({dataset, dash, data}: InnerDashRenderProps) {
         return <Alert message="yField attribute not specified" type="error"/>
 
     const {columns} = dataset.spec
-    if (!columns || !columns.xField || !columns.yField)
+    if (!columns || !columns[xField] || !columns[yField])
         return <Alert message="The dataset does not contain a columns specification" type="error"/>
     
     const xFieldType = columns[xField].type

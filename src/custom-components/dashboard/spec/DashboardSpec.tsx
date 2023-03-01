@@ -59,7 +59,7 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
                     h: 1,
                     type: appConfig.dashboard.defaultDashType,
                     optValues: {},
-                    defaultFilters: {},
+                    defaultFilters: [],
                     defaultPeriod: TemporalPeriod.ARBITRARY,
                     isAggregate: false,
                     refreshIntervalSeconds: appConfig.dashboard.defaultRefreshIntervalSeconds

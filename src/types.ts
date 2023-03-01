@@ -335,7 +335,7 @@ export interface IDash {
     sortField?: string
     sortDirection?: string
     optValues: any
-    defaultFilters: DatasetFiltersInput<any>
+    defaultFilters: IDashFilter[]
     temporalField?: string
     defaultPeriod: TemporalPeriod
     defaultStartTemporal?: string
@@ -346,8 +346,6 @@ export interface IDash {
 export type NumericType = FieldType.int | FieldType.long | FieldType.float | FieldType.double | FieldType.decimal
 
 export type TemporalType = FieldType.date | FieldType.time | FieldType.datetime | FieldType.timestamp
-
-export type MetricType = NumericType | TemporalType
 
 export enum DashType {
     area = 'area',
@@ -362,6 +360,14 @@ export enum DashType {
     radar = 'radar',
     scatter = 'scatter',
     statistic = 'statistic'
+}
+
+export interface IDashFilter {
+    columnName: string
+    columnAlias?: string
+    op: BoolQueryOp | UnaryQueryOp | BinaryQueryOp | ListQueryOp
+    value: any
+    show?: boolean
 }
 
 export enum TemporalPeriod {

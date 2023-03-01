@@ -1,8 +1,9 @@
-import {Button, FormInstance} from 'antd'
-import {Dataset, DatasetFiltersInput, IDash, QueryOp, QueryPredicate} from '../../../../types'
+import {Button, FormInstance, Space, Tooltip} from 'antd'
+import {Dataset, IDash, IDashFilter, QueryOp, QueryPredicate} from '../../../../types'
 import {useCallback, useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
-import {PlusOutlined} from '@ant-design/icons'
+import {BsBraces, BsPlus, BsPlusLg} from 'react-icons/bs'
+import styles from './DashFilters.module.css'
 
 interface Props {
     dataset: Dataset
@@ -24,15 +25,22 @@ export default function DashFilters({dataset, dash, form}: Props) {
         return res
     }, [allColumns])
     const [availableColumnOps, setAvailableColumnOps] = useState<{[name: string]: QueryOp[]}>(initialColumnOps())
-    const [filters, setFilters] = useState<DatasetFiltersInput<any>>(dash.defaultFilters ?? {})
+    const [filters, setFilters] = useState<IDashFilter[]>(dash.defaultFilters ?? [])
 
     return (
         <>
-            <Button icon={<PlusOutlined/>}/>
-            {Object.keys(filters).filter(k => !groupFilterKeys.has(k)).map(k => {
-                const filter = filters[k]
+            <Space>
+                <Tooltip title={t('Add Filter')}>
+                    <Button size="small"><BsPlus className={styles.btnIcon}/></Button>
+                </Tooltip>
+                <Tooltip title={t('Add Block')}>
+                    <Button size="small"><BsPlus className={styles.btnIcon}/><BsBraces className={styles.btnIcon}/></Button>
+                </Tooltip>
+            </Space>
+            {filters.map(filter => {
+                const {columnName, op} = filter
                 return (
-                    <div key={k}></div>
+                    <div key={`${columnName}#${op}`}>{`${columnName}#${op}`}</div>
                 )
             })}
         </>

@@ -18,7 +18,7 @@ import {
     Dataset,
     DatasetFiltersInput,
     FieldType,
-    IDash,
+    IDash, IDashFilter,
     TemporalPeriod,
     TemporalType
 } from '../../../types'
@@ -39,6 +39,7 @@ import dayjs, {Dayjs} from 'dayjs'
 import {getRenderer} from '../../../dashboard/DashRenderers'
 import DashOptFieldWrapper from './DashOptFieldWrapper'
 import {DashRenderer} from '../../../dashboard/dashes'
+import DashFilters from './dash-filters/DashFilters'
 
 interface Props {
     form: FormInstance
@@ -59,7 +60,7 @@ export interface DashValues {
     aggregateField?: string
     groupField?: string
     optValues: any
-    defaultFilters: DatasetFiltersInput<any>
+    defaultFilters: IDashFilter[]
     temporalField?: string
     defaultPeriod: TemporalPeriod
     defaultStartTemporal?: Dayjs
@@ -397,6 +398,7 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                             </>
                         )}
                     </Row>
+                    {dataset && <DashFilters dataset={dataset} dash={dash} form={form}/>}
                 </Panel>
             </Collapse>
 
