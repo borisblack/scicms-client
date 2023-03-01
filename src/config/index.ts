@@ -60,7 +60,6 @@ interface AppConfig {
 
 const appConfig: AppConfig = {
     coreVersion: 'v1',
-    // coreUrl: 'https://sandbox-712.iss-reshetnev.ru:24202',
     coreUrl: 'http://localhost:8079',
     i18nLng: 'ru',
     antdLocale: ruRU,
