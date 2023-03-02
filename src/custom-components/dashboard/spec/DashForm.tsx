@@ -13,10 +13,9 @@ import {
 } from 'antd'
 import {
     AggregateType,
-    Column,
+    Column, DashFiltersBlock,
     DashType,
     Dataset,
-    DatasetFiltersInput,
     FieldType,
     IDash, IDashFilter,
     TemporalPeriod,
@@ -60,7 +59,7 @@ export interface DashValues {
     aggregateField?: string
     groupField?: string
     optValues: any
-    defaultFilters: IDashFilter[]
+    defaultFilters: DashFiltersBlock
     temporalField?: string
     defaultPeriod: TemporalPeriod
     defaultStartTemporal?: Dayjs

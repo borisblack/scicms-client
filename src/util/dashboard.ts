@@ -1,4 +1,4 @@
-import {DashType, FieldType, IDash, TemporalPeriod, TemporalType} from '../types'
+import {DashFiltersBlock, DashType, FieldType, IDash, QueryPredicate, TemporalPeriod, TemporalType} from '../types'
 import {DateTime} from 'luxon'
 import util from 'util'
 import i18n from '../i18n'
@@ -18,14 +18,7 @@ export const dashTypes = Object.keys(DashType).sort()
 export const numericTypes = [FieldType.int, FieldType.long, FieldType.float, FieldType.double, FieldType.decimal]
 export const temporalTypes = [FieldType.date, FieldType.time, FieldType.datetime, FieldType.timestamp]
 export const metricTypes = [...numericTypes, ...temporalTypes]
-export const labelTypes = [
-    FieldType.uuid, FieldType.string, FieldType.text, FieldType.sequence, FieldType.email, FieldType.enum,
-    ...numericTypes,
-    ...temporalTypes,
-    FieldType.bool, FieldType.media, FieldType.relation
-]
 export const temporalTypeSet = new Set(temporalTypes)
-export const labelTypeSet = new Set([...labelTypes])
 export const allTemporalPeriods: string[] = Object.keys(TemporalPeriod)
 export const timeTemporalPeriods: TemporalPeriod[] = [
     TemporalPeriod.ARBITRARY,
@@ -40,6 +33,12 @@ export const timeScaleProps = {
             // zone: UTC
         }
     }
+}
+
+export const defaultDashFiltersBlock: DashFiltersBlock = {
+    predicate: QueryPredicate.$and,
+    filters: [],
+    blocks: []
 }
 
 export const temporalPeriodTitles: {[key: string]: string} = {

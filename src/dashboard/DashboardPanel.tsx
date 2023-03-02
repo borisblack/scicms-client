@@ -21,7 +21,6 @@ interface Props {
 registerLocale('ru-RU', RU_RU_LOCALE)
 
 const K = ANTD_GRID_COLS / appConfig.dashboard.cols
-const ROW_VERTICAL_SPACE = 16
 
 const intCompareFn = (a: string, b: string) => parseInt(a) - parseInt(b)
 const dashColCompareFn = (a: IDash, b: IDash) => a.x - b.x

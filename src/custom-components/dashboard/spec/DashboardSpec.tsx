@@ -8,7 +8,7 @@ import 'react-resizable/css/styles.css'
 import {CustomComponentRenderContext} from '../../index'
 import {DASHBOARD_ITEM_NAME} from '../../../config/constants'
 import PermissionService from '../../../services/permission'
-import {IDash, IDashboardSpec, TemporalPeriod} from '../../../types'
+import {IDash, IDashboardSpec, QueryPredicate, TemporalPeriod} from '../../../types'
 import DashForm, {DashValues} from './DashForm'
 import {DeleteOutlined} from '@ant-design/icons'
 import {getDashIcon} from '../../../util/icons'
@@ -59,7 +59,11 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
                     h: 1,
                     type: appConfig.dashboard.defaultDashType,
                     optValues: {},
-                    defaultFilters: [],
+                    defaultFilters: {
+                        predicate: QueryPredicate.$and,
+                        filters: [],
+                        blocks: []
+                    },
                     defaultPeriod: TemporalPeriod.ARBITRARY,
                     isAggregate: false,
                     refreshIntervalSeconds: appConfig.dashboard.defaultRefreshIntervalSeconds

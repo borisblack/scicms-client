@@ -335,7 +335,7 @@ export interface IDash {
     sortField?: string
     sortDirection?: string
     optValues: any
-    defaultFilters: IDashFilter[]
+    defaultFilters: DashFiltersBlock
     temporalField?: string
     defaultPeriod: TemporalPeriod
     defaultStartTemporal?: string
@@ -368,6 +368,12 @@ export interface IDashFilter {
     op: BoolQueryOp | UnaryQueryOp | BinaryQueryOp | ListQueryOp
     value: any
     show?: boolean
+}
+
+export interface DashFiltersBlock {
+    predicate: Omit<QueryPredicate, QueryPredicate.$not>
+    filters: IDashFilter[]
+    blocks: DashFiltersBlock[]
 }
 
 export enum TemporalPeriod {
