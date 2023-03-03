@@ -1,5 +1,5 @@
 import {Button, FormInstance, Space, Tooltip} from 'antd'
-import {DashFiltersBlock, Dataset, IDash, QueryOp, QueryPredicate} from '../../../../types'
+import {Column, DashFiltersBlock, Dataset, IDash, QueryOp, QueryPredicate} from '../../../../types'
 import {useCallback, useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {defaultDashFiltersBlock} from '../../../../util/dashboard'
@@ -15,10 +15,11 @@ const groupFilterKeys = new Set<string>([QueryPredicate.$and, QueryPredicate.$or
 
 export default function DashFilters({dataset, dash, form}: Props) {
     const {t} = useTranslation()
-    const allColumns: string[] = useMemo(() => Object.keys(dataset.spec.columns).sort(), [dataset.spec.columns])
+    const allColumns: {[name: string]: Column} = useMemo(() => dataset.spec.columns ?? {}, [dataset.spec.columns])
     const initialColumnOps = useCallback((): {[name: string]: QueryOp[]} => {
         const res: {[name: string]: QueryOp[]} = {}
-        for (const col of allColumns) {
+        const columnNames = Object.keys(allColumns).sort()
+        for (const col of columnNames) {
             res[col] = [...allOps]
         }
         return res
