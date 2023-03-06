@@ -366,7 +366,7 @@ export interface IDashFilter {
     columnName: string
     columnAlias?: string
     op: BoolQueryOp | UnaryQueryOp | BinaryQueryOp | ListQueryOp
-    value: any
+    value?: any
     show?: boolean
 }
 

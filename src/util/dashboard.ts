@@ -14,14 +14,7 @@ import i18n from '../i18n'
 import appConfig from '../config'
 import dayjs, {Dayjs} from 'dayjs'
 
-const {
-    luxonDisplayDateFormatString,
-    luxonDisplayTimeFormatString,
-    luxonDisplayDateTimeFormatString,
-    momentDisplayDateFormatString,
-    momentDisplayTimeFormatString,
-    momentDisplayDateTimeFormatString
-} = appConfig.dateTime
+const {momentDisplayDateFormatString, momentDisplayTimeFormatString, momentDisplayDateTimeFormatString} = appConfig.dateTime
 
 export const dashTypes = Object.keys(DashType).sort()
 export const stringTypes = [FieldType.string, FieldType.text, FieldType.uuid, FieldType.sequence, FieldType.email, FieldType.password, FieldType.array, FieldType.json, FieldType.media, FieldType.relation]
@@ -106,7 +99,7 @@ export const defaultDashFiltersBlock: DashFiltersBlock = {
     blocks: []
 }
 
-export const queryOpTitles = {
+export const queryOpTitles: {[key: string]: string} = {
     [QueryOp.$eq]: i18n.t('equals'),
     [QueryOp.$ne]: i18n.t('not equals'),
     [QueryOp.$gt]: i18n.t('greater than'),
@@ -126,7 +119,7 @@ export const queryOpTitles = {
     [QueryOp.$notNull]: i18n.t('not null')
 }
 
-export const temporalPeriodTitles = {
+export const temporalPeriodTitles: {[key: string]: string} = {
     [TemporalPeriod.ARBITRARY]: i18n.t('Arbitrary'),
     [TemporalPeriod.LAST_5_MINUTES]: util.format(i18n.t('Last %d minutes'), 5),
     [TemporalPeriod.LAST_15_MINUTES]: util.format(i18n.t('Last %d minutes'), 15),
@@ -157,6 +150,22 @@ export const isNumeric = (fieldType: FieldType) => numericTypeSet.has(fieldType)
 export const isTemporal = (fieldType: FieldType) => temporalTypeSet.has(fieldType)
 
 export const isBool = (fieldType: FieldType) => fieldType === FieldType.bool
+
+export function queryOps(fieldType: FieldType): QueryOp[] {
+    if (isString(fieldType))
+        return [...stringQueryOps]
+
+    if (isNumeric(fieldType))
+        return [...numericQueryOps]
+
+    if (isTemporal(fieldType))
+        return [...temporalQueryOps]
+
+    if (isBool(fieldType))
+        return [...boolQueryOps]
+
+    throw new Error(`Illegal field type: ${fieldType}`)
+}
 
 export function startTemporalFromPeriod(period: TemporalPeriod, temporalType: TemporalType): Dayjs {
     switch (period) {
@@ -232,13 +241,13 @@ export const formatTemporalDisplay = (temporal: string | null, temporalType: Tem
     if (temporal == null)
         return ''
 
-    const dt = DateTime.fromISO(temporal)
+    const dt = dayjs(temporal)
     if (temporalType === FieldType.date)
-        return dt.toFormat(luxonDisplayDateFormatString)
+        return dt.format(momentDisplayDateFormatString)
     else if (temporalType === FieldType.time)
-        return dt.toFormat(luxonDisplayTimeFormatString)
+        return dt.format(momentDisplayTimeFormatString)
     else
-        return dt.toFormat(luxonDisplayDateTimeFormatString)
+        return dt.format((dt.hour() === 0 && dt.minute() === 0) ? momentDisplayDateFormatString : momentDisplayDateTimeFormatString)
 }
 
 export const mapLabels = (data: any[], labelField: string): string[] =>
