@@ -1,4 +1,5 @@
 import {Button, FormInstance, Space, Tooltip} from 'antd'
+import {v4 as uuidv4} from 'uuid'
 import {Column, DashFiltersBlock, Dataset, IDash, IDashFilter, QueryOp, QueryPredicate} from '../../../../types'
 import {useCallback, useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
@@ -34,6 +35,7 @@ export default function DashFilters({dataset, dash, form}: Props) {
         const op = availableOps[0]
 
         const newFilter: IDashFilter = {
+            id: uuidv4(),
             columnName: colName,
             op,
             show: false
@@ -55,6 +57,7 @@ export default function DashFilters({dataset, dash, form}: Props) {
 
     const handleBlockAdd = useCallback(() => {
         const newBlock: DashFiltersBlock = {
+            id: uuidv4(),
             predicate: QueryPredicate.$and,
             filters: [],
             blocks: []

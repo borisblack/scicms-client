@@ -320,6 +320,7 @@ export interface IDashboardSpec {
 }
 
 export interface IDash {
+    id: string
     name: string
     x: number
     y: number
@@ -363,6 +364,7 @@ export enum DashType {
 }
 
 export interface IDashFilter {
+    id: string
     columnName: string
     columnAlias?: string
     op: BoolQueryOp | UnaryQueryOp | BinaryQueryOp | ListQueryOp
@@ -371,6 +373,7 @@ export interface IDashFilter {
 }
 
 export interface DashFiltersBlock {
+    id: string
     predicate: Omit<QueryPredicate, QueryPredicate.$not>
     filters: IDashFilter[]
     blocks: DashFiltersBlock[]

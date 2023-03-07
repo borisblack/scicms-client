@@ -2,6 +2,7 @@ import {useEffect, useMemo, useState} from 'react'
 import RGL, {Layout, WidthProvider} from 'react-grid-layout'
 import {Button, Form, Modal} from 'antd'
 import {useTranslation} from 'react-i18next'
+import {v4 as uuidv4} from 'uuid'
 import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
 
@@ -22,7 +23,7 @@ const initialSpec: IDashboardSpec = {
     dashes: []
 }
 
-let tempId = 0
+let seqNum = 0
 
 export default function DashboardSpec({me, item, data, buffer, onBufferChange}: CustomComponentRenderContext) {
     if (item.name !== DASHBOARD_ITEM_NAME)
@@ -48,11 +49,11 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
     }, [spec])
 
     function handleDashAdd() {
-        const id = (++tempId).toString()
         const newSpec: IDashboardSpec = {
             dashes: [
                 {
-                    name: id,
+                    id: uuidv4(),
+                    name: (++seqNum).toString(),
                     x: 0,
                     y: 0,
                     w: appConfig.dashboard.cols / 2,
@@ -77,10 +78,10 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
 
     function handleLayoutChange(layouts: Layout[]) {
         const newSpec: IDashboardSpec = {
-            dashes: layouts.map((it, i) => {
+            dashes: layouts.map((layout, i) => {
                 const curDash = spec.dashes[i]
                 const {
-                    name, dataset, type, unit,
+                    id, name, dataset, type, unit,
                     isAggregate, aggregateType, aggregateField, groupField, sortField, sortDirection,
                     optValues,
                     defaultFilters, temporalField, defaultPeriod, defaultStartTemporal, defaultEndTemporal,
@@ -88,10 +89,11 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
                 } = curDash
 
                 return {
-                    x: it.x,
-                    y: it.y,
-                    w: it.w,
-                    h: it.h,
+                    id: id ?? uuidv4(),
+                    x: layout.x,
+                    y: layout.y,
+                    w: layout.w,
+                    h: layout.h,
                     name,
                     dataset,
                     type,
