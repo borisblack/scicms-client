@@ -9,13 +9,14 @@ import 'react-resizable/css/styles.css'
 import {CustomComponentRenderContext} from '../../index'
 import {DASHBOARD_ITEM_NAME} from '../../../config/constants'
 import PermissionService from '../../../services/permission'
-import {IDash, IDashboardSpec, QueryPredicate, TemporalPeriod} from '../../../types'
+import {IDash, IDashboardSpec, TemporalPeriod} from '../../../types'
 import DashForm, {DashValues} from './DashForm'
 import {DeleteOutlined} from '@ant-design/icons'
 import {getDashIcon} from '../../../util/icons'
 import appConfig from '../../../config'
 import './DashboardSpec.css'
 import styles from './DashboardSpec.module.css'
+import {defaultDashFiltersBlock} from '../../../util/dashboard'
 
 const ReactGridLayout = WidthProvider(RGL)
 
@@ -60,11 +61,7 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
                     h: 1,
                     type: appConfig.dashboard.defaultDashType,
                     optValues: {},
-                    defaultFilters: {
-                        predicate: QueryPredicate.$and,
-                        filters: [],
-                        blocks: []
-                    },
+                    defaultFilters: {...defaultDashFiltersBlock},
                     defaultPeriod: TemporalPeriod.ARBITRARY,
                     isAggregate: false,
                     refreshIntervalSeconds: appConfig.dashboard.defaultRefreshIntervalSeconds

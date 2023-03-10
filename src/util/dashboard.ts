@@ -13,6 +13,7 @@ import util from 'util'
 import i18n from '../i18n'
 import appConfig from '../config'
 import dayjs, {Dayjs} from 'dayjs'
+import {v4 as uuidv4} from 'uuid'
 
 const {momentDisplayDateFormatString, momentDisplayTimeFormatString, momentDisplayDateTimeFormatString} = appConfig.dateTime
 
@@ -94,6 +95,7 @@ export const timeScaleProps = {
 }
 
 export const defaultDashFiltersBlock: DashFiltersBlock = {
+    id: uuidv4(),
     predicate: QueryPredicate.$and,
     filters: [],
     blocks: []

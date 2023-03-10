@@ -72,9 +72,35 @@ export default function DashFilters({dataset, dash, form}: Props) {
         }))
     }, [])
 
-    const handleFilterRemove = useCallback(() => {}, [])
+    const handleFilterRemove = useCallback((id: string) => {
+        const filterToRemove = filters.filters.find(f => f.id === id)
+        if (filterToRemove == null)
+            throw new Error('Illegal state')
 
-    const handleBlockRemove = useCallback(() => {}, [])
+        // Remove filter
+        setFilters(prevFilters => ({
+            ...prevFilters,
+            filters: prevFilters.filters.filter(f => f.id !== id)
+        }))
+
+        // Restore query operators for column
+        const colName = filterToRemove.columnName
+        const column = allColumns[colName]
+        const allOps = queryOps(column.type)
+        const availableOpSet = new Set(availableColOps[colName])
+        const newAvailableOps: QueryOp[] = allOps.filter(op => availableOpSet.has(op) || op === filterToRemove.op)
+        setAvailableColOps(prevAvailableColOps => ({
+            ...prevAvailableColOps,
+            [colName]: newAvailableOps
+        }))
+    }, [allColumns, availableColOps, filters.filters])
+
+    const handleBlockRemove = useCallback((id: string) => {
+        setFilters(prevFilters => ({
+            ...prevFilters,
+            blocks: prevFilters.blocks.filter(b => b.id !== id)
+        }))
+    }, [])
 
     return (
         <>
