@@ -298,6 +298,7 @@ export interface Dataset extends DefaultItemTemplate {
     dataSource: string
     tableName: string | null
     query: string | null
+    description: string | null
     spec: DatasetSpec
     hash: string | null
 }

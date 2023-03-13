@@ -46,11 +46,11 @@ export default function DashboardPanel({me, pageKey, spec}: Props) {
 
         const datasetName = dash.dataset
         if (!datasetName)
-            return <span>Dataset name not specified</span>
+            return <Alert message="Dataset name not specified" type="error"/>
 
         const dataset = datasets[datasetName]
         if (!dataset)
-            return <span>Dataset not found</span>
+            return <Alert message="Dataset not found" type="error"/>
 
         return (
             <DashWrapper
