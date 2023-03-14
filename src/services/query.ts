@@ -29,8 +29,8 @@ export interface ExtRequestParams extends RequestParams {
 }
 
 export type ItemFiltersInput<FiltersType extends ItemData> = {
-    and?: [FiltersType]
-    or?: [FiltersType]
+    and?: FiltersType[]
+    or?: FiltersType[]
     not?: FiltersType
 } & {[name: string]: ItemFiltersInput<FiltersType> | ItemFilterInput<FiltersType, string | boolean | number>}
 
@@ -52,8 +52,8 @@ export type ItemFilterInput<FilterType extends ItemData, ElementType extends str
     notIn?: ElementType[]
     null?: boolean
     notNull?: boolean
-    and?: [FilterType]
-    or?: [FilterType]
+    and?: FilterType[]
+    or?: FilterType[]
     not?: FilterType
 }
 
