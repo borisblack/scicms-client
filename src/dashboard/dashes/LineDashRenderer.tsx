@@ -3,7 +3,7 @@ import {DashType} from '../../types'
 import {DashOpt, DashOptType, DashRenderer, InnerDashRenderProps, XYDashOpts, xyDashOpts} from '.'
 import appConfig from '../../config'
 import {Alert} from 'antd'
-import {formatValue, isTemporal} from '../../util/dashboard'
+import {formatValue, isTemporal, parseDashColor} from '../../util/dashboard'
 
 interface LineDashOpts extends XYDashOpts {
     xAxisLabelAutoRotate?: boolean
@@ -71,6 +71,7 @@ function LineDash({dataset, dash, data}: InnerDashRenderProps) {
                 alias: yFieldAlias
             }
         },
+        color: parseDashColor(seriesField == null),
         locale: appConfig.dashboard.locale
     }
 

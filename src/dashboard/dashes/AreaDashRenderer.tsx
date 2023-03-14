@@ -3,7 +3,7 @@ import {DashType} from '../../types'
 import {DashOpt, DashRenderer, InnerDashRenderProps, XYDashOpts, xyDashOpts} from '.'
 import appConfig from '../../config'
 import {Alert} from 'antd'
-import {formatValue, isTemporal} from '../../util/dashboard'
+import {formatValue, isTemporal, parseDashColor} from '../../util/dashboard'
 
 interface AreaDashOpts extends XYDashOpts {}
 
@@ -63,6 +63,7 @@ function AreaDash({dataset, dash, data}: InnerDashRenderProps) {
                 formatter: (value: any) => formatValue(value, xFieldType)
             }
         },
+        color: parseDashColor(seriesField == null),
         locale: appConfig.dashboard.locale
     }
 

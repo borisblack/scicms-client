@@ -44,6 +44,8 @@ interface AppConfig {
         defaultPageSize: number
         maxPageSize: number
         openFirstDashboard: boolean
+        statisticColor: string
+        dashColor?: string | string[]
     }
     ui: {
         dataGrid: {
@@ -92,7 +94,8 @@ const appConfig: AppConfig = {
         defaultDashType: DashType.bar,
         defaultPageSize: 100,
         maxPageSize: 1000,
-        openFirstDashboard: true
+        openFirstDashboard: true,
+        statisticColor: '#333366'
     },
     ui: {
         dataGrid: {

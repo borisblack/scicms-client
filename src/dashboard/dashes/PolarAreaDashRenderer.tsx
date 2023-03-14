@@ -3,7 +3,7 @@ import {DashType} from '../../types'
 import {DashOpt, DashRenderer, InnerDashRenderProps, XYDashOpts, xyDashOpts} from '.'
 import appConfig from '../../config'
 import {Alert} from 'antd'
-import {formatValue, isTemporal} from '../../util/dashboard'
+import {formatValue, isTemporal, parseDashColor} from '../../util/dashboard'
 
 interface PolarAreaDashOpts extends XYDashOpts {}
 
@@ -64,6 +64,7 @@ function PolarAreaDash({dataset, dash, data}: InnerDashRenderProps) {
                 alias: yFieldAlias
             }
         },
+        color: parseDashColor(seriesField == null),
         locale: appConfig.dashboard.locale
     }
 

@@ -3,7 +3,7 @@ import {DashType} from '../../types'
 import {DashOpt, DashOptType, DashRenderer, InnerDashRenderProps, XYDashOpts, xyDashOpts} from '.'
 import appConfig from '../../config'
 import {Alert} from 'antd'
-import {isTemporal} from '../../util/dashboard'
+import {isTemporal, parseDashColor} from '../../util/dashboard'
 
 interface BarDashOpts extends XYDashOpts {
     xAxisLabelAutoRotate?: boolean
@@ -70,6 +70,7 @@ function BarDash({dataset, dash, data}: InnerDashRenderProps) {
                 alias: yFieldAlias
             }
         },
+        color: parseDashColor(),
         locale: appConfig.dashboard.locale
     }
 

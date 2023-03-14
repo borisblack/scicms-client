@@ -3,7 +3,7 @@ import {DashType} from '../../types'
 import {bubbleDashOpts, BubbleDashOpts, DashOpt, DashRenderer, InnerDashRenderProps} from '.'
 import appConfig from '../../config'
 import {Alert} from 'antd'
-import {formatValue, isTemporal} from '../../util/dashboard'
+import {formatValue, isTemporal, parseDashColor} from '../../util/dashboard'
 
 export default class BubbleDashRenderer implements DashRenderer {
     supports = (dashType: DashType) => dashType === DashType.bubble
@@ -86,6 +86,7 @@ function BubbleDash({dataset, dash, data}: InnerDashRenderProps) {
                 alias: sizeFieldAlias
             }
         },
+        color: parseDashColor(),
         locale: appConfig.dashboard.locale
     }
 

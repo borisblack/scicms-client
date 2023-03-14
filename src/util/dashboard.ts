@@ -16,6 +16,7 @@ import dayjs, {Dayjs} from 'dayjs'
 import {v4 as uuidv4} from 'uuid'
 
 const {momentDisplayDateFormatString, momentDisplayTimeFormatString, momentDisplayDateTimeFormatString} = appConfig.dateTime
+const {dashColor} = appConfig.dashboard
 
 export const dashTypes = Object.keys(DashType).sort()
 export const stringTypes = [FieldType.string, FieldType.text, FieldType.uuid, FieldType.sequence, FieldType.email, FieldType.password, FieldType.array, FieldType.json, FieldType.media, FieldType.relation]
@@ -275,4 +276,19 @@ export const formatValue = (value: any, type: FieldType) => {
         default:
             return value
     }
+}
+
+export function parseDashColor(single: boolean = false): string | string[] | undefined {
+    if (dashColor == null)
+        return undefined
+
+    if (Array.isArray(dashColor)) {
+        if (dashColor.length === 0)
+            return undefined
+
+        if (single)
+            return dashColor[0]
+    }
+
+    return dashColor
 }

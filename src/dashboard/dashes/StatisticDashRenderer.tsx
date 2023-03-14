@@ -1,6 +1,7 @@
 import {DashType} from '../../types'
 import {DashOpt, DashOptType, DashRenderer, InnerDashRenderProps} from '.'
 import {Alert, Statistic} from 'antd'
+import appConfig from '../../config'
 
 interface StatisticDashOpts {
     statisticField?: string
@@ -36,7 +37,7 @@ function StatisticDash({dataset, dash, data}: InnerDashRenderProps) {
             {data.length > 0 && (
                 <Statistic
                     style={{padding: '0 12px'}}
-                    valueStyle={{fontSize: 48, fontWeight: 600, color: '#333366'}}
+                    valueStyle={{fontSize: 48, fontWeight: 600, color: appConfig.dashboard.statisticColor}}
                     value={data[0][statisticField]}
                     groupSeparator=" "
                 />

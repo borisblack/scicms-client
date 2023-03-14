@@ -3,6 +3,7 @@ import {DashType} from '../../types'
 import {DashOpt, DashRenderer, DoughnutDashOpts, doughnutDashOpts, InnerDashRenderProps} from '.'
 import appConfig from '../../config'
 import {Alert} from 'antd'
+import {parseDashColor} from '../../util/dashboard'
 
 export default class DoughnutDashRenderer implements DashRenderer {
     supports = (dashType: DashType) => dashType === DashType.doughnut
@@ -63,6 +64,7 @@ function DoughnutDash({dash, data}: InnerDashRenderProps) {
                 alias: colorFieldAlias
             }
         },
+        color: parseDashColor(),
         locale: appConfig.dashboard.locale
     }
 

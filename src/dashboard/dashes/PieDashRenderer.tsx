@@ -3,6 +3,7 @@ import {DashType} from '../../types'
 import {DashOpt, DashRenderer, doughnutDashOpts, DoughnutDashOpts, InnerDashRenderProps} from '.'
 import appConfig from '../../config'
 import {Alert} from 'antd'
+import {parseDashColor} from '../../util/dashboard'
 
 type PieDashOpts = Omit<DoughnutDashOpts, 'innerRadius'>
 
@@ -64,6 +65,7 @@ function PieDash({dash, data}: InnerDashRenderProps) {
                 alias: colorFieldAlias
             }
         },
+        color: parseDashColor(),
         locale: appConfig.dashboard.locale
     }
 
