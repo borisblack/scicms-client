@@ -70,7 +70,7 @@ function BarDash({dataset, dash, data}: InnerDashRenderProps) {
                 alias: yFieldAlias
             }
         },
-        color: parseDashColor(),
+        color: parseDashColor(seriesField == null),
         locale: appConfig.dashboard.locale
     }
 
