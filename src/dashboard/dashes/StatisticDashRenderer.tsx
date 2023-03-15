@@ -37,7 +37,7 @@ function StatisticDash({dataset, dash, data}: InnerDashRenderProps) {
             {data.length > 0 && (
                 <Statistic
                     style={{padding: '0 12px'}}
-                    valueStyle={{fontSize: 48, fontWeight: 600, color: appConfig.dashboard.statisticColor}}
+                    valueStyle={{fontSize: 48, fontWeight: 600, color: appConfig.dashboard.dash?.statistic?.color}}
                     value={data[0][statisticField]}
                     groupSeparator=" "
                 />

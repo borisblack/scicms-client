@@ -7,6 +7,8 @@ import {parseDashColor} from '../../util/dashboard'
 
 type PieDashOpts = Omit<DoughnutDashOpts, 'innerRadius'>
 
+const {locale, dash: dashConfig} = appConfig.dashboard
+
 export default class PieDashRenderer implements DashRenderer {
     supports = (dashType: DashType) => dashType === DashType.pie
 
@@ -46,10 +48,7 @@ function PieDash({dash, data}: InnerDashRenderProps) {
             type: 'inner',
             offset: '-30%',
             content: ({ percent }) => `${(percent * 100).toFixed(0)}%`,
-            style: {
-                textAlign: 'center',
-                fontSize: 14
-            },
+            style: dashConfig?.pie?.labelStyle
         },
         interactions: [{
             type: 'element-selected',
@@ -66,7 +65,7 @@ function PieDash({dash, data}: InnerDashRenderProps) {
             }
         },
         color: parseDashColor(),
-        locale: appConfig.dashboard.locale
+        locale
     }
 
     return <Pie {...config} />

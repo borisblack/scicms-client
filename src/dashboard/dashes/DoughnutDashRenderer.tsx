@@ -5,6 +5,8 @@ import appConfig from '../../config'
 import {Alert} from 'antd'
 import {parseDashColor} from '../../util/dashboard'
 
+const {locale, dash: dashConfig} = appConfig.dashboard
+
 export default class DoughnutDashRenderer implements DashRenderer {
     supports = (dashType: DashType) => dashType === DashType.doughnut
 
@@ -45,10 +47,7 @@ function DoughnutDash({dash, data}: InnerDashRenderProps) {
             type: 'inner',
             offset: '-50%',
             content: ({ percent }) => `${(percent * 100).toFixed(0)}%`,
-            style: {
-                textAlign: 'center',
-                fontSize: 14
-            },
+            style: dashConfig?.doughnut?.labelStyle
         },
         interactions: [{
             type: 'element-selected',
@@ -65,7 +64,7 @@ function DoughnutDash({dash, data}: InnerDashRenderProps) {
             }
         },
         color: parseDashColor(),
-        locale: appConfig.dashboard.locale
+        locale
     }
 
     return <Pie {...config} />

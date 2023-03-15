@@ -44,8 +44,24 @@ interface AppConfig {
         defaultPageSize: number
         maxPageSize: number
         openFirstDashboard: boolean
-        statisticColor: string
-        dashColor?: string | string[]
+        dash?: {
+            all?: {
+                color: string | string[]
+            },
+            doughnut?: {
+                labelStyle: {
+                    [key: string]: any
+                }
+            },
+            pie?: {
+                labelStyle: {
+                    [key: string]: any
+                }
+            },
+            statistic?: {
+                color?: string
+            }
+        }
     }
     ui: {
         dataGrid: {
@@ -95,7 +111,23 @@ const appConfig: AppConfig = {
         defaultPageSize: 100,
         maxPageSize: 1000,
         openFirstDashboard: true,
-        statisticColor: '#333366'
+        dash: {
+            doughnut: {
+                labelStyle: {
+                    textAlign: 'center',
+                    fontSize: 14
+                }
+            },
+            pie: {
+                labelStyle: {
+                    textAlign: 'center',
+                    fontSize: 14
+                }
+            },
+            statistic: {
+                color: '#333366'
+            },
+        }
     },
     ui: {
         dataGrid: {

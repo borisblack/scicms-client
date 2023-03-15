@@ -9,6 +9,8 @@ interface BarDashOpts extends XYDashOpts {
     xAxisLabelAutoRotate?: boolean
 }
 
+const {locale} = appConfig.dashboard
+
 export default class BarDashRenderer implements DashRenderer {
     supports = (dashType: DashType) => dashType === DashType.bar
 
@@ -71,7 +73,7 @@ function BarDash({dataset, dash, data}: InnerDashRenderProps) {
             }
         },
         color: parseDashColor(seriesField == null),
-        locale: appConfig.dashboard.locale
+        locale
     }
 
     return <Bar {...config} />
