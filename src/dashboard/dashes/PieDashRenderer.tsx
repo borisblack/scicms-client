@@ -40,6 +40,7 @@ function PieDash({dataset, dash, data}: InnerDashRenderProps) {
         return <Alert message="Invalid columns specification" type="error"/>
 
     const angleFieldType = columns[angleField].type
+    const colorFieldType = columns[colorField].type
     const config: PieConfig = {
         appendPadding: 10,
         data,
@@ -67,7 +68,8 @@ function PieDash({dataset, dash, data}: InnerDashRenderProps) {
                 formatter: (value: any) => formatValue(value, angleFieldType)
             },
             [colorField]: {
-                alias: colorFieldAlias
+                alias: colorFieldAlias,
+                formatter: (value: any) => formatValue(value, colorFieldType)
             }
         },
         color: parseDashColor(),

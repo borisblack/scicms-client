@@ -35,7 +35,7 @@ function ScatterDash({dataset, dash, data}: InnerDashRenderProps) {
 
     const {columns} = dataset.spec
     if (!columns || !columns[xField] || !columns[yField])
-        return <Alert message="The dataset does not contain a columns specification" type="error"/>
+        return <Alert message="Invalid columns specification" type="error"/>
 
     const xFieldType = columns[xField].type
     const yFieldType = columns[yField].type
@@ -82,7 +82,8 @@ function ScatterDash({dataset, dash, data}: InnerDashRenderProps) {
                 formatter: (value: any) => formatValue(value, xFieldType)
             },
             [yField]: {
-                alias: yFieldAlias
+                alias: yFieldAlias,
+                formatter: (value: any) => formatValue(value, yFieldType)
             }
         },
         color: parseDashColor(),
