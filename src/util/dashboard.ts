@@ -273,6 +273,13 @@ export const formatValue = (value: any, type: FieldType) => {
         case FieldType.timestamp:
             const dt = dayjs(value)
             return dt.format((dt.hour() === 0 && dt.minute() === 0) ? momentDisplayDateFormatString : momentDisplayDateTimeFormatString)
+        case FieldType.int:
+        case FieldType.long:
+        case FieldType.float:
+        case FieldType.double:
+        case FieldType.decimal:
+        case FieldType.sequence:
+            return `${value}`.replace(/\d{1,3}(?=(\d{3})+$)/g, s => `${s} `)
         default:
             return value
     }

@@ -3,7 +3,7 @@ import {DashType} from '../../types'
 import {DashOpt, DashRenderer, DoughnutDashOpts, doughnutDashOpts, InnerDashRenderProps} from '.'
 import appConfig from '../../config'
 import {Alert} from 'antd'
-import {parseDashColor} from '../../util/dashboard'
+import {formatValue, parseDashColor} from '../../util/dashboard'
 
 const {locale, dash: dashConfig} = appConfig.dashboard
 
@@ -25,7 +25,7 @@ export default class DoughnutDashRenderer implements DashRenderer {
     }
 }
 
-function DoughnutDash({dash, data}: InnerDashRenderProps) {
+function DoughnutDash({dataset, dash, data}: InnerDashRenderProps) {
     const {angleField, colorField, angleFieldAlias, colorFieldAlias, radius, innerRadius, hideLegend, legendPosition} = dash.optValues as DoughnutDashOpts
     if (!angleField)
         return <Alert message="angleField attribute not specified" type="error"/>
@@ -33,6 +33,11 @@ function DoughnutDash({dash, data}: InnerDashRenderProps) {
     if (!colorField)
         return <Alert message="colorField attribute not specified" type="error"/>
 
+    const {columns} = dataset.spec
+    if (!columns || !columns[angleField] || !columns[colorField])
+        return <Alert message="Invalid columns specification" type="error"/>
+
+    const angleFieldType = columns[angleField].type
     const config: PieConfig = {
         appendPadding: 10,
         data,
@@ -57,7 +62,8 @@ function DoughnutDash({dash, data}: InnerDashRenderProps) {
         autoFit: true,
         meta: {
             [angleField]: {
-                alias: angleFieldAlias
+                alias: angleFieldAlias,
+                formatter: (value: any) => formatValue(value, angleFieldType)
             },
             [colorField]: {
                 alias: colorFieldAlias

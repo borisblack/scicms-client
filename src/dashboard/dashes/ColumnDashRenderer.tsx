@@ -3,7 +3,7 @@ import {DashType} from '../../types'
 import {DashOpt, DashOptType, DashRenderer, InnerDashRenderProps, XYDashOpts, xyDashOpts} from '.'
 import appConfig from '../../config'
 import {Alert} from 'antd'
-import {isTemporal, parseDashColor} from '../../util/dashboard'
+import {formatValue, isTemporal, parseDashColor} from '../../util/dashboard'
 
 interface ColumnDashOpts extends XYDashOpts {
     xAxisLabelAutoRotate?: boolean
@@ -64,10 +64,12 @@ function ColumnDash({dataset, dash, data}: InnerDashRenderProps) {
         },
         meta: {
             [xField]: {
-                alias: xFieldAlias
+                alias: xFieldAlias,
+                formatter: (value: any) => formatValue(value, xFieldType)
             },
             [yField]: {
-                alias: yFieldAlias
+                alias: yFieldAlias,
+                formatter: (value: any) => formatValue(value, yFieldType)
             }
         },
         color: parseDashColor(seriesField == null),
