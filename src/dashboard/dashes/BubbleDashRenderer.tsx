@@ -5,6 +5,9 @@ import appConfig from '../../config'
 import {Alert} from 'antd'
 import {formatValue, isTemporal, parseDashColor} from '../../util/dashboard'
 
+const {dash: dashConfig, locale} = appConfig.dashboard
+const axisLabelStyle = dashConfig?.all?.axisLabelStyle
+
 export default class BubbleDashRenderer implements DashRenderer {
     supports = (dashType: DashType) => dashType === DashType.bubble
 
@@ -60,7 +63,8 @@ function BubbleDash({dataset, dash, data}: InnerDashRenderProps) {
         },
         xAxis: {
             label: {
-                autoRotate: xAxisLabelAutoRotate
+                autoRotate: xAxisLabelAutoRotate,
+                style: axisLabelStyle
             },
             type: isTemporal(xFieldType) ? 'time' : undefined,
             grid: {
@@ -73,6 +77,9 @@ function BubbleDash({dataset, dash, data}: InnerDashRenderProps) {
             },
         },
         yAxis: {
+            label: {
+                style: axisLabelStyle
+            },
             type: isTemporal(yFieldType) ? 'time' : undefined
         },
         meta: {
@@ -90,7 +97,7 @@ function BubbleDash({dataset, dash, data}: InnerDashRenderProps) {
             }
         },
         color: parseDashColor(),
-        locale: appConfig.dashboard.locale
+        locale
     }
 
     return <Scatter {...config} />

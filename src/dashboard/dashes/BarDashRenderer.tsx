@@ -9,7 +9,8 @@ interface BarDashOpts extends XYDashOpts {
     xAxisLabelAutoRotate?: boolean
 }
 
-const {locale} = appConfig.dashboard
+const {dash: dashConfig, locale} = appConfig.dashboard
+const axisLabelStyle = dashConfig?.all?.axisLabelStyle
 
 export default class BarDashRenderer implements DashRenderer {
     supports = (dashType: DashType) => dashType === DashType.bar
@@ -57,11 +58,15 @@ function BarDash({dataset, dash, data}: InnerDashRenderProps) {
         autoFit: true,
         xAxis: {
             label: {
-                autoRotate: xAxisLabelAutoRotate
+                autoRotate: xAxisLabelAutoRotate,
+                style: axisLabelStyle
             },
             type: isTemporal(xFieldType) ? 'time' : undefined
         },
         yAxis: {
+            label: {
+                style: axisLabelStyle
+            },
             type: isTemporal(yFieldType) ? 'time' : undefined
         },
         meta: {

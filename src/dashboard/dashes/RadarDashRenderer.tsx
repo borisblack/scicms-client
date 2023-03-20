@@ -7,6 +7,9 @@ import {formatValue, isTemporal, parseDashColor} from '../../util/dashboard'
 
 interface PolarAreaDashOpts extends XYDashOpts {}
 
+const {dash: dashConfig, locale} = appConfig.dashboard
+const axisLabelStyle = dashConfig?.all?.axisLabelStyle
+
 export default class RadarDashRenderer implements DashRenderer {
     supports = (dashType: DashType) => dashType === DashType.radar
 
@@ -52,7 +55,10 @@ function RadarDash({dataset, dash, data}: InnerDashRenderProps) {
         autoFit: true,
         xAxis: {
             type: isTemporal(xFieldType) ? 'time' : undefined,
-            tickLine: null
+            tickLine: null,
+            label: {
+                style: axisLabelStyle
+            }
         },
         yAxis: {
             type: isTemporal(yFieldType) ? 'time' : undefined,
@@ -72,7 +78,7 @@ function RadarDash({dataset, dash, data}: InnerDashRenderProps) {
             }
         },
         color: parseDashColor(seriesField == null),
-        locale: appConfig.dashboard.locale
+        locale
     }
 
     return <Radar {...config} />

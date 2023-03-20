@@ -7,6 +7,9 @@ import {formatValue, isTemporal, parseDashColor} from '../../util/dashboard'
 
 type ScatterDashOpts = Omit<BubbleDashOpts, 'sizeField'>
 
+const {dash: dashConfig, locale} = appConfig.dashboard
+const axisLabelStyle = dashConfig?.all?.axisLabelStyle
+
 export default class ScatterDashRenderer implements DashRenderer {
     supports = (dashType: DashType) => dashType === DashType.scatter
 
@@ -57,7 +60,8 @@ function ScatterDash({dataset, dash, data}: InnerDashRenderProps) {
         },
         xAxis: {
             label: {
-                autoRotate: xAxisLabelAutoRotate
+                autoRotate: xAxisLabelAutoRotate,
+                style: axisLabelStyle
             },
             type: isTemporal(xFieldType) ? 'time' : undefined,
             grid: {
@@ -75,6 +79,9 @@ function ScatterDash({dataset, dash, data}: InnerDashRenderProps) {
             line: {
                 style: {stroke: '#aaa'}
             },
+            label: {
+                style: axisLabelStyle
+            }
         },
         meta: {
             [xField]: {
@@ -87,7 +94,7 @@ function ScatterDash({dataset, dash, data}: InnerDashRenderProps) {
             }
         },
         color: parseDashColor(),
-        locale: appConfig.dashboard.locale
+        locale
     }
 
     return <Scatter {...config} />

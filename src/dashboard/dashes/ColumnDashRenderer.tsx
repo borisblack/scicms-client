@@ -9,6 +9,9 @@ interface ColumnDashOpts extends XYDashOpts {
     xAxisLabelAutoRotate?: boolean
 }
 
+const {dash: dashConfig, locale} = appConfig.dashboard
+const axisLabelStyle = dashConfig?.all?.axisLabelStyle
+
 export default class ColumnDashRenderer implements DashRenderer {
     supports = (dashType: DashType) => dashType === DashType.column
 
@@ -55,11 +58,15 @@ function ColumnDash({dataset, dash, data}: InnerDashRenderProps) {
         autoFit: true,
         xAxis: {
             label: {
-                autoRotate: xAxisLabelAutoRotate
+                autoRotate: xAxisLabelAutoRotate,
+                style: axisLabelStyle
             },
             type: isTemporal(xFieldType) ? 'time' : undefined
         },
         yAxis: {
+            label: {
+                style: axisLabelStyle
+            },
             type: isTemporal(yFieldType) ? 'time' : undefined
         },
         meta: {
@@ -73,7 +80,7 @@ function ColumnDash({dataset, dash, data}: InnerDashRenderProps) {
             }
         },
         color: parseDashColor(seriesField == null),
-        locale: appConfig.dashboard.locale
+        locale
     }
 
     return <Column {...config} />

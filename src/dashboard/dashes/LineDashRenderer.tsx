@@ -9,6 +9,9 @@ interface LineDashOpts extends XYDashOpts {
     xAxisLabelAutoRotate?: boolean
 }
 
+const {dash: dashConfig, locale} = appConfig.dashboard
+const axisLabelStyle = dashConfig?.all?.axisLabelStyle
+
 export default class LineDashRenderer implements DashRenderer {
     supports = (dashType: DashType) => dashType === DashType.line
 
@@ -55,12 +58,16 @@ function LineDash({dataset, dash, data}: InnerDashRenderProps) {
         autoFit: true,
         xAxis: {
             label: {
-                autoRotate: xAxisLabelAutoRotate
+                autoRotate: xAxisLabelAutoRotate,
+                style: axisLabelStyle
             },
             type: isTemporal(xFieldType) ? 'time' : undefined
         },
         yAxis: {
-            type: isTemporal(yFieldType) ? 'time' : undefined
+            type: isTemporal(yFieldType) ? 'time' : undefined,
+            label: {
+                style: axisLabelStyle
+            }
         },
         meta: {
             [xField]: {
@@ -73,7 +80,7 @@ function LineDash({dataset, dash, data}: InnerDashRenderProps) {
             }
         },
         color: parseDashColor(seriesField == null),
-        locale: appConfig.dashboard.locale
+        locale
     }
 
     return <Line {...config} />

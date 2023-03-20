@@ -17,7 +17,8 @@ import {
     DashType,
     Dataset,
     FieldType,
-    IDash, IDashFilter,
+    IDash,
+    IDashFilter,
     TemporalPeriod,
     TemporalType
 } from '../../../types'

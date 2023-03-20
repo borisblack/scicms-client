@@ -7,6 +7,9 @@ import {formatValue, isTemporal, parseDashColor} from '../../util/dashboard'
 
 interface PolarAreaDashOpts extends XYDashOpts {}
 
+const {dash: dashConfig, locale} = appConfig.dashboard
+const axisLabelStyle = dashConfig?.all?.axisLabelStyle
+
 export default class PolarAreaDashRenderer implements DashRenderer {
     supports = (dashType: DashType) => dashType === DashType.polarArea
 
@@ -50,10 +53,16 @@ function PolarAreaDash({dataset, dash, data}: InnerDashRenderProps) {
         },
         autoFit: true,
         xAxis: {
-            type: isTemporal(xFieldType) ? 'time' : undefined
+            type: isTemporal(xFieldType) ? 'time' : undefined,
+            label: {
+                style: axisLabelStyle
+            }
         },
         yAxis: {
-            type: isTemporal(yFieldType) ? 'time' : undefined
+            type: isTemporal(yFieldType) ? 'time' : undefined,
+            label: {
+                style: axisLabelStyle
+            }
         },
         meta: {
             [xField]: {
@@ -66,7 +75,7 @@ function PolarAreaDash({dataset, dash, data}: InnerDashRenderProps) {
             }
         },
         color: parseDashColor(seriesField == null),
-        locale: appConfig.dashboard.locale
+        locale
     }
 
     return <Rose {...config} />
