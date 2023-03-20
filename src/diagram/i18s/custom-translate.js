@@ -3,7 +3,7 @@ import appConfig from '../../config'
 
 export default function customTranslate(template, replacements) {
     replacements = replacements || {};
-    const translation = translations[appConfig.diagramTranslation] || {}
+    const translation = translations[appConfig.i18nLng] || {}
 
     // Translate
     template = translation[template] || template;
