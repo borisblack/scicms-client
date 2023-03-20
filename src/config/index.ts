@@ -47,6 +47,9 @@ interface AppConfig {
         dash?: {
             all?: {
                 color: string | string[]
+                legendLabelStyle?: {
+                    [key: string]: any
+                }
                 axisLabelStyle?: {
                     [key: string]: any
                 }

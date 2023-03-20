@@ -7,6 +7,7 @@ import {formatValue, isTemporal, parseDashColor} from '../../util/dashboard'
 
 const {dash: dashConfig, locale} = appConfig.dashboard
 const axisLabelStyle = dashConfig?.all?.axisLabelStyle
+const legendLabelStyle = dashConfig?.all?.legendLabelStyle
 
 export default class BubbleDashRenderer implements DashRenderer {
     supports = (dashType: DashType) => dashType === DashType.bubble
@@ -59,7 +60,10 @@ function BubbleDash({dataset, dash, data}: InnerDashRenderProps) {
             stroke: '#bbb',
         },
         legend: hideLegend ? false : {
-            position: legendPosition ?? 'top-left'
+            position: legendPosition ?? 'top-left',
+            label: {
+                style: legendLabelStyle
+            }
         },
         xAxis: {
             label: {

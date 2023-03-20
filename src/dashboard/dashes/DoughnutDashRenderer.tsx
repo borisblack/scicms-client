@@ -6,6 +6,7 @@ import {Alert} from 'antd'
 import {formatValue, parseDashColor} from '../../util/dashboard'
 
 const {locale, dash: dashConfig} = appConfig.dashboard
+const legendLabelStyle = dashConfig?.all?.legendLabelStyle
 
 export default class DoughnutDashRenderer implements DashRenderer {
     supports = (dashType: DashType) => dashType === DashType.doughnut
@@ -47,7 +48,10 @@ function DoughnutDash({dataset, dash, data}: InnerDashRenderProps) {
         radius,
         innerRadius,
         legend: hideLegend ? false : {
-            position: legendPosition ?? 'top-left'
+            position: legendPosition ?? 'top-left',
+            label: {
+                style: legendLabelStyle
+            }
         },
         label: {
             type: 'inner',

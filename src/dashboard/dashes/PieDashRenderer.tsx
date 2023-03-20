@@ -8,6 +8,7 @@ import {formatValue, parseDashColor} from '../../util/dashboard'
 type PieDashOpts = Omit<DoughnutDashOpts, 'innerRadius'>
 
 const {locale, dash: dashConfig} = appConfig.dashboard
+const legendLabelStyle = dashConfig?.all?.legendLabelStyle
 
 export default class PieDashRenderer implements DashRenderer {
     supports = (dashType: DashType) => dashType === DashType.pie
@@ -48,7 +49,10 @@ function PieDash({dataset, dash, data}: InnerDashRenderProps) {
         colorField,
         radius,
         legend: hideLegend ? false : {
-            position: legendPosition ?? 'top-left'
+            position: legendPosition ?? 'top-left',
+            label: {
+                style: legendLabelStyle
+            }
         },
         label: {
             type: 'inner',

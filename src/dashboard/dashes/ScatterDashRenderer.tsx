@@ -9,6 +9,7 @@ type ScatterDashOpts = Omit<BubbleDashOpts, 'sizeField'>
 
 const {dash: dashConfig, locale} = appConfig.dashboard
 const axisLabelStyle = dashConfig?.all?.axisLabelStyle
+const legendLabelStyle = dashConfig?.all?.legendLabelStyle
 
 export default class ScatterDashRenderer implements DashRenderer {
     supports = (dashType: DashType) => dashType === DashType.scatter
@@ -56,7 +57,10 @@ function ScatterDash({dataset, dash, data}: InnerDashRenderProps) {
             stroke: '#bbb',
         },
         legend: hideLegend ? false : {
-            position: legendPosition ?? 'top-left'
+            position: legendPosition ?? 'top-left',
+            label: {
+                style: legendLabelStyle
+            }
         },
         xAxis: {
             label: {
