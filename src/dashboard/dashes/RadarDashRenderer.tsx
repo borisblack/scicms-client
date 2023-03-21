@@ -9,7 +9,7 @@ interface PolarAreaDashOpts extends XYDashOpts {}
 
 const {dash: dashConfig, locale} = appConfig.dashboard
 const axisLabelStyle = dashConfig?.all?.axisLabelStyle
-const legendLabelStyle = dashConfig?.all?.legendLabelStyle
+const legendConfig = dashConfig?.all?.legend
 
 export default class RadarDashRenderer implements DashRenderer {
     supports = (dashType: DashType) => dashType === DashType.radar
@@ -53,7 +53,7 @@ function RadarDash({dataset, dash, data}: InnerDashRenderProps) {
         legend: hideLegend ? false : {
             position: legendPosition ?? 'top-left',
             label: {
-                style: legendLabelStyle
+                style: legendConfig?.itemName?.style
             }
         },
         autoFit: true,

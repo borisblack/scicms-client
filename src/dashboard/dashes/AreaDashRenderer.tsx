@@ -9,7 +9,7 @@ interface AreaDashOpts extends XYDashOpts {}
 
 const {dash: dashConfig, locale} = appConfig.dashboard
 const axisLabelStyle = dashConfig?.all?.axisLabelStyle
-const legendLabelStyle = dashConfig?.all?.legendLabelStyle
+const legendConfig = dashConfig?.all?.legend
 
 export default class AreaDashRenderer implements DashRenderer {
     supports = (dashType: DashType) => dashType === DashType.area
@@ -50,8 +50,8 @@ function AreaDash({dataset, dash, data}: InnerDashRenderProps) {
         seriesField,
         legend: hideLegend ? false : {
             position: legendPosition ?? 'top-left',
-            label: {
-                style: legendLabelStyle
+            itemName: {
+                style: legendConfig?.itemName?.style
             }
         },
         autoFit: true,
