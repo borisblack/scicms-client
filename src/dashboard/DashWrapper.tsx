@@ -59,6 +59,10 @@ export default function DashWrapper(props: DashRenderProps) {
     const [fetchError, setFetchError] = useState<string | null>(null)
 
     useEffect(() => {
+        setPeriod(dash.defaultPeriod ?? TemporalPeriod.ARBITRARY)
+    }, [dash.defaultPeriod])
+
+    useEffect(() => {
         fetchDatasetData()
     }, [dataset, period, startTemporal, endTemporal])
 

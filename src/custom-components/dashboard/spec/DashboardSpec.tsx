@@ -40,14 +40,10 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
         return [canEdit]
     }, [data, isLockedByMe, isNew, item, me, permissionService])
     const [canEdit] = permissions
-    const spec = useMemo<IDashboardSpec>(() => buffer.spec ?? data?.spec ?? initialSpec, [buffer.spec, data?.spec])
+    const spec: IDashboardSpec = useMemo(() => buffer.spec ?? data?.spec ?? initialSpec, [buffer.spec, data?.spec])
     const [activeDash, setActiveDash] = useState<IDash | null>(null)
     const [isDashModalVisible, setDashModalVisible] = useState(false)
     const [dashForm] = Form.useForm()
-
-    useEffect(() => {
-        onBufferChange({spec})
-    }, [spec])
 
     function handleDashAdd() {
         const newSpec: IDashboardSpec = {
