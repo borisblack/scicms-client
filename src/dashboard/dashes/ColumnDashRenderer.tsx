@@ -56,6 +56,9 @@ function ColumnDash({dataset, dash, data}: InnerDashRenderProps) {
         legend: hideLegend ? false : {
             position: legendPosition ?? 'top-left',
             label: {
+                style: legendConfig?.label?.style
+            },
+            itemName: {
                 style: legendConfig?.itemName?.style
             }
         },

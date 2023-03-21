@@ -50,6 +50,9 @@ function AreaDash({dataset, dash, data}: InnerDashRenderProps) {
         seriesField,
         legend: hideLegend ? false : {
             position: legendPosition ?? 'top-left',
+            label: {
+                style: legendConfig?.label?.style
+            },
             itemName: {
                 style: legendConfig?.itemName?.style
             }
