@@ -308,7 +308,8 @@ export interface DatasetSpec {
 }
 
 export interface Column {
-    type: FieldType
+    type: FieldType,
+    alias?: string
 }
 
 export interface Dashboard extends DefaultItemTemplate {

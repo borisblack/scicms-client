@@ -404,6 +404,12 @@ export const getColumnColumns = (): ColumnDef<NamedColumn, any>[] =>
             cell: info => <Tag color="processing">{info.getValue()}</Tag>,
             size: appConfig.ui.dataGrid.colWidth,
             enableSorting: true
+        }) as ColumnDef<NamedColumn, FieldType>,
+        columnHelper.accessor('alias', {
+            header: i18n.t('Alias'),
+            cell: info => info.getValue(),
+            size: 250,
+            enableSorting: true
         }) as ColumnDef<NamedColumn, FieldType>
     ]
 

@@ -12,19 +12,21 @@ import {
     NamedColumn,
     processLocal
 } from '../../../util/datagrid'
+import {DatasetSpec} from '../../../types'
 
-export default function Columns({me, item, buffer, data}: CustomComponentRenderContext) {
+export default function Columns({item, buffer, data}: CustomComponentRenderContext) {
     if (item.name !== DATASET_ITEM_NAME)
         throw new Error('Illegal attribute')
 
     const {t} = useTranslation()
+    const spec: DatasetSpec = useMemo(() => buffer.spec ?? data?.spec ?? {}, [buffer.spec, data?.spec])
     const [version, setVersion] = useState<number>(0)
     const columns = useMemo(() => getColumnColumns(), [])
     const hiddenColumns = useMemo(() => getHiddenColumnColumns(), [])
     const namedColumns = useMemo((): NamedColumn[] => {
-        const columns = data?.spec?.columns ?? {}
-        return Object.keys(columns).map(attrName => ({name: attrName, ...columns[attrName]}))
-    }, [data?.spec?.columns])
+        const columns = spec.columns ?? {}
+        return Object.keys(columns).map(colName => ({name: colName, ...columns[colName]}))
+    }, [spec.columns])
     const [filteredData, setFilteredData] = useState<DataWithPagination<NamedColumn>>(getInitialData())
 
     useEffect(() => {

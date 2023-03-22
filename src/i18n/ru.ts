@@ -17,6 +17,7 @@ const ru = {
         'Aggregate': 'Агрегатная функция',
         'Aggregate Field': 'Поле агрегата',
         'Aggregate Type': 'Тип агрегатной функции',
+        'Alias': 'Псевдоним',
         'All Locales': 'Все языки',
         'All Versions': 'Все версии',
         'Allowed Lifecycle': 'Доступный ЖЦ',
