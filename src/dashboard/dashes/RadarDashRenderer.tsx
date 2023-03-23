@@ -17,8 +17,7 @@ export default class RadarDashRenderer implements DashRenderer {
     listOpts = (): DashOpt[] => [...xyDashOpts]
 
     getLabelField = () => ({
-        name: 'xField',
-        alias: 'xFieldAlias',
+        name: 'xField'
     })
 
     render(props: InnerDashRenderProps) {
@@ -30,19 +29,19 @@ export default class RadarDashRenderer implements DashRenderer {
 }
 
 function RadarDash({dataset, dash, data}: InnerDashRenderProps) {
-    const {xField, yField, xFieldAlias, yFieldAlias, seriesField, hideLegend, legendPosition} = dash.optValues as PolarAreaDashOpts
+    const {xField, yField, seriesField, hideLegend, legendPosition} = dash.optValues as PolarAreaDashOpts
     if (!xField)
         return <Alert message="xField attribute not specified" type="error"/>
 
     if (!yField)
         return <Alert message="yField attribute not specified" type="error"/>
 
-    const {columns} = dataset.spec
-    if (!columns || !columns[xField] || !columns[yField])
+    const columns = dataset.spec.columns ?? {}
+    const xColumn = columns[xField]
+    const yColumn = columns[yField]
+    if (xColumn == null || yColumn == null)
         return <Alert message="Invalid columns specification" type="error"/>
 
-    const xFieldType = columns[xField].type
-    const yFieldType = columns[yField].type
     const config: RadarConfig = {
         appendPadding: [0, 10, 0, 10],
         data,
@@ -61,14 +60,14 @@ function RadarDash({dataset, dash, data}: InnerDashRenderProps) {
         },
         autoFit: true,
         xAxis: {
-            type: isTemporal(xFieldType) ? 'time' : undefined,
+            type: isTemporal(xColumn.type) ? 'time' : undefined,
             tickLine: null,
             label: {
                 style: axisLabelStyle
             }
         },
         yAxis: {
-            type: isTemporal(yFieldType) ? 'time' : undefined,
+            type: isTemporal(yColumn.type) ? 'time' : undefined,
             label: false,
             grid: { alternateColor: 'rgba(0, 0, 0, 0.04)' }
         },
@@ -76,12 +75,12 @@ function RadarDash({dataset, dash, data}: InnerDashRenderProps) {
         area: {},
         meta: {
             [xField]: {
-                alias: xFieldAlias,
-                formatter: (value: any) => formatValue(value, xFieldType)
+                alias: xColumn.alias || xField,
+                formatter: (value: any) => formatValue(value, xColumn.type)
             },
             [yField]: {
-                alias: yFieldAlias,
-                formatter: (value: any) => formatValue(value, yFieldType)
+                alias: yColumn.alias || yField,
+                formatter: (value: any) => formatValue(value, yColumn.type)
             }
         },
         color: parseDashColor(seriesField == null),

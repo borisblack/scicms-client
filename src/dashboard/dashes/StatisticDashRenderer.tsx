@@ -15,8 +15,7 @@ export default class StatisticDashRenderer implements DashRenderer {
     ]
 
     getLabelField = () => ({
-        name: 'statisticField',
-        alias: 'statisticField',
+        name: 'statisticField'
     })
 
     render(props: InnerDashRenderProps) {

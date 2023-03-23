@@ -17,8 +17,7 @@ export default class ScatterDashRenderer implements DashRenderer {
     listOpts = (): DashOpt[] => bubbleDashOpts.filter(o => o.name !== 'sizeField')
 
     getLabelField = () => ({
-        name: 'xField',
-        alias: 'xFieldAlias',
+        name: 'xField'
     })
 
     render(props: InnerDashRenderProps) {
@@ -30,19 +29,19 @@ export default class ScatterDashRenderer implements DashRenderer {
 }
 
 function ScatterDash({dataset, dash, data}: InnerDashRenderProps) {
-    const {xField, yField, colorField, xFieldAlias, yFieldAlias, hideLegend, legendPosition, xAxisLabelAutoRotate} = dash.optValues as ScatterDashOpts
+    const {xField, yField, colorField, hideLegend, legendPosition, xAxisLabelAutoRotate} = dash.optValues as ScatterDashOpts
     if (!xField)
         return <Alert message="xField attribute not specified" type="error"/>
 
     if (!yField)
         return <Alert message="yField attribute not specified" type="error"/>
 
-    const {columns} = dataset.spec
-    if (!columns || !columns[xField] || !columns[yField])
+    const columns = dataset.spec.columns ?? {}
+    const xColumn = columns[xField]
+    const yColumn = columns[yField]
+    if (xColumn == null || yColumn == null)
         return <Alert message="Invalid columns specification" type="error"/>
 
-    const xFieldType = columns[xField].type
-    const yFieldType = columns[yField].type
     const config: ScatterConfig = {
         appendPadding: 10,
         data,
@@ -70,7 +69,7 @@ function ScatterDash({dataset, dash, data}: InnerDashRenderProps) {
                 autoRotate: xAxisLabelAutoRotate,
                 style: axisLabelStyle
             },
-            type: isTemporal(xFieldType) ? 'time' : undefined,
+            type: isTemporal(xColumn.type) ? 'time' : undefined,
             grid: {
                 line: {
                     style: {stroke: '#eee',}
@@ -82,7 +81,7 @@ function ScatterDash({dataset, dash, data}: InnerDashRenderProps) {
         },
         yAxis: {
             nice: true,
-            type: isTemporal(yFieldType) ? 'time' : undefined,
+            type: isTemporal(yColumn.type) ? 'time' : undefined,
             line: {
                 style: {stroke: '#aaa'}
             },
@@ -92,12 +91,12 @@ function ScatterDash({dataset, dash, data}: InnerDashRenderProps) {
         },
         meta: {
             [xField]: {
-                alias: xFieldAlias,
-                formatter: (value: any) => formatValue(value, xFieldType)
+                alias: xColumn.alias || xField,
+                formatter: (value: any) => formatValue(value, xColumn.type)
             },
             [yField]: {
-                alias: yFieldAlias,
-                formatter: (value: any) => formatValue(value, yFieldType)
+                alias: yColumn.alias || yField,
+                formatter: (value: any) => formatValue(value, yColumn.type)
             }
         },
         color: parseDashColor(),

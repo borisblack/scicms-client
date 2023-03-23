@@ -14,8 +14,7 @@ export default class BubbleMapDashRenderer implements DashRenderer {
     listOpts = (): DashOpt[] => [...bubbleMapDashOpts]
 
     getLabelField = () => ({
-        name: 'locationField',
-        alias: 'locationField',
+        name: 'locationField'
     })
 
     render(props: InnerDashRenderProps) {

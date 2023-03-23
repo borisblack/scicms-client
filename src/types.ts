@@ -368,7 +368,6 @@ export enum DashType {
 export interface IDashFilter {
     id: string
     columnName: string
-    columnAlias?: string
     op: BoolQueryOp | UnaryQueryOp | BinaryQueryOp | ListQueryOp
     value?: any
     show?: boolean

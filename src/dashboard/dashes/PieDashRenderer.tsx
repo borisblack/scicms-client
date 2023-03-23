@@ -16,8 +16,7 @@ export default class PieDashRenderer implements DashRenderer {
     listOpts = (): DashOpt[] => [...doughnutDashOpts.filter(o => o.name !== 'innerRadius')]
 
     getLabelField = () => ({
-        name: 'colorField',
-        alias: 'colorFieldAlias',
+        name: 'colorField'
     })
 
     render(props: InnerDashRenderProps) {
@@ -29,19 +28,19 @@ export default class PieDashRenderer implements DashRenderer {
 }
 
 function PieDash({dataset, dash, data}: InnerDashRenderProps) {
-    const {angleField, colorField, angleFieldAlias, colorFieldAlias, radius, hideLegend, legendPosition} = dash.optValues as PieDashOpts
+    const {angleField, colorField, radius, hideLegend, legendPosition} = dash.optValues as PieDashOpts
     if (!angleField)
         return <Alert message="angleField attribute not specified" type="error"/>
 
     if (!colorField)
         return <Alert message="colorField attribute not specified" type="error"/>
 
-    const {columns} = dataset.spec
-    if (!columns || !columns[angleField] || !columns[colorField])
+    const columns = dataset.spec.columns ?? {}
+    const angleColumn = columns[angleField]
+    const colorColumn = columns[colorField]
+    if (angleColumn == null || colorColumn == null)
         return <Alert message="Invalid columns specification" type="error"/>
 
-    const angleFieldType = columns[angleField].type
-    const colorFieldType = columns[colorField].type
     const config: PieConfig = {
         appendPadding: 10,
         data,
@@ -71,12 +70,12 @@ function PieDash({dataset, dash, data}: InnerDashRenderProps) {
         autoFit: true,
         meta: {
             [angleField]: {
-                alias: angleFieldAlias,
-                formatter: (value: any) => formatValue(value, angleFieldType)
+                alias: angleColumn.alias || angleField,
+                formatter: (value: any) => formatValue(value, angleColumn.type)
             },
             [colorField]: {
-                alias: colorFieldAlias,
-                formatter: (value: any) => formatValue(value, colorFieldType)
+                alias: colorColumn.alias || colorField,
+                formatter: (value: any) => formatValue(value, colorColumn.type)
             }
         },
         color: parseDashColor(),

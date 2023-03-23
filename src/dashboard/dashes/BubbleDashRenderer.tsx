@@ -15,8 +15,7 @@ export default class BubbleDashRenderer implements DashRenderer {
     listOpts = (): DashOpt[] => [...bubbleDashOpts]
 
     getLabelField = () => ({
-        name: 'xField',
-        alias: 'xFieldAlias',
+        name: 'xField'
     })
 
     render(props: InnerDashRenderProps) {
@@ -28,7 +27,7 @@ export default class BubbleDashRenderer implements DashRenderer {
 }
 
 function BubbleDash({dataset, dash, data}: InnerDashRenderProps) {
-    const {xField, yField, sizeField, colorField, xFieldAlias, yFieldAlias, sizeFieldAlias, hideLegend, legendPosition, xAxisLabelAutoRotate} = dash.optValues as BubbleDashOpts
+    const {xField, yField, sizeField, colorField, hideLegend, legendPosition, xAxisLabelAutoRotate} = dash.optValues as BubbleDashOpts
     if (!xField)
         return <Alert message="xField attribute not specified" type="error"/>
 
@@ -38,13 +37,13 @@ function BubbleDash({dataset, dash, data}: InnerDashRenderProps) {
     if (!sizeField)
         return <Alert message="sizeField attribute not specified" type="error"/>
 
-    const {columns} = dataset.spec
-    if (!columns || !columns[xField] || !columns[yField] || !columns[sizeField])
+    const columns = dataset.spec.columns ?? {}
+    const xColumn = columns[xField]
+    const yColumn = columns[yField]
+    const sizeColumn = columns[sizeField]
+    if (xColumn == null || yColumn == null || sizeColumn == null)
         return <Alert message="Invalid columns specification" type="error"/>
 
-    const xFieldType = columns[xField].type
-    const yFieldType = columns[yField].type
-    const sizeFieldType = columns[sizeField].type
     const config: ScatterConfig = {
         appendPadding: 10,
         data,
@@ -73,7 +72,7 @@ function BubbleDash({dataset, dash, data}: InnerDashRenderProps) {
                 autoRotate: xAxisLabelAutoRotate,
                 style: axisLabelStyle
             },
-            type: isTemporal(xFieldType) ? 'time' : undefined,
+            type: isTemporal(xColumn.type) ? 'time' : undefined,
             grid: {
                 line: {
                     style: {stroke: '#eee'}
@@ -87,20 +86,20 @@ function BubbleDash({dataset, dash, data}: InnerDashRenderProps) {
             label: {
                 style: axisLabelStyle
             },
-            type: isTemporal(yFieldType) ? 'time' : undefined
+            type: isTemporal(yColumn.type) ? 'time' : undefined
         },
         meta: {
             [xField]: {
-                alias: xFieldAlias,
-                formatter: (value: any) => formatValue(value, xFieldType)
+                alias: xColumn.alias || xField,
+                formatter: (value: any) => formatValue(value, xColumn.type)
             },
             [yField]: {
-                alias: yFieldAlias,
-                formatter: (value: any) => formatValue(value, yFieldType)
+                alias: yColumn.alias || yField,
+                formatter: (value: any) => formatValue(value, yColumn.type)
             },
             [sizeField]: {
-                alias: sizeFieldAlias,
-                formatter: (value: any) => formatValue(value, sizeFieldType)
+                alias: sizeColumn.alias || sizeField,
+                formatter: (value: any) => formatValue(value, sizeColumn.type)
             }
         },
         color: parseDashColor(),
