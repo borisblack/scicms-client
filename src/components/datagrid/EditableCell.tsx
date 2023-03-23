@@ -6,16 +6,6 @@ interface Props {
     onChange: (value: any) => void
 }
 
-const placeholder = (
-    <>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    </>
-)
-
 export default function EditableCell({value, onChange}: Props) {
     const [innerValue, setInnerValue] = useState(value)
     const [editing, setEditing] = useState(false)
@@ -50,8 +40,8 @@ export default function EditableCell({value, onChange}: Props) {
     return editing ? (
         <Input ref={editInput} size="small" value={innerValue} onChange={handleChange} onKeyUp={handleKeyUp}/>
     ) : (
-        <span onDoubleClick={startEditing}>
-            {innerValue || placeholder}
-        </span>
+        <div style={{minHeight: 22}} onDoubleClick={startEditing}>
+            {innerValue}
+        </div>
     )
 }
