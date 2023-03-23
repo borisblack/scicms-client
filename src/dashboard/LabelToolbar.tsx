@@ -18,7 +18,7 @@ interface Props {
 export default function LabelToolbar({dataset, dash, data, labelField, checkedLabelSet, onChange}: Props) {
     const labelName = useMemo(() => dash.optValues[labelField.name], [dash.optValues, labelField.name])
     const labelType: FieldType = useMemo(() => dataset.spec.columns[labelName].type, [dataset.spec.columns, labelName])
-    const labelAlias = useMemo(() => dataset.spec.columns[labelName].alias, [dataset.spec.columns, labelName])
+    const labelAlias = useMemo(() => dataset.spec.columns[labelName].alias || labelName, [dataset.spec.columns, labelName])
 
     const getMetricTreeNode = useCallback((): TreeDataNode => {
         const labels = data.map(it => it[labelName]).filter(it => it != null)
