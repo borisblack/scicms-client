@@ -24,6 +24,8 @@ import {ItemType} from 'antd/es/menu/hooks/useItems'
 
 const EDIT_MODAL_WIDTH = 800
 
+const permissionService = PermissionService.getInstance()
+
 export default function Attributes({me, item, data, buffer, onBufferChange}: CustomComponentRenderContext) {
     if (item.name !== ITEM_TEMPLATE_ITEM_NAME && item.name !== ITEM_ITEM_NAME)
         throw new Error('Illegal attribute')
@@ -33,7 +35,6 @@ export default function Attributes({me, item, data, buffer, onBufferChange}: Cus
     const {t} = useTranslation()
     const [version, setVersion] = useState<number>(0)
     const itemTemplateService = useMemo(() => ItemTemplateService.getInstance(), [])
-    const permissionService = useMemo(() => PermissionService.getInstance(), [])
     const permissions = useMemo(() => {
         const acl = permissionService.getAcl(me, item, data)
         const canEdit = (isNew && acl.canCreate) || (!data?.core && isLockedByMe && acl.canWrite)
@@ -68,7 +69,7 @@ export default function Attributes({me, item, data, buffer, onBufferChange}: Cus
     const [selectedAttribute, setSelectedAttribute] = useState<NamedAttribute | null>(null)
     const [isEditModalVisible, setEditModalVisible] = useState<boolean>(false)
     const [attributeForm] = Form.useForm()
-    
+
     const handleNamedAttributesChange = useCallback((newNamedAttributes: NamedAttribute[]) => {
         setNamedAttributes(newNamedAttributes)
         const newAttributes: {[name: string]: Attribute} = {}
@@ -77,11 +78,11 @@ export default function Attributes({me, item, data, buffer, onBufferChange}: Cus
             newAttributes[it.name] = newAttribute
             delete newAttribute.name
         })
-        
+
         const newSpec = {
             attributes: newAttributes
         }
-        
+
         onBufferChange({spec: newSpec})
     }, [onBufferChange])
 

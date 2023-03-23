@@ -1,36 +1,57 @@
-import {Input} from 'antd'
-import {ChangeEvent, KeyboardEvent, useState} from 'react'
+import {Input, InputRef} from 'antd'
+import {ChangeEvent, KeyboardEvent, useEffect, useRef, useState} from 'react'
 
 interface Props {
     value: any
     onChange: (value: any) => void
 }
 
+const placeholder = (
+    <>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    </>
+)
+
 export default function EditableCell({value, onChange}: Props) {
     const [innerValue, setInnerValue] = useState(value)
     const [editing, setEditing] = useState(false)
+    const editInput = useRef<InputRef>(null)
 
-    function handleKeyUp(evt: KeyboardEvent<any>) {
-        if (evt.key === 'Enter') {
-            setEditing(false)
-            onChange(evt.target.value)
-        }
+    useEffect(() => {
+        setInnerValue(value)
+    }, [value])
+
+    function startEditing() {
+        setEditing(true)
+        setTimeout(() => editInput.current?.select(), 100)
     }
 
     function handleChange(evt: ChangeEvent<any>) {
         setInnerValue(evt.target.value)
     }
 
+    function handleKeyUp(evt: KeyboardEvent<any>) {
+        if (evt.key === 'Escape') {
+            setEditing(false)
+            setInnerValue(value)
+            return
+        }
+
+        if (evt.key === 'Enter') {
+            setEditing(false)
+            onChange(evt.target.value)
+        }
+    }
+
     return editing ? (
-        <Input
-            size="small"
-            value={innerValue ?? ''}
-            onKeyUp={handleKeyUp}
-            onChange={handleChange}
-        />
+        <Input ref={editInput} size="small" value={innerValue} onChange={handleChange} onKeyUp={handleKeyUp}/>
     ) : (
-        <span onDoubleClick={() => {console.log('editing'); setEditing(true)}}>
-            {innerValue}
+        <span onDoubleClick={startEditing}>
+            {innerValue || placeholder}
         </span>
     )
 }

@@ -22,10 +22,6 @@ export interface NamedIndex extends Index {
     name: string
 }
 
-export interface NamedColumn extends Column {
-    name: string
-}
-
 const {luxonDisplayDateFormatString, luxonDisplayTimeFormatString, luxonDisplayDateTimeFormatString} = appConfig.dateTime
 const columnHelper = createColumnHelper<any>()
 const itemService = ItemService.getInstance()

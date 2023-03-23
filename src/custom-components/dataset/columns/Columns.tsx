@@ -5,56 +5,71 @@ import {CustomComponentRenderContext} from '../../index'
 import {DATASET_ITEM_NAME} from '../../../config/constants'
 import DataGrid, {DataWithPagination, RequestParams} from '../../../components/datagrid/DataGrid'
 import appConfig from '../../../config'
-import {getInitialData, NamedColumn, processLocal} from '../../../util/datagrid'
-import {DatasetSpec, FieldType} from '../../../types'
-import {ColumnDef, createColumnHelper} from '@tanstack/react-table'
-import i18n from '../../../i18n'
-import {Tag} from 'antd'
-import EditableCell from '../../../components/datagrid/EditableCell'
+import {getInitialData, processLocal} from '../../../util/datagrid'
+import {Column, DatasetSpec} from '../../../types'
+import {getColumns, NamedColumn} from './columns-datagrid'
+import PermissionService from '../../../services/permission'
 
-const columnHelper = createColumnHelper<NamedColumn>()
-const getGridColumns = (onChange: (vale: NamedColumn) => void): ColumnDef<NamedColumn, any>[] => [
-    columnHelper.accessor('name', {
-        header: i18n.t('Name'),
-        cell: info => info.getValue(),
-        size: appConfig.ui.dataGrid.colWidth,
-        enableSorting: true
-    }) as ColumnDef<NamedColumn, string>,
-    columnHelper.accessor('type', {
-        header: i18n.t('Type'),
-        cell: info => <Tag color="processing">{info.getValue()}</Tag>,
-        size: appConfig.ui.dataGrid.colWidth,
-        enableSorting: true
-    }) as ColumnDef<NamedColumn, FieldType>,
-    columnHelper.accessor('alias', {
-        header: i18n.t('Alias'),
-        cell: info => <EditableCell value={info.getValue()} onChange={alias => onChange({...info.row.original, alias})}/>,
-        size: 250,
-        enableSorting: true
-    }) as ColumnDef<NamedColumn, FieldType>
-]
+const permissionService = PermissionService.getInstance()
 
-export default function Columns({item, buffer, data}: CustomComponentRenderContext) {
+export default function Columns({me, item, buffer, data, onBufferChange}: CustomComponentRenderContext) {
     if (item.name !== DATASET_ITEM_NAME)
         throw new Error('Illegal attribute')
 
     const {t} = useTranslation()
-    const spec: DatasetSpec = useMemo(() => buffer.spec ?? data?.spec ?? {}, [buffer.spec, data?.spec])
-    const [version, setVersion] = useState<number>(0)
-    const namedColumns = useMemo((): NamedColumn[] => {
-        const columns = spec.columns ?? {}
-        return Object.keys(columns).map(colName => ({name: colName, ...columns[colName]}))
-    }, [spec.columns])
+    const isNew = !data?.id
+    const isLockedByMe = data?.lockedBy?.data?.id === me.id
+    const permissions = useMemo(() => {
+        const acl = permissionService.getAcl(me, item, data)
+        const canEdit = (isNew && acl.canCreate) || (!data?.core && isLockedByMe && acl.canWrite)
+        return [canEdit]
+    }, [data, isLockedByMe, isNew, item, me])
+    const [canEdit] = permissions
+    const spec: DatasetSpec = useMemo(() => data?.spec ?? buffer.spec ?? {}, [buffer.spec, data?.spec])
+    const [namedColumns, setNamedColumns] = useState(getCurrentNamedColumns())
     const [filteredData, setFilteredData] = useState<DataWithPagination<NamedColumn>>(getInitialData())
-    const gridColumns = useMemo(() => getGridColumns(() => {}), [])
+    const [version, setVersion] = useState<number>(0)
+
+    useEffect(() => {
+        setNamedColumns(getCurrentNamedColumns())
+        setVersion(prevVersion => prevVersion + 1)
+    }, [spec.columns])
 
     useEffect(() => {
         setVersion(prevVersion => prevVersion + 1)
-    }, [data?.spec])
-
-    const handleRequest = useCallback(async (params: RequestParams) => {
-        setFilteredData(processLocal(namedColumns, params))
     }, [namedColumns])
+
+    function getCurrentNamedColumns(): NamedColumn[] {
+        const columns = spec.columns ?? {}
+        return Object.keys(columns).map(colName => ({name: colName, ...columns[colName]}))
+    }
+
+    function handleNamedColumnChange(namedCol: NamedColumn) {
+        if (!canEdit)
+            return
+
+        const newNamedColumns = namedColumns.map(nc => nc.name === namedCol.name ? {...namedCol} : nc)
+        setNamedColumns(newNamedColumns)
+
+        const newColumns: {[name: string]: Column} = {}
+        for (const nc of newNamedColumns) {
+            const newColumn: any = {...nc}
+            newColumns[nc.name] = newColumn
+            delete newColumn.name
+        }
+
+        onBufferChange({
+            spec: {
+                columns: newColumns
+            }
+        })
+    }
+
+    const handleRequest = (params: RequestParams) => {
+        setFilteredData(processLocal(namedColumns, params))
+    }
+
+    const gridColumns = getColumns(canEdit, handleNamedColumnChange)
 
     return (
         <DataGrid
