@@ -5,14 +5,34 @@ import {CustomComponentRenderContext} from '../../index'
 import {DATASET_ITEM_NAME} from '../../../config/constants'
 import DataGrid, {DataWithPagination, RequestParams} from '../../../components/datagrid/DataGrid'
 import appConfig from '../../../config'
-import {
-    getColumnColumns,
-    getHiddenColumnColumns,
-    getInitialData,
-    NamedColumn,
-    processLocal
-} from '../../../util/datagrid'
-import {DatasetSpec} from '../../../types'
+import {getInitialData, NamedColumn, processLocal} from '../../../util/datagrid'
+import {DatasetSpec, FieldType} from '../../../types'
+import {ColumnDef, createColumnHelper} from '@tanstack/react-table'
+import i18n from '../../../i18n'
+import {Tag} from 'antd'
+import EditableCell from '../../../components/datagrid/EditableCell'
+
+const columnHelper = createColumnHelper<NamedColumn>()
+const getGridColumns = (onChange: (vale: NamedColumn) => void): ColumnDef<NamedColumn, any>[] => [
+    columnHelper.accessor('name', {
+        header: i18n.t('Name'),
+        cell: info => info.getValue(),
+        size: appConfig.ui.dataGrid.colWidth,
+        enableSorting: true
+    }) as ColumnDef<NamedColumn, string>,
+    columnHelper.accessor('type', {
+        header: i18n.t('Type'),
+        cell: info => <Tag color="processing">{info.getValue()}</Tag>,
+        size: appConfig.ui.dataGrid.colWidth,
+        enableSorting: true
+    }) as ColumnDef<NamedColumn, FieldType>,
+    columnHelper.accessor('alias', {
+        header: i18n.t('Alias'),
+        cell: info => <EditableCell value={info.getValue()} onChange={alias => onChange({...info.row.original, alias})}/>,
+        size: 250,
+        enableSorting: true
+    }) as ColumnDef<NamedColumn, FieldType>
+]
 
 export default function Columns({item, buffer, data}: CustomComponentRenderContext) {
     if (item.name !== DATASET_ITEM_NAME)
@@ -21,13 +41,12 @@ export default function Columns({item, buffer, data}: CustomComponentRenderConte
     const {t} = useTranslation()
     const spec: DatasetSpec = useMemo(() => buffer.spec ?? data?.spec ?? {}, [buffer.spec, data?.spec])
     const [version, setVersion] = useState<number>(0)
-    const columns = useMemo(() => getColumnColumns(), [])
-    const hiddenColumns = useMemo(() => getHiddenColumnColumns(), [])
     const namedColumns = useMemo((): NamedColumn[] => {
         const columns = spec.columns ?? {}
         return Object.keys(columns).map(colName => ({name: colName, ...columns[colName]}))
     }, [spec.columns])
     const [filteredData, setFilteredData] = useState<DataWithPagination<NamedColumn>>(getInitialData())
+    const gridColumns = useMemo(() => getGridColumns(() => {}), [])
 
     useEffect(() => {
         setVersion(prevVersion => prevVersion + 1)
@@ -39,10 +58,10 @@ export default function Columns({item, buffer, data}: CustomComponentRenderConte
 
     return (
         <DataGrid
-            columns={columns}
+            columns={gridColumns}
             data={filteredData}
             initialState={{
-                hiddenColumns: hiddenColumns,
+                hiddenColumns: [],
                 pageSize: appConfig.query.defaultPageSize
             }}
             title={t('Columns')}

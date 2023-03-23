@@ -391,30 +391,6 @@ export const getIndexColumns = (): ColumnDef<NamedIndex, any>[] =>
 
 export const getHiddenIndexColumns = () => []
 
-export const getColumnColumns = (): ColumnDef<NamedColumn, any>[] =>
-    [
-        columnHelper.accessor('name', {
-            header: i18n.t('Name'),
-            cell: info => info.getValue(),
-            size: appConfig.ui.dataGrid.colWidth,
-            enableSorting: true
-        }) as ColumnDef<NamedColumn, string>,
-        columnHelper.accessor('type', {
-            header: i18n.t('Type'),
-            cell: info => <Tag color="processing">{info.getValue()}</Tag>,
-            size: appConfig.ui.dataGrid.colWidth,
-            enableSorting: true
-        }) as ColumnDef<NamedColumn, FieldType>,
-        columnHelper.accessor('alias', {
-            header: i18n.t('Alias'),
-            cell: info => info.getValue(),
-            size: 250,
-            enableSorting: true
-        }) as ColumnDef<NamedColumn, FieldType>
-    ]
-
-export const getHiddenColumnColumns = () => []
-
 export function processLocal(data: any[], params: RequestParams): DataWithPagination<any> {
     const {sorting, filters, pagination} = params
     const {page, pageSize} = pagination
