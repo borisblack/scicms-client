@@ -279,7 +279,7 @@ export const formatValue = (value: any, type: FieldType) => {
         case FieldType.double:
         case FieldType.decimal:
         case FieldType.sequence:
-            return `${value}`.replace(/\d{1,3}(?=(\d{3})+$)/g, s => `${s} `)
+            return `${value}`.replace(/\d{1,3}(?=(\d{3})+)/g, s => `${s} `)
         default:
             return value
     }
