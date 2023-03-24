@@ -24,7 +24,7 @@ export default function EditableCell({value, onChange}: Props) {
         setInnerValue(evt.target.value)
     }
 
-    function handleKeyUp(evt: KeyboardEvent<any>) {
+    function handleKeyUp(evt: KeyboardEvent<HTMLInputElement>) {
         if (evt.key === 'Escape') {
             setEditing(false)
             setInnerValue(value)
@@ -33,7 +33,7 @@ export default function EditableCell({value, onChange}: Props) {
 
         if (evt.key === 'Enter') {
             setEditing(false)
-            onChange((evt.target as HTMLInputElement).value)
+            onChange(evt.target.value)
         }
     }
 
