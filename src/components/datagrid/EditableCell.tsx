@@ -20,7 +20,7 @@ export default function EditableCell({value, onChange}: Props) {
         setTimeout(() => editInput.current?.select(), 100)
     }
 
-    function handleChange(evt: ChangeEvent<any>) {
+    function handleChange(evt: ChangeEvent<HTMLInputElement>) {
         setInnerValue(evt.target.value)
     }
 
