@@ -32,8 +32,10 @@ export default function Columns({me, item, buffer, data, onBufferChange}: Custom
 
     useEffect(() => {
         setNamedColumns(getCurrentNamedColumns())
-        setVersion(prevVersion => prevVersion + 1)
-    }, [spec.columns])
+        onBufferChange({
+            spec
+        })
+    }, [spec])
 
     useEffect(() => {
         setVersion(prevVersion => prevVersion + 1)
