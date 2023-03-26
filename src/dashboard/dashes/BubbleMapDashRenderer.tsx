@@ -1,7 +1,7 @@
 import {DashType} from '../../types'
 import {bubbleMapDashOpts, BubbleMapDashOpts, DashOpt, DashRenderer, InnerDashRenderProps} from '.'
 import {Alert} from 'antd'
-import {isTemporal, map3dMapMetrics, mapLabels, timeScaleProps} from '../../util/dashboard'
+import {map3dMapMetrics, mapLabels, timeScaleProps} from '../../util/dashboard'
 import {useEffect, useMemo, useRef, useState} from 'react'
 import {BubbleMapController, ColorScale, GeoFeature, ProjectionScale, SizeScale, topojson} from 'chartjs-chart-geo'
 import Chart from 'chart.js/auto'

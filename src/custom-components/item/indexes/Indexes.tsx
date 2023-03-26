@@ -18,7 +18,7 @@ import IndexForm from './IndexForm'
 
 export default function Indexes({me, item, data, buffer, onBufferChange}: CustomComponentRenderContext) {
     if (item.name !== ITEM_TEMPLATE_ITEM_NAME && item.name !== ITEM_ITEM_NAME)
-        throw new Error('Illegal attribute')
+        throw new Error('Illegal argument')
 
     const isNew = !data?.id
     const isLockedByMe = data?.lockedBy?.data?.id === me.id
@@ -116,7 +116,7 @@ export default function Indexes({me, item, data, buffer, onBufferChange}: Custom
         const parsedValues = parseValues(values)
         const {name} = parsedValues
         if (!name)
-            throw new Error('Illegal attribute')
+            throw new Error('Illegal argument')
 
         if (name in (spec.indexes ?? {}))
             handleNamedIndexesChange(namedIndexes.map(it => it.name === name ? {...parsedValues} : it))

@@ -1,8 +1,9 @@
 import {
-    DashFiltersBlock,
     DashType,
     FieldType,
     IDash,
+    QueryBlock,
+    PositiveQueryPredicate,
     QueryOp,
     QueryPredicate,
     TemporalPeriod,
@@ -17,67 +18,8 @@ import {v4 as uuidv4} from 'uuid'
 
 const {momentDisplayDateFormatString, momentDisplayTimeFormatString, momentDisplayDateTimeFormatString} = appConfig.dateTime
 const {dash: dashConfig} = appConfig.dashboard
-
 export const dashTypes = Object.keys(DashType).sort()
-export const stringTypes = [FieldType.string, FieldType.text, FieldType.uuid, FieldType.sequence, FieldType.email, FieldType.password, FieldType.array, FieldType.json, FieldType.media, FieldType.relation]
-export const numericTypes = [FieldType.int, FieldType.long, FieldType.float, FieldType.double, FieldType.decimal]
-export const temporalTypes = [FieldType.date, FieldType.time, FieldType.datetime, FieldType.timestamp]
-export const stringTypeSet = new Set(stringTypes)
-export const numericTypeSet = new Set(numericTypes)
-export const temporalTypeSet = new Set(temporalTypes)
 export const allTemporalPeriods: string[] = Object.keys(TemporalPeriod)
-
-export const stringQueryOps = [
-    QueryOp.$eq,
-    QueryOp.$ne,
-    QueryOp.$startsWith,
-    QueryOp.$endsWith,
-    QueryOp.$contains,
-    QueryOp.$containsi,
-    QueryOp.$notContains,
-    QueryOp.$notContainsi,
-    QueryOp.$in,
-    QueryOp.$notIn,
-    QueryOp.$null,
-    QueryOp.$notNull
-]
-
-export const numericQueryOps = [
-    QueryOp.$eq,
-    QueryOp.$ne,
-    QueryOp.$gt,
-    QueryOp.$gte,
-    QueryOp.$lt,
-    QueryOp.$lte,
-    QueryOp.$between,
-    QueryOp.$in,
-    QueryOp.$notIn,
-    QueryOp.$null,
-    QueryOp.$notNull
-]
-
-export const temporalQueryOps = [
-    QueryOp.$eq,
-    QueryOp.$ne,
-    QueryOp.$gt,
-    QueryOp.$gte,
-    QueryOp.$lt,
-    QueryOp.$lte,
-    QueryOp.$between,
-    QueryOp.$in,
-    QueryOp.$notIn,
-    QueryOp.$null,
-    QueryOp.$notNull
-]
-
-export const boolQueryOps = [
-    QueryOp.$eq,
-    QueryOp.$ne,
-    QueryOp.$in,
-    QueryOp.$notIn,
-    QueryOp.$null,
-    QueryOp.$notNull
-]
 
 export const timeTemporalPeriods: TemporalPeriod[] = [
     TemporalPeriod.ARBITRARY,
@@ -95,32 +37,12 @@ export const timeScaleProps = {
     }
 }
 
-export const defaultDashFiltersBlock: DashFiltersBlock = {
+export const generateQueryBlock = (): QueryBlock => ({
     id: uuidv4(),
     predicate: QueryPredicate.$and,
     filters: [],
     blocks: []
-}
-
-export const queryOpTitles: {[key: string]: string} = {
-    [QueryOp.$eq]: i18n.t('equals'),
-    [QueryOp.$ne]: i18n.t('not equals'),
-    [QueryOp.$gt]: i18n.t('greater than'),
-    [QueryOp.$gte]: i18n.t('greater than or equals'),
-    [QueryOp.$lt]: i18n.t('less than'),
-    [QueryOp.$lte]: i18n.t('less than or equals'),
-    [QueryOp.$between]: i18n.t('between'),
-    [QueryOp.$startsWith]: i18n.t('starts with'),
-    [QueryOp.$endsWith]: i18n.t('ends with'),
-    [QueryOp.$contains]: i18n.t('contains'),
-    [QueryOp.$containsi]: i18n.t('contains ignore case'),
-    [QueryOp.$notContains]: i18n.t('not contains'),
-    [QueryOp.$notContainsi]: i18n.t('not contains ignore case'),
-    [QueryOp.$in]: i18n.t('in'),
-    [QueryOp.$notIn]: i18n.t('not in'),
-    [QueryOp.$null]: i18n.t('null'),
-    [QueryOp.$notNull]: i18n.t('not null')
-}
+})
 
 export const temporalPeriodTitles: {[key: string]: string} = {
     [TemporalPeriod.ARBITRARY]: i18n.t('Arbitrary'),
@@ -144,30 +66,6 @@ export const temporalPeriodTitles: {[key: string]: string} = {
     [TemporalPeriod.LAST_10_YEARS]: util.format(i18n.t('Last %d years'), 10),
     [TemporalPeriod.LAST_20_YEARS]: util.format(i18n.t('Last %d years'), 20),
     [TemporalPeriod.LAST_30_YEARS]: util.format(i18n.t('Last %d years'), 30)
-}
-
-export const isString = (fieldType: FieldType) => stringTypeSet.has(fieldType)
-
-export const isNumeric = (fieldType: FieldType) => numericTypeSet.has(fieldType)
-
-export const isTemporal = (fieldType: FieldType) => temporalTypeSet.has(fieldType)
-
-export const isBool = (fieldType: FieldType) => fieldType === FieldType.bool
-
-export function queryOps(fieldType: FieldType): QueryOp[] {
-    if (isString(fieldType))
-        return [...stringQueryOps]
-
-    if (isNumeric(fieldType))
-        return [...numericQueryOps]
-
-    if (isTemporal(fieldType))
-        return [...temporalQueryOps]
-
-    if (isBool(fieldType))
-        return [...boolQueryOps]
-
-    throw new Error(`Illegal field type: ${fieldType}`)
 }
 
 export function startTemporalFromPeriod(period: TemporalPeriod, temporalType: TemporalType): Dayjs {

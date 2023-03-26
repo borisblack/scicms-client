@@ -14,7 +14,7 @@ const permissionService = PermissionService.getInstance()
 
 export default function Columns({me, item, buffer, data, onBufferChange}: CustomComponentRenderContext) {
     if (item.name !== DATASET_ITEM_NAME)
-        throw new Error('Illegal attribute')
+        throw new Error('Illegal argument')
 
     const {t} = useTranslation()
     const isNew = !data?.id

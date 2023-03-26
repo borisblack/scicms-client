@@ -7,16 +7,15 @@ import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
 
 import {CustomComponentRenderContext} from '../../index'
-import {DASHBOARD_ITEM_NAME} from '../../../config/constants'
+import {DASHBOARD_ITEM_NAME, DEBUG} from '../../../config/constants'
 import PermissionService from '../../../services/permission'
 import {IDash, IDashboardSpec, TemporalPeriod} from '../../../types'
 import DashForm, {DashValues} from './DashForm'
 import {DeleteOutlined} from '@ant-design/icons'
 import {getDashIcon} from '../../../util/icons'
 import appConfig from '../../../config'
-import './DashboardSpec.css'
+import {generateQueryBlock} from '../../../util/dashboard'
 import styles from './DashboardSpec.module.css'
-import {defaultDashFiltersBlock} from '../../../util/dashboard'
 
 const ReactGridLayout = WidthProvider(RGL)
 
@@ -28,7 +27,7 @@ let seqNum = 0
 
 export default function DashboardSpec({me, item, data, buffer, onBufferChange}: CustomComponentRenderContext) {
     if (item.name !== DASHBOARD_ITEM_NAME)
-        throw new Error('Illegal attribute')
+        throw new Error('Illegal argument')
 
     const {t} = useTranslation()
     const isNew = !data?.id
@@ -57,7 +56,7 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
                     h: 1,
                     type: appConfig.dashboard.defaultDashType,
                     optValues: {},
-                    defaultFilters: {...defaultDashFiltersBlock},
+                    defaultFilters: generateQueryBlock(),
                     defaultPeriod: TemporalPeriod.ARBITRARY,
                     isAggregate: false,
                     refreshIntervalSeconds: appConfig.dashboard.defaultRefreshIntervalSeconds
@@ -176,6 +175,9 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
     }
 
     function handleDashFormFinish(newDash: DashValues) {
+        if (DEBUG)
+            console.log(newDash)
+
         handleActiveDashChange(newDash)
         setDashModalVisible(false)
     }

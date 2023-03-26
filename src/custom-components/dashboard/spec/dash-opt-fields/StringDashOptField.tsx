@@ -10,7 +10,7 @@ const {Option: SelectOption} = Select
 
 const StringDashOptField: FC<DashOptFieldProps> = ({dashOpt, availableColumns, initialValue}) => {
     if (dashOpt.type !== DashOptType.string)
-        throw new Error('Illegal attribute')
+        throw new Error('Illegal argument')
 
     const {t} = useTranslation()
 

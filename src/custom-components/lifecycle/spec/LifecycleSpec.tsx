@@ -17,7 +17,7 @@ const customTranslateModule = {
 
 export default function LifecycleSpec({me, item, data, onBufferChange}: CustomComponentRenderContext) {
     if (item.name !== LIFECYCLE_ITEM_NAME)
-        throw new Error('Illegal attribute')
+        throw new Error('Illegal argument')
 
     const isNew = !data?.id
     const isLockedByMe = data?.lockedBy?.data?.id === me.id

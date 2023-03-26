@@ -3,7 +3,8 @@ import {DashType} from '../../types'
 import {DashOpt, DashRenderer, InnerDashRenderProps, XYDashOpts, xyDashOpts} from '.'
 import appConfig from '../../config'
 import {Alert} from 'antd'
-import {formatValue, isTemporal, parseDashColor} from '../../util/dashboard'
+import {formatValue, parseDashColor} from '../../util/dashboard'
+import {isTemporal} from '../../util/dataset'
 
 interface PolarAreaDashOpts extends XYDashOpts {}
 

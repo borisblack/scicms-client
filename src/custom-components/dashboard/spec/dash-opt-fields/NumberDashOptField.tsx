@@ -10,7 +10,7 @@ const {Item: FormItem} = Form
 
 const NumberDashOptField: FC<DashOptFieldProps> = ({dashOpt, initialValue}) => {
     if (dashOpt.type !== DashOptType.number)
-        throw new Error('Illegal attribute')
+        throw new Error('Illegal argument')
 
     const {min, max} = dashOpt
     const {t} = useTranslation()

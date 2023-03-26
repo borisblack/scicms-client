@@ -13,23 +13,22 @@ import {
 } from 'antd'
 import {
     AggregateType,
-    Column, DashFiltersBlock,
+    Column,
     DashType,
     Dataset,
     FieldType,
     IDash,
-    IDashFilter,
+    QueryBlock,
     TemporalPeriod,
     TemporalType
 } from '../../../types'
-import styles from './DashboardSpec.module.css'
 import {useTranslation} from 'react-i18next'
 import appConfig from '../../../config'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {
     allTemporalPeriods,
     dashTypes,
-    isTemporal,
+    generateQueryBlock,
     temporalPeriodTitles,
     timeTemporalPeriods
 } from '../../../util/dashboard'
@@ -39,7 +38,9 @@ import dayjs, {Dayjs} from 'dayjs'
 import {getRenderer} from '../../../dashboard/DashRenderers'
 import DashOptFieldWrapper from './DashOptFieldWrapper'
 import {DashRenderer} from '../../../dashboard/dashes'
-import DashFilters from './dash-filters/DashFilters'
+import DashFilters from '../../../dashboard/dash-filters/DashFilters'
+import styles from './DashboardSpec.module.css'
+import {isTemporal} from '../../../util/dataset'
 
 interface Props {
     form: FormInstance
@@ -60,7 +61,7 @@ export interface DashValues {
     aggregateField?: string
     groupField?: string
     optValues: any
-    defaultFilters: DashFiltersBlock
+    defaultFilters: QueryBlock
     temporalField?: string
     defaultPeriod: TemporalPeriod
     defaultStartTemporal?: Dayjs
@@ -398,7 +399,15 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                             </>
                         )}
                     </Row>
-                    {dataset && <DashFilters dataset={dataset} dash={dash} form={form}/>}
+
+                    {dataset && (
+                        <DashFilters
+                            form={form}
+                            namePrefix={['defaultFilters']}
+                            dataset={dataset}
+                            initialBlock={dash.defaultFilters ?? generateQueryBlock()}
+                        />
+                    )}
                 </Panel>
             </Collapse>
 

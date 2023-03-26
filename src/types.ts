@@ -338,7 +338,7 @@ export interface IDash {
     sortField?: string
     sortDirection?: string
     optValues: any
-    defaultFilters: DashFiltersBlock
+    defaultFilters: QueryBlock
     temporalField?: string
     defaultPeriod: TemporalPeriod
     defaultStartTemporal?: string
@@ -365,7 +365,7 @@ export enum DashType {
     statistic = 'statistic'
 }
 
-export interface IDashFilter {
+export interface QueryFilter {
     id: string
     columnName: string
     op: BoolQueryOp | UnaryQueryOp | BinaryQueryOp | ListQueryOp
@@ -373,11 +373,11 @@ export interface IDashFilter {
     show?: boolean
 }
 
-export interface DashFiltersBlock {
+export interface QueryBlock {
     id: string
-    predicate: Omit<QueryPredicate, QueryPredicate.$not>
-    filters: IDashFilter[]
-    blocks: DashFiltersBlock[]
+    predicate: PositiveQueryPredicate
+    filters: QueryFilter[]
+    blocks: QueryBlock[]
 }
 
 export enum TemporalPeriod {
@@ -449,13 +449,14 @@ interface ListFilterInput<T extends string | number | boolean> {
     $notIn?: T[]
 }
 
-export type BoolQueryOp = '$null' | '$notNull'
+export type BoolQueryOp = QueryOp.$null | QueryOp.$notNull
 
-export type UnaryQueryOp = '$eq' | '$ne' | '$gt' | '$gte' | '$lt' | '$lte' | '$startsWith' | '$endsWith' | '$contains' | '$containsi' | '$notContains' | '$notContainsi'
+export type UnaryQueryOp = QueryOp.$eq | QueryOp.$ne | QueryOp.$gt | QueryOp.$gte | QueryOp.$lt | QueryOp.$lte |
+    QueryOp.$startsWith | QueryOp.$endsWith | QueryOp.$contains | QueryOp.$containsi | QueryOp.$notContains | QueryOp.$notContainsi
 
-export type BinaryQueryOp = '$between'
+export type BinaryQueryOp = QueryOp.$between
 
-export type ListQueryOp = '$in' | '$notIn'
+export type ListQueryOp = QueryOp.$in | QueryOp.$notIn
 
 export enum QueryOp {
     $eq = '$eq',
@@ -476,6 +477,8 @@ export enum QueryOp {
     $null = '$null',
     $notNull = '$notNull'
 }
+
+export type PositiveQueryPredicate = QueryPredicate.$and | QueryPredicate.$or
 
 export enum QueryPredicate {
     $and = '$and',

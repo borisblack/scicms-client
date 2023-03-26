@@ -9,7 +9,7 @@ const {Item: FormItem} = Form
 
 const BooleanDashOptField: FC<DashOptFieldProps> = ({dashOpt, initialValue}) => {
     if (dashOpt.type !== DashOptType.boolean)
-        throw new Error('Illegal attribute')
+        throw new Error('Illegal argument')
 
     const {t} = useTranslation()
 

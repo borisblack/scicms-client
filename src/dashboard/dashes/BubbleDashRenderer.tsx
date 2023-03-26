@@ -3,7 +3,8 @@ import {DashType} from '../../types'
 import {bubbleDashOpts, BubbleDashOpts, DashOpt, DashRenderer, InnerDashRenderProps} from '.'
 import appConfig from '../../config'
 import {Alert} from 'antd'
-import {formatValue, isTemporal, parseDashColor} from '../../util/dashboard'
+import {formatValue, parseDashColor} from '../../util/dashboard'
+import {isTemporal} from '../../util/dataset'
 
 const {dash: dashConfig, locale} = appConfig.dashboard
 const axisLabelStyle = dashConfig?.all?.axisLabelStyle
