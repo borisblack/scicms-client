@@ -1,0 +1,13 @@
+import {CustomAttributeField} from '../index'
+import {LOCALE_ATTR_NAME} from '../../config/constants'
+import LocaleAttributeField from './LocaleAttributeField'
+import {FieldType} from '../../types'
+
+const COMPONENT_ID = 'locale'
+
+export const locale: CustomAttributeField = {
+    id: COMPONENT_ID,
+    supports: (itemName, attrName, attribute) => attrName === LOCALE_ATTR_NAME && attribute.type === FieldType.string,
+    priority: 10,
+    render: ({context}) => <LocaleAttributeField key={COMPONENT_ID} {...context}/>
+}

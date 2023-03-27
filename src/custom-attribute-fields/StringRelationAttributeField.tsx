@@ -1,14 +1,14 @@
 import {Button, Form, Input, message, Modal, Tooltip} from 'antd'
 import {FC, useMemo, useState} from 'react'
 
-import {FieldType, ItemData} from '../../../types'
-import ItemService from '../../../services/item'
-import SearchDataGridWrapper from '../SearchDataGridWrapper'
+import {FieldType, ItemData} from '../types'
+import ItemService from '../services/item'
+import SearchDataGridWrapper from '../features/pages/SearchDataGridWrapper'
 import {useTranslation} from 'react-i18next'
 import {CloseCircleOutlined, FolderOpenOutlined} from '@ant-design/icons'
-import QueryService from '../../../services/query'
-import styles from './AttributeField.module.css'
-import {AttributeFieldProps} from './index'
+import QueryService from '../services/query'
+import {CustomAttributeFieldRenderContext} from './index'
+import styles from './CustomAttributeField.module.css'
 
 const SUFFIX_BUTTON_WIDTH = 24
 const RELATION_MODAL_WIDTH = 800
@@ -16,7 +16,7 @@ const RELATION_MODAL_WIDTH = 800
 const {Item: FormItem} = Form
 const {Search} = Input
 
-interface Props extends AttributeFieldProps {
+interface Props extends CustomAttributeFieldRenderContext {
     target: string
     forceVisible?: boolean
 }

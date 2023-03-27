@@ -351,6 +351,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
                     return (
                         <Col span={span} key={attrName}>
                             <AttributeFieldWrapper
+                                me={me}
                                 pageKey={page.key}
                                 form={form}
                                 item={item}
@@ -360,7 +361,9 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
                                 value={data ? data[attrName] : null}
                                 setLoading={setLoading}
                                 onChange={(value: any) => handleFieldChange(attrName, value)}
+                                onItemCreate={onItemCreate}
                                 onItemView={onItemView}
+                                onItemDelete={onItemDelete}
                             />
                         </Col>
                     )

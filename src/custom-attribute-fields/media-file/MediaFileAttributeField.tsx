@@ -1,14 +1,14 @@
 import {FC, useCallback} from 'react'
 import {Button, message} from 'antd'
 
-import {AttributeFieldProps} from '.'
 import {useTranslation} from 'react-i18next'
-import {FILENAME_ATTR_NAME, MEDIA_ITEM_NAME} from '../../../config/constants'
-import MediaService from '../../../services/media'
+import {FILENAME_ATTR_NAME, MEDIA_ITEM_NAME} from '../../config/constants'
+import MediaService from '../../services/media'
+import {CustomAttributeFieldRenderContext} from '../index'
 
 const mediaService = MediaService.getInstance()
 
-const MediaFileAttributeField: FC<AttributeFieldProps> = ({form, item, data, attrName, attribute, value}) => {
+const MediaFileAttributeField: FC<CustomAttributeFieldRenderContext> = ({form, item, data, attrName, attribute, value}) => {
     if (item.name !== MEDIA_ITEM_NAME || attrName !== FILENAME_ATTR_NAME || data == null || value == null)
         throw new Error('Illegal attribute')
 

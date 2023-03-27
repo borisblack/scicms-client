@@ -1,15 +1,15 @@
 import {FC, useCallback, useMemo} from 'react'
 import {Checkbox, Form, InputNumber} from 'antd'
 
-import {AttributeFieldProps} from '.'
-import styles from './AttributeField.module.css'
 import {useTranslation} from 'react-i18next'
-import {ACCESS_ITEM_NAME, MASK_ATTR_NAME} from '../../../config/constants'
-import {clearBit, getBit, setBit} from '../../../util'
+import {ACCESS_ITEM_NAME, MASK_ATTR_NAME} from '../../config/constants'
+import {clearBit, getBit, setBit} from '../../util'
+import {CustomAttributeFieldRenderContext} from '../index'
+import styles from '../CustomAttributeField.module.css'
 
 const FormItem = Form.Item
 
-const AccessMaskAttributeField: FC<AttributeFieldProps> = ({pageKey, form, item, attrName, attribute, value}) => {
+const AccessMaskAttributeField: FC<CustomAttributeFieldRenderContext> = ({pageKey, form, item, attrName, attribute, value}) => {
     if (item.name !== ACCESS_ITEM_NAME || attrName !== MASK_ATTR_NAME)
         throw new Error('Illegal attribute')
 
