@@ -18,6 +18,8 @@ interface Acl {
 }
 
 export const DEFAULT_PERMISSION_ID = '6fd701bf-87e0-4aca-bbfd-fe1e9f85fc71'
+export const SECURITY_PERMISSION_ID = '4e1f310d-570f-4a16-9f41-cbc80b08ab8e'
+export const BI_PERMISSION_ID = '874e089e-cd9a-428a-962f-0c3d994cd371'
 
 const FIND_ALL_QUERY = gql`
     query findAll {

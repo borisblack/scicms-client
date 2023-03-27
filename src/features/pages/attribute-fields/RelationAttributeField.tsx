@@ -8,16 +8,54 @@ import {useTranslation} from 'react-i18next'
 import {AttributeFieldProps} from '.'
 import {CloseCircleOutlined, FolderOpenOutlined} from '@ant-design/icons'
 import {DEFAULT_LIFECYCLE_ID} from '../../../services/lifecycle'
-import {DEFAULT_PERMISSION_ID} from '../../../services/permission'
+import {BI_PERMISSION_ID, DEFAULT_PERMISSION_ID, SECURITY_PERMISSION_ID} from '../../../services/permission'
 import {ItemFiltersInput} from '../../../services/query'
 import styles from './AttributeField.module.css'
-import {LIFECYCLE_ATTR_NAME, PERMISSION_ATTR_NAME, STATE_ATTR_NAME} from '../../../config/constants'
+import {
+    DASHBOARD_ITEM_NAME,
+    DATASET_ITEM_NAME,
+    GROUP_ITEM_NAME,
+    GROUP_MEMBER_ITEM_NAME,
+    GROUP_ROLE_ITEM_NAME,
+    LIFECYCLE_ATTR_NAME,
+    PERMISSION_ATTR_NAME,
+    ROLE_ITEM_NAME,
+    STATE_ATTR_NAME,
+    USER_ITEM_NAME
+} from '../../../config/constants'
 
 const SUFFIX_BUTTON_WIDTH = 24
 const RELATION_MODAL_WIDTH = 800
 
 const {Item: FormItem} = Form
 const {Search} = Input
+
+const securityItemNames = new Set([
+    // ACCESS_ITEM_NAME,
+    // ALLOWED_PERMISSION_ITEM_NAME,
+    GROUP_ITEM_NAME,
+    GROUP_MEMBER_ITEM_NAME,
+    GROUP_ROLE_ITEM_NAME,
+    // IDENTITY_ITEM_NAME,
+    // PERMISSION_ITEM_NAME,
+    ROLE_ITEM_NAME,
+    USER_ITEM_NAME
+])
+const biItemNames = new Set([DASHBOARD_ITEM_NAME, DATASET_ITEM_NAME])
+
+const isSecurityItem = (itemName: string) => securityItemNames.has(itemName)
+
+const isBiItem = (itemName: string) => biItemNames.has(itemName)
+
+function getDefaultPermission(itemName: string): string {
+    if (isSecurityItem(itemName))
+        return SECURITY_PERMISSION_ID
+
+    if (isBiItem(itemName))
+        return BI_PERMISSION_ID
+
+    return DEFAULT_PERMISSION_ID
+}
 
 const RelationAttributeField: FC<AttributeFieldProps> = ({pageKey, form, item, attrName, attribute, value, onItemView}) => {
     if (attribute.type !== FieldType.relation || attribute.relType === RelType.oneToMany || attribute.relType === RelType.manyToMany)
@@ -55,7 +93,7 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({pageKey, form, item, a
         }
 
         if (attrName === PERMISSION_ATTR_NAME) {
-            const allowedPermissionIds = [...item.allowedPermissions.data.map(it => it.id), DEFAULT_PERMISSION_ID]
+            const allowedPermissionIds = [...item.allowedPermissions.data.map(it => it.id), getDefaultPermission(item.name)]
             return {
                 id: {
                     in: allowedPermissionIds

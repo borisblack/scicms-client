@@ -52,6 +52,14 @@ export default function RelationsDataGridWrapper({me, pageKey, item, itemData, r
     const columns = useMemo(() => getColumns(target), [target])
     const isOneToMany = useMemo(() => relAttribute.relType === RelType.oneToMany, [relAttribute.relType])
 
+    const isNew = !itemData?.id
+    const isLockedByMe = itemData?.lockedBy?.data?.id === me.id
+    const [canEdit] = useMemo(() => {
+        const acl = permissionService.getAcl(me, item, itemData)
+        const canEdit = (isNew && acl.canCreate) || (isLockedByMe && acl.canWrite)
+        return [canEdit]
+    }, [isLockedByMe, isNew, item, itemData, me, permissionService])
+
     const oppositeAttrName = useMemo((): string | undefined => {
         const relAttribute = item.spec.attributes[relAttrName]
         return relAttribute.inversedBy ?? relAttribute.mappedBy
@@ -230,17 +238,17 @@ export default function RelationsDataGridWrapper({me, pageKey, item, itemData, r
     }, [t, permissionService, me, relAttribute.readOnly, openTarget, target.versioned, deleteTarget])
 
     const renderToolbar = useCallback(() => {
-        if (relAttribute.readOnly)
+        if (!canEdit || relAttribute.readOnly)
             return null
 
         const targetPermissionId = target.permission.data?.id
         const targetPermission = targetPermissionId ? permissionService.findById(targetPermissionId) : null
-        const canCreate = !!targetPermission && ACL.canCreate(me, targetPermission)
+        const canCreateTarget = !!targetPermission && ACL.canCreate(me, targetPermission)
 
         return (
             <Space>
                 {!isOneToMany && <Button size="small" icon={<SelectOutlined/>} onClick={() => setSelectionModalVisible(true)}>{t('Select')}</Button>}
-                {canCreate && <Button type="primary" size="small" icon={<PlusCircleOutlined/>} onClick={handleCreate}>{t('Add')}</Button>}
+                {canCreateTarget && <Button type="primary" size="small" icon={<PlusCircleOutlined/>} onClick={handleCreate}>{t('Add')}</Button>}
             </Space>
         )
     }, [handleCreate, isOneToMany, me, permissionService, relAttribute.readOnly, t, target.permission.data?.id])

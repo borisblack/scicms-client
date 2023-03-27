@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useState} from 'react'
+import {useMemo, useState} from 'react'
 import RGL, {Layout, WidthProvider} from 'react-grid-layout'
 import {Button, Form, Modal} from 'antd'
 import {useTranslation} from 'react-i18next'
@@ -39,7 +39,8 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
         return [canEdit]
     }, [data, isLockedByMe, isNew, item, me, permissionService])
     const [canEdit] = permissions
-    const spec: IDashboardSpec = useMemo(() => buffer.spec ?? data?.spec ?? initialSpec, [buffer.spec, data?.spec])
+    const spec: IDashboardSpec = buffer.spec ?? data?.spec ?? initialSpec
+    const allDashes = spec.dashes ?? []
     const [activeDash, setActiveDash] = useState<IDash | null>(null)
     const [isDashModalVisible, setDashModalVisible] = useState(false)
     const [dashForm] = Form.useForm()
@@ -61,7 +62,7 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
                     isAggregate: false,
                     refreshIntervalSeconds: appConfig.dashboard.defaultRefreshIntervalSeconds
                 },
-                ...spec.dashes
+                ...allDashes
             ]
         }
 
@@ -71,7 +72,7 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
     function handleLayoutChange(layouts: Layout[]) {
         const newSpec: IDashboardSpec = {
             dashes: layouts.map((layout, i) => {
-                const curDash = spec.dashes[i]
+                const curDash = allDashes[i]
                 const {
                     id, name, dataset, type, unit,
                     isAggregate, aggregateType, aggregateField, groupField, sortField, sortDirection,
@@ -127,7 +128,7 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
         }
 
         const newSpec = {
-            dashes: spec.dashes.filter(it => it.name !== name)
+            dashes: allDashes.filter(it => it.name !== name)
         }
 
         onBufferChange({spec: newSpec})
@@ -167,7 +168,7 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
         }
 
         const newSpec = {
-            dashes: spec.dashes.map(it => it.name === activeDash.name ? dashToUpdate : it)
+            dashes: allDashes.map(it => it.name === activeDash.name ? dashToUpdate : it)
         }
 
         onBufferChange({spec: newSpec})
@@ -196,12 +197,12 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
         )
     }
 
-    const layout = spec.dashes.map(it => ({i: it.name, x: it.x, y: it.y, w: it.w, h: it.h}))
+    const layout = allDashes.map(it => ({i: it.name, x: it.x, y: it.y, w: it.w, h: it.h}))
 
     return (
         <>
             <Button type="dashed" disabled={!canEdit} onClick={handleDashAdd}>{t('Add Dash')}</Button>
-            {spec.dashes.length > 0 && (
+            {allDashes.length > 0 && (
                 <ReactGridLayout
                     className={styles.layout}
                     layout={layout}
@@ -212,7 +213,7 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
                     isResizable={canEdit}
                     onLayoutChange={handleLayoutChange}
                 >
-                    {spec.dashes.map(it => renderDash(it))}
+                    {allDashes.map(it => renderDash(it))}
                 </ReactGridLayout>
             )}
 

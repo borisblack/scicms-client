@@ -18,15 +18,17 @@ import ItemService from '../../services/item'
 interface Props {
     me: UserInfo
     pageKey: string
-    target: string
+    itemName: string
+    targetItemName: string
     mappedBy: string
     mappedByValue: any
+    itemData?: ItemData | null
     onItemCreate: (item: Item, initialData?: ItemData | null, cb?: Callback, observerKey?: string) => void
     onItemView: (item: Item, id: string, cb?: Callback, observerKey?: string) => void
     onItemDelete: (itemName: string, id: string) => void
 }
 
-export default function OneToManyDataGridWrapper({me, pageKey, target, mappedBy, mappedByValue, onItemCreate, onItemView, onItemDelete}: Props) {
+export default function OneToManyDataGridWrapper({me, pageKey, itemName, targetItemName, mappedBy, mappedByValue, itemData, onItemCreate, onItemView, onItemDelete}: Props) {
     const {t} = useTranslation()
     const [loading, setLoading] = useState<boolean>(false)
     const [data, setData] = useState(getInitialData())
@@ -34,8 +36,17 @@ export default function OneToManyDataGridWrapper({me, pageKey, target, mappedBy,
     const itemService = useMemo(() => ItemService.getInstance(), [])
     const permissionService = useMemo(() => PermissionService.getInstance(), [])
     const mutationService = useMemo(() => MutationService.getInstance(), [])
-    const targetItem = useMemo(() => itemService.getByName(target), [itemService, target])
+    const item = useMemo(() => itemService.getByName(itemName), [itemService, targetItemName])
+    const targetItem = useMemo(() => itemService.getByName(targetItemName), [itemService, targetItemName])
     const columns = useMemo(() => getColumns(targetItem), [targetItem])
+
+    const isNew = !itemData?.id
+    const isLockedByMe = itemData?.lockedBy?.data?.id === me.id
+    const [canEdit] = useMemo(() => {
+        const acl = permissionService.getAcl(me, item, itemData)
+        const canEdit = (isNew && acl.canCreate) || (isLockedByMe && acl.canWrite)
+        return [canEdit]
+    }, [isLockedByMe, isNew, item, itemData, me, permissionService])
 
     const hiddenColumnsMemoized = useMemo(() => {
         const hiddenColumns = getHiddenColumns(targetItem)
@@ -126,16 +137,19 @@ export default function OneToManyDataGridWrapper({me, pageKey, target, mappedBy,
     }, [t, permissionService, me, openTarget, targetItem.versioned, deleteTarget])
 
     const renderToolbar = useCallback(() => {
+        if (!canEdit)
+            return null
+
         const targetPermissionId = targetItem.permission.data?.id
         const targetPermission = targetPermissionId ? permissionService.findById(targetPermissionId) : null
-        const canCreate = !!targetPermission && ACL.canCreate(me, targetPermission)
+        const canCreateTarget = !!targetPermission && ACL.canCreate(me, targetPermission)
 
         return (
             <Space>
-                {canCreate && <Button type="primary" size="small" icon={<PlusCircleOutlined/>} onClick={handleCreate}>{t('Add')}</Button>}
+                {canCreateTarget && <Button type="primary" size="small" icon={<PlusCircleOutlined/>} onClick={handleCreate}>{t('Add')}</Button>}
             </Space>
         )
-    }, [handleCreate, me, permissionService, t, targetItem.permission.data?.id])
+    }, [canEdit, handleCreate, me, permissionService, t, targetItem.permission.data?.id])
 
     return (
         <>
