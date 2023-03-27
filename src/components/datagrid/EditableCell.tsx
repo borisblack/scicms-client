@@ -33,7 +33,7 @@ export default function EditableCell({value, onChange}: Props) {
 
         if (evt.key === 'Enter') {
             setEditing(false)
-            onChange(evt.target.value)
+            onChange((evt.target as HTMLInputElement).value)
         }
     }
 
