@@ -84,7 +84,7 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({pageKey, form, item, a
 
     const extraFiltersInput: ItemFiltersInput<ItemData> = useMemo(() => {
         if (attrName === LIFECYCLE_ATTR_NAME) {
-            const allowedLifecycleIds = [...item.allowedLifecycles.data.map(it => it.id), DEFAULT_LIFECYCLE_ID]
+            const allowedLifecycleIds = [...item.allowedLifecycles.data.map(al => al.target.data.id), DEFAULT_LIFECYCLE_ID]
             return {
                 id: {
                     in: allowedLifecycleIds
@@ -93,7 +93,7 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({pageKey, form, item, a
         }
 
         if (attrName === PERMISSION_ATTR_NAME) {
-            const allowedPermissionIds = [...item.allowedPermissions.data.map(it => it.id), getDefaultPermission(item.name)]
+            const allowedPermissionIds = [...item.allowedPermissions.data.map(ap => ap.target.data.id), getDefaultPermission(item.name)]
             return {
                 id: {
                     in: allowedPermissionIds

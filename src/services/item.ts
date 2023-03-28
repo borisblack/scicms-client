@@ -50,11 +50,23 @@ const FIND_ALL_QUERY = gql`
                 allowedLifecycles {
                     data {
                         id
+                        target {
+                            data {
+                                id
+                                name
+                            }
+                        }
                     }
                 }
                 allowedPermissions {
                     data {
                         id
+                        target {
+                            data {
+                                id
+                                name
+                            }
+                        }
                     }
                 }
             }
