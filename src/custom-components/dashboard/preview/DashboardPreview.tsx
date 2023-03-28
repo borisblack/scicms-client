@@ -2,7 +2,7 @@ import {CustomComponentRenderContext} from '../../index'
 import {DASHBOARD_ITEM_NAME} from '../../../config/constants'
 import {useMemo} from 'react'
 import {IDashboardSpec} from '../../../types'
-import DashboardPanel from '../../../dashboard/DashboardPanel'
+import DashboardPanel from '../../../bi/DashboardPanel'
 
 const initialSpec: IDashboardSpec = {
     dashes: []

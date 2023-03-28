@@ -2,14 +2,14 @@ import React, {FC} from 'react'
 import {DashOptFieldProps} from './index'
 import {useTranslation} from 'react-i18next'
 import {Form, Input, Select} from 'antd'
-import {DashOptType} from '../../../../dashboard/dashes'
+import {DashOptionType} from '../../../../bi'
 import styles from './DashOptField.module.css'
 
 const {Item: FormItem} = Form
 const {Option: SelectOption} = Select
 
 const StringDashOptField: FC<DashOptFieldProps> = ({dashOpt, availableColumns, initialValue}) => {
-    if (dashOpt.type !== DashOptType.string)
+    if (dashOpt.type !== DashOptionType.string)
         throw new Error('Illegal argument')
 
     const {t} = useTranslation()

@@ -8,5 +8,5 @@ export const mediaFile: CustomAttributeField = {
     id: ATTRIBUTE_FIELD_ID,
     supports: (itemName, attrName, attribute) => attrName === FILENAME_ATTR_NAME && itemName === MEDIA_ITEM_NAME,
     priority: 10,
-    render: ({context}) => <MediaFileAttributeField key={ATTRIBUTE_FIELD_ID} {...context}/>
+    render: ({context}) => <MediaFileAttributeField {...context}/>
 }

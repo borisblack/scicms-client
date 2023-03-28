@@ -1,24 +1,14 @@
-import {
-    DashType,
-    FieldType,
-    IDash,
-    QueryBlock,
-    PositiveQueryPredicate,
-    QueryOp,
-    QueryPredicate,
-    TemporalPeriod,
-    TemporalType
-} from '../types'
+import {FieldType, IDash, QueryBlock, QueryPredicate, TemporalPeriod, TemporalType} from '../types'
 import {DateTime} from 'luxon'
 import util from 'util'
 import i18n from '../i18n'
 import appConfig from '../config'
 import dayjs, {Dayjs} from 'dayjs'
 import {v4 as uuidv4} from 'uuid'
+import biConfig from '../config/bi'
 
 const {momentDisplayDateFormatString, momentDisplayTimeFormatString, momentDisplayDateTimeFormatString} = appConfig.dateTime
-const {dash: dashConfig} = appConfig.dashboard
-export const dashTypes = Object.keys(DashType).sort()
+const {dash: dashConfig, dateTime: dateTimeConfig} = biConfig
 export const allTemporalPeriods: string[] = Object.keys(TemporalPeriod)
 
 export const timeTemporalPeriods: TemporalPeriod[] = [
@@ -164,13 +154,13 @@ export const formatValue = (value: any, type: FieldType) => {
 
     switch (type) {
         case FieldType.date:
-            return dayjs(value).format(momentDisplayDateFormatString)
+            return dayjs(value).format(dateTimeConfig.dateFormatString)
         case FieldType.time:
-            return dayjs(value).format(momentDisplayTimeFormatString)
+            return dayjs(value).format(dateTimeConfig.timeFormatString)
         case FieldType.datetime:
         case FieldType.timestamp:
             const dt = dayjs(value)
-            return dt.format((dt.hour() === 0 && dt.minute() === 0) ? momentDisplayDateFormatString : momentDisplayDateTimeFormatString)
+            return dt.format((dt.hour() === 0 && dt.minute() === 0) ? dateTimeConfig.dateFormatString : dateTimeConfig.dateTimeFormatString)
         case FieldType.int:
         case FieldType.long:
         case FieldType.float:

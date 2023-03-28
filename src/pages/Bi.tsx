@@ -11,10 +11,11 @@ import {reset as resetRegistry} from '../features/registry/registrySlice'
 import {reset as resetPages} from '../features/pages/pagesSlice'
 import DashboardService from '../services/dashboard'
 import {Dashboard} from '../types'
-import DashboardPanel from '../dashboard/DashboardPanel'
+import DashboardPanel from '../bi/DashboardPanel'
 import './Bi.css'
 import logo from '../logo.svg'
 import appConfig from '../config'
+import biConfig from '../config/bi'
 
 const {Content, Sider} = Layout
 
@@ -41,7 +42,7 @@ function Bi() {
                 return data
             })
             .then(data => {
-                if (data.length > 0 && appConfig.dashboard.openFirstDashboard)
+                if (data.length > 0 && biConfig.openFirstDashboard)
                     openDashboard(data[0])
             })
             .finally(() => {

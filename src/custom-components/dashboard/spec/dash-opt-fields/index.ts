@@ -1,7 +1,7 @@
-import {DashOpt} from '../../../../dashboard/dashes'
+import {DashOption} from '../../../../bi'
 
 export interface DashOptFieldProps {
-    dashOpt: DashOpt
+    dashOpt: DashOption
     availableColumns: string[]
     initialValue: any
 }

@@ -1,14 +1,14 @@
 import {FC} from 'react'
 import {DashOptFieldProps} from './dash-opt-fields'
-import {DashOptType} from '../../../dashboard/dashes'
+import {DashOptionType} from '../../../bi'
 import StringDashOptField from './dash-opt-fields/StringDashOptField'
 import BooleanDashOptField from './dash-opt-fields/BooleanDashOptField'
 import NumberDashOptField from './dash-opt-fields/NumberDashOptField'
 
 const dashPropFields: {[type: string]: FC<DashOptFieldProps>} = {
-    [DashOptType.string]: StringDashOptField,
-    [DashOptType.number]: NumberDashOptField,
-    [DashOptType.boolean]: BooleanDashOptField
+    [DashOptionType.string]: StringDashOptField,
+    [DashOptionType.number]: NumberDashOptField,
+    [DashOptionType.boolean]: BooleanDashOptField
 }
 
 export default function DashOptFieldWrapper(props: DashOptFieldProps) {

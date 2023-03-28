@@ -4,7 +4,7 @@ import ruRU from 'antd/locale/ru_RU'
 import 'dayjs/locale/ru'
 
 import {LUXON_DATE_FORMAT_STRING, LUXON_DATETIME_FORMAT_STRING, LUXON_TIME_FORMAT_STRING} from './constants'
-import {DashType, DeletingStrategy} from '../types'
+import {DeletingStrategy} from '../types'
 import dayjs from 'dayjs'
 
 // LuxonSettings.defaultZone = UTC
@@ -32,51 +32,6 @@ interface AppConfig {
     mutation: {
         copyCollectionRelations: boolean
         deletingStrategy: DeletingStrategy
-    }
-    dashboard: {
-        locale: string
-        cols: number
-        specRowHeight: number
-        viewRowHeight: number
-        minRefreshIntervalSeconds: number
-        defaultRefreshIntervalSeconds: number
-        defaultDashType: DashType
-        defaultPageSize: number
-        maxPageSize: number
-        openFirstDashboard: boolean
-        dash?: {
-            all?: {
-                color: string | string[]
-                legend?: {
-                    label?: {
-                        style?: {
-                            [key: string]: any
-                        }
-                    },
-                    itemName?: {
-                        style?: {
-                            [key: string]: any
-                        }
-                    }
-                }
-                axisLabelStyle?: {
-                    [key: string]: any
-                }
-            },
-            doughnut?: {
-                labelStyle: {
-                    [key: string]: any
-                }
-            },
-            pie?: {
-                labelStyle: {
-                    [key: string]: any
-                }
-            },
-            statistic?: {
-                color?: string
-            }
-        }
     }
     ui: {
         dataGrid: {
@@ -113,35 +68,6 @@ const appConfig: AppConfig = {
     mutation: {
         copyCollectionRelations: true,
         deletingStrategy: DeletingStrategy.CASCADE
-    },
-    dashboard: {
-        locale: 'ru-RU',
-        cols: 24,
-        specRowHeight: 100,
-        viewRowHeight: 300,
-        minRefreshIntervalSeconds: 5,
-        defaultRefreshIntervalSeconds: 300,
-        defaultDashType: DashType.bar,
-        defaultPageSize: 100,
-        maxPageSize: 1000,
-        openFirstDashboard: true,
-        dash: {
-            doughnut: {
-                labelStyle: {
-                    textAlign: 'center',
-                    fontSize: 14
-                }
-            },
-            pie: {
-                labelStyle: {
-                    textAlign: 'center',
-                    fontSize: 14
-                }
-            },
-            statistic: {
-                color: '#333366'
-            },
-        }
     },
     ui: {
         dataGrid: {

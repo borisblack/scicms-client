@@ -329,7 +329,7 @@ export interface IDash {
     w: number
     h: number
     dataset?: string
-    type: DashType
+    type: string
     unit?: string
     isAggregate: boolean
     aggregateType?: AggregateType
@@ -349,21 +349,6 @@ export interface IDash {
 export type NumericType = FieldType.int | FieldType.long | FieldType.float | FieldType.double | FieldType.decimal
 
 export type TemporalType = FieldType.date | FieldType.time | FieldType.datetime | FieldType.timestamp
-
-export enum DashType {
-    area = 'area',
-    bar = 'bar',
-    bubble = 'bubble',
-    bubbleMap = 'bubbleMap',
-    column = 'column',
-    doughnut = 'doughnut',
-    line = 'line',
-    pie = 'pie',
-    polarArea = 'polarArea',
-    radar = 'radar',
-    scatter = 'scatter',
-    statistic = 'statistic'
-}
 
 export interface QueryFilter {
     id: string

@@ -12,10 +12,11 @@ import PermissionService from '../../../services/permission'
 import {IDash, IDashboardSpec, TemporalPeriod} from '../../../types'
 import DashForm, {DashValues} from './DashForm'
 import {DeleteOutlined} from '@ant-design/icons'
-import {getDashIcon} from '../../../util/icons'
-import appConfig from '../../../config'
 import {generateQueryBlock} from '../../../util/dashboard'
 import styles from './DashboardSpec.module.css'
+import {getDash} from '../../../dashes'
+import {allIcons} from '../../../util/icons'
+import biConfig from '../../../config/bi'
 
 const ReactGridLayout = WidthProvider(RGL)
 
@@ -53,14 +54,14 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
                     name: (++seqNum).toString(),
                     x: 0,
                     y: 0,
-                    w: appConfig.dashboard.cols / 2,
+                    w: biConfig.cols / 2,
                     h: 1,
-                    type: appConfig.dashboard.defaultDashType,
+                    type: biConfig.defaultDashType,
                     optValues: {},
                     defaultFilters: generateQueryBlock(),
                     defaultPeriod: TemporalPeriod.ARBITRARY,
                     isAggregate: false,
-                    refreshIntervalSeconds: appConfig.dashboard.defaultRefreshIntervalSeconds
+                    refreshIntervalSeconds: biConfig.defaultRefreshIntervalSeconds
                 },
                 ...allDashes
             ]
@@ -184,7 +185,9 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
     }
 
     function renderDash(dash: IDash) {
-        const Icon = getDashIcon(dash.type)
+        const dashHandler = getDash(dash.type)
+        const icon = dashHandler?.icon
+        const Icon = icon ? allIcons[icon] : null
         return (
             <div
                 key={dash.name}
@@ -192,7 +195,7 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
                 onClick={() => selectDash(dash)}
                 onDoubleClick={() => openDash(dash)}
             >
-                <Icon/>&nbsp;{dash.name}&nbsp;({dash.type})
+                {Icon && <Icon/>}&nbsp;{dash.name}&nbsp;({dash.type})
             </div>
         )
     }
@@ -206,8 +209,8 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
                 <ReactGridLayout
                     className={styles.layout}
                     layout={layout}
-                    cols={appConfig.dashboard.cols}
-                    rowHeight={appConfig.dashboard.specRowHeight}
+                    cols={biConfig.cols}
+                    rowHeight={biConfig.specRowHeight}
                     isDraggable={canEdit}
                     isDroppable={canEdit}
                     isResizable={canEdit}

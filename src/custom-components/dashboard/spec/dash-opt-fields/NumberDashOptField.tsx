@@ -2,14 +2,14 @@ import React, {FC, useMemo} from 'react'
 import {DashOptFieldProps} from './index'
 import {useTranslation} from 'react-i18next'
 import {Form, InputNumber} from 'antd'
-import {DashOptType} from '../../../../dashboard/dashes'
+import {DashOptionType} from '../../../../bi'
 import {Rule} from 'rc-field-form/lib/interface'
 import styles from './DashOptField.module.css'
 
 const {Item: FormItem} = Form
 
 const NumberDashOptField: FC<DashOptFieldProps> = ({dashOpt, initialValue}) => {
-    if (dashOpt.type !== DashOptType.number)
+    if (dashOpt.type !== DashOptionType.number)
         throw new Error('Illegal argument')
 
     const {min, max} = dashOpt

@@ -14,7 +14,6 @@ import {
 import {
     AggregateType,
     Column,
-    DashType,
     Dataset,
     FieldType,
     IDash,
@@ -23,11 +22,9 @@ import {
     TemporalType
 } from '../../../types'
 import {useTranslation} from 'react-i18next'
-import appConfig from '../../../config'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {
     allTemporalPeriods,
-    dashTypes,
     generateQueryBlock,
     temporalPeriodTitles,
     timeTemporalPeriods
@@ -35,12 +32,12 @@ import {
 import DatasetService from '../../../services/dataset'
 import {CheckboxChangeEvent} from 'antd/es/checkbox'
 import dayjs, {Dayjs} from 'dayjs'
-import {getRenderer} from '../../../dashboard/DashRenderers'
 import DashOptFieldWrapper from './DashOptFieldWrapper'
-import {DashRenderer} from '../../../dashboard/dashes'
-import DashFilters from '../../../dashboard/dash-filters/DashFilters'
+import DashFilters from '../../../bi/dash-filters/DashFilters'
 import styles from './DashboardSpec.module.css'
 import {isTemporal} from '../../../util/dataset'
+import {Dash, getDash, getDashIds} from '../../../dashes'
+import biConfig from '../../../config/bi'
 
 interface Props {
     form: FormInstance
@@ -52,7 +49,7 @@ interface Props {
 export interface DashValues {
     name: string
     dataset: string
-    type: DashType
+    type: string
     unit?: string
     isAggregate: boolean
     aggregateType?: AggregateType
@@ -72,6 +69,7 @@ export interface DashValues {
 const {Item: FormItem} = Form
 const {Option: SelectOption} = Select
 const {Panel} = Collapse
+const dashTypes = getDashIds()
 const datasetService = DatasetService.getInstance()
 
 export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
@@ -94,8 +92,8 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
         () => temporalField ? datasetColumns[temporalField]?.type as TemporalType | undefined : undefined,
         [datasetColumns, temporalField])
     const [defaultPeriod, setDefaultPeriod] = useState<TemporalPeriod | undefined>(dash.defaultPeriod ?? TemporalPeriod.ARBITRARY)
-    const [dashType, setDashType] = useState<DashType>(dash.type)
-    const dashRenderer: DashRenderer | null = useMemo(() => getRenderer(dashType), [dashType])
+    const [dashType, setDashType] = useState<string>(dash.type)
+    const dashHandler: Dash | undefined = useMemo(() => getDash(dashType), [dashType])
 
     useEffect(() => {
         datasetService.findAll()
@@ -159,7 +157,7 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
         setGroupField(newGroupField)
     }, [resetSortAndOptValuesFormFields])
 
-    const handleDashTypeChange = useCallback((newDashType: DashType) => {
+    const handleDashTypeChange = useCallback((newDashType: string) => {
         // form.setFieldValue('optValues', {})
         setDashType(newDashType)
     }, [])
@@ -203,7 +201,7 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                 </Col>
             </Row>
 
-            <Collapse defaultActiveKey={dashRenderer ? ['queryOptions', 'dashOptions'] : ['queryOptions']}>
+            <Collapse defaultActiveKey={dashHandler ? ['queryOptions', 'dashOptions'] : ['queryOptions']}>
                 <Panel header={t('Query Options')} key="queryOptions">
                     <Row gutter={10}>
                         <Col span={6}>
@@ -307,12 +305,12 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                                 </Select>
                             </FormItem>
                         </Col>
-                        {dashRenderer && dashRenderer.listOpts().map(p => (
-                            <Col key={p.name} span={6}>
+                        {dashHandler && dashHandler.options.map(opt => (
+                            <Col key={opt.name} span={6}>
                                 <DashOptFieldWrapper
-                                    dashOpt={p}
+                                    dashOpt={opt}
                                     availableColumns={availableColNames}
-                                    initialValue={dash.optValues ? dash.optValues[p.name] : undefined}
+                                    initialValue={dash.optValues ? dash.optValues[opt.name] : undefined}
                                 />
                             </Col>
                         ))}
@@ -420,10 +418,10 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                         initialValue={dash.refreshIntervalSeconds}
                         rules={[
                             {required: true, message: t('Required field')},
-                            {type: 'number', min: appConfig.dashboard.minRefreshIntervalSeconds}
+                            {type: 'number', min: biConfig.minRefreshIntervalSeconds}
                         ]}
                     >
-                        <InputNumber style={{width: '50%'}} min={appConfig.dashboard.minRefreshIntervalSeconds}/>
+                        <InputNumber style={{width: '50%'}} min={biConfig.minRefreshIntervalSeconds}/>
                     </FormItem>
                 </Col>
             </Row>

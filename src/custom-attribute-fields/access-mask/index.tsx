@@ -8,5 +8,5 @@ export const accessMask: CustomAttributeField = {
     id: ATTRIBUTE_FIELD_ID,
     supports: (itemName, attrName, attribute) => attrName === MASK_ATTR_NAME && itemName === ACCESS_ITEM_NAME,
     priority: 10,
-    render: ({context}) => <AccessMaskAttributeField key={ATTRIBUTE_FIELD_ID} {...context}/>
+    render: ({context}) => <AccessMaskAttributeField {...context}/>
 }

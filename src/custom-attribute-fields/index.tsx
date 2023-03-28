@@ -27,9 +27,5 @@ export const getAttributeField = (itemName: string, attrName: string, attribute:
 export function renderAttributeField(context: CustomAttributeFieldRenderContext, defaultRender: FC<CustomAttributeFieldRenderContext>): ReactElement | null {
     const attributeField = getAttributeField(context.item.name, context.attrName, context.attribute)
 
-    return (
-        <>
-            {attributeField ? attributeField.render({context}) : defaultRender(context)}
-        </>
-    )
+    return <>{attributeField ? attributeField.render({context}) : defaultRender(context)}</>
 }
