@@ -137,8 +137,8 @@ export default function OneToManyDataGridWrapper({me, pageKey, itemName, targetI
     }, [t, permissionService, me, openTarget, targetItem.versioned, deleteTarget])
 
     const renderToolbar = useCallback(() => {
-        if (!canEdit)
-            return null
+        // if (!canEdit)
+        //     return null
 
         const targetPermissionId = targetItem.permission.data?.id
         const targetPermission = targetPermissionId ? permissionService.findById(targetPermissionId) : null

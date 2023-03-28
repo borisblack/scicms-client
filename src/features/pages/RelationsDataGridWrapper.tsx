@@ -238,7 +238,7 @@ export default function RelationsDataGridWrapper({me, pageKey, item, itemData, r
     }, [t, permissionService, me, relAttribute.readOnly, openTarget, target.versioned, deleteTarget])
 
     const renderToolbar = useCallback(() => {
-        if (!canEdit || relAttribute.readOnly)
+        if (/*!canEdit || */relAttribute.readOnly)
             return null
 
         const targetPermissionId = target.permission.data?.id
