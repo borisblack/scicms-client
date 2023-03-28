@@ -5,8 +5,7 @@ import {useTranslation} from 'react-i18next'
 import {registerLocale} from '@antv/g2plot'
 import {Dataset, IDash, IDashboardSpec, UserInfo} from '../types'
 import appConfig from '../config'
-import {hasRole} from '../util/acl'
-import {ANTD_GRID_COLS, ROLE_ADMIN, ROLE_ANALYST} from '../config/constants'
+import {ANTD_GRID_COLS} from '../config/constants'
 import DashWrapper from './DashWrapper'
 import DatasetService from '../services/dataset'
 import {RU_RU_LOCALE} from './locales/ru_RU'
@@ -31,7 +30,6 @@ export default function DashboardPanel({me, pageKey, spec}: Props) {
     const {t} = useTranslation()
     const [datasets, setDatasets] = useState<{[name: string]: Dataset} | null>(null)
     const [isFullScreenComponentExist, setFullScreenComponentExist] = useState<boolean>(false)
-    const canPreview = useMemo(() => hasRole(me, ROLE_ANALYST) || hasRole(me, ROLE_ADMIN), [me])
     const rows = useMemo(() => _.groupBy(dashes, d => d.y), [dashes])
 
     useEffect(() => {
@@ -64,7 +62,7 @@ export default function DashboardPanel({me, pageKey, spec}: Props) {
     }, [datasets, isFullScreenComponentExist, pageKey])
 
     const rowKeys = Object.keys(rows).sort(intCompareFn)
-    return (canPreview ? (
+    return (
         <>
             {datasets && rowKeys.map((rowIndex) => {
                 const colDashes = rows[rowIndex]
@@ -79,8 +77,5 @@ export default function DashboardPanel({me, pageKey, spec}: Props) {
                 )
             })}
         </>
-        ) : (
-            <Alert message={t('You do not have permission to access this content')} type="info"/>
-        )
     )
 }
