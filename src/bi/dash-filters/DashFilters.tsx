@@ -4,7 +4,7 @@ import {Dataset, QueryBlock} from '../../types'
 import React from 'react'
 import {useTranslation} from 'react-i18next'
 import {generateQueryBlock} from '../../util/bi'
-import {positiveQueryPredicates, queryPredicateTitles} from '../../util/bi'
+import {positiveLogicalOps, logicalOpTitles} from '../../util/bi'
 import DashFilter from './DashFilter'
 import styles from './DashFilters.module.css'
 
@@ -13,36 +13,36 @@ interface Props {
     namePrefix: (string|number)[]
     dataset: Dataset
     initialBlock?: QueryBlock
-    showPredicate?: boolean
+    showLogicalOp?: boolean
     onRemove?: () => void
 }
 
 const {Item: FormItem, List: FormList} = Form
 const {Option: SelectOption} = Select
 const TOOLBAR_HEIGHT = 24
-const PREDICATE_FIELD_WIDTH = 75
+const LOGICAL_OP_FIELD_WIDTH = 75
 const BTN_WIDTH = 40
 const H_SPACE = 4, V_SPACE = 6
 const INDENT = 12
 
-export default function DashFilters({form, namePrefix, dataset, initialBlock, showPredicate, onRemove}: Props) {
+export default function DashFilters({form, namePrefix, dataset, initialBlock, showLogicalOp, onRemove}: Props) {
     if (namePrefix.length === 0)
         throw new Error('Illegal argument')
 
     const fieldName = namePrefix[namePrefix.length - 1]
-    const startBtnLeft = showPredicate ? (PREDICATE_FIELD_WIDTH + H_SPACE) : 0
+    const startBtnLeft = showLogicalOp ? (LOGICAL_OP_FIELD_WIDTH + H_SPACE) : 0
     const {t} = useTranslation()
 
     return (
         <div style={{position: 'relative'}}>
-            {showPredicate ? (
+            {showLogicalOp ? (
                 <FormItem
                     className={styles.formItem}
-                    name={[fieldName, 'predicate']}
+                    name={[fieldName, 'logicalOp']}
                     rules={[{required: true, message: t('Required field')}]}
                 >
-                    <Select style={{width: PREDICATE_FIELD_WIDTH, height: TOOLBAR_HEIGHT, marginBottom: V_SPACE}} placeholder={t('Predicate')}>
-                        {positiveQueryPredicates.map(p => <SelectOption key={p} value={p}>{queryPredicateTitles[p]}</SelectOption>)}
+                    <Select style={{width: LOGICAL_OP_FIELD_WIDTH, height: TOOLBAR_HEIGHT, marginBottom: V_SPACE}} placeholder={t('Logical Operator')}>
+                        {positiveLogicalOps.map(p => <SelectOption key={p} value={p}>{logicalOpTitles[p]}</SelectOption>)}
                     </Select>
                 </FormItem>
             ) : (
@@ -100,7 +100,7 @@ export default function DashFilters({form, namePrefix, dataset, initialBlock, sh
                                         form={form}
                                         namePrefix={[...namePrefix, 'blocks', blockFieldNumber]}
                                         dataset={dataset}
-                                        showPredicate
+                                        showLogicalOp
                                         onRemove={() => remove(blockFieldNumber)}
                                     />
                                 )

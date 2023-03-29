@@ -1,9 +1,9 @@
 import {
     FieldType, IDash,
-    PositiveQueryPredicate,
+    PositiveLogicalOp,
     QueryBlock,
     QueryOp,
-    QueryPredicate,
+    LogicalOp,
     TemporalPeriod,
     TemporalType
 } from '../types'
@@ -114,12 +114,12 @@ export const queryOpTitles: {[key: string]: string} = {
     [QueryOp.$notNull]: i18n.t('not null')
 }
 
-export const positiveQueryPredicates: PositiveQueryPredicate[] = [QueryPredicate.$and, QueryPredicate.$or]
+export const positiveLogicalOps: PositiveLogicalOp[] = [LogicalOp.$and, LogicalOp.$or]
 
-export const queryPredicateTitles: {[key: string]: string} = {
-    [QueryPredicate.$and]: i18n.t('and'),
-    [QueryPredicate.$or]: i18n.t('or'),
-    [QueryPredicate.$not]: i18n.t('not'),
+export const logicalOpTitles: {[key: string]: string} = {
+    [LogicalOp.$and]: i18n.t('and'),
+    [LogicalOp.$or]: i18n.t('or'),
+    [LogicalOp.$not]: i18n.t('not'),
 }
 
 export const temporalPeriodTitles: {[key: string]: string} = {
@@ -172,7 +172,7 @@ export function queryOpList(fieldType: FieldType): QueryOp[] {
 
 export const generateQueryBlock = (): QueryBlock => ({
     id: uuidv4(),
-    predicate: QueryPredicate.$and,
+    logicalOp: LogicalOp.$and,
     filters: [],
     blocks: []
 })

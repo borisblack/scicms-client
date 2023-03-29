@@ -360,7 +360,7 @@ export interface QueryFilter {
 
 export interface QueryBlock {
     id: string
-    predicate: PositiveQueryPredicate
+    logicalOp: PositiveLogicalOp
     filters: QueryFilter[]
     blocks: QueryBlock[]
 }
@@ -463,9 +463,9 @@ export enum QueryOp {
     $notNull = '$notNull'
 }
 
-export type PositiveQueryPredicate = QueryPredicate.$and | QueryPredicate.$or
+export type PositiveLogicalOp = LogicalOp.$and | LogicalOp.$or
 
-export enum QueryPredicate {
+export enum LogicalOp {
     $and = '$and',
     $or = '$or',
     $not = '$not'
