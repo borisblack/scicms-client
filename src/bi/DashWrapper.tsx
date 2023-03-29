@@ -25,9 +25,9 @@ import {
     formatTemporalIso,
     startTemporalFromPeriod,
     temporalPeriodTitles
-} from '../util/dashboard'
+} from '../util/bi'
 import dayjs from 'dayjs'
-import {Dash, getDash} from '../dashes'
+import {Dash, getDash} from '../extensions/dashes'
 import biConfig from '../config/bi'
 
 const datasetService = DatasetService.getInstance()

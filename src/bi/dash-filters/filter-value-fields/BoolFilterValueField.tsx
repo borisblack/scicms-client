@@ -3,7 +3,7 @@ import {FilterValueFieldProps} from './index'
 import {useTranslation} from 'react-i18next'
 import {Form, Input} from 'antd'
 import styles from '../DashFilters.module.css'
-import {isBool} from '../../../util/dataset'
+import {isBool} from '../../../util/bi'
 import {QueryOp} from '../../../types'
 
 const {Item: FormItem} = Form

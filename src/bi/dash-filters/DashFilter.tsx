@@ -2,7 +2,7 @@ import {Dataset, QueryOp} from '../../types'
 import {Button, Checkbox, Form, FormInstance, Input, Select, Space} from 'antd'
 import React, {CSSProperties, useEffect} from 'react'
 import {useTranslation} from 'react-i18next'
-import {queryOpList, queryOpTitles} from '../../util/dataset'
+import {queryOpList, queryOpTitles} from '../../util/bi'
 import styles from './DashFilters.module.css'
 import FilterValueFieldWrapper from './FilterValueFieldWrapper'
 

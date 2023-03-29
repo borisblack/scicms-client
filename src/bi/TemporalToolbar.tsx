@@ -3,7 +3,7 @@ import {FieldType, TemporalPeriod, TemporalType} from '../types'
 import {useTranslation} from 'react-i18next'
 import dayjs, {Dayjs} from 'dayjs'
 import {useCallback} from 'react'
-import {allTemporalPeriods, formatTemporalIso, temporalPeriodTitles, timeTemporalPeriods} from '../util/dashboard'
+import {allTemporalPeriods, formatTemporalIso, temporalPeriodTitles, timeTemporalPeriods} from '../util/bi'
 
 interface Props {
     temporalType: TemporalType

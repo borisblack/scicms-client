@@ -2,7 +2,7 @@ import {Empty, Tree, TreeDataNode, TreeProps} from 'antd'
 import {useCallback, useMemo} from 'react'
 import {Dataset, FieldType, IDash} from '../types'
 import {FolderOutlined} from '@ant-design/icons'
-import {formatValue} from '../util/dashboard'
+import {formatValue} from '../util/bi'
 
 interface Props {
     dataset: Dataset

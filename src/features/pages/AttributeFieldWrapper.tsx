@@ -14,7 +14,7 @@ import MediaAttributeField from './attribute-fields/MediaAttributeField'
 import EnumAttributeField from './attribute-fields/EnumAttributeField'
 import './attribute-fields/AttributeField.css'
 import ArrayAttributeField from './attribute-fields/ArrayAttributeField'
-import {renderAttributeField} from '../../custom-attribute-fields'
+import {renderAttributeField} from '../../extensions/custom-attribute-fields'
 
 const attributeFields: AttributeFields = {
     [FieldType.string]: StringAttributeField,

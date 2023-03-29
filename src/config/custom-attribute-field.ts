@@ -1,8 +1,8 @@
-import {CustomAttributeField} from '../custom-attribute-fields'
-import {accessMask} from '../custom-attribute-fields/access-mask'
-import {locale} from '../custom-attribute-fields/locale'
-import {mediaFile} from '../custom-attribute-fields/media-file'
-import {userRelated} from '../custom-attribute-fields/user-related'
+import {CustomAttributeField} from '../extensions/custom-attribute-fields'
+import {accessMask} from '../extensions/custom-attribute-fields/access-mask'
+import {locale} from '../extensions/custom-attribute-fields/locale'
+import {mediaFile} from '../extensions/custom-attribute-fields/media-file'
+import {userRelated} from '../extensions/custom-attribute-fields/user-related'
 
 interface CustomAttributeFieldConfig {
     attributeFields: CustomAttributeField[]

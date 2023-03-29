@@ -1,6 +1,6 @@
-import {hiPlugin} from '../plugins/hi'
-import {helloPlugin} from '../plugins/hello'
-import {CustomPlugin} from '../plugins'
+import {hiPlugin} from '../extensions/plugins/hi'
+import {helloPlugin} from '../extensions/plugins/hello'
+import {CustomPlugin} from '../extensions/plugins'
 
 interface PluginConfig {
     plugins: CustomPlugin[]
