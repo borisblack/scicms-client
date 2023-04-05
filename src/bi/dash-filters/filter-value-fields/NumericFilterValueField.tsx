@@ -1,10 +1,11 @@
 import React, {FC} from 'react'
 import {FilterValueFieldProps} from './index'
 import {useTranslation} from 'react-i18next'
-import {Form, InputNumber} from 'antd'
+import {Form, Input, InputNumber} from 'antd'
 import styles from '../DashFilters.module.css'
 import {isNumeric} from '../../../util/bi'
 import {QueryOp} from '../../../types'
+import {regExpRule} from '../../../util/form'
 
 const {Item: FormItem} = Form
 
@@ -54,7 +55,18 @@ const NumericFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, t
                 )
             case QueryOp.$in:
             case QueryOp.$notIn:
-                return null
+                return (
+                    <FormItem
+                        className={styles.formItem}
+                        name={[fieldName, 'value']}
+                        rules={[
+                            {required: true, message: ''},
+                            regExpRule(/^(?:(\d+(?:\.\d+)?)(?:,\s*\d+(?:\.\d+)?)?)+$/g, 'String must contain only comma-separated values')
+                        ]}
+                    >
+                        <Input placeholder={t('Comma separated values')}/>
+                    </FormItem>
+                )
             default:
                 return (
                     <FormItem
