@@ -79,8 +79,6 @@ export const temporalQueryOps = [
     QueryOp.$lt,
     QueryOp.$lte,
     QueryOp.$between,
-    QueryOp.$in,
-    QueryOp.$notIn,
     QueryOp.$null,
     QueryOp.$notNull
 ]
@@ -88,8 +86,6 @@ export const temporalQueryOps = [
 export const boolQueryOps = [
     QueryOp.$eq,
     QueryOp.$ne,
-    QueryOp.$in,
-    QueryOp.$notIn,
     QueryOp.$null,
     QueryOp.$notNull
 ]

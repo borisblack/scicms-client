@@ -14,7 +14,6 @@ import {Dashboard} from '../types'
 import DashboardPanel from '../bi/DashboardPanel'
 import './Bi.css'
 import logo from '../logo.svg'
-import appConfig from '../config'
 import biConfig from '../config/bi'
 
 const {Content, Sider} = Layout

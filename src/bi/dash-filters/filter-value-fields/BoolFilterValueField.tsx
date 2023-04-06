@@ -1,10 +1,10 @@
 import React, {FC} from 'react'
 import {FilterValueFieldProps} from './index'
 import {useTranslation} from 'react-i18next'
-import {Form, Input} from 'antd'
-import styles from '../DashFilters.module.css'
+import {Checkbox, Form} from 'antd'
 import {isBool} from '../../../util/bi'
 import {QueryOp} from '../../../types'
+import styles from '../DashFilters.module.css'
 
 const {Item: FormItem} = Form
 
@@ -18,18 +18,26 @@ const BoolFilterValueField: FC<FilterValueFieldProps> = ({namePrefix, type, op})
     const fieldName = namePrefix[namePrefix.length - 1]
     const {t} = useTranslation()
 
-    if (op === QueryOp.$null || op === QueryOp.$notNull)
-        return null
-
-    return (
+    const renderDefaultContent = () => (
         <FormItem
             className={styles.formItem}
             name={[fieldName, 'value']}
-            rules={[{required: true, message: ''}]}
+            valuePropName="checked"
         >
-            <Input placeholder={t('Value')}/>
+            <Checkbox style={{marginTop: 24}}>{t('Value')}</Checkbox>
         </FormItem>
     )
+
+    switch (op) {
+        case QueryOp.$null:
+        case QueryOp.$notNull:
+            return null
+        case QueryOp.$eq:
+        case QueryOp.$ne:
+            return renderDefaultContent()
+        default:
+            return <span className="red">{t('Unsupported operator')}</span>
+    }
 }
 
 export default BoolFilterValueField

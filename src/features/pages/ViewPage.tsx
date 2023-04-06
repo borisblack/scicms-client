@@ -29,7 +29,7 @@ import {
 import ItemService from '../../services/item'
 import RelationsDataGridWrapper from './RelationsDataGridWrapper'
 import {Callback} from '../../services/mediator'
-import {ApiMiddlewareContext, ApiOperation, handleApiMiddleware, hasApiMiddleware} from '../../api-middleware'
+import {ApiMiddlewareContext, ApiOperation, handleApiMiddleware, hasApiMiddleware} from '../../extensions/api-middleware'
 import {allIcons} from '../../util/icons'
 import {exportWinFeatures, exportWinStyle, renderValue} from '../../util/export'
 

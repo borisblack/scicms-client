@@ -32,7 +32,7 @@ import {
     MAJOR_REV_ATTR_NAME,
     MINOR_REV_ATTR_NAME
 } from '../../config/constants'
-import {ApiMiddlewareContext, ApiOperation, handleApiMiddleware, hasApiMiddleware} from '../../api-middleware'
+import {ApiMiddlewareContext, ApiOperation, handleApiMiddleware, hasApiMiddleware} from '../../extensions/api-middleware'
 
 interface Props {
     me: UserInfo

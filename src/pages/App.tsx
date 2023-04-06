@@ -9,7 +9,7 @@ import Navbar from '../features/registry/Navbar'
 import Pages from '../features/pages/Pages'
 import './App.css'
 
-const {Content, Footer} = Layout
+const {Content} = Layout
 
 function App() {
     const dispatch = useAppDispatch()

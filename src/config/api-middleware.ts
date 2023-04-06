@@ -1,6 +1,6 @@
-import {ApiMiddleware} from '../api-middleware'
-import {itemMiddleware} from '../api-middleware/item'
-import {itemTemplateMiddleware} from '../api-middleware/item-template'
+import {ApiMiddleware} from '../extensions/api-middleware'
+import {itemMiddleware} from '../extensions/api-middleware/item'
+import {itemTemplateMiddleware} from '../extensions/api-middleware/item-template'
 
 interface ApiMiddlewareConfig {
     apiMiddleware: ApiMiddleware[]
