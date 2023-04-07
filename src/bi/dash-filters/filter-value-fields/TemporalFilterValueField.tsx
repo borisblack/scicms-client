@@ -49,8 +49,8 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({namePrefix, type, 
             </FormItem>
 
             <Switch
-                checkedChildren={t('Choice')}
-                unCheckedChildren={t('Input')}
+                checkedChildren={t('choice')}
+                unCheckedChildren={t('input')}
                 checked={isChoice}
                 onChange={setChoice}
             />
