@@ -1,7 +1,7 @@
 import React, {FC, useState} from 'react'
 import {FilterValueFieldProps} from './index'
 import {useTranslation} from 'react-i18next'
-import {Checkbox, DatePicker, Form, Input, Select, Space, TimePicker} from 'antd'
+import {DatePicker, Form, Input, Select, Space, Switch, TimePicker} from 'antd'
 import {allTemporalPeriods, isTemporal, temporalPeriodTitles, timeTemporalPeriods} from '../../../util/bi'
 import {FieldType, QueryOp, TemporalPeriod} from '../../../types'
 import styles from '../DashFilters.module.css'
@@ -18,7 +18,7 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({namePrefix, type, 
 
     const fieldName = namePrefix[namePrefix.length - 1]
     const {t} = useTranslation()
-    const [isManualInput, setManualInput] = useState(false)
+    const [isChoice, setChoice] = useState(true)
     const [period, setPeriod] = useState(TemporalPeriod.ARBITRARY)
     const [isManualInputLeft, setManualInputLeft] = useState(false)
     const [isManualInputRight, setManualInputRight] = useState(false)
@@ -34,9 +34,7 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({namePrefix, type, 
                 name={[fieldName, 'value']}
                 rules={[{required: true, message: ''}]}
             >
-                {isManualInput ? (
-                    <Input placeholder={t('Value')}/>
-                ) : (
+                {isChoice ? (
                     type === FieldType.time ? (
                         <TimePicker placeholder={t('Value')}/>
                     ) : (
@@ -45,15 +43,17 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({namePrefix, type, 
                             showTime={type === FieldType.datetime || type === FieldType.timestamp}
                         />
                     )
+                ) : (
+                    <Input placeholder={t('Value')}/>
                 )}
             </FormItem>
 
-            <Checkbox
-                style={{marginTop: 24}}
-                onChange={evt => setManualInput(evt.target.checked)}
-            >
-                {t('Manual input')}
-            </Checkbox>
+            <Switch
+                checkedChildren={t('Choice')}
+                unCheckedChildren={t('Input')}
+                checked={isChoice}
+                onChange={setChoice}
+            />
         </Space>
     )
 
