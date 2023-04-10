@@ -20,8 +20,8 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({namePrefix, type, 
     const {t} = useTranslation()
     const [isChoice, setChoice] = useState(true)
     const [period, setPeriod] = useState(TemporalPeriod.ARBITRARY)
-    const [isManualInputLeft, setManualInputLeft] = useState(false)
-    const [isManualInputRight, setManualInputRight] = useState(false)
+    const [isChoiceLeft, setChoiceLeft] = useState(false)
+    const [isChoiceRight, setChoiceRight] = useState(false)
 
     function handlePeriodSelect(newPeriod: TemporalPeriod) {
         setPeriod(newPeriod)
@@ -69,6 +69,63 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({namePrefix, type, 
                     onSelect={handlePeriodSelect}
                 />
             </FormItem>
+
+            {period === TemporalPeriod.ARBITRARY && (
+                <>
+                    <FormItem
+                        className={styles.formItem}
+                        name={[fieldName, 'extra', 'left']}
+                        rules={[{required: true, message: ''}]}
+                    >
+                        {isChoiceLeft ? (
+                            type === FieldType.time ? (
+                                <TimePicker placeholder={t('Begin')}/>
+                            ) : (
+                                <DatePicker
+                                    placeholder={t('Begin')}
+                                    showTime={type === FieldType.datetime || type === FieldType.timestamp}
+                                />
+                            )
+                        ) : (
+                            <Input placeholder={t('Begin')}/>
+                        )}
+                    </FormItem>
+
+                    <Switch
+                        checkedChildren={t('choice')}
+                        unCheckedChildren={t('input')}
+                        checked={isChoiceLeft}
+                        onChange={setChoiceLeft}
+                    />
+
+                    <FormItem
+                        className={styles.formItem}
+                        name={[fieldName, 'extra', 'right']}
+                        rules={[{required: true, message: ''}]}
+                    >
+                        {isChoiceRight ? (
+                            type === FieldType.time ? (
+                                <TimePicker placeholder={t('End')}/>
+                            ) : (
+                                <DatePicker
+                                    placeholder={t('End')}
+                                    showTime={type === FieldType.datetime || type === FieldType.timestamp}
+                                />
+                            )
+                        ) : (
+                            <Input placeholder={t('End')}/>
+                        )}
+
+                    </FormItem>
+
+                    <Switch
+                        checkedChildren={t('choice')}
+                        unCheckedChildren={t('input')}
+                        checked={isChoiceRight}
+                        onChange={setChoiceRight}
+                    />
+                </>
+            )}
         </Space>
     )
 
