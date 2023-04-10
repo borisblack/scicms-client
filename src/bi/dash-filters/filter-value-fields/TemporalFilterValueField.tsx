@@ -6,10 +6,10 @@ import {allTemporalPeriods, isTemporal, temporalPeriodTitles, timeTemporalPeriod
 import {FieldType, QueryOp, TemporalPeriod} from '../../../types'
 import styles from '../DashFilters.module.css'
 
+const INPUT_WIDTH = 120
 const {Item: FormItem} = Form
-const {Option: SelectOption} = Select
 
-const TemporalFilterValueField: FC<FilterValueFieldProps> = ({namePrefix, type, op}) => {
+const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, type, op}) => {
     if (namePrefix.length === 0)
         throw new Error('Illegal argument')
 
@@ -20,11 +20,21 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({namePrefix, type, 
     const {t} = useTranslation()
     const [isChoice, setChoice] = useState(true)
     const [period, setPeriod] = useState(TemporalPeriod.ARBITRARY)
-    const [isChoiceLeft, setChoiceLeft] = useState(false)
-    const [isChoiceRight, setChoiceRight] = useState(false)
+    const [isChoiceLeft, setChoiceLeft] = useState(true)
+    const [isChoiceRight, setChoiceRight] = useState(true)
 
     function handlePeriodSelect(newPeriod: TemporalPeriod) {
         setPeriod(newPeriod)
+    }
+
+    function handleLeftValueChange(leftValue: any) {
+        const rightValue = form.getFieldValue([...namePrefix, 'extra', 'right']) ?? 0
+        form.setFieldValue([...namePrefix, 'value'], [leftValue ?? 0, rightValue])
+    }
+
+    function handleRightValueChange(rightValue: any) {
+        const leftValue = form.getFieldValue([...namePrefix, 'extra', 'left']) ?? 0
+        form.setFieldValue([...namePrefix, 'value'], [leftValue ?? 0, rightValue])
     }
 
     const renderDefaultContent = () => (
@@ -36,21 +46,23 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({namePrefix, type, 
             >
                 {isChoice ? (
                     type === FieldType.time ? (
-                        <TimePicker placeholder={t('Value')}/>
+                        <TimePicker style={{width: 200}} placeholder={t('Value')}/>
                     ) : (
                         <DatePicker
+                            style={{width: INPUT_WIDTH}}
                             placeholder={t('Value')}
                             showTime={type === FieldType.datetime || type === FieldType.timestamp}
                         />
                     )
                 ) : (
-                    <Input placeholder={t('Value')}/>
+                    <Input style={{width: INPUT_WIDTH}} placeholder={t('Value')}/>
                 )}
             </FormItem>
 
             <Switch
-                checkedChildren={t('choice')}
-                unCheckedChildren={t('input')}
+                className={styles.switch}
+                checkedChildren={t('CHOICE')}
+                unCheckedChildren={t('INPUT')}
                 checked={isChoice}
                 onChange={setChoice}
             />
@@ -62,9 +74,9 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({namePrefix, type, 
             <FormItem
                 className={styles.formItem}
                 name={[fieldName, 'extra', 'period']}
-                label={t('Period')}
             >
                 <Select
+                    style={{width: 180}}
                     options={(type === FieldType.time ? timeTemporalPeriods : allTemporalPeriods).map(k => ({value: k, label: temporalPeriodTitles[k]}))}
                     onSelect={handlePeriodSelect}
                 />
@@ -79,21 +91,30 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({namePrefix, type, 
                     >
                         {isChoiceLeft ? (
                             type === FieldType.time ? (
-                                <TimePicker placeholder={t('Begin')}/>
+                                <TimePicker
+                                    style={{width: INPUT_WIDTH}} placeholder={t('Begin')}
+                                    onChange={handleLeftValueChange}
+                                />
                             ) : (
                                 <DatePicker
+                                    style={{width: INPUT_WIDTH}}
                                     placeholder={t('Begin')}
                                     showTime={type === FieldType.datetime || type === FieldType.timestamp}
+                                    onChange={handleLeftValueChange}
                                 />
                             )
                         ) : (
-                            <Input placeholder={t('Begin')}/>
+                            <Input
+                                style={{width: INPUT_WIDTH}} placeholder={t('Begin')}
+                                onChange={evt => handleLeftValueChange(evt.target.value)}
+                            />
                         )}
                     </FormItem>
 
                     <Switch
-                        checkedChildren={t('choice')}
-                        unCheckedChildren={t('input')}
+                        className={styles.switch}
+                        checkedChildren={t('CHOICE')}
+                        unCheckedChildren={t('INPUT')}
                         checked={isChoiceLeft}
                         onChange={setChoiceLeft}
                     />
@@ -105,22 +126,31 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({namePrefix, type, 
                     >
                         {isChoiceRight ? (
                             type === FieldType.time ? (
-                                <TimePicker placeholder={t('End')}/>
+                                <TimePicker
+                                    style={{width: INPUT_WIDTH}} placeholder={t('End')}
+                                    onChange={handleRightValueChange}
+                                />
                             ) : (
                                 <DatePicker
+                                    style={{width: INPUT_WIDTH}}
                                     placeholder={t('End')}
                                     showTime={type === FieldType.datetime || type === FieldType.timestamp}
+                                    onChange={handleRightValueChange}
                                 />
                             )
                         ) : (
-                            <Input placeholder={t('End')}/>
+                            <Input
+                                style={{width: INPUT_WIDTH}} placeholder={t('End')}
+                                onChange={evt => handleLeftValueChange(evt.target.value)}
+                            />
                         )}
 
                     </FormItem>
 
                     <Switch
-                        checkedChildren={t('choice')}
-                        unCheckedChildren={t('input')}
+                        className={styles.switch}
+                        checkedChildren={t('CHOICE')}
+                        unCheckedChildren={t('INPUT')}
                         checked={isChoiceRight}
                         onChange={setChoiceRight}
                     />

@@ -136,6 +136,6 @@ export const regExpRule = (regExp: RegExp, message?: string): FormRule => () => 
         if (value == null || value.match(regExp))
             return Promise.resolve()
 
-        const msg = message ? message : (regExp.toString() === LOWERCASE_NO_WHITESPACE_PATTERN.toString() ? LOWERCASE_NO_WHITESPACE_MESSAGE : null)
-        return Promise.reject(new Error(msg ? i18n.t(msg) : util.format(i18n.t('String does not match pattern %s'), regExp)))
+        const msg = message == null ? (regExp.toString() === LOWERCASE_NO_WHITESPACE_PATTERN.toString() ? LOWERCASE_NO_WHITESPACE_MESSAGE : null) : message
+        return Promise.reject(new Error(msg == null ? util.format(i18n.t('String does not match pattern %s'), regExp) : i18n.t(msg)))
     }})

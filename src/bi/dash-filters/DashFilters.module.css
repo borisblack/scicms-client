@@ -1,3 +1,7 @@
 .formItem {
     margin-bottom: 0;
 }
+
+.switch {
+    margin-top: -4px;
+}
