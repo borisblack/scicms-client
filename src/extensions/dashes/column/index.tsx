@@ -9,7 +9,8 @@ export const column: Dash = {
     id: DASH_ID,
     options: [
         ...xyDashOptions,
-        {name: 'xAxisLabelAutoRotate', type: DashOptionType.boolean, label: 'Auto rotate x-axis label'}
+        {name: 'xAxisLabelAutoRotate', type: DashOptionType.boolean, label: 'Auto rotate x-axis label'},
+        {name: 'isStack', type: DashOptionType.boolean, label: 'Stack'},
     ],
     labelFieldName: 'xField',
     icon: 'BarChartOutlined',

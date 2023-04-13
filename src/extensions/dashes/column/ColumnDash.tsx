@@ -8,6 +8,7 @@ import biConfig from '../../../config/bi'
 
 interface ColumnDashOptions extends XYDashOptions {
     xAxisLabelAutoRotate?: boolean
+    isStack?: boolean
 }
 
 const {dash: dashConfig, locale} = biConfig
@@ -15,7 +16,16 @@ const axisLabelStyle = dashConfig?.all?.axisLabelStyle
 const legendConfig = dashConfig?.all?.legend
 
 export default function ColumnDash({dataset, dash, data}: DashRenderContext) {
-    const {xField, yField, seriesField, hideLegend, legendPosition, xAxisLabelAutoRotate} = dash.optValues as ColumnDashOptions
+    const {
+        xField,
+        yField,
+        seriesField,
+        hideLegend,
+        legendPosition,
+        xAxisLabelAutoRotate,
+        isStack
+    } = dash.optValues as ColumnDashOptions
+
     if (!xField)
         return <Alert message="xField attribute not specified" type="error"/>
 
@@ -43,6 +53,7 @@ export default function ColumnDash({dataset, dash, data}: DashRenderContext) {
             }
         },
         autoFit: true,
+        isStack,
         xAxis: {
             label: {
                 autoRotate: xAxisLabelAutoRotate,

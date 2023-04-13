@@ -276,6 +276,7 @@ const en = {
         'Source Permission': 'Source Permission',
         'Spec': 'Spec',
         'Specification': 'Specification',
+        'Stack': 'Stack',
         'Start State': 'Start State',
         'Statistic field': 'Statistic field',
         'Step': 'Step',

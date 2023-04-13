@@ -276,6 +276,7 @@ const ru = {
         'Source Permission': 'Исходное разрешение',
         'Spec': 'Спецификация',
         'Specification': 'Спецификация',
+        'Stack': 'Стопка',
         'Start State': 'Начальный статус',
         'Statistic field': 'Поле статистики',
         'Step': 'Шаг',
