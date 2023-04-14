@@ -26,7 +26,7 @@ const NumericFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, t
 
     function handleRightValueChange(rightValue: number | null) {
         const leftValue = form.getFieldValue([...namePrefix, 'extra', 'left']) ?? 0
-        form.setFieldValue([...namePrefix, 'value'], [leftValue ?? 0, rightValue])
+        form.setFieldValue([...namePrefix, 'value'], [leftValue, rightValue ?? 0])
     }
 
     const renderBetweenContent = () => (

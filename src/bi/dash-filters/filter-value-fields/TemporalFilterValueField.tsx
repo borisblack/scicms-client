@@ -2,11 +2,13 @@ import React, {FC, useState} from 'react'
 import {FilterValueFieldProps} from './index'
 import {useTranslation} from 'react-i18next'
 import {DatePicker, Form, Input, Select, Space, Switch, TimePicker} from 'antd'
+import {Dayjs} from 'dayjs'
 import {allTemporalPeriods, isTemporal, temporalPeriodTitles, timeTemporalPeriods} from '../../../util/bi'
 import {FieldType, QueryOp, TemporalPeriod} from '../../../types'
 import styles from '../DashFilters.module.css'
 
-const INPUT_WIDTH = 120
+const INPUT_WIDTH = 180
+const BETWEEN_INPUT_WIDTH = 120
 const {Item: FormItem} = Form
 
 const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, type, op}) => {
@@ -27,14 +29,18 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
         setPeriod(newPeriod)
     }
 
+    function handleValueChange(value: Dayjs | null, dateString?: string) {
+        form.setFieldValue([...namePrefix, 'value'], dateString)
+    }
+
     function handleLeftValueChange(leftValue: any) {
-        const rightValue = form.getFieldValue([...namePrefix, 'extra', 'right']) ?? 0
-        form.setFieldValue([...namePrefix, 'value'], [leftValue ?? 0, rightValue])
+        const rightValue = form.getFieldValue([...namePrefix, 'extra', 'right'])
+        form.setFieldValue([...namePrefix, 'value'], [leftValue, rightValue])
     }
 
     function handleRightValueChange(rightValue: any) {
-        const leftValue = form.getFieldValue([...namePrefix, 'extra', 'left']) ?? 0
-        form.setFieldValue([...namePrefix, 'value'], [leftValue ?? 0, rightValue])
+        const leftValue = form.getFieldValue([...namePrefix, 'extra', 'left'])
+        form.setFieldValue([...namePrefix, 'value'], [leftValue, rightValue])
     }
 
     const renderDefaultContent = () => (
@@ -46,12 +52,17 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
             >
                 {isChoice ? (
                     type === FieldType.time ? (
-                        <TimePicker style={{width: 200}} placeholder={t('Value')}/>
+                        <TimePicker
+                            style={{width: INPUT_WIDTH}}
+                            placeholder={t('Value')}
+                            onChange={handleValueChange}
+                        />
                     ) : (
                         <DatePicker
                             style={{width: INPUT_WIDTH}}
                             placeholder={t('Value')}
                             showTime={type === FieldType.datetime || type === FieldType.timestamp}
+                            onChange={handleValueChange}
                         />
                     )
                 ) : (
@@ -92,12 +103,12 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
                         {isChoiceLeft ? (
                             type === FieldType.time ? (
                                 <TimePicker
-                                    style={{width: INPUT_WIDTH}} placeholder={t('Begin')}
+                                    style={{width: BETWEEN_INPUT_WIDTH}} placeholder={t('Begin')}
                                     onChange={handleLeftValueChange}
                                 />
                             ) : (
                                 <DatePicker
-                                    style={{width: INPUT_WIDTH}}
+                                    style={{width: BETWEEN_INPUT_WIDTH}}
                                     placeholder={t('Begin')}
                                     showTime={type === FieldType.datetime || type === FieldType.timestamp}
                                     onChange={handleLeftValueChange}
@@ -105,7 +116,7 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
                             )
                         ) : (
                             <Input
-                                style={{width: INPUT_WIDTH}} placeholder={t('Begin')}
+                                style={{width: BETWEEN_INPUT_WIDTH}} placeholder={t('Begin')}
                                 onChange={evt => handleLeftValueChange(evt.target.value)}
                             />
                         )}
@@ -127,12 +138,12 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
                         {isChoiceRight ? (
                             type === FieldType.time ? (
                                 <TimePicker
-                                    style={{width: INPUT_WIDTH}} placeholder={t('End')}
+                                    style={{width: BETWEEN_INPUT_WIDTH}} placeholder={t('End')}
                                     onChange={handleRightValueChange}
                                 />
                             ) : (
                                 <DatePicker
-                                    style={{width: INPUT_WIDTH}}
+                                    style={{width: BETWEEN_INPUT_WIDTH}}
                                     placeholder={t('End')}
                                     showTime={type === FieldType.datetime || type === FieldType.timestamp}
                                     onChange={handleRightValueChange}
@@ -140,7 +151,7 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
                             )
                         ) : (
                             <Input
-                                style={{width: INPUT_WIDTH}} placeholder={t('End')}
+                                style={{width: BETWEEN_INPUT_WIDTH}} placeholder={t('End')}
                                 onChange={evt => handleLeftValueChange(evt.target.value)}
                             />
                         )}
