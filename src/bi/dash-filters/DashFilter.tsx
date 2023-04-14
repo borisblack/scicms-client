@@ -1,10 +1,11 @@
 import {Dataset, QueryOp} from '../../types'
-import {Button, Checkbox, Form, FormInstance, Input, Select, Space} from 'antd'
-import React, {CSSProperties, useEffect} from 'react'
+import {Button, Form, FormInstance, Select, Space, Switch} from 'antd'
+import React, {CSSProperties} from 'react'
 import {useTranslation} from 'react-i18next'
 import {queryOpList, queryOpTitles} from '../../util/bi'
 import styles from './DashFilters.module.css'
 import FilterValueFieldWrapper from './FilterValueFieldWrapper'
+import {EyeOutlined} from '@ant-design/icons'
 
 interface Props {
     style?: CSSProperties
@@ -71,11 +72,16 @@ export default function DashFilter({style, btnStyle, form, namePrefix, dataset, 
                     name={[fieldName, 'show']}
                     valuePropName="checked"
                 >
-                    <Checkbox>{t('Show')}</Checkbox>
+                    <Switch
+                        title={t('Show')}
+                        checkedChildren={<EyeOutlined/>}
+                        unCheckedChildren={<EyeOutlined/>}
+                    />
                 </FormItem>
 
                 <Button
                     style={btnStyle}
+                    danger
                     title={t('Remove Filter')}
                     onClick={onRemove}>
                     -
