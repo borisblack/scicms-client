@@ -69,14 +69,18 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
                     <Input style={{width: INPUT_WIDTH}} placeholder={t('Value')}/>
                 )}
             </FormItem>
-
-            <Switch
-                className={styles.switch}
-                checkedChildren={t('CHOICE')}
-                unCheckedChildren={t('INPUT')}
-                checked={isChoice}
-                onChange={setChoice}
-            />
+            <FormItem
+                className={styles.formItem}
+                name={[fieldName, 'extra', 'isChoice']}
+                valuePropName="checked"
+            >
+                <Switch
+                    className={styles.switch}
+                    checkedChildren={t('INPUT')}
+                    unCheckedChildren={t('CHOICE')}
+                    onChange={setChoice}
+                />
+            </FormItem>
         </Space>
     )
 
