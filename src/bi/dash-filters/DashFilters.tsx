@@ -54,7 +54,7 @@ export default function DashFilters({form, namePrefix, dataset, initialBlock, sh
                     <>
                         <Button
                             style={{position: 'absolute', width: BTN_WIDTH, height: TOOLBAR_HEIGHT, top: 0, left: startBtnLeft}}
-                            type="primary"
+                            // type="primary"
                             title={t('Add Filter')}
                             onClick={() => add({id: uuidv4()})}
                         >
@@ -86,7 +86,7 @@ export default function DashFilters({form, namePrefix, dataset, initialBlock, sh
                     <>
                         <Button
                             style={{position: 'absolute', width: BTN_WIDTH, height: TOOLBAR_HEIGHT, top: 0, left: startBtnLeft + BTN_WIDTH + H_SPACE}}
-                            type="primary"
+                            // type="primary"
                             title={t('Add Block')}
                             onClick={() => add(generateQueryBlock())}
                         >
