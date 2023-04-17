@@ -57,6 +57,7 @@ export interface Access extends DefaultItemTemplate, IntermediateItemTemplate {
     source: {data: Permission}
     target: {data: Identity}
     mask: number
+    granting: boolean
     beginDate: string
     endDate: string | null
 }

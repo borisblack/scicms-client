@@ -57,7 +57,7 @@ function getDefaultPermission(itemName: string): string {
     return DEFAULT_PERMISSION_ID
 }
 
-const RelationAttributeField: FC<AttributeFieldProps> = ({pageKey, form, item, attrName, attribute, value, onItemView}) => {
+const RelationAttributeField: FC<AttributeFieldProps> = ({pageKey, form, item, attrName, attribute, value, canAdmin, onItemView}) => {
     if (attribute.type !== FieldType.relation || attribute.relType === RelType.oneToMany || attribute.relType === RelType.manyToMany)
         throw new Error('Illegal attribute')
 
@@ -68,7 +68,7 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({pageKey, form, item, a
     const {t} = useTranslation()
     const [loading, setLoading] = useState<boolean>(false)
     const [isRelationModalVisible, setRelationModalVisible] = useState<boolean>(false)
-    const isDisabled = useMemo(() => attribute.keyed || attribute.readOnly, [attribute.keyed, attribute.readOnly])
+    const isDisabled = useMemo(() => attribute.keyed || attribute.readOnly || ((attrName === LIFECYCLE_ATTR_NAME || attrName === PERMISSION_ATTR_NAME) && !canAdmin), [attribute.keyed, attribute.readOnly])
     const additionalProps = useMemo((): any => {
         const additionalProps: any = {}
         if (isDisabled)

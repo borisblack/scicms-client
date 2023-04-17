@@ -12,6 +12,7 @@ export interface AttributeFieldProps {
     attrName: string
     attribute: Attribute
     value: any
+    canAdmin: boolean
     setLoading: (loading: boolean) => void
     onChange: (value: any) => void
     onItemCreate: (item: Item, initialData?: ItemData | null, cb?: Callback, observerKey?: string) => void

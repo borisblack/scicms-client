@@ -6,7 +6,12 @@ import PermissionService from '../../services/permission'
 import {useTranslation} from 'react-i18next'
 import {IPage} from './pagesSlice'
 import {CustomPluginRenderContext, hasPlugins, renderPlugins} from '../../extensions/plugins'
-import {CustomComponentRenderContext, getComponents, hasComponents, renderComponents} from '../../extensions/custom-components'
+import {
+    CustomComponentRenderContext,
+    getComponents,
+    hasComponents,
+    renderComponents
+} from '../../extensions/custom-components'
 import ItemTemplateService from '../../services/item-template'
 import AttributeFieldWrapper from './AttributeFieldWrapper'
 import QueryService from '../../services/query'
@@ -29,7 +34,12 @@ import {
 import ItemService from '../../services/item'
 import RelationsDataGridWrapper from './RelationsDataGridWrapper'
 import {Callback} from '../../services/mediator'
-import {ApiMiddlewareContext, ApiOperation, handleApiMiddleware, hasApiMiddleware} from '../../extensions/api-middleware'
+import {
+    ApiMiddlewareContext,
+    ApiOperation,
+    handleApiMiddleware,
+    hasApiMiddleware
+} from '../../extensions/api-middleware'
 import {allIcons} from '../../util/icons'
 import {exportWinFeatures, exportWinStyle, renderValue} from '../../util/export'
 
@@ -74,9 +84,9 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
         const acl = permissionService.getAcl(me, item, data)
         const canEdit = (!isSystemItem || !data?.core) && !item.readOnly && (!item.versioned || !!data?.current) && acl.canWrite
         const canDelete = (!isSystemItem || !data?.core) && !item.readOnly && acl.canDelete
-        return [acl.canCreate, canEdit, canDelete]
+        return [acl.canCreate, canEdit, canDelete, acl.canAdmin]
     }, [data, isSystemItem, item, me, permissionService])
-    const [canCreate, canEdit, canDelete] = permissions
+    const [canCreate, canEdit, canDelete, canAdmin] = permissions
     const handleBufferChange = useCallback((bufferChanges: IBuffer) => setBuffer({...buffer, ...bufferChanges}), [buffer])
     const pluginContext: CustomPluginRenderContext = useMemo(() => ({
         me,
@@ -359,6 +369,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
                                 attrName={attrName}
                                 attribute={attr}
                                 value={data ? data[attrName] : null}
+                                canAdmin={canAdmin}
                                 setLoading={setLoading}
                                 onChange={(value: any) => handleFieldChange(attrName, value)}
                                 onItemCreate={onItemCreate}

@@ -33,6 +33,9 @@ const FIND_ALL_QUERY = gql`
                         label
                         sortOrder
                         mask
+                        granting
+                        beginDate
+                        endDate
                         target {
                             data {
                                 id
@@ -67,6 +70,9 @@ const FIND_ALL_BY_IDENTITY_NAMES_QUERY = gql`
                         label
                         sortOrder
                         mask
+                        granting
+                        beginDate
+                        endDate
                         target {
                             data {
                                 id
