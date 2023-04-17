@@ -396,8 +396,14 @@ function parseFilterValue(dataset: Dataset, filter: QueryFilter): any {
     }
 
     const extra = filter.extra ?? {}
-    if (op === QueryOp.$between)
-        return [extra.left, extra.right]
+    if (op === QueryOp.$between) {
+        if (!isTemporal(type) || extra.period === TemporalPeriod.ARBITRARY) {
+            return [extra.isManualLeft ? parseManualFilterValue(extra.left) : extra.left, extra.isManualRight ? parseManualFilterValue(extra.right) : extra.right]
+        } else {
+            // TODO: Process period
+            return null
+        }
+    }
 
     if (op === QueryOp.$in || op === QueryOp.$notIn) {
         const arr = value == null ? [] : (value as string).split(/\s*,\s*/)
@@ -407,6 +413,14 @@ function parseFilterValue(dataset: Dataset, filter: QueryFilter): any {
         return arr
     }
 
+    return extra.isManual ? parseManualFilterValue(value) : value
+}
+
+function parseManualFilterValue(type: FieldType, value?: string): any {
+    if (value == null)
+        return null
+
+    // TODO: Process value
     return value
 }
 
