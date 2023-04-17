@@ -357,6 +357,7 @@ export interface QueryFilter {
     op: BoolQueryOp | UnaryQueryOp | BinaryQueryOp | ListQueryOp
     value?: any
     show?: boolean
+    extra?: any
 }
 
 export interface QueryBlock {

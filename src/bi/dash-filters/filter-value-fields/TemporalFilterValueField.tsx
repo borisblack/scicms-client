@@ -1,15 +1,17 @@
-import React, {FC, useState} from 'react'
-import {FilterValueFieldProps} from './index'
-import {useTranslation} from 'react-i18next'
+import React, {FC, useEffect, useState} from 'react'
 import {DatePicker, Form, Input, Select, Space, Switch, TimePicker} from 'antd'
+import {FunctionOutlined} from '@ant-design/icons'
+import {useTranslation} from 'react-i18next'
+import {FilterValueFieldProps} from './index'
 import {allTemporalPeriods, isTemporal, temporalPeriodTitles, timeTemporalPeriods} from '../../../util/bi'
 import {FieldType, QueryOp, TemporalPeriod} from '../../../types'
+import appConfig from '../../../config'
 import styles from '../DashFilters.module.css'
-import {FunctionOutlined} from '@ant-design/icons'
 
 const INPUT_WIDTH = 180
 const BETWEEN_INPUT_WIDTH = 140
 const {Item: FormItem} = Form
+const {momentDisplayDateFormatString, momentDisplayTimeFormatString, momentDisplayDateTimeFormatString} = appConfig.dateTime
 
 const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, type, op}) => {
     if (namePrefix.length === 0)
@@ -25,18 +27,27 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
     const [isManualLeft, setManualLeft] = useState(form.getFieldValue([...namePrefix, 'extra', 'isManualLeft']))
     const [isManualRight, setManualRight] = useState(form.getFieldValue([...namePrefix, 'extra', 'isManualRight']))
 
-    function handlePeriodSelect(newPeriod: TemporalPeriod) {
-        setPeriod(newPeriod)
+    useEffect(() => {
+        form.setFieldValue([...namePrefix, 'extra', 'period'], TemporalPeriod.ARBITRARY)
+        setPeriod(TemporalPeriod.ARBITRARY)
+    }, [op])
+
+
+    function handleManualChange(newManual: boolean) {
+        setManual(newManual)
+        form.setFieldValue([...namePrefix, 'value'], null)
     }
 
-    function handleLeftValueChange(leftValue: any) {
-        const rightValue = form.getFieldValue([...namePrefix, 'extra', 'right'])
-        form.setFieldValue([...namePrefix, 'value'], [leftValue, rightValue])
+    function handleManualLeftChange(newManualLeft: boolean) {
+        setManualLeft(newManualLeft)
+        form.setFieldValue([...namePrefix, 'extra', 'left'], null)
+        form.setFieldValue([...namePrefix, 'value'], null)
     }
 
-    function handleRightValueChange(rightValue: any) {
-        const leftValue = form.getFieldValue([...namePrefix, 'extra', 'left'])
-        form.setFieldValue([...namePrefix, 'value'], [leftValue, rightValue])
+    function handleManualRightChange(newManualRight: boolean) {
+        setManualRight(newManualRight)
+        form.setFieldValue([...namePrefix, 'extra', 'right'], null)
+        form.setFieldValue([...namePrefix, 'value'], null)
     }
 
     const renderDefaultContent = () => (
@@ -53,11 +64,13 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
                         <TimePicker
                             style={{width: INPUT_WIDTH}}
                             placeholder={t('Value')}
+                            format={momentDisplayTimeFormatString}
                         />
                     ) : (
                         <DatePicker
                             style={{width: INPUT_WIDTH}}
                             placeholder={t('Value')}
+                            format={type === FieldType.date ? momentDisplayDateFormatString : momentDisplayDateTimeFormatString}
                             showTime={type === FieldType.datetime || type === FieldType.timestamp}
                         />
                     )
@@ -73,7 +86,7 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
                     title={t('Edit manually')}
                     checkedChildren={<FunctionOutlined/>}
                     unCheckedChildren={<FunctionOutlined/>}
-                    onChange={setManual}
+                    onChange={handleManualChange}
                 />
             </FormItem>
         </Space>
@@ -88,7 +101,7 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
                 <Select
                     style={{width: 180}}
                     options={(type === FieldType.time ? timeTemporalPeriods : allTemporalPeriods).map(k => ({value: k, label: temporalPeriodTitles[k]}))}
-                    onSelect={handlePeriodSelect}
+                    onSelect={setPeriod}
                 />
             </FormItem>
 
@@ -100,22 +113,20 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
                         rules={[{required: true, message: ''}]}
                     >
                         {isManualLeft ? (
-                            <Input
-                                style={{width: BETWEEN_INPUT_WIDTH}} placeholder={t('Begin')}
-                                onChange={evt => handleLeftValueChange(evt.target.value)}
-                            />
+                            <Input style={{width: BETWEEN_INPUT_WIDTH}} placeholder={t('Begin')}/>
                         ) : (
                             type === FieldType.time ? (
                                 <TimePicker
-                                    style={{width: BETWEEN_INPUT_WIDTH}} placeholder={t('Begin')}
-                                    onChange={handleLeftValueChange}
+                                    style={{width: BETWEEN_INPUT_WIDTH}}
+                                    placeholder={t('Begin')}
+                                    format={momentDisplayTimeFormatString}
                                 />
                             ) : (
                                 <DatePicker
                                     style={{width: BETWEEN_INPUT_WIDTH}}
                                     placeholder={t('Begin')}
+                                    format={type === FieldType.date ? momentDisplayDateFormatString : momentDisplayDateTimeFormatString}
                                     showTime={type === FieldType.datetime || type === FieldType.timestamp}
-                                    onChange={handleLeftValueChange}
                                 />
                             )
                         )}
@@ -130,7 +141,7 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
                             title={t('Edit manually')}
                             checkedChildren={<FunctionOutlined/>}
                             unCheckedChildren={<FunctionOutlined/>}
-                            onChange={setManualLeft}
+                            onChange={handleManualLeftChange}
                         />
                     </FormItem>
 
@@ -140,22 +151,20 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
                         rules={[{required: true, message: ''}]}
                     >
                         {isManualRight ? (
-                            <Input
-                                style={{width: BETWEEN_INPUT_WIDTH}} placeholder={t('End')}
-                                onChange={evt => handleLeftValueChange(evt.target.value)}
-                            />
+                            <Input style={{width: BETWEEN_INPUT_WIDTH}} placeholder={t('End')}/>
                         ) : (
                             type === FieldType.time ? (
                                 <TimePicker
-                                    style={{width: BETWEEN_INPUT_WIDTH}} placeholder={t('End')}
-                                    onChange={handleRightValueChange}
+                                    style={{width: BETWEEN_INPUT_WIDTH}}
+                                    placeholder={t('End')}
+                                    format={momentDisplayTimeFormatString}
                                 />
                             ) : (
                                 <DatePicker
                                     style={{width: BETWEEN_INPUT_WIDTH}}
                                     placeholder={t('End')}
+                                    format={type === FieldType.date ? momentDisplayDateFormatString : momentDisplayDateTimeFormatString}
                                     showTime={type === FieldType.datetime || type === FieldType.timestamp}
-                                    onChange={handleRightValueChange}
                                 />
                             )
                         )}
@@ -171,7 +180,7 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
                             title={t('Edit manually')}
                             checkedChildren={<FunctionOutlined/>}
                             unCheckedChildren={<FunctionOutlined/>}
-                            onChange={setManualRight}
+                            onChange={handleManualRightChange}
                         />
                     </FormItem>
                 </>

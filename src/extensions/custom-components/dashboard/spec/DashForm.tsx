@@ -25,9 +25,11 @@ import {useTranslation} from 'react-i18next'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {
     allTemporalPeriods,
-    generateQueryBlock,
+    fromFormQueryBlock, generateQueryBlock,
+    isTemporal,
     temporalPeriodTitles,
-    timeTemporalPeriods
+    timeTemporalPeriods,
+    toFormQueryBlock
 } from '../../../../util/bi'
 import DatasetService from '../../../../services/dataset'
 import {CheckboxChangeEvent} from 'antd/es/checkbox'
@@ -35,7 +37,6 @@ import dayjs, {Dayjs} from 'dayjs'
 import DashOptFieldWrapper from './DashOptFieldWrapper'
 import DashFilters from '../../../../bi/dash-filters/DashFilters'
 import styles from './DashboardSpec.module.css'
-import {isTemporal} from '../../../../util/bi'
 import {Dash, getDash, getDashIds} from '../../../dashes'
 import biConfig from '../../../../config/bi'
 
@@ -72,6 +73,11 @@ const {Panel} = Collapse
 const dashTypes = getDashIds()
 const datasetService = DatasetService.getInstance()
 
+const prepareDashValues = (dashValues: DashValues, dataset?: Dataset): DashValues => ({
+    ...dashValues,
+    defaultFilters: dataset == null ? generateQueryBlock() : fromFormQueryBlock(dataset, dashValues.defaultFilters)
+})
+
 export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
     const {t} = useTranslation()
     const [datasets, setDatasets] = useState<Dataset[]>([])
@@ -100,6 +106,7 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
             .then(datasets => {
                 setDatasets(datasets)
                 setDataset(datasets.find(d => d.name === dash.dataset))
+                // TODO: Reset default filters
             })
     }, [dash.dataset])
 
@@ -163,7 +170,13 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
     }, [])
 
     return (
-        <Form form={form} size="small" layout="vertical" disabled={!canEdit} onFinish={onFormFinish}>
+        <Form
+            form={form}
+            size="small"
+            layout="vertical"
+            disabled={!canEdit}
+            onFinish={dashValues => onFormFinish(prepareDashValues(dashValues, dataset))}
+        >
             <Row gutter={10}>
                 <Col span={12}>
                     <FormItem
@@ -403,7 +416,7 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                             form={form}
                             namePrefix={['defaultFilters']}
                             dataset={dataset}
-                            initialBlock={dash.defaultFilters ?? generateQueryBlock()}
+                            initialBlock={toFormQueryBlock(dataset, dash.defaultFilters)}
                         />
                     )}
                 </Panel>

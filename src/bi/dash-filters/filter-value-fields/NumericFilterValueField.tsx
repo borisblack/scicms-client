@@ -19,16 +19,6 @@ const NumericFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, t
     const fieldName = namePrefix[namePrefix.length - 1]
     const {t} = useTranslation()
 
-    function handleLeftValueChange(leftValue: number | null) {
-        const rightValue = form.getFieldValue([...namePrefix, 'extra', 'right']) ?? 0
-        form.setFieldValue([...namePrefix, 'value'], [leftValue ?? 0, rightValue])
-    }
-
-    function handleRightValueChange(rightValue: number | null) {
-        const leftValue = form.getFieldValue([...namePrefix, 'extra', 'left']) ?? 0
-        form.setFieldValue([...namePrefix, 'value'], [leftValue, rightValue ?? 0])
-    }
-
     const renderBetweenContent = () => (
         <Space>
             <FormItem
@@ -36,7 +26,7 @@ const NumericFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, t
                 name={[fieldName, 'extra', 'left']}
                 rules={[{required: true, message: ''}]}
             >
-                <InputNumber placeholder={t('Left value')} onChange={handleLeftValueChange}/>
+                <InputNumber placeholder={t('Left value')}/>
             </FormItem>
 
             <FormItem
@@ -44,7 +34,7 @@ const NumericFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, t
                 name={[fieldName, 'extra', 'right']}
                 rules={[{required: true, message: ''}]}
             >
-                <InputNumber placeholder={t('Right value')} onChange={handleRightValueChange}/>
+                <InputNumber placeholder={t('Right value')}/>
             </FormItem>
         </Space>
     )
@@ -55,7 +45,7 @@ const NumericFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, t
             name={[fieldName, 'value']}
             rules={[
                 {required: true, message: ''},
-                regExpRule(/^(\d+(\.\d+)?)(,\s*\d+(\.\d+)?)*$/, ''/*'String must contain only comma-separated values'*/)
+                regExpRule(/^(\d+(\.\d+)?)(\s*,\s*\d+(\.\d+)?)*$/, ''/*'String must contain only comma-separated values'*/)
             ]}
         >
             <Input placeholder={t('Comma separated values')}/>

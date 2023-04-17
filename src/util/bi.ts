@@ -1,9 +1,13 @@
 import {
-    FieldType, IDash,
+    Dataset,
+    DatasetFiltersInput,
+    FieldType,
+    IDash,
+    LogicalOp,
     PositiveLogicalOp,
     QueryBlock,
+    QueryFilter,
     QueryOp,
-    LogicalOp,
     TemporalPeriod,
     TemporalType
 } from '../types'
@@ -14,6 +18,7 @@ import util from 'util'
 import {v4 as uuidv4} from 'uuid'
 import dayjs, {Dayjs} from 'dayjs'
 import {DateTime} from 'luxon'
+import _ from 'lodash'
 
 const {dash: dashConfig, dateTime: dateTimeConfig} = biConfig
 
@@ -295,6 +300,114 @@ export function parseDashColor(single: boolean = false): string | string[] | und
     }
 
     return color
+}
+
+export function toFormQueryBlock(dataset: Dataset, queryBlock?: QueryBlock): QueryBlock {
+    if (queryBlock == null)
+        return generateQueryBlock()
+
+    const formQueryBlock = _.cloneDeep(queryBlock)
+    processQueryFilters(dataset, formQueryBlock.filters, true)
+
+    for (let i = 0; i < formQueryBlock.blocks.length; i++) {
+        formQueryBlock.blocks[i] = toFormQueryBlock(dataset, formQueryBlock.blocks[i])
+    }
+
+    return formQueryBlock
+}
+
+export function fromFormQueryBlock(dataset: Dataset, formQueryBlock?: QueryBlock): QueryBlock {
+    if (formQueryBlock == null)
+        return generateQueryBlock()
+
+    const queryBlock = _.cloneDeep(formQueryBlock)
+    processQueryFilters(dataset, queryBlock.filters, false)
+
+    for (let i = 0; i < queryBlock.blocks.length; i++) {
+        queryBlock.blocks[i] = fromFormQueryBlock(dataset, queryBlock.blocks[i])
+    }
+
+    return queryBlock
+}
+
+function processQueryFilters(dataset: Dataset, queryFilters: QueryFilter[], toForm: boolean) {
+    const columns = dataset.spec?.columns ?? {}
+    for (const filter of queryFilters) {
+        const {columnName, op} = filter
+        if (op === QueryOp.$null || op === QueryOp.$notNull) {
+            filter.value = null
+            continue
+        }
+
+        const type = columns[columnName]?.type
+        if (type == null || !isTemporal(type))
+            continue
+
+        const extra = filter.extra ?? {}
+        if (op === QueryOp.$eq || op === QueryOp.$ne || op === QueryOp.$gt || op === QueryOp.$gte || op === QueryOp.$lt || op === QueryOp.$lte) {
+            if (filter.value != null && !extra.isManual)
+                filter.value = toForm ? dayjs(filter.value) : (filter.value as Dayjs).format()
+
+            continue
+        }
+
+        if (op === QueryOp.$between) {
+            if (extra.left != null && !extra.isManualLeft)
+                extra.left = toForm ? dayjs(extra.left) : (extra.left as Dayjs).format()
+
+            if (extra.right != null && !extra.isManualRight)
+                extra.right = toForm ? dayjs(extra.right) : (extra.right as Dayjs).format()
+        }
+    }
+}
+
+function toDatasetFiltersInput(dataset: Dataset, queryBlock: QueryBlock): DatasetFiltersInput<any> {
+    const datasetFiltersInput: DatasetFiltersInput<any> = {}
+    datasetFiltersInput.$and = []
+    const opFilters = _.groupBy(queryBlock.filters, filter => filter.op)
+    for (const op in opFilters) {
+        const filters = opFilters[op]
+        while (filters.length > 1) {
+            const filter = filters.pop() as QueryFilter
+            datasetFiltersInput.$and.push({[op]: parseFilterValue(dataset, filter)})
+        }
+        datasetFiltersInput[op] = parseFilterValue(dataset, filters[0])
+    }
+
+    for (const nestedBlock of queryBlock.blocks) {
+        if (nestedBlock.logicalOp === LogicalOp.$and) {
+            datasetFiltersInput.$and.push(toDatasetFiltersInput(dataset, nestedBlock))
+        } else if (nestedBlock.logicalOp === LogicalOp.$or) {
+            const orFiltersInput: DatasetFiltersInput<any> = {}
+            orFiltersInput.$or = [toDatasetFiltersInput(dataset, nestedBlock)]
+            datasetFiltersInput.$and.push(orFiltersInput)
+        }
+    }
+
+    return datasetFiltersInput
+}
+
+function parseFilterValue(dataset: Dataset, filter: QueryFilter): any {
+    const {columnName, op, value} = filter
+    const columns = dataset.spec?.columns ?? {}
+    const type = columns[columnName]?.type
+    if (op === QueryOp.$null || op === QueryOp.$notNull) {
+        return true
+    }
+
+    const extra = filter.extra ?? {}
+    if (op === QueryOp.$between)
+        return [extra.left, extra.right]
+
+    if (op === QueryOp.$in || op === QueryOp.$notIn) {
+        const arr = value == null ? [] : (value as string).split(/\s*,\s*/)
+        if (isNumeric(type))
+            return arr.map(a => Number(a))
+
+        return arr
+    }
+
+    return value
 }
 
 export const mapLabels = (data: any[], labelField: string): string[] =>
