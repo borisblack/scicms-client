@@ -106,6 +106,7 @@ const en = {
         'Filename': 'Filename',
         'Full screen': 'Full screen',
         'Gateway error': 'Gateway error',
+        'Granting': 'Granting',
         'Group': 'Group',
         'Group Field': 'Group Field',
         'Group Member': 'Group Member',

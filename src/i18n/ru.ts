@@ -106,6 +106,7 @@ const ru = {
         'Filename': 'Имя файла',
         'Full screen': 'Полноэкранный режим',
         'Gateway error': 'Ошибка шлюза',
+        'Granting': 'Разрешение',
         'Group': 'Группа',
         'Group Field': 'Поле группировки',
         'Group Member': 'Участник группы',
