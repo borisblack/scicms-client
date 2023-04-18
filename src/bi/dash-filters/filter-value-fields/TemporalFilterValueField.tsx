@@ -97,7 +97,7 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
     )
 
     const getCustomFunctionsInfo = () =>
-        getInfo().map(info => `${info.id} - ${t(info.description ?? 'No description')}`).join('\n')
+        getInfo().map(info => `${info.id}() - ${t(info.description ?? 'No description')}`).join('\n')
 
     const renderBetweenContent = () => (
         <Space>
