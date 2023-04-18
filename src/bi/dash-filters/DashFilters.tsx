@@ -3,10 +3,10 @@ import {v4 as uuidv4} from 'uuid'
 import {Dataset, QueryBlock} from '../../types'
 import React from 'react'
 import {useTranslation} from 'react-i18next'
-import {generateQueryBlock} from '../../util/bi'
-import {positiveLogicalOps, logicalOpTitles} from '../../util/bi'
+import {generateQueryBlock, logicalOpTitles, positiveLogicalOps} from '../../util/bi'
 import DashFilter from './DashFilter'
 import styles from './DashFilters.module.css'
+import {DeleteOutlined} from '@ant-design/icons'
 
 interface Props {
     form: FormInstance
@@ -115,11 +115,10 @@ export default function DashFilters({form, namePrefix, dataset, initialBlock, sh
             {onRemove && (
                 <Button
                     style={{position: 'absolute', width: BTN_WIDTH, height: TOOLBAR_HEIGHT, top: 0, left: startBtnLeft + BTN_WIDTH*2 + H_SPACE*2}}
-                    danger
                     title={t('Remove Block')}
                     onClick={onRemove}
                 >
-                    -
+                    <DeleteOutlined/>
                 </Button>
             )}
         </div>

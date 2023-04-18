@@ -5,7 +5,7 @@ import {useTranslation} from 'react-i18next'
 import {queryOpList, queryOpTitles} from '../../util/bi'
 import styles from './DashFilters.module.css'
 import FilterValueFieldWrapper from './FilterValueFieldWrapper'
-import {EyeOutlined} from '@ant-design/icons'
+import {DeleteOutlined, EyeOutlined} from '@ant-design/icons'
 
 interface Props {
     style?: CSSProperties
@@ -81,10 +81,10 @@ export default function DashFilter({style, btnStyle, form, namePrefix, dataset, 
 
                 <Button
                     style={btnStyle}
-                    danger
                     title={t('Remove Filter')}
-                    onClick={onRemove}>
-                    -
+                    onClick={onRemove}
+                >
+                    <DeleteOutlined/>
                 </Button>
             </Space>
         </div>
