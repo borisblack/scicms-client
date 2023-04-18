@@ -453,21 +453,28 @@ function parseManualFilterValue(type: FieldType, value?: string): any {
 function printQueryBlock(dataset: Dataset, queryBlock: QueryBlock): string {
     let buf: string[]  = []
     const logicalOpTitle = logicalOpTitles[queryBlock.logicalOp]
-    for (let i = 0; i < queryBlock.filters.length; i++) {
-        if (i > 0)
+    for (const queryFilter of queryBlock.filters) {
+        if (!queryFilter.show)
+            continue
+
+        if (buf.length > 0)
             buf.push(logicalOpTitle)
 
-        buf.push(printQueryFilter(dataset, queryBlock.filters[i]))
+        buf.push(printQueryFilter(dataset, queryFilter))
     }
 
-    for (let i = 0; i < queryBlock.blocks.length; i++) {
-        if (i > 0)
+    for (const nestedQueryBlock of queryBlock.blocks) {
+        const nestedQueryBlockContent = printQueryBlock(dataset, nestedQueryBlock)
+        if (nestedQueryBlockContent.length === 0)
+            continue
+
+        if (buf.length > 0)
             buf.push(logicalOpTitle)
 
-        buf.push(`(${printQueryBlock(dataset, queryBlock.blocks[i])})`)
+        buf.push(`(${nestedQueryBlockContent})`)
     }
 
-    return buf.join(' ')
+    return buf.length === 0 ? '' : buf.join(' ')
 }
 
 function printQueryFilter(dataset: Dataset, filter: QueryFilter): string {
