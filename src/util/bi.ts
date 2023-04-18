@@ -375,9 +375,9 @@ function toDatasetFiltersInput(dataset: Dataset, queryBlock: QueryBlock): Datase
         const filters = opFilters[op]
         while (filters.length > 1) {
             const filter = filters.pop() as QueryFilter
-            datasetFiltersInput.$and.push({[op]: parseFilterValue(dataset, filter)})
+            datasetFiltersInput.$and.push({[op]: toDatasetFilterInputValue(dataset, filter)})
         }
-        datasetFiltersInput[op] = parseFilterValue(dataset, filters[0])
+        datasetFiltersInput[op] = toDatasetFilterInputValue(dataset, filters[0])
     }
 
     for (const nestedBlock of queryBlock.blocks) {
@@ -393,17 +393,21 @@ function toDatasetFiltersInput(dataset: Dataset, queryBlock: QueryBlock): Datase
     return datasetFiltersInput
 }
 
-function parseFilterValue(dataset: Dataset, filter: QueryFilter): any {
+function toDatasetFilterInputValue(dataset: Dataset, filter: QueryFilter): any {
     const {columnName, op, value} = filter
     const columns = dataset.spec?.columns ?? {}
     const column = columns[columnName]
     if (column == null)
         throw new Error(`Column '${columnName}' not found in dataset '${dataset.name}'`)
 
+    return parseFilterValue(column.type, filter)
+}
+
+function parseFilterValue(type: FieldType, filter: QueryFilter): any {
+    const {op, value} = filter
     if (op === QueryOp.$null || op === QueryOp.$notNull)
         return true
 
-    const {type} = column
     const extra = filter.extra ?? {}
     if (op === QueryOp.$between) {
         if (isTemporal(type)) {
@@ -444,6 +448,48 @@ function parseManualFilterValue(type: FieldType, value?: string): any {
         return null
 
     return evaluate({expression: value})
+}
+
+function printQueryBlock(dataset: Dataset, queryBlock: QueryBlock): string {
+    let buf: string[]  = []
+    const logicalOpTitle = logicalOpTitles[queryBlock.logicalOp]
+    for (let i = 0; i < queryBlock.filters.length; i++) {
+        if (i > 0)
+            buf.push(logicalOpTitle)
+
+        buf.push(printQueryFilter(dataset, queryBlock.filters[i]))
+    }
+
+    for (let i = 0; i < queryBlock.blocks.length; i++) {
+        if (i > 0)
+            buf.push(logicalOpTitle)
+
+        buf.push(`(${printQueryBlock(dataset, queryBlock.blocks[i])})`)
+    }
+
+    return buf.join(' ')
+}
+
+function printQueryFilter(dataset: Dataset, filter: QueryFilter): string {
+    const {columnName, op} = filter
+    const columns = dataset.spec?.columns ?? {}
+    const column = columns[columnName]
+    if (column == null)
+        throw new Error(`Column '${columnName}' not found in dataset '${dataset.name}'`)
+
+    const opTitle = queryOpTitles[op]
+    const columnAlias = column.alias ?? columnName
+    if (op === QueryOp.$null || op === QueryOp.$notNull)
+        return `${columnAlias} ${opTitle}`
+
+    const filterValue = parseFilterValue(column.type, filter)
+    if (op === QueryOp.$between)
+        return `${columnAlias} ${opTitle} ${filterValue[0]} ${i18n.t('and')} ${filterValue[1]}`
+
+    if (op === QueryOp.$in || op === QueryOp.$notIn)
+        return `${columnAlias} ${opTitle} (${(filterValue as any[]).join(', ')})`
+
+    return `${columnAlias} ${opTitle} ${filterValue}`
 }
 
 export const mapLabels = (data: any[], labelField: string): string[] =>
