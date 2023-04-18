@@ -106,7 +106,6 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
             .then(datasets => {
                 setDatasets(datasets)
                 setDataset(datasets.find(d => d.name === dash.dataset))
-                // TODO: Reset default filters
             })
     }, [dash.dataset])
 
@@ -126,7 +125,7 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
     const handleDatasetChange = useCallback((newDataset: string) => {
         resetAggregateFormFields()
         resetSortAndOptValuesFormFields()
-        form.setFieldValue('filters', {})
+        form.setFieldValue('defaultFilters', generateQueryBlock())
         setDataset(datasets.find(d => d.name === newDataset))
     }, [datasets, form, resetAggregateFormFields, resetSortAndOptValuesFormFields])
 
