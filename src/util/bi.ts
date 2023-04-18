@@ -334,29 +334,34 @@ function processQueryFilters(dataset: Dataset, queryFilters: QueryFilter[], toFo
     const columns = dataset.spec?.columns ?? {}
     for (const filter of queryFilters) {
         const {columnName, op} = filter
+        const column = columns[columnName]
+        if (column == null)
+            throw new Error(`Column '${columnName}' not found in dataset '${dataset.name}'`)
+
         if (op === QueryOp.$null || op === QueryOp.$notNull) {
             filter.value = null
             continue
         }
 
-        const type = columns[columnName]?.type
+        const {type} = column
         if (type == null || !isTemporal(type))
             continue
 
+        const temporalType = type as TemporalType
         const extra = filter.extra ?? {}
         if (op === QueryOp.$eq || op === QueryOp.$ne || op === QueryOp.$gt || op === QueryOp.$gte || op === QueryOp.$lt || op === QueryOp.$lte) {
             if (filter.value != null && !extra.isManual)
-                filter.value = toForm ? dayjs(filter.value) : (filter.value as Dayjs).format()
+                filter.value = toForm ? dayjs(filter.value) : formatTemporalIso(filter.value as Dayjs, temporalType)
 
             continue
         }
 
         if (op === QueryOp.$between) {
             if (extra.left != null && !extra.isManualLeft)
-                extra.left = toForm ? dayjs(extra.left) : (extra.left as Dayjs).format()
+                extra.left = toForm ? dayjs(extra.left) : formatTemporalIso(extra.left as Dayjs, temporalType)
 
             if (extra.right != null && !extra.isManualRight)
-                extra.right = toForm ? dayjs(extra.right) : (extra.right as Dayjs).format()
+                extra.right = toForm ? dayjs(extra.right) : formatTemporalIso(extra.right as Dayjs, temporalType)
         }
     }
 }
@@ -390,18 +395,35 @@ function toDatasetFiltersInput(dataset: Dataset, queryBlock: QueryBlock): Datase
 function parseFilterValue(dataset: Dataset, filter: QueryFilter): any {
     const {columnName, op, value} = filter
     const columns = dataset.spec?.columns ?? {}
-    const type = columns[columnName]?.type
-    if (op === QueryOp.$null || op === QueryOp.$notNull) {
-        return true
-    }
+    const column = columns[columnName]
+    if (column == null)
+        throw new Error(`Column '${columnName}' not found in dataset '${dataset.name}'`)
 
+    if (op === QueryOp.$null || op === QueryOp.$notNull)
+        return true
+
+    const {type} = column
     const extra = filter.extra ?? {}
     if (op === QueryOp.$between) {
-        if (!isTemporal(type) || extra.period === TemporalPeriod.ARBITRARY) {
-            return [extra.isManualLeft ? parseManualFilterValue(extra.left) : extra.left, extra.isManualRight ? parseManualFilterValue(extra.right) : extra.right]
+        if (isTemporal(type)) {
+            const period = extra.period ?? TemporalPeriod.ARBITRARY
+            if (period === TemporalPeriod.ARBITRARY) {
+                return [
+                    extra.isManualLeft ? parseManualFilterValue(extra.left) : extra.left,
+                    extra.isManualRight ? parseManualFilterValue(extra.right) : extra.right
+                ]
+            } else {
+                const temporalType = type as TemporalType
+                return [
+                    formatTemporalIso(startTemporalFromPeriod(period, temporalType), temporalType),
+                    formatTemporalIso(dayjs(), temporalType)
+                ]
+            }
         } else {
-            // TODO: Process period
-            return null
+            return [
+                extra.isManualLeft ? parseManualFilterValue(extra.left) : extra.left,
+                extra.isManualRight ? parseManualFilterValue(extra.right) : extra.right
+            ]
         }
     }
 
