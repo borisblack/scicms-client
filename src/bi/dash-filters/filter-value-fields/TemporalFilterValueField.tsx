@@ -7,6 +7,7 @@ import {allTemporalPeriods, isTemporal, temporalPeriodTitles, timeTemporalPeriod
 import {FieldType, QueryOp, TemporalPeriod} from '../../../types'
 import appConfig from '../../../config'
 import styles from '../DashFilters.module.css'
+import {getInfo} from '../../../extensions/functions'
 
 const INPUT_WIDTH = 180
 const BETWEEN_INPUT_WIDTH = 140
@@ -58,7 +59,10 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
                 rules={[{required: true, message: ''}]}
             >
                 {isManual ? (
-                    <Input style={{width: INPUT_WIDTH}} placeholder={t('Value')}/>
+                    <Input
+                        style={{width: INPUT_WIDTH}} placeholder={t('Value')}
+                        title={getCustomFunctionsInfo()}
+                    />
                 ) : (
                     type === FieldType.time ? (
                         <TimePicker
@@ -92,6 +96,9 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
         </Space>
     )
 
+    const getCustomFunctionsInfo = () =>
+        getInfo().map(info => `${info.id} - ${t(info.description ?? 'No description')}`).join('\n')
+
     const renderBetweenContent = () => (
         <Space>
             <FormItem
@@ -113,7 +120,10 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
                         rules={[{required: true, message: ''}]}
                     >
                         {isManualLeft ? (
-                            <Input style={{width: BETWEEN_INPUT_WIDTH}} placeholder={t('Begin')}/>
+                            <Input
+                                style={{width: BETWEEN_INPUT_WIDTH}} placeholder={t('Begin')}
+                                title={getCustomFunctionsInfo()}
+                            />
                         ) : (
                             type === FieldType.time ? (
                                 <TimePicker
@@ -151,7 +161,10 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
                         rules={[{required: true, message: ''}]}
                     >
                         {isManualRight ? (
-                            <Input style={{width: BETWEEN_INPUT_WIDTH}} placeholder={t('End')}/>
+                            <Input
+                                style={{width: BETWEEN_INPUT_WIDTH}} placeholder={t('End')}
+                                title={getCustomFunctionsInfo()}
+                            />
                         ) : (
                             type === FieldType.time ? (
                                 <TimePicker
