@@ -1,22 +1,32 @@
-import {Parser} from 'expr-eval'
+import {Parser} from 'js-expression'
 import functionConfig from '../../config/custom-function'
 
 export interface CustomFunction {
     id: string
-    apply: (...args: any) => any
-    display: (...args: any) => string
+    exec: (...args: any[]) => any
+    description?: string
 }
 
+type CustomFunctionInfo = Omit<CustomFunction, 'exec'>
+
 export interface CustomFunctionContext {
-    expression: string
+    expression: string,
+    values?: {[key: string]: any}
 }
 
 const parser = new Parser()
 const functions: CustomFunction[] = functionConfig.functions
 for (const func of functions) {
-    parser.functions[func.id] = func.apply
-    parser.functions[`${func.id}Display`] = func.display
+    parser.addFunction(func.id, func.exec)
 }
 
-export const evaluate = (context: CustomFunctionContext): any =>
-    parser.evaluate(context.expression)
+export function evaluate(context: CustomFunctionContext): any {
+    const expr = parser.parse(context.expression)
+    return expr.evaluate(context.values)
+}
+
+export const getInfo = (): CustomFunctionInfo[] =>
+    functions.map(f => ({
+        id: f.id,
+        description: f.description
+    }))

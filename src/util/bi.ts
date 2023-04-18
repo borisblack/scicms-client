@@ -19,6 +19,7 @@ import {v4 as uuidv4} from 'uuid'
 import dayjs, {Dayjs} from 'dayjs'
 import {DateTime} from 'luxon'
 import _ from 'lodash'
+import {evaluate} from '../extensions/functions'
 
 const {dash: dashConfig, dateTime: dateTimeConfig} = biConfig
 
@@ -442,8 +443,7 @@ function parseManualFilterValue(type: FieldType, value?: string): any {
     if (value == null)
         return null
 
-    // TODO: Process value
-    return value
+    return evaluate({expression: value})
 }
 
 export const mapLabels = (data: any[], labelField: string): string[] =>
