@@ -107,6 +107,7 @@ const en = {
         'File Size (B)': 'File Size (B)',
         'Filename': 'Filename',
         'Filters': 'Filters',
+        'Format': 'Format',
         'Full screen': 'Full screen',
         'for': 'for',
         'Gateway error': 'Gateway error',

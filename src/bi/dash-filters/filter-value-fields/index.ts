@@ -1,9 +1,9 @@
 import {FormInstance} from 'antd'
-import {FieldType, QueryOp} from '../../../types'
+import {Column, QueryOp} from '../../../types'
 
 export interface FilterValueFieldProps {
     form: FormInstance
     namePrefix: (string|number)[]
-    type: FieldType
+    column: Column
     op: QueryOp
 }

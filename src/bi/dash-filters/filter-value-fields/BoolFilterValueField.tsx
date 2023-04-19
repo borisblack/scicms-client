@@ -8,11 +8,11 @@ import styles from '../DashFilters.module.css'
 
 const {Item: FormItem} = Form
 
-const BoolFilterValueField: FC<FilterValueFieldProps> = ({namePrefix, type, op}) => {
+const BoolFilterValueField: FC<FilterValueFieldProps> = ({namePrefix, column, op}) => {
     if (namePrefix.length === 0)
         throw new Error('Illegal argument')
 
-    if (!isBool(type))
+    if (!isBool(column.type))
         throw new Error('Illegal argument')
 
     const fieldName = namePrefix[namePrefix.length - 1]

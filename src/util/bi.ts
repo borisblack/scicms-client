@@ -1,4 +1,5 @@
 import {
+    Column,
     Dataset,
     DatasetFiltersInput,
     FieldType,
@@ -263,6 +264,9 @@ export const formatTemporalDisplay = (temporal: string | null, temporalType: Tem
         return dt.format((dt.hour() === 0 && dt.minute() === 0) ? dateTimeConfig.dateFormatString : dateTimeConfig.dateTimeFormatString)
 }
 
+export const columnType = (column: Column): FieldType =>
+    (column.type === FieldType.datetime || column.type === FieldType.timestamp) ? (column.format ?? FieldType.datetime) : column.type
+
 export const formatValue = (value: any, type: FieldType) => {
     if (!value)
         return value
@@ -497,7 +501,7 @@ function printQueryFilter(dataset: Dataset, filter: QueryFilter): string {
         if (!isTemporal(column.type))
             return `${columnAlias} ${opTitle} ${filterValue[0]} ${i18n.t('and')} ${filterValue[1]}`
 
-        const temporalType = column.type as TemporalType
+        const temporalType = columnType(column) as TemporalType
         const period = filter.extra?.period ?? TemporalPeriod.ARBITRARY
         if (period === TemporalPeriod.ARBITRARY) {
             const left = formatTemporalDisplay(filterValue[0], temporalType)
@@ -511,7 +515,7 @@ function printQueryFilter(dataset: Dataset, filter: QueryFilter): string {
     if (op === QueryOp.$in || op === QueryOp.$notIn)
         return `${columnAlias} ${opTitle} (${(filterValue as any[]).join(', ')})`
 
-    return `${columnAlias} ${opTitle} ${isTemporal(column.type) ? formatTemporalDisplay(filterValue, column.type as TemporalType) : filterValue}`
+    return `${columnAlias} ${opTitle} ${isTemporal(column.type) ? formatTemporalDisplay(filterValue, columnType(column) as TemporalType) : filterValue}`
 }
 
 export function getCustomFunctionsInfo(): string[] {

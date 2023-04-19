@@ -9,11 +9,11 @@ import {regExpRule} from '../../../util/form'
 
 const {Item: FormItem} = Form
 
-const NumericFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, type, op}) => {
+const NumericFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, column, op}) => {
     if (namePrefix.length === 0)
         throw new Error('Illegal argument')
 
-    if (!isNumeric(type))
+    if (!isNumeric(column.type))
         throw new Error('Illegal argument')
 
     const fieldName = namePrefix[namePrefix.length - 1]

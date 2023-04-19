@@ -107,6 +107,7 @@ const ru = {
         'File Size (B)': 'Размер файла (Б)',
         'Filename': 'Имя файла',
         'Filters': 'Фильтры',
+        'Format': 'Формат',
         'Full screen': 'Полноэкранный режим',
         'for': 'за',
         'Gateway error': 'Ошибка шлюза',

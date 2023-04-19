@@ -3,8 +3,8 @@ import {DatePicker, Form, Input, Select, Space, Switch, TimePicker} from 'antd'
 import {FunctionOutlined} from '@ant-design/icons'
 import {useTranslation} from 'react-i18next'
 import {FilterValueFieldProps} from './index'
-import {allTemporalPeriods, isTemporal, temporalPeriodTitles, timeTemporalPeriods} from '../../../util/bi'
-import {FieldType, QueryOp, TemporalPeriod} from '../../../types'
+import {allTemporalPeriods, columnType, isTemporal, temporalPeriodTitles, timeTemporalPeriods} from '../../../util/bi'
+import {FieldType, QueryOp, TemporalPeriod, TemporalType} from '../../../types'
 import appConfig from '../../../config'
 import styles from '../DashFilters.module.css'
 
@@ -13,14 +13,15 @@ const BETWEEN_INPUT_WIDTH = 140
 const {Item: FormItem} = Form
 const {momentDisplayDateFormatString, momentDisplayTimeFormatString, momentDisplayDateTimeFormatString} = appConfig.dateTime
 
-const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, type, op}) => {
+const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, column, op}) => {
     if (namePrefix.length === 0)
         throw new Error('Illegal argument')
 
-    if (!isTemporal(type))
+    if (!isTemporal(column.type))
         throw new Error('Illegal argument')
 
     const fieldName = namePrefix[namePrefix.length - 1]
+    const temporalType = columnType(column) as TemporalType
     const {t} = useTranslation()
     const [isManual, setManual] = useState(form.getFieldValue([...namePrefix, 'extra', 'isManual']))
     const [period, setPeriod] = useState(TemporalPeriod.ARBITRARY)
@@ -60,7 +61,7 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
                 {isManual ? (
                     <Input style={{width: INPUT_WIDTH}} placeholder={t('Value')}/>
                 ) : (
-                    type === FieldType.time ? (
+                    temporalType === FieldType.time ? (
                         <TimePicker
                             style={{width: INPUT_WIDTH}}
                             placeholder={t('Value')}
@@ -70,8 +71,8 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
                         <DatePicker
                             style={{width: INPUT_WIDTH}}
                             placeholder={t('Value')}
-                            format={type === FieldType.date ? momentDisplayDateFormatString : momentDisplayDateTimeFormatString}
-                            showTime={type === FieldType.datetime || type === FieldType.timestamp}
+                            format={temporalType === FieldType.date ? momentDisplayDateFormatString : momentDisplayDateTimeFormatString}
+                            showTime={temporalType === FieldType.datetime || temporalType === FieldType.timestamp}
                         />
                     )
                 )}
@@ -100,7 +101,7 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
             >
                 <Select
                     style={{width: 180}}
-                    options={(type === FieldType.time ? timeTemporalPeriods : allTemporalPeriods).map(k => ({value: k, label: temporalPeriodTitles[k]}))}
+                    options={(temporalType === FieldType.time ? timeTemporalPeriods : allTemporalPeriods).map(k => ({value: k, label: temporalPeriodTitles[k]}))}
                     onSelect={setPeriod}
                 />
             </FormItem>
@@ -115,7 +116,7 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
                         {isManualLeft ? (
                             <Input style={{width: BETWEEN_INPUT_WIDTH}} placeholder={t('Begin')}/>
                         ) : (
-                            type === FieldType.time ? (
+                            temporalType === FieldType.time ? (
                                 <TimePicker
                                     style={{width: BETWEEN_INPUT_WIDTH}}
                                     placeholder={t('Begin')}
@@ -125,8 +126,8 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
                                 <DatePicker
                                     style={{width: BETWEEN_INPUT_WIDTH}}
                                     placeholder={t('Begin')}
-                                    format={type === FieldType.date ? momentDisplayDateFormatString : momentDisplayDateTimeFormatString}
-                                    showTime={type === FieldType.datetime || type === FieldType.timestamp}
+                                    format={temporalType === FieldType.date ? momentDisplayDateFormatString : momentDisplayDateTimeFormatString}
+                                    showTime={temporalType === FieldType.datetime || temporalType === FieldType.timestamp}
                                 />
                             )
                         )}
@@ -153,7 +154,7 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
                         {isManualRight ? (
                             <Input style={{width: BETWEEN_INPUT_WIDTH}} placeholder={t('End')}/>
                         ) : (
-                            type === FieldType.time ? (
+                            temporalType === FieldType.time ? (
                                 <TimePicker
                                     style={{width: BETWEEN_INPUT_WIDTH}}
                                     placeholder={t('End')}
@@ -163,8 +164,8 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
                                 <DatePicker
                                     style={{width: BETWEEN_INPUT_WIDTH}}
                                     placeholder={t('End')}
-                                    format={type === FieldType.date ? momentDisplayDateFormatString : momentDisplayDateTimeFormatString}
-                                    showTime={type === FieldType.datetime || type === FieldType.timestamp}
+                                    format={temporalType === FieldType.date ? momentDisplayDateFormatString : momentDisplayDateTimeFormatString}
+                                    showTime={temporalType === FieldType.datetime || temporalType === FieldType.timestamp}
                                 />
                             )
                         )}

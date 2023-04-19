@@ -31,7 +31,7 @@ function UnsupportedType() {
 }
 
 export default function FilterValueFieldWrapper(props: FilterValueFieldProps) {
-    const FilterValueFieldComponent = filterValueField(props.type)
+    const FilterValueFieldComponent = filterValueField(props.column.type)
 
     return <FilterValueFieldComponent {...props}/>
 }

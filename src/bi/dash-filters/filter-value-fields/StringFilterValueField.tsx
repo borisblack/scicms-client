@@ -8,11 +8,11 @@ import {QueryOp} from '../../../types'
 
 const {Item: FormItem} = Form
 
-const StringFilterValueField: FC<FilterValueFieldProps> = ({namePrefix, type, op}) => {
+const StringFilterValueField: FC<FilterValueFieldProps> = ({namePrefix, column, op}) => {
     if (namePrefix.length === 0)
         throw new Error('Illegal argument')
 
-    if (!isString(type))
+    if (!isString(column.type))
         throw new Error('Illegal argument')
 
     const fieldName = namePrefix[namePrefix.length - 1]

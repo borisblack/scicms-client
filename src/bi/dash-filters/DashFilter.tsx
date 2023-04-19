@@ -63,8 +63,8 @@ export default function DashFilter({style, btnStyle, form, namePrefix, dataset, 
                     </Select>
                 </FormItem>
 
-                {column?.type && op && (
-                    <FilterValueFieldWrapper form={form} namePrefix={namePrefix} type={column?.type} op={op}/>
+                {column && op && (
+                    <FilterValueFieldWrapper form={form} namePrefix={namePrefix} column={column} op={op}/>
                 )}
 
                 <FormItem

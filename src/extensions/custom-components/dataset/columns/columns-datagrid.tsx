@@ -4,10 +4,17 @@ import appConfig from '../../../../config'
 import {Tag} from 'antd'
 import {Column, FieldType} from '../../../../types'
 import EditableCell from '../../../../components/datagrid/EditableCell'
+import SelectableCell from '../../../../components/datagrid/SelectableCell'
 
 export interface NamedColumn extends Column {
     name: string
 }
+
+const formatOptions = [
+    {label: 'date', value: 'date'},
+    {label: 'time', value: 'time'},
+    {label: 'datetime', value: 'datetime'}
+]
 
 const columnHelper = createColumnHelper<NamedColumn>()
 export const getColumns = (canEdit: boolean, onChange: (value: NamedColumn) => void): ColumnDef<NamedColumn, any>[] => [
@@ -20,6 +27,18 @@ export const getColumns = (canEdit: boolean, onChange: (value: NamedColumn) => v
     columnHelper.accessor('type', {
         header: i18n.t('Type'),
         cell: info => <Tag color="processing">{info.getValue()}</Tag>,
+        size: appConfig.ui.dataGrid.colWidth,
+        enableSorting: true
+    }) as ColumnDef<NamedColumn, FieldType>,
+    columnHelper.accessor('format', {
+        header: i18n.t('Format'),
+        cell: info => {
+            const {type} = info.row.original
+            if (canEdit && (type === FieldType.datetime || type === FieldType.timestamp))
+                return <SelectableCell value={info.getValue()} options={formatOptions} onChange={format => onChange({...info.row.original, format})}/>
+
+            return info.getValue()
+        },
         size: appConfig.ui.dataGrid.colWidth,
         enableSorting: true
     }) as ColumnDef<NamedColumn, FieldType>,
