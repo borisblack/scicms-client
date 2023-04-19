@@ -9,7 +9,8 @@ import {
     InputNumber,
     Row,
     Select,
-    TimePicker
+    Space,
+    TimePicker, Tooltip
 } from 'antd'
 import {
     AggregateType,
@@ -25,7 +26,8 @@ import {useTranslation} from 'react-i18next'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {
     allTemporalPeriods,
-    fromFormQueryBlock, generateQueryBlock,
+    fromFormQueryBlock,
+    generateQueryBlock, getCustomFunctionsInfo,
     isTemporal,
     temporalPeriodTitles,
     timeTemporalPeriods,
@@ -39,6 +41,7 @@ import DashFilters from '../../../../bi/dash-filters/DashFilters'
 import styles from './DashboardSpec.module.css'
 import {Dash, getDash, getDashIds} from '../../../dashes'
 import biConfig from '../../../../config/bi'
+import {QuestionCircleOutlined} from '@ant-design/icons'
 
 interface Props {
     form: FormInstance
@@ -329,7 +332,21 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                     </Row>
                 </Panel>
 
-                <Panel header={t('Default Filters')} key="defaultFilters">
+                <Panel
+                    key="defaultFilters"
+                    header={(
+                        <Space>
+                            {t('Default Filters')}
+                            <Tooltip
+                                placement="right"
+                                overlayInnerStyle={{width: 400}}
+                                title={<>{getCustomFunctionsInfo().map((s, i) => <div key={i}>{s}</div>)}</>}
+                            >
+                                <QuestionCircleOutlined className="blue"/>
+                            </Tooltip>
+                        </Space>
+                    )}
+                >
                     <Row gutter={10}>
                         <Col span={6}>
                             <FormItem

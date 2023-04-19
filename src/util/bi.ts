@@ -5,6 +5,7 @@ import {
     IDash,
     LogicalOp,
     PositiveLogicalOp,
+    PrimitiveFilterInput,
     QueryBlock,
     QueryFilter,
     QueryOp,
@@ -19,7 +20,7 @@ import {v4 as uuidv4} from 'uuid'
 import dayjs, {Dayjs} from 'dayjs'
 import {DateTime} from 'luxon'
 import _ from 'lodash'
-import {evaluate} from '../extensions/functions'
+import {evaluate, getInfo} from '../extensions/functions'
 
 const {dash: dashConfig, dateTime: dateTimeConfig} = biConfig
 
@@ -367,26 +368,32 @@ function processQueryFilters(dataset: Dataset, queryFilters: QueryFilter[], toFo
     }
 }
 
-function toDatasetFiltersInput(dataset: Dataset, queryBlock: QueryBlock): DatasetFiltersInput<any> {
+export function toDatasetFiltersInput(dataset: Dataset, queryBlock: QueryBlock): DatasetFiltersInput<any> {
     const datasetFiltersInput: DatasetFiltersInput<any> = {}
     datasetFiltersInput.$and = []
-    const opFilters = _.groupBy(queryBlock.filters, filter => filter.op)
-    for (const op in opFilters) {
-        const filters = opFilters[op]
-        while (filters.length > 1) {
-            const filter = filters.pop() as QueryFilter
-            datasetFiltersInput.$and.push({[op]: toDatasetFilterInputValue(dataset, filter)})
+    const colFilters = _.groupBy(queryBlock.filters, f => f.columnName)
+    for (const col in colFilters) {
+        const colFiltersList = colFilters[col]
+        const opFilters = _.groupBy(colFiltersList, f => f.op)
+        for (const op in opFilters) {
+            const opFiltersList = opFilters[op]
+            while (opFiltersList.length > 1) {
+                const filter = opFiltersList.pop() as QueryFilter
+                datasetFiltersInput.$and.push({[col]: {[op]: toDatasetFilterInputValue(dataset, filter)}})
+            }
+            const filterInput = (datasetFiltersInput[col] ?? {}) as {[op: string]: any}
+            filterInput[op] = toDatasetFilterInputValue(dataset, opFiltersList[0])
+            datasetFiltersInput[col] = filterInput as PrimitiveFilterInput<any>
         }
-        datasetFiltersInput[op] = toDatasetFilterInputValue(dataset, filters[0])
     }
 
     for (const nestedBlock of queryBlock.blocks) {
-        if (nestedBlock.logicalOp === LogicalOp.$and) {
-            datasetFiltersInput.$and.push(toDatasetFiltersInput(dataset, nestedBlock))
-        } else if (nestedBlock.logicalOp === LogicalOp.$or) {
+        if (nestedBlock.logicalOp === LogicalOp.$or) {
             const orFiltersInput: DatasetFiltersInput<any> = {}
             orFiltersInput.$or = [toDatasetFiltersInput(dataset, nestedBlock)]
             datasetFiltersInput.$and.push(orFiltersInput)
+        } else {
+            datasetFiltersInput.$and.push(toDatasetFiltersInput(dataset, nestedBlock))
         }
     }
 
@@ -410,13 +417,12 @@ function parseFilterValue(type: FieldType, filter: QueryFilter): any {
 
     const extra = filter.extra ?? {}
     if (op === QueryOp.$between) {
+        const left = extra.isManualLeft ? parseManualFilterValue(extra.left) : extra.left
+        const right = extra.isManualRight ? parseManualFilterValue(extra.right) : extra.right
         if (isTemporal(type)) {
             const period = extra.period ?? TemporalPeriod.ARBITRARY
             if (period === TemporalPeriod.ARBITRARY) {
-                return [
-                    extra.isManualLeft ? parseManualFilterValue(extra.left) : extra.left,
-                    extra.isManualRight ? parseManualFilterValue(extra.right) : extra.right
-                ]
+                return [left, right]
             } else {
                 const temporalType = type as TemporalType
                 return [
@@ -425,10 +431,7 @@ function parseFilterValue(type: FieldType, filter: QueryFilter): any {
                 ]
             }
         } else {
-            return [
-                extra.isManualLeft ? parseManualFilterValue(extra.left) : extra.left,
-                extra.isManualRight ? parseManualFilterValue(extra.right) : extra.right
-            ]
+            return [left, right]
         }
     }
 
@@ -443,14 +446,14 @@ function parseFilterValue(type: FieldType, filter: QueryFilter): any {
     return extra.isManual ? parseManualFilterValue(value) : value
 }
 
-function parseManualFilterValue(type: FieldType, value?: string): any {
+function parseManualFilterValue(value?: string): any {
     if (value == null)
         return null
 
     return evaluate({expression: value})
 }
 
-function printQueryBlock(dataset: Dataset, queryBlock: QueryBlock): string | null {
+export function printQueryBlock(dataset: Dataset, queryBlock: QueryBlock): string | null {
     let buf: string[]  = []
     const logicalOpTitle = logicalOpTitles[queryBlock.logicalOp]
     for (const queryFilter of queryBlock.filters) {
@@ -501,7 +504,7 @@ function printQueryFilter(dataset: Dataset, filter: QueryFilter): string {
             const right = formatTemporalDisplay(filterValue[1], temporalType)
             return `${columnAlias} ${opTitle} ${left} ${i18n.t('and')} ${right}`
         } else {
-            return `${columnAlias} ${opTitle} ${temporalPeriodTitles[period]}`
+            return `${columnAlias} ${i18n.t('for')} ${temporalPeriodTitles[period]}`
         }
     }
 
@@ -509,6 +512,20 @@ function printQueryFilter(dataset: Dataset, filter: QueryFilter): string {
         return `${columnAlias} ${opTitle} (${(filterValue as any[]).join(', ')})`
 
     return `${columnAlias} ${opTitle} ${isTemporal(column.type) ? formatTemporalDisplay(filterValue, column.type as TemporalType) : filterValue}`
+}
+
+export function getCustomFunctionsInfo(): string[] {
+    const buf: string[] = []
+    const categoryFunctionsInfo = _.groupBy(getInfo(), info => info.category)
+    for (const category in categoryFunctionsInfo) {
+        buf.push(`${i18n.t(category)}:`)
+        const functionsInfo = categoryFunctionsInfo[category]
+        for (const func of functionsInfo) {
+            buf.push(`${func.id}() - ${i18n.t(func.description ?? 'No description')}`)
+        }
+    }
+
+    return buf
 }
 
 export const mapLabels = (data: any[], labelField: string): string[] =>

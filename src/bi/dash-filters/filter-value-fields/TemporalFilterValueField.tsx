@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import React, {FC, useEffect, useState} from 'react'
 import {DatePicker, Form, Input, Select, Space, Switch, TimePicker} from 'antd'
 import {FunctionOutlined} from '@ant-design/icons'
@@ -8,7 +7,6 @@ import {allTemporalPeriods, isTemporal, temporalPeriodTitles, timeTemporalPeriod
 import {FieldType, QueryOp, TemporalPeriod} from '../../../types'
 import appConfig from '../../../config'
 import styles from '../DashFilters.module.css'
-import {getInfo} from '../../../extensions/functions'
 
 const INPUT_WIDTH = 180
 const BETWEEN_INPUT_WIDTH = 140
@@ -60,10 +58,7 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
                 rules={[{required: true, message: ''}]}
             >
                 {isManual ? (
-                    <Input
-                        style={{width: INPUT_WIDTH}} placeholder={t('Value')}
-                        title={getCustomFunctionsInfo()}
-                    />
+                    <Input style={{width: INPUT_WIDTH}} placeholder={t('Value')}/>
                 ) : (
                     type === FieldType.time ? (
                         <TimePicker
@@ -97,20 +92,6 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
         </Space>
     )
 
-    function getCustomFunctionsInfo() {
-        const buf: string[] = []
-        const categoryFunctionsInfo = _.groupBy(getInfo(), info => info.category)
-        for (const category in categoryFunctionsInfo) {
-            buf.push(`${category}:`)
-            const functionsInfo = categoryFunctionsInfo[category]
-            for (const func of functionsInfo) {
-                buf.push(`${func.id}() - ${t(func.description ?? 'No description')}`)
-            }
-        }
-
-        return buf.join('\n')
-    }
-
     const renderBetweenContent = () => (
         <Space>
             <FormItem
@@ -132,10 +113,7 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
                         rules={[{required: true, message: ''}]}
                     >
                         {isManualLeft ? (
-                            <Input
-                                style={{width: BETWEEN_INPUT_WIDTH}} placeholder={t('Begin')}
-                                title={getCustomFunctionsInfo()}
-                            />
+                            <Input style={{width: BETWEEN_INPUT_WIDTH}} placeholder={t('Begin')}/>
                         ) : (
                             type === FieldType.time ? (
                                 <TimePicker
@@ -173,10 +151,7 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
                         rules={[{required: true, message: ''}]}
                     >
                         {isManualRight ? (
-                            <Input
-                                style={{width: BETWEEN_INPUT_WIDTH}} placeholder={t('End')}
-                                title={getCustomFunctionsInfo()}
-                            />
+                            <Input style={{width: BETWEEN_INPUT_WIDTH}} placeholder={t('End')}/>
                         ) : (
                             type === FieldType.time ? (
                                 <TimePicker

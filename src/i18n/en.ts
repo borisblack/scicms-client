@@ -108,6 +108,7 @@ const en = {
         'Filename': 'Filename',
         'Filters': 'Filters',
         'Full screen': 'Full screen',
+        'for': 'for',
         'Gateway error': 'Gateway error',
         'Granting': 'Granting',
         'Group': 'Group',

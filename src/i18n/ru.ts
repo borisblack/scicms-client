@@ -108,6 +108,7 @@ const ru = {
         'Filename': 'Имя файла',
         'Filters': 'Фильтры',
         'Full screen': 'Полноэкранный режим',
+        'for': 'за',
         'Gateway error': 'Ошибка шлюза',
         'Granting': 'Разрешение',
         'Group': 'Группа',

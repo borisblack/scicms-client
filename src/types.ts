@@ -408,18 +408,9 @@ export type DatasetFiltersInput<T> = {
     $not?: DatasetFiltersInput<T>
 } & {[name: string]: PrimitiveFilterInput<string | number | boolean>}
 
-interface PrimitiveFilterInput<T extends string | number | boolean> extends BoolFilterInput, UnaryFilterInput<T>, BinaryFilterInput<T>, ListFilterInput<T> {
-    $and?: PrimitiveFilterInput<T>[]
-    $or?: PrimitiveFilterInput<T>[]
-    $not?: PrimitiveFilterInput<T>
-}
-
-interface BoolFilterInput {
+export interface PrimitiveFilterInput<T extends string | number | boolean> {
     $null?: boolean
     $notNull?: boolean
-}
-
-interface UnaryFilterInput<T extends string | number | boolean> {
     $eq?: T
     $ne?: T
     $gt?: T
@@ -432,15 +423,12 @@ interface UnaryFilterInput<T extends string | number | boolean> {
     $containsi?: T
     $notContains?: T
     $notContainsi?: T
-}
-
-interface BinaryFilterInput<T extends string | number | boolean> {
     $between?: T[]
-}
-
-interface ListFilterInput<T extends string | number | boolean> {
     $in?: T[]
     $notIn?: T[]
+    $and?: PrimitiveFilterInput<T>[]
+    $or?: PrimitiveFilterInput<T>[]
+    $not?: PrimitiveFilterInput<T>
 }
 
 export type BoolQueryOp = QueryOp.$null | QueryOp.$notNull
