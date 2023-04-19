@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {notification} from 'antd'
+import {Form, Modal, notification, Popover} from 'antd'
 import {PageHeader} from '@ant-design/pro-layout'
 import {useTranslation} from 'react-i18next'
 import 'chartjs-adapter-luxon'
@@ -10,6 +10,7 @@ import {
     FullscreenExitOutlined,
     FullscreenOutlined,
     ReloadOutlined,
+    SettingOutlined,
     SyncOutlined
 } from '@ant-design/icons'
 import LeftPanel from '../components/panel/LeftPanel'
@@ -20,15 +21,11 @@ import LabelToolbar from './LabelToolbar'
 import styles from './DashWrapper.module.css'
 import DatasetService, {DatasetInput} from '../services/dataset'
 import appConfig from '../config'
-import {
-    formatTemporalDisplay,
-    formatTemporalIso,
-    startTemporalFromPeriod,
-    temporalPeriodTitles
-} from '../util/bi'
+import {formatTemporalDisplay, formatTemporalIso, startTemporalFromPeriod, temporalPeriodTitles} from '../util/bi'
 import dayjs from 'dayjs'
 import {Dash, getDash} from '../extensions/dashes'
 import biConfig from '../config/bi'
+import FiltersFom from './FiltersForm'
 
 const datasetService = DatasetService.getInstance()
 
@@ -56,6 +53,8 @@ export default function DashWrapper(props: DashProps) {
     const [endTemporal, setEndTemporal] = useState<string | null>(dash.defaultEndTemporal ?? null)
     const [loading, setLoading] = useState<boolean>(false)
     const [fetchError, setFetchError] = useState<string | null>(null)
+    const [isFiltersModalVisible, setFiltersModalVisible] = useState(false)
+    const [filtersForm] = Form.useForm()
 
     useEffect(() => {
         setPeriod(dash.defaultPeriod ?? TemporalPeriod.ARBITRARY)
@@ -195,19 +194,19 @@ export default function DashWrapper(props: DashProps) {
                 subTitle={renderSubTitle()}
                 extra={[
                     <ReloadOutlined key="refresh" className={styles.toolbarBtn} title={t('Refresh')} onClick={() => fetchDatasetData()}/>,
-                    // <Popover
-                    //     key="settings"
-                    //     content={(
-                    //         <div>
-                    //             <p>Content</p>
-                    //             <p>Content</p>
-                    //         </div>
-                    //     )}
-                    //     placement='bottomRight'
-                    //     trigger='click'
-                    // >
-                    //     <SettingOutlined className={styles.toolbarBtn} title={t('Settings')}/>
-                    // </Popover>,
+                    <Popover
+                        key="settings"
+                        content={(
+                            <>
+                                <a onClick={() => setFiltersModalVisible(true)}>{t('Filters')}</a>
+                                {/*<div>Content</div>*/}
+                            </>
+                        )}
+                        placement='bottomRight'
+                        trigger='click'
+                    >
+                        <SettingOutlined className={styles.toolbarBtn} title={t('Settings')}/>
+                    </Popover>,
                     fullScreen ? (
                         <FullscreenExitOutlined key="exitFullScreen" className={styles.toolbarBtn} title={t('Exit full screen')} onClick={() => handleFullScreenChange(false)}/>
                     ) : (
@@ -258,6 +257,21 @@ export default function DashWrapper(props: DashProps) {
                     }
                 })}
             </div>
+
+            <Modal
+                style={{top: 20}}
+                title={t('Filters')}
+                open={isFiltersModalVisible}
+                destroyOnClose
+                width={1280}
+                onOk={() => filtersForm.submit()}
+                onCancel={() => setFiltersModalVisible(false)}
+            >
+                <FiltersFom
+                    form={filtersForm}
+                    onFormFinish={values => {}}
+                />
+            </Modal>
         </FullScreen>
     )
 }

@@ -125,27 +125,27 @@ export const logicalOpTitles: {[key: string]: string} = {
 }
 
 export const temporalPeriodTitles: {[key: string]: string} = {
-    [TemporalPeriod.ARBITRARY]: i18n.t('Arbitrary'),
-    [TemporalPeriod.LAST_5_MINUTES]: util.format(i18n.t('Last %d minutes'), 5),
-    [TemporalPeriod.LAST_15_MINUTES]: util.format(i18n.t('Last %d minutes'), 15),
-    [TemporalPeriod.LAST_30_MINUTES]: util.format(i18n.t('Last %d minutes'), 30),
-    [TemporalPeriod.LAST_HOUR]: i18n.t('Last hour'),
-    [TemporalPeriod.LAST_3_HOURS]: i18n.t('Last 3 hours'),
-    [TemporalPeriod.LAST_6_HOURS]: util.format(i18n.t('Last %d hours'), 6),
-    [TemporalPeriod.LAST_12_HOURS]: util.format(i18n.t('Last %d hours'), 12),
-    [TemporalPeriod.LAST_DAY]: i18n.t('Last day'),
-    [TemporalPeriod.LAST_3_DAYS]: i18n.t('Last 3 days'),
-    [TemporalPeriod.LAST_WEEK]: i18n.t('Last week'),
-    [TemporalPeriod.LAST_2_WEEKS]: i18n.t('Last 2 weeks'),
-    [TemporalPeriod.LAST_MONTH]: i18n.t('Last month'),
-    [TemporalPeriod.LAST_3_MONTHS]: i18n.t('Last 3 months'),
-    [TemporalPeriod.LAST_6_MONTHS]: util.format(i18n.t('Last %d months'), 6),
-    [TemporalPeriod.LAST_YEAR]: i18n.t('Last year'),
-    [TemporalPeriod.LAST_3_YEARS]: i18n.t('Last 3 years'),
-    [TemporalPeriod.LAST_5_YEARS]: util.format(i18n.t('Last %d years'), 5),
-    [TemporalPeriod.LAST_10_YEARS]: util.format(i18n.t('Last %d years'), 10),
-    [TemporalPeriod.LAST_20_YEARS]: util.format(i18n.t('Last %d years'), 20),
-    [TemporalPeriod.LAST_30_YEARS]: util.format(i18n.t('Last %d years'), 30)
+    [TemporalPeriod.ARBITRARY]: i18n.t('arbitrary'),
+    [TemporalPeriod.LAST_5_MINUTES]: util.format(i18n.t('last %d minutes'), 5),
+    [TemporalPeriod.LAST_15_MINUTES]: util.format(i18n.t('last %d minutes'), 15),
+    [TemporalPeriod.LAST_30_MINUTES]: util.format(i18n.t('last %d minutes'), 30),
+    [TemporalPeriod.LAST_HOUR]: i18n.t('last hour'),
+    [TemporalPeriod.LAST_3_HOURS]: i18n.t('last 3 hours'),
+    [TemporalPeriod.LAST_6_HOURS]: util.format(i18n.t('last %d hours'), 6),
+    [TemporalPeriod.LAST_12_HOURS]: util.format(i18n.t('last %d hours'), 12),
+    [TemporalPeriod.LAST_DAY]: i18n.t('last day'),
+    [TemporalPeriod.LAST_3_DAYS]: i18n.t('last 3 days'),
+    [TemporalPeriod.LAST_WEEK]: i18n.t('last week'),
+    [TemporalPeriod.LAST_2_WEEKS]: i18n.t('last 2 weeks'),
+    [TemporalPeriod.LAST_MONTH]: i18n.t('last month'),
+    [TemporalPeriod.LAST_3_MONTHS]: i18n.t('last 3 months'),
+    [TemporalPeriod.LAST_6_MONTHS]: util.format(i18n.t('last %d months'), 6),
+    [TemporalPeriod.LAST_YEAR]: i18n.t('last year'),
+    [TemporalPeriod.LAST_3_YEARS]: i18n.t('last 3 years'),
+    [TemporalPeriod.LAST_5_YEARS]: util.format(i18n.t('last %d years'), 5),
+    [TemporalPeriod.LAST_10_YEARS]: util.format(i18n.t('last %d years'), 10),
+    [TemporalPeriod.LAST_20_YEARS]: util.format(i18n.t('last %d years'), 20),
+    [TemporalPeriod.LAST_30_YEARS]: util.format(i18n.t('last %d years'), 30)
 }
 
 export const isString = (fieldType: FieldType) => stringTypeSet.has(fieldType)
@@ -394,7 +394,7 @@ function toDatasetFiltersInput(dataset: Dataset, queryBlock: QueryBlock): Datase
 }
 
 function toDatasetFilterInputValue(dataset: Dataset, filter: QueryFilter): any {
-    const {columnName, op, value} = filter
+    const {columnName} = filter
     const columns = dataset.spec?.columns ?? {}
     const column = columns[columnName]
     if (column == null)
@@ -490,13 +490,25 @@ function printQueryFilter(dataset: Dataset, filter: QueryFilter): string {
         return `${columnAlias} ${opTitle}`
 
     const filterValue = parseFilterValue(column.type, filter)
-    if (op === QueryOp.$between)
-        return `${columnAlias} ${opTitle} ${filterValue[0]} ${i18n.t('and')} ${filterValue[1]}`
+    if (op === QueryOp.$between) {
+        if (!isTemporal(column.type))
+            return `${columnAlias} ${opTitle} ${filterValue[0]} ${i18n.t('and')} ${filterValue[1]}`
+
+        const temporalType = column.type as TemporalType
+        const period = filter.extra?.period ?? TemporalPeriod.ARBITRARY
+        if (period === TemporalPeriod.ARBITRARY) {
+            const left = formatTemporalDisplay(filterValue[0], temporalType)
+            const right = formatTemporalDisplay(filterValue[1], temporalType)
+            return `${columnAlias} ${opTitle} ${left} ${i18n.t('and')} ${right}`
+        } else {
+            return `${columnAlias} ${opTitle} ${temporalPeriodTitles[period]}`
+        }
+    }
 
     if (op === QueryOp.$in || op === QueryOp.$notIn)
         return `${columnAlias} ${opTitle} (${(filterValue as any[]).join(', ')})`
 
-    return `${columnAlias} ${opTitle} ${filterValue}`
+    return `${columnAlias} ${opTitle} ${isTemporal(column.type) ? formatTemporalDisplay(filterValue, column.type as TemporalType) : filterValue}`
 }
 
 export const mapLabels = (data: any[], labelField: string): string[] =>

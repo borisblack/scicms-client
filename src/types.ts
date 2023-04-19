@@ -357,7 +357,14 @@ export interface QueryFilter {
     op: BoolQueryOp | UnaryQueryOp | BinaryQueryOp | ListQueryOp
     value?: any
     show?: boolean
-    extra?: any
+    extra?: {
+        period?: TemporalPeriod
+        isManual?: boolean
+        isManualLeft?: boolean
+        isManualRight?: boolean
+        left?: any
+        right?: any
+    }
 }
 
 export interface QueryBlock {

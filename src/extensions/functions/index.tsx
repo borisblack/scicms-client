@@ -3,6 +3,7 @@ import functionConfig from '../../config/custom-function'
 
 export interface CustomFunction {
     id: string
+    category: string
     exec: (...args: any[]) => any
     description?: string
 }
@@ -28,5 +29,6 @@ export function evaluate(context: CustomFunctionContext): any {
 export const getInfo = (): CustomFunctionInfo[] =>
     functions.map(f => ({
         id: f.id,
+        category: f.category,
         description: f.description
     }))

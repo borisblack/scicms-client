@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import React, {FC, useEffect, useState} from 'react'
 import {DatePicker, Form, Input, Select, Space, Switch, TimePicker} from 'antd'
 import {FunctionOutlined} from '@ant-design/icons'
@@ -96,8 +97,19 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
         </Space>
     )
 
-    const getCustomFunctionsInfo = () =>
-        getInfo().map(info => `${info.id}() - ${t(info.description ?? 'No description')}`).join('\n')
+    function getCustomFunctionsInfo() {
+        const buf: string[] = []
+        const categoryFunctionsInfo = _.groupBy(getInfo(), info => info.category)
+        for (const category in categoryFunctionsInfo) {
+            buf.push(`${category}:`)
+            const functionsInfo = categoryFunctionsInfo[category]
+            for (const func of functionsInfo) {
+                buf.push(`${func.id}() - ${t(func.description ?? 'No description')}`)
+            }
+        }
+
+        return buf.join('\n')
+    }
 
     const renderBetweenContent = () => (
         <Space>
