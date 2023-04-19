@@ -459,7 +459,7 @@ function parseManualFilterValue(value?: string): any {
 
 export function printQueryBlock(dataset: Dataset, queryBlock: QueryBlock): string | null {
     let buf: string[]  = []
-    const logicalOpTitle = logicalOpTitles[queryBlock.logicalOp]
+    const logicalOpTitle = logicalOpTitles[queryBlock.logicalOp ?? LogicalOp.$and]
     for (const queryFilter of queryBlock.filters) {
         if (!queryFilter.show)
             continue
@@ -499,14 +499,14 @@ function printQueryFilter(dataset: Dataset, filter: QueryFilter): string {
     const filterValue = parseFilterValue(column.type, filter)
     if (op === QueryOp.$between) {
         if (!isTemporal(column.type))
-            return `${columnAlias} ${opTitle} ${filterValue[0]} ${i18n.t('and')} ${filterValue[1]}`
+            return `${columnAlias} ${opTitle} (${filterValue[0]} ${i18n.t('and')} ${filterValue[1]})`
 
         const temporalType = columnType(column) as TemporalType
         const period = filter.extra?.period ?? TemporalPeriod.ARBITRARY
         if (period === TemporalPeriod.ARBITRARY) {
             const left = formatTemporalDisplay(filterValue[0], temporalType)
             const right = formatTemporalDisplay(filterValue[1], temporalType)
-            return `${columnAlias} ${opTitle} ${left} ${i18n.t('and')} ${right}`
+            return `${columnAlias} ${opTitle} (${left} ${i18n.t('and')} ${right})`
         } else {
             return `${columnAlias} ${i18n.t('for')} ${temporalPeriodTitles[period]}`
         }
