@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {Dropdown, Empty, Form, Modal, notification, Space, Tooltip} from 'antd'
+import {Dropdown, Form, Modal, notification, Space, Tooltip} from 'antd'
 import {PageHeader} from '@ant-design/pro-layout'
 import {useTranslation} from 'react-i18next'
 import 'chartjs-adapter-luxon'
@@ -273,19 +273,17 @@ export default function DashWrapper(props: DashProps) {
                     </>
                 )}
 
-                {filteredData.length === 0 ? (
-                    <Empty/>
-                ) : (
-                    <div style={{margin: fullScreen ? 16 : 0, height: fullScreen ? '90vh' : biConfig.viewRowHeight * dash.h}}>
-                        {dashHandler.render({
+                <div style={{margin: fullScreen ? 16 : 0, height: fullScreen ? '90vh' : biConfig.viewRowHeight * dash.h}}>
+                    {filteredData.length > 0 && (
+                        dashHandler.render({
                             context: {
                                 fullScreen,
                                 data: filteredData,
                                 ...props
                             }
-                        })}
-                    </div>
-                )}
+                        })
+                    )}
+                </div>
             </FullScreen>
 
             <Modal
