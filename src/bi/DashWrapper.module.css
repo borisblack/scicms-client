@@ -7,3 +7,9 @@
     cursor: pointer;
     margin: 8px 0;
 }
+
+.centerChildContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
