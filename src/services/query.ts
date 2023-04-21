@@ -31,30 +31,30 @@ export interface ExtRequestParams extends RequestParams {
 export type ItemFiltersInput<FiltersType extends ItemData> = {
     and?: FiltersType[]
     or?: FiltersType[]
-    not?: FiltersType
+    not?: FiltersType | null
 } & {[name: string]: ItemFiltersInput<FiltersType> | ItemFilterInput<FiltersType, string | boolean | number>}
 
 export type ItemFilterInput<FilterType extends ItemData, ElementType extends string | boolean | number> = {
-    eq?: ElementType
-    ne?: ElementType
-    gt?: ElementType
-    gte?: ElementType
-    lt?: ElementType
-    lte?: ElementType
+    eq?: ElementType | null
+    ne?: ElementType | null
+    gt?: ElementType | null
+    gte?: ElementType | null
+    lt?: ElementType | null
+    lte?: ElementType | null
     between?: ElementType[]
-    startsWith?: ElementType
-    endsWith?: ElementType
-    contains?: ElementType
-    containsi?: ElementType
-    notContains?: ElementType
-    notContainsi?: ElementType
+    startsWith?: ElementType | null
+    endsWith?: ElementType | null
+    contains?: ElementType | null
+    containsi?: ElementType | null
+    notContains?: ElementType | null
+    notContainsi?: ElementType | null
     in?: ElementType[]
     notIn?: ElementType[]
-    null?: boolean
-    notNull?: boolean
+    null?: boolean | null
+    notNull?: boolean | null
     and?: FilterType[]
     or?: FilterType[]
-    not?: FilterType
+    not?: FilterType | null
 }
 
 const SORT_ATTR_PATTERN = /^(\w+)\.?(\w+)?$/

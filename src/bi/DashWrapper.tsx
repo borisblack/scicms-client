@@ -68,7 +68,7 @@ export default function DashWrapper(props: DashProps) {
     const [isFiltersModalVisible, setFiltersModalVisible] = useState(false)
     const [filters, setFilters] = useState(dash.defaultFilters ?? generateQueryBlock())
     const [filtersForm] = Form.useForm()
-    const dashHeight = biConfig.viewRowHeight * dash.h
+    const dashHeight = (dashHandler.height ?? biConfig.viewRowHeight) * dash.h
 
     useEffect(() => {
         setPeriod(dash.defaultPeriod ?? TemporalPeriod.ARBITRARY)

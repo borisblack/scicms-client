@@ -1,4 +1,4 @@
-import {Locale} from 'antd/lib/locale-provider'
+import {Locale} from 'antd/lib/locale'
 import ruRU from 'antd/locale/ru_RU'
 // import {Settings as LuxonSettings} from 'luxon'
 import 'dayjs/locale/ru'

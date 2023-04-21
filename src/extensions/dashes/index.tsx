@@ -8,6 +8,7 @@ export interface Dash {
     options: DashOption[]
     labelFieldName: string
     icon: string
+    height?: number
     render: ({context}: DashRenderProps) => ReactNode
 }
 
