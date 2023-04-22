@@ -34,7 +34,7 @@ const NumberDashOptField: FC<DashOptFieldProps> = ({dashOpt, initialValue}) => {
             initialValue={initialValue == null ? dashOpt.defaultValue : initialValue}
             rules={rules}
         >
-            <InputNumber style={{width: '50%'}} min={min} max={max}/>
+            <InputNumber style={{width: '100%'}} min={min} max={max}/>
         </FormItem>
     )
 }
