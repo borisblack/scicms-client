@@ -1,5 +1,5 @@
 import {CustomComponent} from '../../index'
-import DashboardSpec from './DashboardSpec'
+import DashboardSpec from '../../../../bi/DashboardSpec'
 
 const COMPONENT_ID = 'dashboardSpec'
 

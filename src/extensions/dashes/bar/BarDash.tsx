@@ -1,13 +1,19 @@
 import {Alert} from 'antd'
 import {Bar, BarConfig} from '@ant-design/charts'
-import {isTemporal} from '../../../util/bi'
-import {formatValue, parseDashColor} from '../../../util/bi'
+import {formatValue, isTemporal, parseDashColor} from '../../../util/bi'
 import {DashRenderContext} from '../index'
-import {XYDashOptions} from '../util'
+import {LegendPosition} from '../util'
 import biConfig from '../../../config/bi'
 
-interface BarDashOpts extends XYDashOptions {
+interface BarDashOpts {
+    xField?: string
+    yField?: string
+    seriesField?: string
+    legendPosition?: LegendPosition
+    hideLegend?: boolean
     xAxisLabelAutoRotate?: boolean
+    isStack?: boolean
+    isGroup?: boolean
 }
 
 const {dash: dashConfig, locale} = biConfig
@@ -15,7 +21,16 @@ const axisLabelStyle = dashConfig?.all?.axisLabelStyle
 const legendConfig = dashConfig?.all?.legend
 
 export default function BarDash({dataset, dash, data}: DashRenderContext) {
-    const {xField, yField, seriesField, hideLegend, legendPosition, xAxisLabelAutoRotate} = dash.optValues as BarDashOpts
+    const {
+        xField,
+        yField,
+        seriesField,
+        hideLegend,
+        legendPosition,
+        xAxisLabelAutoRotate,
+        isStack,
+        isGroup
+    } = dash.optValues as BarDashOpts
     if (!xField)
         return <Alert message="xField attribute not specified" type="error"/>
 
@@ -43,6 +58,8 @@ export default function BarDash({dataset, dash, data}: DashRenderContext) {
             }
         },
         autoFit: true,
+        isStack,
+        isGroup,
         xAxis: {
             label: {
                 autoRotate: xAxisLabelAutoRotate,

@@ -1,4 +1,5 @@
 import {Dataset, IDash} from '../types'
+import {FormInstance} from 'antd'
 
 export interface DashProps {
     pageKey: string
@@ -24,4 +25,12 @@ export enum DashOptionType {
     string = 'string',
     number = 'number',
     boolean = 'boolean'
+}
+
+export interface DashOptionsFormProps {
+    dataset: Dataset
+    availableColNames: string[]
+    fieldName: string,
+    form: FormInstance
+    values: {[key: string]: any}
 }

@@ -1,14 +1,19 @@
 import {DashRenderContext} from '../index'
 import {Alert} from 'antd'
 import {Column, ColumnConfig} from '@ant-design/charts'
-import {isTemporal} from '../../../util/bi'
-import {formatValue, parseDashColor} from '../../../util/bi'
-import {XYDashOptions} from '../util'
+import {formatValue, isTemporal, parseDashColor} from '../../../util/bi'
+import {LegendPosition} from '../util'
 import biConfig from '../../../config/bi'
 
-interface ColumnDashOptions extends XYDashOptions {
+interface ColumnDashOptions {
+    xField?: string
+    yField?: string
+    seriesField?: string
+    legendPosition?: LegendPosition
+    hideLegend?: boolean
     xAxisLabelAutoRotate?: boolean
     isStack?: boolean
+    isGroup?: boolean
 }
 
 const {dash: dashConfig, locale} = biConfig
@@ -23,7 +28,8 @@ export default function ColumnDash({dataset, dash, data}: DashRenderContext) {
         hideLegend,
         legendPosition,
         xAxisLabelAutoRotate,
-        isStack
+        isStack,
+        isGroup
     } = dash.optValues as ColumnDashOptions
 
     if (!xField)
@@ -54,6 +60,7 @@ export default function ColumnDash({dataset, dash, data}: DashRenderContext) {
         },
         autoFit: true,
         isStack,
+        isGroup,
         xAxis: {
             label: {
                 autoRotate: xAxisLabelAutoRotate,

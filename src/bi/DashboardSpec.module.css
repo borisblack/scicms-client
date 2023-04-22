@@ -1,0 +1,43 @@
+.layout {
+    background-color: #eee;
+    margin-top: 12px;
+}
+
+.layout .dashWrapper {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    justify-items: center;
+    flex-direction: row;
+    user-select: none;
+}
+
+.layout .dashWrapper:hover {
+    background-color: #fefbd7;
+}
+
+.layout .dashWrapper.activeDash {
+    background-color: #fef7af;
+}
+
+.layout .dashWrapper.activeDash:hover {
+    background-color: #fef386;
+}
+
+.dashModalFooter {
+    width: 100%;
+    text-align: right;
+}
+
+.dashItemField {
+    border-bottom: 1px solid #eee;
+    margin-bottom: 16px;
+}
+
+.formItem {
+    margin-bottom: 8px;
+}

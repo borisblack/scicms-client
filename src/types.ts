@@ -339,7 +339,7 @@ export interface IDash {
     groupField?: string
     sortField?: string
     sortDirection?: string
-    optValues: any
+    optValues: {[key: string]: any}
     defaultFilters: QueryBlock
     temporalField?: string
     defaultPeriod: TemporalPeriod

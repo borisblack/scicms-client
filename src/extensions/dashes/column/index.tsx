@@ -1,17 +1,12 @@
 import {Dash} from '../index'
 import ColumnDash from './ColumnDash'
-import {DashOptionType} from '../../../bi'
-import {xyDashOptions} from '../util'
+import ColumnDashOptionsForm from './ColumnDashOptionsForm'
 
 const DASH_ID = 'column'
 
 export const column: Dash = {
     id: DASH_ID,
-    options: [
-        ...xyDashOptions,
-        {name: 'xAxisLabelAutoRotate', type: DashOptionType.boolean, label: 'Auto rotate x-axis label'},
-        {name: 'isStack', type: DashOptionType.boolean, label: 'Stack'},
-    ],
+    renderOptionsForm: (props) => <ColumnDashOptionsForm {...props}/>,
     labelFieldName: 'xField',
     icon: 'BarChartOutlined',
     render: ({context}) => <ColumnDash {...context}/>
