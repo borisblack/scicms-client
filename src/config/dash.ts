@@ -11,6 +11,7 @@ import {polarArea} from '../extensions/dashes/polar-area'
 import {radar} from '../extensions/dashes/radar'
 import {scatter} from '../extensions/dashes/scatter'
 import {statistic} from '../extensions/dashes/statistic'
+import {report} from '../extensions/dashes/report'
 
 interface DashConfig {
     dashes: Dash[]
@@ -29,6 +30,7 @@ const dashConfig: DashConfig = {
         pie,
         polarArea,
         radar,
+        report,
         scatter,
         statistic
     ]

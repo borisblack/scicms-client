@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 
 import {CustomComponentRenderContext} from '../../index'
@@ -6,8 +6,8 @@ import {DATASET_ITEM_NAME} from '../../../../config/constants'
 import DataGrid, {DataWithPagination, RequestParams} from '../../../../components/datagrid/DataGrid'
 import appConfig from '../../../../config'
 import {getInitialData, processLocal} from '../../../../util/datagrid'
-import {Column, DatasetSpec} from '../../../../types'
-import {getColumns, NamedColumn} from './columns-datagrid'
+import {Column, DatasetSpec, NamedColumn} from '../../../../types'
+import {getColumns} from './columns-datagrid'
 import PermissionService from '../../../../services/permission'
 
 const permissionService = PermissionService.getInstance()

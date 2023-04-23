@@ -88,6 +88,7 @@ const ru = {
         'Description': 'Описание',
         'Display Name': 'Отображаемое имя',
         'Display Plural Name': 'Отображаемое имя (мн. ч.)',
+        'Displayed columns': 'Отображаемые столбцы',
         'Edit': 'Изменить',
         'Edit manually': 'Редактировать вручную',
         'Enabled': 'Включен',

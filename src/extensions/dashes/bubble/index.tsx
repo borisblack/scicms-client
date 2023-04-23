@@ -7,7 +7,6 @@ const DASH_ID = 'bubble'
 export const bubble: Dash = {
     id: DASH_ID,
     options: [...bubbleDashOptions],
-    labelFieldName: 'xField',
     icon: 'DotChartOutlined',
     render: ({context}) => <BubbleDash {...context}/>
 }

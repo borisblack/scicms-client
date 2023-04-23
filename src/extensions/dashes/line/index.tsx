@@ -11,7 +11,6 @@ export const line: Dash = {
         ...xyDashOptions,
         {name: 'xAxisLabelAutoRotate', type: DashOptionType.boolean, label: 'Auto rotate x-axis label'}
     ],
-    labelFieldName: 'xField',
     icon: 'LineChartOutlined',
     render: ({context}) => <LineDash {...context}/>
 }

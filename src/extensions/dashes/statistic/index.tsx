@@ -7,7 +7,6 @@ const DASH_ID = 'statistic'
 export const statistic: Dash = {
     id: DASH_ID,
     options: [{name: 'statisticField', type: DashOptionType.string, label: 'Statistic field', required: true, fromDataset: true}],
-    labelFieldName: 'statisticField',
     icon: 'BarChartOutlined',
     height: 100,
     render: ({context}) => <StatisticDash {...context}/>

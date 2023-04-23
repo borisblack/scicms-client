@@ -2,13 +2,9 @@ import {ColumnDef, createColumnHelper} from '@tanstack/react-table'
 import i18n from '../../../../i18n'
 import appConfig from '../../../../config'
 import {Tag} from 'antd'
-import {Column, FieldType} from '../../../../types'
+import {FieldType, NamedColumn} from '../../../../types'
 import EditableCell from '../../../../components/datagrid/EditableCell'
 import SelectableCell from '../../../../components/datagrid/SelectableCell'
-
-export interface NamedColumn extends Column {
-    name: string
-}
 
 const formatOptions = [
     {label: 'date', value: 'date'},

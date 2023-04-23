@@ -531,10 +531,3 @@ export function getCustomFunctionsInfo(): string[] {
 
     return buf
 }
-
-export const mapLabels = (data: any[], labelField: string): string[] =>
-    data.map(it => it[labelField]?.toString()?.trim())
-
-export const map3dMapMetrics = (dash: IDash, data: any[]): {longitude: number, latitude: number, value: any}[] => {
-    return []
-}

@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {Dropdown, Empty, Form, Modal, notification, Space, Spin, Tooltip} from 'antd'
 import {PageHeader} from '@ant-design/pro-layout'
 import {useTranslation} from 'react-i18next'
@@ -15,11 +15,9 @@ import {
     SettingOutlined,
     SyncOutlined
 } from '@ant-design/icons'
-import LeftPanel from '../components/panel/LeftPanel'
 import TopPanel from '../components/panel/TopPanel'
 import TemporalToolbar from './TemporalToolbar'
 import FullScreen from '../components/fullscreen/FullScreen'
-import LabelToolbar from './LabelToolbar'
 import styles from './DashWrapper.module.css'
 import DatasetService, {DatasetInput} from '../services/dataset'
 import appConfig from '../config'
@@ -52,13 +50,6 @@ export default function DashWrapper(props: DashProps) {
         () => dash.temporalField ? dataset.spec.columns[dash.temporalField]?.type as TemporalType | undefined : undefined,
         [dash.temporalField, dataset.spec.columns])
     const [datasetData, setDatasetData] = useState<any[]>([])
-    const [checkedLabelSet, setCheckedLabelSet] = useState<Set<string> | null>(null)
-    const isCheckedMetricSetTouched = useRef<boolean>(false)
-    const filteredData = useMemo((): any[] => {
-        const label = dash.optValues[dashHandler.labelFieldName]
-        return datasetData.filter(it => checkedLabelSet == null || label == null || checkedLabelSet.has(it[label]))
-    }, [checkedLabelSet, dash.optValues, dashHandler.labelFieldName, datasetData])
-
     const [fullScreen, setFullScreen] = useState<boolean>(false)
     const [period, setPeriod] = useState<TemporalPeriod>(dash.defaultPeriod ?? TemporalPeriod.ARBITRARY)
     const [startTemporal, setStartTemporal] = useState<string | null>(dash.defaultStartTemporal ?? null)
@@ -156,31 +147,12 @@ export default function DashWrapper(props: DashProps) {
         if (fetchedData == null) {
             return
         }
-
-        // Update checked labels
-        const labelName = dash.optValues[dashHandler.labelFieldName]
-        if (labelName) {
-            const fetchedLabels = fetchedData.map(it => it[labelName])
-            const fetchedLabelSet = new Set(fetchedLabels)
-            if (checkedLabelSet == null || !isCheckedMetricSetTouched.current) {
-                setCheckedLabelSet(fetchedLabelSet)
-            } else {
-                const newCheckedLabels = Array.from(checkedLabelSet).filter(it => fetchedLabelSet.has(it))
-                setCheckedLabelSet(new Set(newCheckedLabels))
-            }
-        }
-
     }
 
     const handleFullScreenChange = useCallback((fullScreen: boolean) => {
         setFullScreen(fullScreen)
         onFullScreenComponentStateChange(fullScreen)
     }, [onFullScreenComponentStateChange])
-
-    const handleCheckedLabelSetChange = useCallback((checkedLabelSet: Set<string>) => {
-        isCheckedMetricSetTouched.current = true
-        setCheckedLabelSet(checkedLabelSet)
-    }, [])
 
     function renderSubTitle(): string | null {
         let temporalSubTitle: string | null = null
@@ -258,24 +230,11 @@ export default function DashWrapper(props: DashProps) {
                                 </div>
                             </TopPanel>
                         )}
-
-                        <LeftPanel title={t('Labels')} width={250}>
-                            <div style={{padding: 8}}>
-                                <LabelToolbar
-                                    dataset={dataset}
-                                    dash={dash}
-                                    data={datasetData}
-                                    labelFieldName={dashHandler.labelFieldName}
-                                    checkedLabelSet={checkedLabelSet}
-                                    onChange={handleCheckedLabelSetChange}
-                                />
-                            </div>
-                        </LeftPanel>
                     </>
                 )}
 
                 <div style={{margin: fullScreen ? 16 : 0, height: fullScreen ? '90vh' : dashHeight}}>
-                    {filteredData.length === 0 ? (
+                    {datasetData.length === 0 ? (
                         <Spin spinning={loading}>
                             <div className={styles.centerChildContainer} style={{height: fullScreen ? '50vh' : dashHeight}}>
                                 <Empty/>
@@ -284,8 +243,9 @@ export default function DashWrapper(props: DashProps) {
                     ) : (
                         dashHandler.render({
                             context: {
+                                height: dashHeight,
                                 fullScreen,
-                                data: filteredData,
+                                data: datasetData,
                                 ...props
                             }
                         })

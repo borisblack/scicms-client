@@ -7,7 +7,6 @@ const DASH_ID = 'column'
 export const column: Dash = {
     id: DASH_ID,
     renderOptionsForm: (props) => <ColumnDashOptionsForm {...props}/>,
-    labelFieldName: 'xField',
     icon: 'BarChartOutlined',
     render: ({context}) => <ColumnDash {...context}/>
 }

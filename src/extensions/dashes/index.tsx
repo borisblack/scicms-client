@@ -7,7 +7,6 @@ export interface Dash {
     id: string
     options?: DashOption[]
     renderOptionsForm?: (props: DashOptionsFormProps) => ReactNode
-    labelFieldName: string
     icon: string
     height?: number
     render: (props: DashRenderProps) => ReactNode
@@ -18,6 +17,7 @@ export interface DashRenderProps {
 }
 
 export interface DashRenderContext extends DashProps {
+    height: number
     fullScreen: boolean
     data: any[]
 }

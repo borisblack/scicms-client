@@ -88,6 +88,7 @@ const en = {
         'Description': 'Description',
         'Display Name': 'Display Name',
         'Display Plural Name': 'Display Plural Name',
+        'Displayed columns': 'Displayed columns',
         'Edit': 'Edit',
         'Edit manually': 'Edit manually',
         'Enabled': 'Enabled',

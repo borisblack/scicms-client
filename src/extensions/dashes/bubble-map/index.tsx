@@ -7,7 +7,6 @@ const DASH_ID = 'bubbleMap'
 export const bubbleMap: Dash = {
     id: DASH_ID,
     options: [...bubbleMapDashOptions],
-    labelFieldName: 'locationField',
     icon: 'DotChartOutlined',
     render: ({context}) => <BubbleMapDash {...context}/>
 }

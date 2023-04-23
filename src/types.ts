@@ -314,6 +314,10 @@ export interface Column {
     alias?: string
 }
 
+export interface NamedColumn extends Column {
+    name: string
+}
+
 export interface Dashboard extends DefaultItemTemplate {
     name: string
     spec: IDashboardSpec
