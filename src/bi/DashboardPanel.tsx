@@ -24,7 +24,6 @@ export default function DashboardPanel({me, pageKey, spec}: Props) {
     const {dashes} = spec
     const {t} = useTranslation()
     const [datasets, setDatasets] = useState<{[name: string]: Dataset} | null>(null)
-    const [isFullScreenComponentExist, setFullScreenComponentExist] = useState<boolean>(false)
     const rows = useMemo(() => _.groupBy(dashes, d => d.y), [dashes])
 
     useEffect(() => {
@@ -50,11 +49,9 @@ export default function DashboardPanel({me, pageKey, spec}: Props) {
                 pageKey={pageKey}
                 dataset={dataset}
                 dash={dash}
-                isFullScreenComponentExist={isFullScreenComponentExist}
-                onFullScreenComponentStateChange={setFullScreenComponentExist}
             />
         )
-    }, [datasets, isFullScreenComponentExist, pageKey])
+    }, [datasets, pageKey])
 
     const rowKeys = Object.keys(rows).sort(intCompareFn)
     return (

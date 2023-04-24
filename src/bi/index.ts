@@ -5,8 +5,6 @@ export interface DashProps {
     pageKey: string
     dataset: Dataset
     dash: IDash
-    isFullScreenComponentExist: boolean
-    onFullScreenComponentStateChange: (fullScreen: boolean) => void
 }
 
 export interface DashOption {

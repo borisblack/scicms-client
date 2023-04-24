@@ -2,3 +2,9 @@
     background-color: #fff;
     overflow: auto;
 }
+
+.fullScreenWrapperActive {}
+
+body:has(.fullScreenWrapperActive) {
+    overflow-y: hidden
+}

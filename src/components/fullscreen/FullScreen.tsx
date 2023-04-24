@@ -10,12 +10,14 @@ interface Props {
 
 const defaultFullScreenStyle: CSSProperties = {
     position: 'fixed',
-    left: 0,
     top: 0,
-    width: '100%',
-    height: '100%',
-    zIndex: 2,
-    overflow: 'hidden'
+    bottom: 0,
+    left: 0,
+    zIndex: 10,
+    overflow: 'hidden',
+    insetInlineStart: 0,
+    insetInlineEnd: 0,
+    outline: 0
 }
 
 const defaultNormalStyle: CSSProperties = {
@@ -30,7 +32,7 @@ export default function FullScreen({active, fullScreenStyle, normalStyle, childr
     )
 
     return (
-        <div className={styles.fullScreenWrapper} style={wrapperStyle}>
+        <div className={`${styles.fullScreenWrapper} ${active ? styles.fullScreenWrapperActive : ''}`} style={wrapperStyle}>
             {children}
         </div>
     )

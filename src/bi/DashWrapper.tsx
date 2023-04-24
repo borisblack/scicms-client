@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import React, {useEffect, useMemo, useState} from 'react'
 import {Dropdown, Empty, Form, Modal, notification, Space, Spin, Tooltip} from 'antd'
 import {PageHeader} from '@ant-design/pro-layout'
 import {useTranslation} from 'react-i18next'
@@ -40,7 +40,7 @@ import FiltersFom, {FiltersFormValues} from './FiltersForm'
 const datasetService = DatasetService.getInstance()
 
 export default function DashWrapper(props: DashProps) {
-    const {dataset, dash, isFullScreenComponentExist, onFullScreenComponentStateChange} = props
+    const {dataset, dash} = props
     const dashHandler: Dash | undefined = useMemo(() => getDash(dash.type), [dash.type])
     if (dashHandler == null)
         throw new Error('Illegal argument')
@@ -149,10 +149,9 @@ export default function DashWrapper(props: DashProps) {
         }
     }
 
-    const handleFullScreenChange = useCallback((fullScreen: boolean) => {
+    const handleFullScreenChange = (fullScreen: boolean) => {
         setFullScreen(fullScreen)
-        onFullScreenComponentStateChange(fullScreen)
-    }, [onFullScreenComponentStateChange])
+    }
 
     function renderSubTitle(): string | null {
         let temporalSubTitle: string | null = null
@@ -189,7 +188,7 @@ export default function DashWrapper(props: DashProps) {
 
     return (
         <>
-            <FullScreen active={fullScreen} normalStyle={{display: isFullScreenComponentExist ? 'none' : 'block'}}>
+            <FullScreen active={fullScreen}>
                 <PageHeader
                     className={styles.pageHeader}
                     title={(

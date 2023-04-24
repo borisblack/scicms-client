@@ -3,7 +3,6 @@ import {
     Dataset,
     DatasetFiltersInput,
     FieldType,
-    IDash,
     LogicalOp,
     PositiveLogicalOp,
     PrimitiveFilterInput,
