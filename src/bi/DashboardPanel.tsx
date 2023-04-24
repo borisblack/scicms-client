@@ -1,7 +1,6 @@
 import _ from 'lodash'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {Alert, Col, Row} from 'antd'
-import {useTranslation} from 'react-i18next'
 import {Dataset, IDash, IDashboardSpec, UserInfo} from '../types'
 import {ANTD_GRID_COLS} from '../config/constants'
 import DashWrapper from './DashWrapper'
@@ -22,7 +21,6 @@ const datasetService = DatasetService.getInstance()
 
 export default function DashboardPanel({me, pageKey, spec}: Props) {
     const {dashes} = spec
-    const {t} = useTranslation()
     const [datasets, setDatasets] = useState<{[name: string]: Dataset} | null>(null)
     const rows = useMemo(() => _.groupBy(dashes, d => d.y), [dashes])
 

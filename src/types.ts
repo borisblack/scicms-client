@@ -1,7 +1,8 @@
 export interface UserInfo {
     id: string
     username: string,
-    roles: string[]
+    roles: string[],
+    sessionData: {[key: string]: any} | null
 }
 
 export interface DefaultItemTemplate {

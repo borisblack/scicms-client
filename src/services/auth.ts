@@ -15,6 +15,7 @@ const ME_QUERY = gql`
             id
             username
             roles
+            sessionData
         }
     }
 `
