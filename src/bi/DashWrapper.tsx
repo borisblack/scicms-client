@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import React, {useEffect, useMemo, useState} from 'react'
 import {Dropdown, Empty, Form, Modal, notification, Space, Spin, Tooltip} from 'antd'
 import {PageHeader} from '@ant-design/pro-layout'
@@ -28,22 +29,27 @@ import {
 import {Dash, getDash} from '../extensions/dashes'
 import biConfig from '../config/bi'
 import FiltersFom, {FiltersFormValues} from './FiltersForm'
+import {useAppDispatch, useAppSelector} from '../util/hooks'
+import {selectMe, updateSessionData} from '../features/auth/authSlice'
 
 const datasetService = DatasetService.getInstance()
 
 export default function DashWrapper(props: DashProps) {
-    const {dataset, dash} = props
+    const {dataset, dashboard, dash} = props
     const dashHandler: Dash | undefined = useMemo(() => getDash(dash.type), [dash.type])
     if (dashHandler == null)
         throw new Error('Illegal argument')
 
     const {t} = useTranslation()
+    const me = useAppSelector(selectMe)
+    const dispatch = useAppDispatch()
     const [datasetData, setDatasetData] = useState<any[]>([])
     const [fullScreen, setFullScreen] = useState<boolean>(false)
     const [loading, setLoading] = useState<boolean>(false)
     const [fetchError, setFetchError] = useState<string | null>(null)
     const [isFiltersModalVisible, setFiltersModalVisible] = useState(false)
-    const [filters, setFilters] = useState(dash.defaultFilters ?? generateQueryBlock())
+    const sessionFilters = (((((me?.sessionData ?? {}).dashboards ?? {})[dashboard.name] ?? {}).dashes ?? {})[dash.name] ?? {}).filters
+    const [filters, setFilters] = useState(sessionFilters ?? dash.defaultFilters ?? generateQueryBlock())
     const [filtersForm] = Form.useForm()
     const dashHeight = (dashHandler.height ?? biConfig.viewRowHeight) * dash.h
 
@@ -112,8 +118,19 @@ export default function DashWrapper(props: DashProps) {
         onClick: () => setFiltersModalVisible(true)
     }]
 
-    function handleFiltersFormFinish(values: FiltersFormValues) {
-        setFilters(fromFormQueryBlock(dataset, values.filters))
+    async function handleFiltersFormFinish(values: FiltersFormValues) {
+        const newFilters = fromFormQueryBlock(dataset, values.filters)
+
+        // Set session data
+        const sessionData = me?.sessionData ? _.cloneDeep(me.sessionData) : {}
+        sessionData.dashboards = sessionData.dashboards ?? {}
+        sessionData.dashboards[dashboard.name] = sessionData.dashboards[dashboard.name] ?? {}
+        sessionData.dashboards[dashboard.name].dashes = sessionData.dashboards[dashboard.name].dashes ?? {}
+        sessionData.dashboards[dashboard.name].dashes[dash.name] = sessionData.dashboards[dashboard.name].dashes[dash.name] ?? {}
+        sessionData.dashboards[dashboard.name].dashes[dash.name].filters = newFilters
+        dispatch(updateSessionData(sessionData))
+
+        setFilters(newFilters)
         setFiltersModalVisible(false)
     }
 

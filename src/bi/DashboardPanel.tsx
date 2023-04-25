@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {Alert, Col, Row} from 'antd'
-import {Dataset, IDash, IDashboardSpec, UserInfo} from '../types'
+import {Dashboard, Dataset, IDash, UserInfo} from '../types'
 import {ANTD_GRID_COLS} from '../config/constants'
 import DashWrapper from './DashWrapper'
 import DatasetService from '../services/dataset'
@@ -10,7 +10,7 @@ import biConfig from '../config/bi'
 interface Props {
     me: UserInfo
     pageKey: string
-    spec: IDashboardSpec
+    dashboard: Dashboard
 }
 
 const K = ANTD_GRID_COLS / biConfig.cols
@@ -19,8 +19,8 @@ const intCompareFn = (a: string, b: string) => parseInt(a) - parseInt(b)
 const dashColCompareFn = (a: IDash, b: IDash) => a.x - b.x
 const datasetService = DatasetService.getInstance()
 
-export default function DashboardPanel({me, pageKey, spec}: Props) {
-    const {dashes} = spec
+export default function DashboardPanel({me, pageKey, dashboard}: Props) {
+    const {dashes} = dashboard.spec
     const [datasets, setDatasets] = useState<{[name: string]: Dataset} | null>(null)
     const rows = useMemo(() => _.groupBy(dashes, d => d.y), [dashes])
 
@@ -28,7 +28,7 @@ export default function DashboardPanel({me, pageKey, spec}: Props) {
         datasetService.findAll().then(datasetList => {
             setDatasets(_.mapKeys(datasetList, ds => ds.name))
         })
-    }, [spec])
+    }, [dashboard])
 
     const renderDash = useCallback((dash: IDash) => {
         if (datasets == null)
@@ -46,6 +46,7 @@ export default function DashboardPanel({me, pageKey, spec}: Props) {
             <DashWrapper
                 pageKey={pageKey}
                 dataset={dataset}
+                dashboard={dashboard}
                 dash={dash}
             />
         )

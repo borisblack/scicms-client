@@ -105,7 +105,7 @@ function Bi() {
             style: {background: '#fff'},
             children: (
                 <div className="Bi-page-content">
-                    <DashboardPanel me={me} pageKey={key} spec={dashboard.spec}/>
+                    <DashboardPanel me={me} pageKey={key} dashboard={dashboard}/>
                 </div>
             )
         }

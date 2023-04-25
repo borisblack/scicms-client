@@ -1,11 +1,13 @@
 import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit'
-import {message} from 'antd'
+import {notification} from 'antd'
 
 import {RootState} from '../../store'
 import {getExpireAt, getJwt, removeExpireAt, removeJwt, storeExpireAt, storeJwt} from '../../services'
 import {DateTime} from 'luxon'
 import AuthService, {JwtTokenResponse} from '../../services/auth'
 import {UserInfo} from '../../types'
+import i18n from '../../i18n'
+import appConfig from '../../config'
 
 export interface AuthState {
     loading: boolean
@@ -49,6 +51,11 @@ const logout = createAsyncThunk(
     () => authService.logout()
 )
 
+const updateSessionData = createAsyncThunk(
+    'auth/updateSessionData',
+    authService.updateSessionData
+)
+
 const authSlice = createSlice({
     name: 'auth',
     initialState,
@@ -70,7 +77,12 @@ const authSlice = createSlice({
             })
             .addCase(login.rejected, (state, action) => {
                 state.loading = false
-                message.error(action.error.message)
+                notification.error({
+                    message: i18n.t('Login error') as string,
+                    description: action.error.message,
+                    duration: appConfig.ui.notificationDuration,
+                    placement: appConfig.ui.notificationPlacement
+                })
             })
             .addCase(fetchMeIfNeeded.pending, state => {
                 state.loading = true
@@ -82,7 +94,12 @@ const authSlice = createSlice({
             .addCase(fetchMeIfNeeded.rejected, (state, action) => {
                 state.me = null
                 state.loading = false
-                message.error(action.error.message)
+                notification.error({
+                    message: i18n.t('Error fetching user info') as string,
+                    description: action.error.message,
+                    duration: appConfig.ui.notificationDuration,
+                    placement: appConfig.ui.notificationPlacement
+                })
             })
             .addCase(logout.pending, state => {
                 state.loading = true
@@ -102,12 +119,36 @@ const authSlice = createSlice({
                 state.expireAt = null
                 state.me = null
                 state.loading = false
-                message.error(action.error.message)
+                notification.error({
+                    message: i18n.t('Logout error') as string,
+                    description: action.error.message,
+                    duration: appConfig.ui.notificationDuration,
+                    placement: appConfig.ui.notificationPlacement
+                })
+            })
+            .addCase(updateSessionData.pending, state => {
+                state.loading = true
+            })
+            .addCase(updateSessionData.fulfilled, (state, action: PayloadAction<{[key: string]: any}>) => {
+                const {me} = state
+                if (me != null) {
+                    me.sessionData = action.payload
+                }
+                state.loading = false
+            })
+            .addCase(updateSessionData.rejected, (state, action) => {
+                state.loading = false
+                notification.error({
+                    message: i18n.t('Session data update error') as string,
+                    description: action.error.message,
+                    duration: appConfig.ui.notificationDuration,
+                    placement: appConfig.ui.notificationPlacement
+                })
             })
     }
 })
 
-export {login, fetchMeIfNeeded, logout}
+export {login, fetchMeIfNeeded, logout, updateSessionData}
 
 export const selectLoading = (state: RootState) => state.auth.loading
 

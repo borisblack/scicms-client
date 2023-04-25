@@ -1,9 +1,10 @@
-import {Dataset, IDash} from '../types'
+import {Dashboard, Dataset, IDash} from '../types'
 import {FormInstance} from 'antd'
 
 export interface DashProps {
     pageKey: string
     dataset: Dataset
+    dashboard: Dashboard
     dash: IDash
 }
 
