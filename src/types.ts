@@ -346,10 +346,6 @@ export interface IDash {
     sortDirection?: string
     optValues: {[key: string]: any}
     defaultFilters: QueryBlock
-    temporalField?: string
-    defaultPeriod: TemporalPeriod
-    defaultStartTemporal?: string
-    defaultEndTemporal?: string
     refreshIntervalSeconds: number
 }
 

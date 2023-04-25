@@ -9,7 +9,7 @@ import 'react-resizable/css/styles.css'
 import {CustomComponentRenderContext} from '../extensions/custom-components'
 import {DASHBOARD_ITEM_NAME, DEBUG} from '../config/constants'
 import PermissionService from '../services/permission'
-import {IDash, IDashboardSpec, TemporalPeriod} from '../types'
+import {IDash, IDashboardSpec} from '../types'
 import DashForm, {DashValues} from './DashForm'
 import {DeleteOutlined} from '@ant-design/icons'
 import {generateQueryBlock} from '../util/bi'
@@ -59,7 +59,6 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
                     type: biConfig.defaultDashType,
                     optValues: {},
                     defaultFilters: generateQueryBlock(),
-                    defaultPeriod: TemporalPeriod.ARBITRARY,
                     isAggregate: false,
                     refreshIntervalSeconds: biConfig.defaultRefreshIntervalSeconds
                 },
@@ -77,9 +76,7 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
                 const {
                     id, name, dataset, type, unit,
                     isAggregate, aggregateType, aggregateField, groupField, sortField, sortDirection,
-                    optValues,
-                    defaultFilters, temporalField, defaultPeriod, defaultStartTemporal, defaultEndTemporal,
-                    refreshIntervalSeconds
+                    optValues, defaultFilters, refreshIntervalSeconds
                 } = curDash
 
                 return {
@@ -100,10 +97,6 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
                     sortDirection,
                     optValues,
                     defaultFilters,
-                    temporalField,
-                    defaultPeriod,
-                    defaultStartTemporal,
-                    defaultEndTemporal,
                     refreshIntervalSeconds
                 }
             })
@@ -142,9 +135,7 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
         const {
             name, dataset, type, unit,
             isAggregate, aggregateType, aggregateField, groupField, sortField, sortDirection,
-            optValues,
-            defaultFilters, temporalField, defaultPeriod, defaultStartTemporal, defaultEndTemporal,
-            refreshIntervalSeconds
+            optValues, defaultFilters, refreshIntervalSeconds
         } = newActiveDash
 
         const dashToUpdate: IDash = {
@@ -161,10 +152,6 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
             sortDirection,
             optValues,
             defaultFilters,
-            temporalField,
-            defaultPeriod,
-            defaultStartTemporal: defaultStartTemporal?.toISOString(),
-            defaultEndTemporal: defaultEndTemporal?.toISOString(),
             refreshIntervalSeconds
         }
 

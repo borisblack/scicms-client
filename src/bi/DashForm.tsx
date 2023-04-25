@@ -1,43 +1,10 @@
-import {
-    Checkbox,
-    Col,
-    Collapse,
-    DatePicker,
-    Form,
-    FormInstance,
-    Input,
-    InputNumber,
-    Row,
-    Select,
-    Space,
-    TimePicker,
-    Tooltip
-} from 'antd'
-import {
-    AggregateType,
-    Column,
-    Dataset,
-    FieldType,
-    IDash,
-    QueryBlock,
-    TemporalPeriod,
-    TemporalType
-} from '../types'
+import {Checkbox, Col, Collapse, Form, FormInstance, Input, InputNumber, Row, Select, Space, Tooltip} from 'antd'
+import {AggregateType, Column, Dataset, IDash, QueryBlock} from '../types'
 import {useTranslation} from 'react-i18next'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
-import {
-    allTemporalPeriods,
-    fromFormQueryBlock,
-    generateQueryBlock,
-    getCustomFunctionsInfo,
-    isTemporal,
-    temporalPeriodTitles,
-    timeTemporalPeriods,
-    toFormQueryBlock
-} from '../util/bi'
+import {fromFormQueryBlock, generateQueryBlock, getCustomFunctionsInfo, toFormQueryBlock} from '../util/bi'
 import DatasetService from '../services/dataset'
 import {CheckboxChangeEvent} from 'antd/es/checkbox'
-import dayjs, {Dayjs} from 'dayjs'
 import DashOptFieldWrapper from './DashOptFieldWrapper'
 import DashFilters from './dash-filters/DashFilters'
 import styles from './DashboardSpec.module.css'
@@ -65,10 +32,6 @@ export interface DashValues {
     groupField?: string
     optValues: any
     defaultFilters: QueryBlock
-    temporalField?: string
-    defaultPeriod: TemporalPeriod
-    defaultStartTemporal?: Dayjs
-    defaultEndTemporal?: Dayjs
     refreshIntervalSeconds: number
 }
 
@@ -98,11 +61,6 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
 
         return (groupField && groupField !== aggregateField) ? [aggregateField, groupField] : [aggregateField]
     }, [aggregateField, allColNames, groupField, isAggregate])
-    const [temporalField, setTemporalField] = useState<string | undefined>(dash.temporalField)
-    const temporalType: TemporalType | undefined = useMemo(
-        () => temporalField ? datasetColumns[temporalField]?.type as TemporalType | undefined : undefined,
-        [datasetColumns, temporalField])
-    const [defaultPeriod, setDefaultPeriod] = useState<TemporalPeriod | undefined>(dash.defaultPeriod ?? TemporalPeriod.ARBITRARY)
     const [dashType, setDashType] = useState<string>(dash.type)
     const dashHandler: Dash | undefined = useMemo(() => getDash(dashType), [dashType])
 
@@ -124,7 +82,6 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
         form.setFieldValue('sortField', undefined)
         form.setFieldValue('sortDirection', 'asc')
         form.setFieldValue('optValues', {})
-        setDefaultPeriod(TemporalPeriod.ARBITRARY)
     }, [form])
 
     const handleDatasetChange = useCallback((newDataset: string) => {
@@ -133,20 +90,6 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
         form.setFieldValue('defaultFilters', generateQueryBlock())
         setDataset(datasets.find(d => d.name === newDataset))
     }, [datasets, form, resetAggregateFormFields, resetSortAndOptValuesFormFields])
-
-    const handleTemporalFieldChange = useCallback((newTemporalField: string | undefined) => {
-        setTemporalField(newTemporalField)
-        setDefaultPeriod(TemporalPeriod.ARBITRARY)
-        form.setFieldValue('defaultPeriod', TemporalPeriod.ARBITRARY)
-        form.setFieldValue('defaultStartTemporal', undefined)
-        form.setFieldValue('defaultEndTemporal', undefined)
-    }, [form])
-
-    const handleDefaultPeriod = useCallback((defaultPeriod: TemporalPeriod) => {
-        setDefaultPeriod(defaultPeriod)
-        form.setFieldValue('defaultStartTemporal', undefined)
-        form.setFieldValue('defaultEndTemporal', undefined)
-    }, [form])
 
     const handleAggregateChange = useCallback((evt: CheckboxChangeEvent) => {
         resetAggregateFormFields()
@@ -374,86 +317,6 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                         </Space>
                     )}
                 >
-                    <Row gutter={10}>
-                        <Col span={6}>
-                            <FormItem
-                                className={styles.formItem}
-                                name="temporalField"
-                                label={t('Temporal Field')}
-                                initialValue={temporalField}
-                            >
-                                <Select allowClear onSelect={handleTemporalFieldChange} onClear={() => handleTemporalFieldChange(undefined)}>
-                                    {allColNames
-                                        .filter(c => {
-                                            const datasetColumnType = datasetColumns[c]?.type
-                                            if (datasetColumnType == null)
-                                                return false
-
-                                            return isTemporal(datasetColumnType)
-                                        })
-                                        .map(c => <SelectOption key={c} value={c}>{c}</SelectOption>)
-                                    }
-                                </Select>
-                            </FormItem>
-                        </Col>
-                        <Col span={6}>
-                            <FormItem
-                                className={styles.formItem}
-                                name="defaultPeriod"
-                                label={t('Default Period')}
-                                initialValue={defaultPeriod}
-                            >
-                                <Select disabled={!canEdit || !temporalType} onSelect={handleDefaultPeriod}>
-                                    {(temporalType === FieldType.time ? timeTemporalPeriods : allTemporalPeriods)
-                                        .map(k => <SelectOption key={k} value={k}>{temporalPeriodTitles[k]}</SelectOption>)
-                                    }
-                                </Select>
-                            </FormItem>
-                        </Col>
-
-                        {defaultPeriod === TemporalPeriod.ARBITRARY && (
-                            <>
-                                <Col span={6}>
-                                    <FormItem
-                                        className={styles.formItem}
-                                        name="defaultStartTemporal"
-                                        label={t('Default Begin')}
-                                        initialValue={dash.defaultStartTemporal == null ? null : dayjs(dash.defaultStartTemporal)}
-                                    >
-                                        {temporalType === FieldType.time ? (
-                                            <TimePicker style={{width: '100%'}} disabled={!canEdit || !temporalType}/>
-                                        ) : (
-                                            <DatePicker
-                                                style={{width: '100%'}}
-                                                showTime={temporalType === FieldType.datetime || temporalType === FieldType.timestamp}
-                                                disabled={!canEdit || !temporalType}
-                                            />
-                                        )}
-                                    </FormItem>
-                                </Col>
-                                <Col span={6}>
-                                    <FormItem
-                                        className={styles.formItem}
-                                        name="defaultEndTemporal"
-                                        label={t('Default End')}
-                                        initialValue={dash.defaultEndTemporal == null ? null : dayjs(dash.defaultEndTemporal)}
-                                    >
-                                        {temporalType === FieldType.time ? (
-                                            <TimePicker style={{width: '100%'}} disabled={!canEdit || !temporalType}/>
-                                        ) : (
-                                            <DatePicker
-                                                style={{width: '100%'}}
-                                                showTime={temporalType === FieldType.datetime || temporalType === FieldType.timestamp}
-                                                disabled={!canEdit || !temporalType}
-                                            />
-                                        )}
-
-                                    </FormItem>
-                                </Col>
-                            </>
-                        )}
-                    </Row>
-
                     {dataset && (
                         <DashFilters
                             form={form}
