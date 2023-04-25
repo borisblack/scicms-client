@@ -20,6 +20,14 @@ const ME_QUERY = gql`
     }
 `
 
+const UPDATE_SESSION_DATA_MUTATION = gql`
+    mutation updateSessionData($sessionData: JSON) {
+        updateSessionData(sessionData: $sessionData) {
+            sessionData
+        }
+    }
+`
+
 export default class AuthService {
     private static instance: AuthService | null = null
 
@@ -55,6 +63,11 @@ export default class AuthService {
         }
     }
 
-    fetchMe = (): Promise<UserInfo> => apolloClient.query({query: ME_QUERY}).then(result => result.data.me)
+    fetchMe = (): Promise<UserInfo> => apolloClient.query({query: ME_QUERY})
+        .then(result => result.data.me)
+
+    updateSessionData = (sessionData: {[key: string]: any}): Promise<{[key: string]: any}> =>
+        apolloClient.mutate({mutation: UPDATE_SESSION_DATA_MUTATION, variables: {sessionData}})
+            .then(result => result.data.sessionData)
 }
 
