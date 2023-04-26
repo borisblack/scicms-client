@@ -21,6 +21,8 @@ for (const func of functions) {
     parser.addFunction(func.id, func.exec)
 }
 
+export const getParser = () => parser
+
 export function evaluate(context: CustomFunctionContext): any {
     const expr = parser.parse(context.expression)
     return expr.evaluate(context.values)

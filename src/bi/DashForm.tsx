@@ -283,8 +283,8 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                 </Panel>
 
                 <Panel header={t('Dash Options')} key="dashOptions">
-                    <Row gutter={10}>
-                        <Col span={8}>
+                    <Row gutter={10} style={{marginBottom: 10}}>
+                        <Col span={6}>
                             <FormItem
                                 className={styles.formItem}
                                 name="type"
