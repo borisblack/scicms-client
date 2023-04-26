@@ -31,6 +31,7 @@ import biConfig from '../config/bi'
 import FiltersFom, {FiltersFormValues} from './FiltersForm'
 import {useAppDispatch, useAppSelector} from '../util/hooks'
 import {selectMe, updateSessionData} from '../features/auth/authSlice'
+import {assign, extract} from '../util'
 
 const datasetService = DatasetService.getInstance()
 
@@ -48,7 +49,7 @@ export default function DashWrapper(props: DashProps) {
     const [loading, setLoading] = useState<boolean>(false)
     const [fetchError, setFetchError] = useState<string | null>(null)
     const [isFiltersModalVisible, setFiltersModalVisible] = useState(false)
-    const sessionFilters = (((((me?.sessionData ?? {}).dashboards ?? {})[dashboard.name] ?? {}).dashes ?? {})[dash.name] ?? {}).filters
+    const sessionFilters = extract(me?.sessionData ?? {}, ['dashboards', dashboard.name, 'dashes', dash.name, 'filters'])
     const [filters, setFilters] = useState(sessionFilters ?? dash.defaultFilters ?? generateQueryBlock())
     const [filtersForm] = Form.useForm()
     const dashHeight = (dashHandler.height ?? biConfig.viewRowHeight) * dash.h
@@ -123,11 +124,7 @@ export default function DashWrapper(props: DashProps) {
 
         // Set session data
         const sessionData = me?.sessionData ? _.cloneDeep(me.sessionData) : {}
-        sessionData.dashboards = sessionData.dashboards ?? {}
-        sessionData.dashboards[dashboard.name] = sessionData.dashboards[dashboard.name] ?? {}
-        sessionData.dashboards[dashboard.name].dashes = sessionData.dashboards[dashboard.name].dashes ?? {}
-        sessionData.dashboards[dashboard.name].dashes[dash.name] = sessionData.dashboards[dashboard.name].dashes[dash.name] ?? {}
-        sessionData.dashboards[dashboard.name].dashes[dash.name].filters = newFilters
+        assign(sessionData, ['dashboards', dashboard.name, 'dashes', dash.name, 'filters'], newFilters)
         dispatch(updateSessionData(sessionData))
 
         setFilters(newFilters)

@@ -14,3 +14,22 @@ export const clearBit = (num: number, i: number) => {
     const mask = ~(1 << i)
     return num & mask
 }
+
+export function extract(src: Record<string, any>, path: string[]): any {
+    let n = path.length
+    if (n === 0)
+        throw new Error('Illegal path argument')
+
+    return path.reduce((prev, key, i) => prev[key] ?? (i < n-1 ? {} : undefined), src)
+}
+
+export function assign(src: Record<string, any>, path: string[], value: any) {
+    let n = path.length
+    if (n === 0)
+        throw new Error('Illegal path argument')
+
+    path.reduce((prev, key, i) => {
+        prev[key] = i < n-1 ? (prev[key] ?? {}) : value
+        return prev[key]
+    }, src)
+}

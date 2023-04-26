@@ -1,6 +1,7 @@
 import {Alert, Table} from 'antd'
 import {DashRenderContext} from '../index'
 import {ColumnsType} from 'antd/es/table'
+import {v4 as uuidv4} from 'uuid'
 
 interface ReportDashOpts {
     keyColName: string
@@ -26,6 +27,7 @@ export default function ReportDash({dataset, dash, height, fullScreen, data}: Da
             size="small"
             columns={columns}
             dataSource={data}
+            rowKey={() => uuidv4()}
             pagination={false}
             scroll={{y: fullScreen ? '80vh' : height - 100}}
         />
