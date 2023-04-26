@@ -17,6 +17,7 @@ interface CellRule {
 }
 
 interface CellProps {
+    field: string
     color?: string
     bgColor?: string
     fontStyle?: string
@@ -25,7 +26,7 @@ interface CellProps {
 }
 
 const RULE_REGEXP = /^(?:(.+)\?)?(.+)$/
-const RULE_ITEM_REGEXP = /^(\w+)=([-\w]+)$/
+const RULE_ITEM_REGEXP = /^(\w+)\.(\w+)=([-\w]+)$/
 const ICON_REGEXP = /^(\w+)(?:-(\w+))?$/
 
 function parseRules(rules?: string): CellRule[] {
@@ -49,16 +50,21 @@ function parseRuleItems(ruleItems: string): CellProps[] {
         .filter(r => r.match(RULE_ITEM_REGEXP))
         .map(r => {
             const ruleItemMatchGroups = r.match(RULE_ITEM_REGEXP) as RegExpMatchArray
-            const key = ruleItemMatchGroups[1] as string
-            const value = ruleItemMatchGroups[2] as string
-            if (key === 'icon') {
+            const field = ruleItemMatchGroups[1] as string
+            const prop = ruleItemMatchGroups[2] as string
+            const value = ruleItemMatchGroups[3] as string
+            if (prop === 'icon') {
                 const iconMatchGroups = value.match(ICON_REGEXP) as RegExpMatchArray
                 return {
+                    field,
                     icon: iconMatchGroups[1],
                     color: iconMatchGroups[2]
                 }
             } else {
-                return {[key]: value}
+                return {
+                    field,
+                    [prop]: value
+                }
             }
         })
 }
@@ -91,7 +97,7 @@ export default function ReportDash({dataset, dash, height, fullScreen, data}: Da
         for (const rule of cellRules) {
             if (rule.condition == null || evalCondition(rule.condition, record)) {
                 for (const ruleItem of rule.items) {
-                    if (ruleItem.icon != null)
+                    if (ruleItem.field === colName && ruleItem.icon != null)
                         iconProps = ruleItem
                 }
             }
