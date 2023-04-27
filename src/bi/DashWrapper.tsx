@@ -32,6 +32,7 @@ import FiltersFom, {FiltersFormValues} from './FiltersForm'
 import {useAppDispatch, useAppSelector} from '../util/hooks'
 import {selectMe, updateSessionData} from '../features/auth/authSlice'
 import {assign, extract} from '../util'
+import {QueryBlock} from '../types'
 
 const datasetService = DatasetService.getInstance()
 
@@ -49,14 +50,21 @@ export default function DashWrapper(props: DashProps) {
     const [loading, setLoading] = useState<boolean>(false)
     const [fetchError, setFetchError] = useState<string | null>(null)
     const [isFiltersModalVisible, setFiltersModalVisible] = useState(false)
-    const sessionFilters = extract(me?.sessionData ?? {}, ['dashboards', dashboard.name, 'dashes', dash.name, 'filters'])
-    const [filters, setFilters] = useState(sessionFilters ?? dash.defaultFilters ?? generateQueryBlock())
+    const sessionFilters = useMemo(
+        () => extract(me?.sessionData ?? {}, ['dashboards', dashboard.name, 'dashes', dash.name, 'filters']),
+        [dash.name, dashboard.name, me?.sessionData]
+    )
+    const [filters, setFilters] = useState<QueryBlock>(sessionFilters ?? dash.defaultFilters ?? generateQueryBlock())
     const [filtersForm] = Form.useForm()
     const dashHeight = (dashHandler.height ?? biConfig.viewRowHeight) * dash.h
+    
+    useEffect(() => {
+        setFilters(sessionFilters ?? dash.defaultFilters ?? generateQueryBlock())
+    }, [dash.defaultFilters, sessionFilters])
 
     useEffect(() => {
         fetchDatasetData()
-    }, [filters])
+    }, [dash, filters])
 
     useEffect(() => {
         const interval = setInterval(fetchDatasetData, dash.refreshIntervalSeconds * 1000)
