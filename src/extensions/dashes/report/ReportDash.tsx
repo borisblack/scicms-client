@@ -4,6 +4,7 @@ import {v4 as uuidv4} from 'uuid'
 import {ColumnsType} from 'antd/es/table'
 import {DashRenderContext} from '..'
 import {getParser} from '../../functions'
+import {allIcons} from '../../../util/icons'
 
 interface ReportDashOpts {
     displayedColNames: string[]
@@ -18,19 +19,20 @@ interface CellRule {
 
 interface CellProps {
     field: string
+    icon?: string
     color?: string
     bgColor?: string
+    fontSize?: string
     fontStyle?: string
     fontWeight?: string
-    icon?: string
 }
 
 const RULE_REGEXP = /^(?:(.+)\?)?(.+)$/
-const RULE_ITEM_REGEXP = /^(\w+)\.(\w+)=([-\w]+)$/
+const RULE_ITEM_REGEXP = /^([*\w]+)\.(\w+)=([-#\w]+)$/
 const ICON_REGEXP = /^(\w+)(?:-(\w+))?$/
 
 function parseRules(rules?: string): CellRule[] {
-    return (rules?.split('\n') ?? [])
+    const parsedRules = (rules?.split('\n') ?? [])
         .map(r => r.replace(/\s*/g, ''))
         .map(r => r.replace(/;$/, ''))
         .filter(r => r !== '')
@@ -43,10 +45,13 @@ function parseRules(rules?: string): CellRule[] {
                 items: parseRuleItems(matchGroups[2] as string)
             }
         })
+    console.log('Parsed rules', parsedRules)
+
+    return parsedRules
 }
 
 function parseRuleItems(ruleItems: string): CellProps[] {
-    return ruleItems.split(';')
+    const parsedRules = ruleItems.split(';')
         .filter(r => r.match(RULE_ITEM_REGEXP))
         .map(r => {
             const ruleItemMatchGroups = r.match(RULE_ITEM_REGEXP) as RegExpMatchArray
@@ -67,11 +72,37 @@ function parseRuleItems(ruleItems: string): CellProps[] {
                 }
             }
         })
+    // console.log('Parsed rule items', parsedRules)
+
+    return parsedRules
 }
 
 function evalCondition(condition: string, values: Record<string, any>): boolean {
     const expr = getParser().parse(condition)
     return expr.evaluate(values)
+}
+
+function toStyle(props: CellProps): CSSProperties {
+    const {icon, color, bgColor, fontSize, fontStyle, fontWeight} = props
+    const style: CSSProperties = {}
+    if (color != null)
+        style.color = color
+
+    if (icon == null) {
+        if (bgColor != null)
+            style.backgroundColor = bgColor
+
+        if (fontStyle != null)
+            style.fontStyle = fontStyle
+
+        if (fontSize != null)
+            style.fontSize = fontSize
+
+        if (fontWeight != null)
+            style.fontWeight = fontWeight
+    }
+
+    return style
 }
 
 export default function ReportDash({dataset, dash, height, fullScreen, data}: DashRenderContext) {
@@ -97,19 +128,34 @@ export default function ReportDash({dataset, dash, height, fullScreen, data}: Da
         for (const rule of cellRules) {
             if (rule.condition == null || evalCondition(rule.condition, record)) {
                 for (const ruleItem of rule.items) {
-                    if (ruleItem.field === colName && ruleItem.icon != null)
+                    if ((ruleItem.field === colName || ruleItem.field === '*') && ruleItem.icon != null)
                         iconProps = ruleItem
                 }
             }
         }
 
-        return iconProps == null ? value : <div>{value}</div>
+        if (iconProps != null) {
+            const Icon = allIcons[iconProps.icon as string]
+
+            return <div>{Icon && <Icon style={toStyle(iconProps)}/>}&nbsp;{value}</div>
+        }
+
+        return value
     }
 
     function getCellStyle(colName: string, record: any, rowIndex?: number): CSSProperties {
-        return {
-            backgroundColor: 'red'
+        const cellStyle: CSSProperties = {}
+        for (const rule of cellRules) {
+            if (rule.condition == null || evalCondition(rule.condition, record)) {
+                for (const ruleItem of rule.items) {
+                    if ((ruleItem.field === colName || ruleItem.field === '*') && ruleItem.icon == null) {
+                        Object.assign(cellStyle, toStyle(ruleItem))
+                    }
+                }
+            }
         }
+
+        return cellStyle
     }
 
     if (columns.length !== displayedColNames.length)

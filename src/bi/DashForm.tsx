@@ -68,9 +68,12 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
         datasetService.findAll()
             .then(datasets => {
                 setDatasets(datasets)
-                setDataset(datasets.find(d => d.name === dash.dataset))
             })
-    }, [dash.dataset])
+    }, [])
+
+    useEffect(() => {
+        setDataset(datasets.find(d => d.name === dash.dataset))
+    }, [dash.dataset, datasets])
 
     const resetAggregateFormFields = useCallback(() => {
         form.setFieldValue('aggregateType', undefined)
@@ -177,7 +180,7 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                         rules={[{required: true, message: t('Required field')}]}
                     >
                         <Select onSelect={handleDatasetChange}>
-                            {datasets.map(d => <SelectOption key={d.name} value={d.name}>{d.name}</SelectOption>)}
+                            {datasets.map(d => d.name).sort().map(d => <SelectOption key={d} value={d}>{d}</SelectOption>)}
                         </Select>
                     </FormItem>
                 </Col>
