@@ -19,7 +19,7 @@ const intCompareFn = (a: string, b: string) => parseInt(a) - parseInt(b)
 const dashColCompareFn = (a: IDash, b: IDash) => a.x - b.x
 const datasetService = DatasetService.getInstance()
 
-export default function DashboardPanel({me, pageKey, dashboard}: Props) {
+export default function DashboardPanel({pageKey, dashboard}: Props) {
     const {dashes} = dashboard.spec
     const [datasets, setDatasets] = useState<{[name: string]: Dataset} | null>(null)
     const rows = useMemo(() => _.groupBy(dashes, d => d.y), [dashes])
@@ -28,7 +28,7 @@ export default function DashboardPanel({me, pageKey, dashboard}: Props) {
         datasetService.findAll().then(datasetList => {
             setDatasets(_.mapKeys(datasetList, ds => ds.name))
         })
-    }, [dashboard])
+    }, [])
 
     const renderDash = useCallback((dash: IDash) => {
         if (datasets == null)

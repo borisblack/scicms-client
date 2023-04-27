@@ -135,7 +135,7 @@ export default function DashWrapper(props: DashProps) {
         assign(sessionData, ['dashboards', dashboard.name, 'dashes', dash.name, 'filters'], newFilters)
         dispatch(updateSessionData(sessionData))
 
-        setFilters(newFilters)
+        // setFilters(newFilters) // updates in useEffect()
         setFiltersModalVisible(false)
     }
 
