@@ -5,6 +5,10 @@ import {ColumnsType} from 'antd/es/table'
 import {DashRenderContext} from '..'
 import {getParser} from '../../functions'
 import {allIcons} from '../../../util/icons'
+import i18n from '../../../i18n'
+import {columnType, formatValue} from '../../../util/bi'
+import {TemporalType} from '../../../types'
+import {notifyErrorThrottled} from '../../../util'
 
 interface ReportDashOpts {
     displayedColNames: string[]
@@ -33,7 +37,7 @@ const ICON_REGEXP = /^(\w+)(?:-(\w+))?$/
 
 function parseRules(rules?: string): CellRule[] {
     const parsedRules = (rules?.split('\n') ?? [])
-        .map(r => r.replace(/\s*/g, ''))
+        .map(r => r.trim())
         .map(r => r.replace(/;$/, ''))
         .filter(r => r !== '')
         .filter(r => !r.startsWith('#'))
@@ -41,17 +45,18 @@ function parseRules(rules?: string): CellRule[] {
         .map(r => {
             const matchGroups = r.match(RULE_REGEXP) as RegExpMatchArray
             return {
-                condition: matchGroups[1],
+                condition: matchGroups[1]?.trim(),
                 items: parseRuleItems(matchGroups[2] as string)
             }
         })
-    console.log('Parsed rules', parsedRules)
+    // console.log('Parsed rules', parsedRules)
 
     return parsedRules
 }
 
 function parseRuleItems(ruleItems: string): CellProps[] {
     const parsedRules = ruleItems.split(';')
+        .map(r => r.replace(/\s*/g, ''))
         .filter(r => r.match(RULE_ITEM_REGEXP))
         .map(r => {
             const ruleItemMatchGroups = r.match(RULE_ITEM_REGEXP) as RegExpMatchArray
@@ -77,9 +82,14 @@ function parseRuleItems(ruleItems: string): CellProps[] {
     return parsedRules
 }
 
-function evalCondition(condition: string, values: Record<string, any>): boolean {
-    const expr = getParser().parse(condition)
-    return expr.evaluate(values)
+function evaluateExpression(condition: string, values: Record<string, any>): any {
+    try {
+        const expr = getParser().parse(condition)
+        return expr.evaluate(values)
+    } catch (e: any) {
+        notifyErrorThrottled(i18n.t('Expression evaluation error'), e.message)
+        return false
+    }
 }
 
 function toStyle(props: CellProps): CSSProperties {
@@ -124,9 +134,10 @@ export default function ReportDash({dataset, dash, height, fullScreen, data}: Da
             })
 
     function renderCell(colName: string, value: any, record: any, rowIndex: number): ReactNode {
+        const formattedValue = formatValue(value, columnType(datasetColumns[colName]) as TemporalType)
         let iconProps: CellProps | null = null
         for (const rule of cellRules) {
-            if (rule.condition == null || evalCondition(rule.condition, record)) {
+            if (rule.condition == null || evaluateExpression(rule.condition, record)) {
                 for (const ruleItem of rule.items) {
                     if ((ruleItem.field === colName || ruleItem.field === '*') && ruleItem.icon != null)
                         iconProps = ruleItem
@@ -137,16 +148,16 @@ export default function ReportDash({dataset, dash, height, fullScreen, data}: Da
         if (iconProps != null) {
             const Icon = allIcons[iconProps.icon as string]
 
-            return <div>{Icon && <Icon style={toStyle(iconProps)}/>}&nbsp;{value}</div>
+            return <div>{Icon && <Icon style={toStyle(iconProps)}/>}&nbsp;{formattedValue}</div>
         }
 
-        return value
+        return formattedValue
     }
 
     function getCellStyle(colName: string, record: any, rowIndex?: number): CSSProperties {
         const cellStyle: CSSProperties = {}
         for (const rule of cellRules) {
-            if (rule.condition == null || evalCondition(rule.condition, record)) {
+            if (rule.condition == null || evaluateExpression(rule.condition, record)) {
                 for (const ruleItem of rule.items) {
                     if ((ruleItem.field === colName || ruleItem.field === '*') && ruleItem.icon == null) {
                         Object.assign(cellStyle, toStyle(ruleItem))

@@ -1,3 +1,5 @@
+import dayjs from 'dayjs'
+import {notification} from 'antd'
 import {Locale} from 'antd/lib/locale'
 import ruRU from 'antd/locale/ru_RU'
 // import {Settings as LuxonSettings} from 'luxon'
@@ -5,7 +7,6 @@ import 'dayjs/locale/ru'
 
 import {LUXON_DATE_FORMAT_STRING, LUXON_DATETIME_FORMAT_STRING, LUXON_TIME_FORMAT_STRING} from './constants'
 import {DeletingStrategy} from '../types'
-import dayjs from 'dayjs'
 
 // LuxonSettings.defaultZone = UTC
 // dayjs.tz.setDefault(UTC)
@@ -83,5 +84,10 @@ const appConfig: AppConfig = {
 }
 
 dayjs.locale(appConfig.i18nLng)
+
+notification.config({
+    placement: appConfig.ui.notificationPlacement,
+    duration: appConfig.ui.notificationDuration
+})
 
 export default appConfig

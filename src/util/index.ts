@@ -1,3 +1,7 @@
+import _ from 'lodash'
+import {notification} from 'antd'
+import appConfig from '../config'
+
 export function tryParseJson(value: any): boolean {
     try {
         return JSON.parse(value)
@@ -22,6 +26,13 @@ export function extract(src: Record<string, any>, path: string[]): any {
 
     return path.reduce((prev, key, i) => prev[key] ?? (i < n-1 ? {} : undefined), src)
 }
+
+export const notifyErrorThrottled =
+    _.throttle(
+        (message: string, description: string) => notification.error({message, description}),
+        appConfig.ui.notificationDuration * 1000,
+        {trailing: false}
+    )
 
 export function assign(src: Record<string, any>, path: string[], value: any) {
     let n = path.length

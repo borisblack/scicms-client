@@ -21,6 +21,7 @@ import dayjs, {Dayjs} from 'dayjs'
 import {DateTime} from 'luxon'
 import _ from 'lodash'
 import {evaluate, getInfo} from '../extensions/functions'
+import {notification} from 'antd'
 
 const {dash: dashConfig, dateTime: dateTimeConfig} = biConfig
 
@@ -453,7 +454,13 @@ function parseManualFilterValue(value?: string): any {
     if (value == null)
         return null
 
-    return evaluate({expression: value})
+    try {
+        return evaluate({expression: value})
+    } catch (e: any) {
+        // notifyErrorThrottled(i18n.t('Expression evaluation error'), e.message)
+        notification.error({message: i18n.t('Expression evaluation error') as string, description: e.message})
+        return undefined
+    }
 }
 
 export function printQueryBlock(dataset: Dataset, queryBlock: QueryBlock): string | null {

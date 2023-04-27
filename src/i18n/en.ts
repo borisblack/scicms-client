@@ -97,6 +97,7 @@ const en = {
         'Error fetching user info': 'Error fetching user info',
         'Exit full screen': 'Exit full screen',
         'Export': 'Export',
+        'Expression evaluation error': 'Expression evaluation error',
         'ends with': 'ends with',
         'equals': 'equals',
         'Field Hidden': 'Field Hidden',

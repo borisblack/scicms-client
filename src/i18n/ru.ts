@@ -97,6 +97,7 @@ const ru = {
         'Error fetching user info': 'Ошибка получения данных пользователя',
         'Exit full screen': 'Выход из полноэкранного режима',
         'Export': 'Экспорт',
+        'Expression evaluation error': 'Ошибка вычисления выражения',
         'ends with': 'заканчивается на',
         'equals': 'равно',
         'Field Hidden': 'Скрытое поле',
