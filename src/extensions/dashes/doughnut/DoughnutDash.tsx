@@ -5,7 +5,7 @@ import {formatValue, parseDashColor} from '../../../util/bi'
 import {DoughnutDashOptions} from '../util'
 import biConfig from '../../../config/bi'
 
-const {locale, dash: dashConfig} = biConfig
+const {locale, percentFractionDigits, dash: dashConfig} = biConfig
 const legendConfig = dashConfig?.all?.legend
 
 export default function DoughnutDash({dataset, dash, data}: DashRenderContext) {
@@ -41,7 +41,7 @@ export default function DoughnutDash({dataset, dash, data}: DashRenderContext) {
         label: {
             type: 'inner',
             offset: '-50%',
-            content: ({ percent }) => `${(percent * 100).toFixed(0)}%`,
+            content: ({ percent }) => `${(percent * 100).toFixed(percentFractionDigits)}%`,
             style: dashConfig?.doughnut?.labelStyle
         },
         interactions: [{

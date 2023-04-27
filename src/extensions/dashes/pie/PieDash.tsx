@@ -7,7 +7,7 @@ import biConfig from '../../../config/bi'
 
 type PieDashOptions = Omit<DoughnutDashOptions, 'innerRadius'>
 
-const {locale, dash: dashConfig} = biConfig
+const {locale, percentFractionDigits, dash: dashConfig} = biConfig
 const legendConfig = dashConfig?.all?.legend
 
 export default function PieDash({dataset, dash, data}: DashRenderContext) {
@@ -42,7 +42,7 @@ export default function PieDash({dataset, dash, data}: DashRenderContext) {
         label: {
             type: 'inner',
             offset: '-30%',
-            content: ({ percent }) => `${(percent * 100).toFixed(0)}%`,
+            content: ({ percent }) => `${(percent * 100).toFixed(percentFractionDigits)}%`,
             style: dashConfig?.pie?.labelStyle
         },
         interactions: [{
