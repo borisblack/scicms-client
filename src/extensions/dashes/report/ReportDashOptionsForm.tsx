@@ -46,7 +46,7 @@ export default function ReportDashOptionsForm({dataset, availableColNames, field
                     label={t('Rules')}
                     initialValue={values.rules}
                 >
-                    <TextArea rows={10}/>
+                    <TextArea rows={10} style={{whiteSpace: 'nowrap'}}/>
                 </FormItem>
             </Col>
         </Row>
