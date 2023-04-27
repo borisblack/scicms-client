@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 import {Alert, Col, Row} from 'antd'
 import {Dashboard, Dataset, IDash, UserInfo} from '../types'
 import {ANTD_GRID_COLS} from '../config/constants'
@@ -30,7 +30,7 @@ export default function DashboardPanel({pageKey, dashboard}: Props) {
         })
     }, [])
 
-    const renderDash = useCallback((dash: IDash) => {
+    const renderDash = (dash: IDash) => {
         if (datasets == null)
             throw new Error('Illegal state')
 
@@ -50,7 +50,7 @@ export default function DashboardPanel({pageKey, dashboard}: Props) {
                 dash={dash}
             />
         )
-    }, [datasets, pageKey])
+    }
 
     const rowKeys = Object.keys(rows).sort(intCompareFn)
     return (
