@@ -128,6 +128,7 @@ const en = {
         'Hours after now': 'Hours after now',
         'Hours before now': 'Hours before now',
         'Icon': 'Icon',
+        'Icons': 'Icons',
         'Identities': 'Identities',
         'Identity': 'Identity',
         'Implementation': 'Implementation',
