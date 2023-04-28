@@ -159,7 +159,7 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
             disabled={!canEdit}
             onFinish={dashValues => onFormFinish(prepareDashValues(dashValues, dataset))}
         >
-            <Row gutter={10}>
+            <Row gutter={10} style={{marginBottom: 10}}>
                 <Col span={12}>
                     <FormItem
                         className={styles.formItem}
