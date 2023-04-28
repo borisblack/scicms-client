@@ -53,6 +53,7 @@ const ru = {
         'Config ID': 'ID конфигурации',
         'Confirm': 'Подтверждение',
         'Composite attribute': 'Составной атрибут',
+        'Copied to clipboard': 'Скопировано в буфер обмена',
         'Core': 'Ядро',
         'Create': 'Создать',
         'Created At': 'Дата создания',

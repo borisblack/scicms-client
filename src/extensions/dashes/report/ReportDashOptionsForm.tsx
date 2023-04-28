@@ -46,10 +46,10 @@ export default function ReportDashOptionsForm({dataset, availableColNames, field
                         <Space>
                             {t('Rules')}
                             <Popover
+                                arrow={false}
                                 placement="bottom"
                                 content={renderHelpContent()}
-                                overlayInnerStyle={{width: 1024}}
-                                arrow={false}
+                                overlayInnerStyle={{width: 1060}}
                             >
                                 <QuestionCircleOutlined className="blue"/>
                             </Popover>

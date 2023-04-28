@@ -1,4 +1,4 @@
-import {Checkbox, Col, Collapse, Form, FormInstance, Input, InputNumber, Row, Select, Space, Tooltip} from 'antd'
+import {Checkbox, Col, Collapse, Form, FormInstance, Input, InputNumber, Popover, Row, Select, Space} from 'antd'
 import {AggregateType, Column, Dataset, IDash, QueryBlock} from '../types'
 import {useTranslation} from 'react-i18next'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
@@ -310,13 +310,14 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                     header={(
                         <Space>
                             {t('Default Filters')}
-                            <Tooltip
+                            <Popover
+                                arrow={false}
                                 placement="right"
                                 overlayInnerStyle={{width: 400}}
-                                title={<>{getCustomFunctionsInfo().map((s, i) => <div key={i}>{s}</div>)}</>}
+                                title={<>{getCustomFunctionsInfo().map((s, i) => <div key={i} style={{fontWeight: 'normal'}}>{s}</div>)}</>}
                             >
                                 <QuestionCircleOutlined className="blue"/>
-                            </Tooltip>
+                            </Popover>
                         </Space>
                     )}
                 >

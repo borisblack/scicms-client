@@ -53,6 +53,7 @@ const en = {
         'Config ID': 'Config ID',
         'Confirm': 'Confirm',
         'Composite attribute': 'Composite attribute',
+        'Copied to clipboard': 'Copied to clipboard',
         'Core': 'Core',
         'Create': 'Create',
         'Created At': 'Created At',
