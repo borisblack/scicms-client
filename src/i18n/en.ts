@@ -18,6 +18,7 @@ const en = {
         'Aggregate Field': 'Aggregate Field',
         'Aggregate Type': 'Aggregate Type',
         'Alias': 'Alias',
+        'All': 'All',
         'All Locales': 'All Locales',
         'All Versions': 'All Versions',
         'Allowed Lifecycle': 'Allowed Lifecycle',
