@@ -5,6 +5,7 @@ import {Tag} from 'antd'
 import {FieldType, NamedColumn} from '../../../../types'
 import EditableCell from '../../../../components/datagrid/EditableCell'
 import SelectableCell from '../../../../components/datagrid/SelectableCell'
+import EditableNumberCell from '../../../../components/datagrid/EditableNumberCell'
 
 const formatOptions = [
     {label: 'date', value: 'date'},
@@ -42,6 +43,12 @@ export const getColumns = (canEdit: boolean, onChange: (value: NamedColumn) => v
         header: i18n.t('Alias'),
         cell: info => canEdit ? <EditableCell value={info.getValue()} onChange={alias => onChange({...info.row.original, alias})}/> : info.getValue(),
         size: 250,
+        enableSorting: true
+    }) as ColumnDef<NamedColumn, FieldType>,
+    columnHelper.accessor('colWidth', {
+        header: i18n.t('Column Width'),
+        cell: info => canEdit ? <EditableNumberCell value={info.getValue()} onChange={colWidth => onChange({...info.row.original, colWidth})}/> : info.getValue(),
+        size: 160,
         enableSorting: true
     }) as ColumnDef<NamedColumn, FieldType>
 ]

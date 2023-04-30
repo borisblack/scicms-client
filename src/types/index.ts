@@ -312,7 +312,8 @@ export interface DatasetSpec {
 export interface Column {
     type: FieldType,
     format?: FieldType.date | FieldType.time | FieldType.datetime,
-    alias?: string
+    alias?: string,
+    colWidth?: number
 }
 
 export interface NamedColumn extends Column {
