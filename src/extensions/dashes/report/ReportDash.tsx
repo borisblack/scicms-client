@@ -124,12 +124,11 @@ export default function ReportDash({dataset, dash, height, fullScreen, data}: Da
             .filter(cn => cn in datasetColumns)
             .map(cn => {
                 const datasetColumn = datasetColumns[cn]
-                console.log(datasetColumn)
                 return {
                     key: cn,
                     dataIndex: cn,
                     title: datasetColumn.alias ?? cn,
-                    width: datasetColumn.colWidth,
+                    width: datasetColumn.colWidth as string | number | undefined,
                     render: (value, record, rowIndex) => renderCell(cn, value, record, rowIndex),
                     onCell: (record, rowIndex) => ({style: getCellStyle(cn, record, rowIndex)})
                 }

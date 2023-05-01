@@ -313,7 +313,7 @@ export interface Column {
     type: FieldType,
     format?: FieldType.date | FieldType.time | FieldType.datetime,
     alias?: string,
-    colWidth?: number
+    colWidth?: string | number | null
 }
 
 export interface NamedColumn extends Column {

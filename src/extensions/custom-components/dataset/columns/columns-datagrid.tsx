@@ -47,7 +47,7 @@ export const getColumns = (canEdit: boolean, onChange: (value: NamedColumn) => v
     }) as ColumnDef<NamedColumn, FieldType>,
     columnHelper.accessor('colWidth', {
         header: i18n.t('Column Width'),
-        cell: info => canEdit ? <EditableNumberCell value={info.getValue()} onChange={colWidth => onChange({...info.row.original, colWidth})}/> : info.getValue(),
+        cell: info => canEdit ? <EditableNumberCell value={info.getValue()} min={0} step={1} onChange={colWidth => onChange({...info.row.original, colWidth})}/> : info.getValue(),
         size: 160,
         enableSorting: true
     }) as ColumnDef<NamedColumn, FieldType>
