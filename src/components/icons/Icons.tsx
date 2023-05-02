@@ -24,8 +24,10 @@ export default function Icons({height}: Props) {
         </div>
     )
 
-    return <Tabs type="card" items={[
-        {key: 'antd', label: 'Ant Design', children: renderIcons(antdIcons)},
-        {key: 'fa', label: 'Font Awesome', children: renderIcons(faIcons)}
-    ]}/>
+    return (
+        <Tabs type="card" items={[
+            {key: 'antd', label: 'Ant Design', children: renderIcons(antdIcons)},
+            {key: 'fa', label: 'Font Awesome', children: renderIcons(faIcons)}
+        ]}/>
+    )
 }
