@@ -1,19 +1,15 @@
-import {Col, notification, Row, Tabs} from 'antd'
+import {Col, Row, Tabs} from 'antd'
 import {antdIcons, faIcons} from '../../util/icons'
-import {useTranslation} from 'react-i18next'
 import {FC} from 'react'
+import {copyToClipboard} from '../../util'
 
-export default function Icons() {
-    const {t} = useTranslation()
+interface Props {
+    height?: number | string
+}
 
-    function copyToClipboard(text: string) {
-        navigator.clipboard.writeText(text).then(() => {
-            notification.info({message: t('Copied to clipboard'), description: text})
-        })
-    }
-
+export default function Icons({height}: Props) {
     const renderIcons = (icons: Record<string, FC>) => (
-        <div style={{height: 350, overflowY: 'scroll'}}>
+        <div style={{height, overflowY: 'scroll'}}>
             <Row>
                 {Object.keys(icons).map(k => {
                     const Icon = icons[k]

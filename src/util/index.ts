@@ -1,6 +1,7 @@
 import _ from 'lodash'
 import {notification} from 'antd'
 import appConfig from '../config'
+import i18n from '../i18n'
 
 export function tryParseJson(value: any): boolean {
     try {
@@ -43,4 +44,10 @@ export function assign(src: Record<string, any>, path: string[], value: any) {
         prev[key] = i < n-1 ? (prev[key] ?? {}) : value
         return prev[key]
     }, src)
+}
+
+export function copyToClipboard(text: string) {
+    navigator.clipboard.writeText(text).then(() => {
+        notification.info({message: i18n.t('Copied to clipboard') as string, description: text})
+    })
 }
