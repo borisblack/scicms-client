@@ -28,7 +28,7 @@ export default function RulesHelp({height}: Props) {
             </ul>
 
             <h4 style={{fontWeight: 600}}>{t('Examples')}</h4>
-            <code style={{fontSize: 13}}>
+            <code>
                 {`count<=0 ? *.color=red;count.icon=ExclamationCircleOutlined-red;name.bgColor=#ffcccc`}<br/>
                 <span style={{color: '#666666'}}>{`# name=='Foo' ? *.bgColor=#ccffcc;name.icon=InfoCircleOutlined-#009933`}</span><br/>
                 {`name=='Bar' ? *.bgColor=#ccffff;name.icon=SmileOutlined-#0066ff`}
