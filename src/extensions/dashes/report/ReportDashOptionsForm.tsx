@@ -7,6 +7,7 @@ import TransferInput from '../../../components/transfer-input/TransferInput'
 import {QuestionCircleOutlined} from '@ant-design/icons'
 import Icons from '../../../components/icons/Icons'
 import Colors from '../../../components/colors/Colors'
+import RulesHelp from './RulesHelp'
 
 const {Item: FormItem} = Form
 const {TextArea} = Input
@@ -17,6 +18,7 @@ export default function ReportDashOptionsForm({dataset, availableColNames, field
 
     const renderHelpContent = () => {
         return <Tabs items={[
+            {key: 'rules', label: t('Rules'), children: <RulesHelp height={350}/>},
             {key: 'colors', label: t('Colors'), children: <Colors height={350}/>},
             {key: 'icons', label: t('Icons'), children: <Icons height={350}/>},
         ]}/>

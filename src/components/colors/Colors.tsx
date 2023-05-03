@@ -64,8 +64,8 @@ export default function Colors({height}: Props) {
         return (
             <div style={{height, overflowY: 'scroll', padding: '0 2px'}}>
                 <Row gutter={1}>
-                    {tableColors.current.map(c => (
-                        <Col span={4}>
+                    {tableColors.current.map((c, i) => (
+                        <Col key={i} span={4}>
                             {c}
                             <div
                                 style={{height: 20,backgroundColor: c, cursor: 'pointer', marginBottom: 4}}
