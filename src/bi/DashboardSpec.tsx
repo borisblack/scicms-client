@@ -140,6 +140,7 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
 
         const dashToUpdate: IDash = {
             ...activeDash,
+            id: activeDash.id ?? uuidv4(),
             name,
             dataset,
             type,

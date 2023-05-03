@@ -1,4 +1,5 @@
 import {useTranslation} from 'react-i18next'
+import {useMemo} from 'react'
 
 interface Props {
     height?: number | string
@@ -7,15 +8,19 @@ interface Props {
 export default function RulesHelp({height}: Props) {
     const {t} = useTranslation()
 
+    const descriptionContent = useMemo(() => {
+        const helpDescription = t('Rules help description')
+        return (
+            <p>
+                {helpDescription.split('\n').map((s, i) => <span key={i}>{s}<br/></span>)}
+            </p>
+        )
+    }, [t])
+
     return (
         <div style={{height, overflowY: 'scroll'}}>
             <h4 style={{fontWeight: 600}}>{t('Description')}</h4>
-            <p>
-                {`${t('The new rule starts on a new line')}.`}<br/>
-                {`${t('Empty lines and whitespaces are ignored')}.`}<br/>
-                {`${t('A comment line starts with a # character')}.`}<br/>
-                {`${t('Cells are named after the field name in the row')}. ${t('You can select the entire row using an asterisk')}.`}
-            </p>
+            {descriptionContent}
 
             <h4 style={{fontWeight: 600}}>{t('Properties')}</h4>
             <ul>
@@ -30,7 +35,7 @@ export default function RulesHelp({height}: Props) {
             <h4 style={{fontWeight: 600}}>{t('Examples')}</h4>
             <code>
                 {`count<=0 ? *.color=red;count.icon=ExclamationCircleOutlined-red;name.bgColor=#ffcccc`}<br/>
-                <span style={{color: '#666666'}}>{`# name=='Foo' ? *.bgColor=#ccffcc;name.icon=InfoCircleOutlined-#009933`}</span><br/>
+                <span style={{color: '#999999'}}>{`# name=='Foo' ? *.bgColor=#ccffcc;name.icon=InfoCircleOutlined-#009933`}</span><br/>
                 {`name=='Bar' ? *.bgColor=#ccffff;name.icon=SmileOutlined-#0066ff`}
             </code>
         </div>

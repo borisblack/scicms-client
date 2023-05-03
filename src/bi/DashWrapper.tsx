@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import React, {useEffect, useMemo, useState} from 'react'
 import {Dropdown, Empty, Form, Modal, notification, Space, Spin, Tooltip} from 'antd'
 import {PageHeader} from '@ant-design/pro-layout'
@@ -29,12 +28,12 @@ import {
 import {Dash, getDash} from '../extensions/dashes'
 import biConfig from '../config/bi'
 import FiltersFom, {FiltersFormValues} from './FiltersForm'
-import {useAppDispatch, useAppSelector} from '../util/hooks'
-import {selectMe, updateSessionData} from '../features/auth/authSlice'
 import {assign, extract} from '../util'
 import {QueryBlock} from '../types'
 
 const datasetService = DatasetService.getInstance()
+
+const extractSessionData = () => JSON.parse(localStorage.getItem('sessionData') ?? '{}')
 
 export default function DashWrapper(props: DashProps) {
     const {dataset, dashboard, dash} = props
@@ -42,22 +41,20 @@ export default function DashWrapper(props: DashProps) {
     if (dashHandler == null)
         throw new Error('Illegal argument')
 
+    if (!dash.id)
+        throw new Error(`Dash [${dash.name}] has no ID`)
+
     const {t} = useTranslation()
-    const me = useAppSelector(selectMe)
-    const dispatch = useAppDispatch()
     const [datasetData, setDatasetData] = useState<any[]>([])
     const [fullScreen, setFullScreen] = useState<boolean>(false)
     const [loading, setLoading] = useState<boolean>(false)
     const [fetchError, setFetchError] = useState<string | null>(null)
     const [isFiltersModalVisible, setFiltersModalVisible] = useState(false)
-    const sessionFilters = useMemo(
-        () => extract(me?.sessionData ?? {}, ['dashboards', dashboard.name, 'dashes', dash.name, 'filters']),
-        [dash.name, dashboard.name, me?.sessionData]
-    )
+    const sessionFilters = useMemo(() => extract(extractSessionData(), ['dashboards', dashboard.id, 'dashes', dash.id, 'filters']), [dash.id, dashboard.id])
     const [filters, setFilters] = useState<QueryBlock>(sessionFilters ?? dash.defaultFilters ?? generateQueryBlock())
     const [filtersForm] = Form.useForm()
     const dashHeight = (dashHandler.height ?? biConfig.viewRowHeight) * dash.h
-    
+
     useEffect(() => {
         setFilters(sessionFilters ?? dash.defaultFilters ?? generateQueryBlock())
     }, [dash.defaultFilters, sessionFilters])
@@ -131,11 +128,11 @@ export default function DashWrapper(props: DashProps) {
         const newFilters = fromFormQueryBlock(dataset, values.filters)
 
         // Set session data
-        const sessionData = me?.sessionData ? _.cloneDeep(me.sessionData) : {}
-        assign(sessionData, ['dashboards', dashboard.name, 'dashes', dash.name, 'filters'], newFilters)
-        dispatch(updateSessionData(sessionData))
+        const newSessionData = extractSessionData()
+        assign(newSessionData, ['dashboards', dashboard.id, 'dashes', dash.id, 'filters'], newFilters)
+        localStorage.setItem('sessionData', JSON.stringify(newSessionData))
 
-        // setFilters(newFilters) // updates in useEffect()
+        setFilters(newFilters) // if we use server session data, it should be update in useEffect()
         setFiltersModalVisible(false)
     }
 
