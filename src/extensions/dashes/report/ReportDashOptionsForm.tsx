@@ -1,13 +1,11 @@
 import {DashOptionsFormProps} from '../../../bi'
-import {Col, Form, Input, Popover, Row, Select, Space, Tabs} from 'antd'
+import {Col, Form, Input, Popover, Row, Select, Space} from 'antd'
 import React from 'react'
 import {useTranslation} from 'react-i18next'
 import styles from '../DashOptionForm.module.css'
 import TransferInput from '../../../components/transfer-input/TransferInput'
 import {QuestionCircleOutlined} from '@ant-design/icons'
-import Icons from '../../../components/icons/Icons'
-import Colors from '../../../components/colors/Colors'
-import RulesHelp from './RulesHelp'
+import RulesHelp from '../../../bi/RulesHelp'
 
 const {Item: FormItem} = Form
 const {TextArea} = Input
@@ -15,14 +13,6 @@ const {TextArea} = Input
 export default function ReportDashOptionsForm({dataset, availableColNames, fieldName, values}: DashOptionsFormProps) {
     const {t} = useTranslation()
     const datasetColumns = dataset.spec.columns ?? {}
-
-    const renderHelpContent = () => {
-        return <Tabs items={[
-            {key: 'rules', label: t('Rules'), children: <RulesHelp height={350}/>},
-            {key: 'colors', label: t('Colors'), children: <Colors height={350}/>},
-            {key: 'icons', label: t('Icons'), children: <Icons height={350}/>},
-        ]}/>
-    }
 
     return (
         <Row gutter={10}>
@@ -52,7 +42,7 @@ export default function ReportDashOptionsForm({dataset, availableColNames, field
                             <Popover
                                 arrow={false}
                                 placement="bottom"
-                                content={renderHelpContent()}
+                                content={<RulesHelp height={350}/>}
                                 overlayInnerStyle={{width: 1060}}
                             >
                                 <QuestionCircleOutlined className="blue"/>

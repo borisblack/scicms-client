@@ -1,11 +1,24 @@
 import {useTranslation} from 'react-i18next'
-import {useMemo} from 'react'
+import React, {useMemo} from 'react'
+import {Tabs} from 'antd'
+import Colors from '../components/colors/Colors'
+import Icons from '../components/icons/Icons'
 
 interface Props {
     height?: number | string
 }
 
 export default function RulesHelp({height}: Props) {
+    const {t} = useTranslation()
+
+    return <Tabs items={[
+        {key: 'rules', label: t('Rules'), children: <RulesDescription height={height}/>},
+        {key: 'colors', label: t('Colors'), children: <Colors height={height}/>},
+        {key: 'icons', label: t('Icons'), children: <Icons height={height}/>}
+    ]}/>
+}
+
+function RulesDescription({height}: Props) {
     const {t} = useTranslation()
 
     const descriptionContent = useMemo(() => {
