@@ -25,7 +25,7 @@ export default function ReportDashOptionsForm({dataset, availableColNames, field
                 >
                     <TransferInput
                         dataSource={availableColNames.map(cn => ({key: cn, title: datasetColumns[cn]?.alias ?? cn, description: cn}))}
-                        listStyle={{width: 270, height: 220}}
+                        listStyle={{width: 270, height: 180}}
                         titles={[t('All'), t('Selected')]}
                         render={item => <span title={item.description}>{item.title}</span>}
                     />
@@ -51,7 +51,7 @@ export default function ReportDashOptionsForm({dataset, availableColNames, field
                     )}
                     initialValue={values.rules}
                 >
-                    <TextArea rows={10}/>
+                    <TextArea rows={8}/>
                 </FormItem>
             </Col>
 

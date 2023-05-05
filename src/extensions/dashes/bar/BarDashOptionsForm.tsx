@@ -1,11 +1,11 @@
-import {DashOptionsFormProps} from '../../../bi'
-import {Checkbox, Col, Form, Input, Popover, Row, Select, Space} from 'antd'
 import React from 'react'
 import {useTranslation} from 'react-i18next'
-import {legendPositions} from '../util'
-import styles from '../DashOptionForm.module.css'
+import {Checkbox, Col, Form, Input, Popover, Row, Select, Space} from 'antd'
 import {QuestionCircleOutlined} from '@ant-design/icons'
+import {DashOptionsFormProps} from '../../../bi'
+import {legendPositions} from '../util'
 import RulesHelp from '../../../bi/RulesHelp'
+import styles from '../DashOptionForm.module.css'
 
 const {Item: FormItem} = Form
 const {TextArea} = Input
