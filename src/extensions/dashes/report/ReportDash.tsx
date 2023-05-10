@@ -8,8 +8,8 @@ import RulesService from '../../../services/rules'
 
 interface ReportDashOpts {
     displayedColNames: string[]
-    rules?: string
     keyColName?: string
+    rules?: string
 }
 
 const rulesService = RulesService.getInstance()

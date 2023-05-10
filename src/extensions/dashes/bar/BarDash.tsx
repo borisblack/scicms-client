@@ -4,6 +4,8 @@ import {formatValue, isTemporal, parseDashColor} from '../../../util/bi'
 import {DashRenderContext} from '../index'
 import {LegendPosition} from '../util'
 import biConfig from '../../../config/bi'
+import {useMemo} from 'react'
+import RulesService from '../../../services/rules'
 
 interface BarDashOpts {
     xField?: string
@@ -14,11 +16,13 @@ interface BarDashOpts {
     xAxisLabelAutoRotate?: boolean
     isStack?: boolean
     isGroup?: boolean
+    rules?: string
 }
 
 const {dash: dashConfig, locale} = biConfig
 const axisLabelStyle = dashConfig?.all?.axisLabelStyle
 const legendConfig = dashConfig?.all?.legend
+const rulesService = RulesService.getInstance()
 
 export default function BarDash({dataset, dash, data}: DashRenderContext) {
     const {
@@ -29,8 +33,11 @@ export default function BarDash({dataset, dash, data}: DashRenderContext) {
         legendPosition,
         xAxisLabelAutoRotate,
         isStack,
-        isGroup
+        isGroup,
+        rules
     } = dash.optValues as BarDashOpts
+    const fieldRules = useMemo(() => rulesService.parseRules(rules), [rules])
+
     if (!xField)
         return <Alert message="xField attribute not specified" type="error"/>
 
