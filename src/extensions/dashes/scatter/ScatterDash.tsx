@@ -1,9 +1,12 @@
 import {DashRenderContext} from '../index'
 import {Alert} from 'antd'
 import {Scatter, ScatterConfig} from '@ant-design/charts'
-import {formatValue, isTemporal, parseDashColor} from '../../../util/bi'
+import {defaultDashColor, defaultDashColors, formatValue, isTemporal} from '../../../util/bi'
 import {LegendPosition} from '../util'
 import biConfig from '../../../config/bi'
+import RulesService from '../../../services/rules'
+import {useMemo} from 'react'
+import _ from 'lodash'
 
 interface ScatterDashOptions {
     xField?: string
@@ -12,11 +15,13 @@ interface ScatterDashOptions {
     legendPosition?: LegendPosition
     hideLegend?: boolean
     xAxisLabelAutoRotate?: boolean
+    rules?: string
 }
 
 const {dash: dashConfig, locale} = biConfig
 const axisLabelStyle = dashConfig?.all?.axisLabelStyle
 const legendConfig = dashConfig?.all?.legend
+const rulesService = RulesService.getInstance()
 
 export default function ScatterDash({dataset, dash, data}: DashRenderContext) {
     const {
@@ -25,8 +30,13 @@ export default function ScatterDash({dataset, dash, data}: DashRenderContext) {
         colorField,
         hideLegend,
         legendPosition,
-        xAxisLabelAutoRotate
+        xAxisLabelAutoRotate,
+        rules
     } = dash.optValues as ScatterDashOptions
+    const fieldRules = useMemo(() => rulesService.parseRules(rules), [rules])
+    const seriesData = colorField ? _.uniqBy(data, colorField) : []
+    const seriesColors = colorField ? rulesService.getSeriesColors(fieldRules, colorField, seriesData, defaultDashColors()) : []
+    const defaultColor = defaultDashColor()
 
     if (!xField)
         return <Alert message="xField attribute not specified" type="error"/>
@@ -97,7 +107,7 @@ export default function ScatterDash({dataset, dash, data}: DashRenderContext) {
                 formatter: (value: any) => formatValue(value, yColumn.type)
             }
         },
-        color: parseDashColor(),
+        color: colorField ? seriesColors : (record => (rulesService.getFieldColor(fieldRules, xField, record) ?? (defaultColor as string))),
         locale
     }
 

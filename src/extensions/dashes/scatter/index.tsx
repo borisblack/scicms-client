@@ -1,12 +1,12 @@
 import {Dash} from '../index'
 import ScatterDash from './ScatterDash'
-import {bubbleDashOptions} from '../util'
+import ScatterDashOptionsForm from './ScatterDashOptionsForm'
 
 const DASH_ID = 'scatter'
 
 export const scatter: Dash = {
     id: DASH_ID,
-    options: bubbleDashOptions.filter(opt => opt.name !== 'sizeField'),
+    renderOptionsForm: (props) => <ScatterDashOptionsForm {...props}/>,
     icon: 'DotChartOutlined',
     render: ({context}) => <ScatterDash {...context}/>
 }

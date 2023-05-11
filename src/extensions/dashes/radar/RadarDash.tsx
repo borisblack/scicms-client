@@ -92,7 +92,7 @@ export default function RadarDash({dataset, dash, data}: DashRenderContext) {
                 formatter: (value: any) => formatValue(value, yColumn.type)
             }
         },
-        color: seriesField ? seriesColors : (record => (rulesService.getFieldColor(fieldRules, yField, record) ?? (defaultColor as string))),
+        color: seriesField ? seriesColors : (record => (rulesService.getFieldColor(fieldRules, xField, record) ?? (defaultColor as string))),
         locale
     }
 
