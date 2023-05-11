@@ -1,7 +1,7 @@
 import {DashRenderContext} from '../index'
 import {Alert} from 'antd'
 import {Pie, PieConfig} from '@ant-design/charts'
-import {formatValue, parseDashColor} from '../../../util/bi'
+import {defaultDashColor, formatValue} from '../../../util/bi'
 import {LegendPosition} from '../util'
 import biConfig from '../../../config/bi'
 import RulesService from '../../../services/rules'
@@ -30,6 +30,7 @@ export default function PieDash({dataset, dash, data}: DashRenderContext) {
         rules
     } = dash.optValues as PieDashOptions
     const fieldRules = useMemo(() => rulesService.parseRules(rules), [rules])
+    const defaultColor = defaultDashColor()
 
     if (!angleField)
         return <Alert message="angleField attribute not specified" type="error"/>
@@ -80,7 +81,7 @@ export default function PieDash({dataset, dash, data}: DashRenderContext) {
                 formatter: (value: any) => formatValue(value, colorColumn.type)
             }
         },
-        color: parseDashColor(),
+        color: record => (rulesService.getFieldColor(fieldRules, colorField, record) ?? (defaultColor as string)),
         locale
     }
 

@@ -308,6 +308,22 @@ export function parseDashColor(single: boolean = false): string | string[] | und
     return color
 }
 
+export function defaultDashColor(): string | undefined {
+    const colors = defaultDashColors()
+    return colors == null ? undefined : colors[0]
+}
+
+export function defaultDashColors(): string[] {
+    const color = dashConfig?.all?.color
+    if (color == null)
+        return []
+
+    if (Array.isArray(color))
+        return color.length === 0 ? [] : color
+
+    return [color]
+}
+
 export function toFormQueryBlock(dataset: Dataset, queryBlock?: QueryBlock): QueryBlock {
     if (queryBlock == null)
         return generateQueryBlock()

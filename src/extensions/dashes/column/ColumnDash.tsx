@@ -1,11 +1,12 @@
 import {DashRenderContext} from '../index'
 import {Alert} from 'antd'
 import {Column, ColumnConfig} from '@ant-design/charts'
-import {formatValue, isTemporal, parseDashColor} from '../../../util/bi'
+import {defaultDashColor, defaultDashColors, formatValue, isTemporal} from '../../../util/bi'
 import {LegendPosition} from '../util'
 import biConfig from '../../../config/bi'
 import {useMemo} from 'react'
 import RulesService from '../../../services/rules'
+import _ from 'lodash'
 
 interface ColumnDashOptions {
     xField?: string
@@ -37,6 +38,9 @@ export default function ColumnDash({dataset, dash, data}: DashRenderContext) {
         rules
     } = dash.optValues as ColumnDashOptions
     const fieldRules = useMemo(() => rulesService.parseRules(rules), [rules])
+    const seriesData = seriesField ? _.uniqBy(data, seriesField) : []
+    const seriesColors = seriesField ? rulesService.getSeriesColors(fieldRules, seriesField, seriesData, defaultDashColors()) : []
+    const defaultColor = defaultDashColor()
 
     if (!xField)
         return <Alert message="xField attribute not specified" type="error"/>
@@ -90,7 +94,7 @@ export default function ColumnDash({dataset, dash, data}: DashRenderContext) {
                 formatter: (value: any) => formatValue(value, yColumn.type)
             }
         },
-        color: seriesField ? parseDashColor(true) : (record, defaultColor) => (rulesService.getFieldColor(fieldRules, xField, record) ?? defaultColor as string),
+        color: seriesField ? seriesColors : (record => (rulesService.getFieldColor(fieldRules, yField, record) ?? (defaultColor as string))),
         locale
     }
 

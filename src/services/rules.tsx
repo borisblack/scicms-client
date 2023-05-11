@@ -3,7 +3,6 @@ import {notifyErrorThrottled} from '../util'
 import i18n from '../i18n'
 import {CSSProperties, ReactNode} from 'react'
 import {allIcons} from '../util/icons'
-import {parseDashColor} from '../util/bi'
 
 export interface FieldRule {
     condition?: string
@@ -150,7 +149,6 @@ export default class RulesService {
     }
 
     getFieldColor(fieldRules: FieldRule[], fieldName: string, record: Record<string, any>): string | undefined {
-        const defaultColor = parseDashColor(true)
         let fieldColor: string | undefined = undefined
         for (const rule of fieldRules) {
             if (rule.condition == null || evaluateExpression(rule.condition, record)) {
@@ -160,6 +158,17 @@ export default class RulesService {
             }
         }
 
-        return fieldColor ?? (defaultColor as string | undefined)
+        return fieldColor
+    }
+
+    getSeriesColors(fieldRules: FieldRule[], fieldName: string, seriesData: any[], defaultColors: string[]): string[] {
+        if (defaultColors.length === 0)
+            return []
+
+        return seriesData.map((s, i) => {
+            const color = this.getFieldColor(fieldRules, fieldName, {[fieldName]: s})
+
+            return color ?? defaultColors[i % defaultColors.length]
+        })
     }
 }
