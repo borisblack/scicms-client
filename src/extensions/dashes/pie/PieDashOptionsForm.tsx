@@ -1,5 +1,5 @@
 import {DashOptionsFormProps} from '../../../bi'
-import {Checkbox, Col, Form, Input, Popover, Row, Select, Space} from 'antd'
+import {Checkbox, Col, Form, Input, InputNumber, Popover, Row, Select, Space} from 'antd'
 import React from 'react'
 import {useTranslation} from 'react-i18next'
 import {legendPositions} from '../util'
@@ -10,7 +10,7 @@ import {QuestionCircleOutlined} from '@ant-design/icons'
 const {Item: FormItem} = Form
 const {TextArea} = Input
 
-export default function ColumnDashOptionsForm({dataset, availableColNames, fieldName, values}: DashOptionsFormProps) {
+export default function PieDashOptionsForm({dataset, availableColNames, fieldName, values}: DashOptionsFormProps) {
     const {t} = useTranslation()
     const datasetColumns = dataset.spec.columns ?? {}
 
@@ -19,9 +19,9 @@ export default function ColumnDashOptionsForm({dataset, availableColNames, field
             <Col span={6}>
                 <FormItem
                     className={styles.formItem}
-                    name={[fieldName, 'xField']}
-                    label={t('x-axis field')}
-                    initialValue={values.xField}
+                    name={[fieldName, 'angleField']}
+                    label={t('Angle field')}
+                    initialValue={values.angleField}
                     rules={[{required: true, message: t('Required field')}]}
                 >
                     <Select allowClear options={availableColNames.map(cn => ({value: cn, label: datasetColumns[cn]?.alias ?? cn}))}/>
@@ -31,9 +31,9 @@ export default function ColumnDashOptionsForm({dataset, availableColNames, field
             <Col span={6}>
                 <FormItem
                     className={styles.formItem}
-                    name={[fieldName, 'yField']}
-                    label={t('y-axis field')}
-                    initialValue={values.yField}
+                    name={[fieldName, 'colorField']}
+                    label={t('Color field')}
+                    initialValue={values.colorField}
                     rules={[{required: true, message: t('Required field')}]}
                 >
                     <Select allowClear options={availableColNames.map(cn => ({value: cn, label: datasetColumns[cn]?.alias ?? cn}))}/>
@@ -43,11 +43,15 @@ export default function ColumnDashOptionsForm({dataset, availableColNames, field
             <Col span={6}>
                 <FormItem
                     className={styles.formItem}
-                    name={[fieldName, 'seriesField']}
-                    label={t('Series field')}
-                    initialValue={values.seriesField}
+                    name={[fieldName, 'radius']}
+                    label={t('Radius')}
+                    initialValue={values.radius}
+                    rules={[
+                        {type: 'number', min: 0},
+                        {type: 'number', max: 1}
+                    ]}
                 >
-                    <Select allowClear options={availableColNames.map(cn => ({value: cn, label: datasetColumns[cn]?.alias ?? cn}))}/>
+                    <InputNumber style={{width: '100%'}} min={0} max={1} step={0.1}/>
                 </FormItem>
             </Col>
 
@@ -65,44 +69,11 @@ export default function ColumnDashOptionsForm({dataset, availableColNames, field
             <Col span={6}>
                 <FormItem
                     className={styles.formItem}
-                    name={[fieldName, 'xAxisLabelAutoRotate']}
-                    valuePropName="checked"
-                    initialValue={values.xAxisLabelAutoRotate}
-                >
-                    <Checkbox style={{marginTop: 24}}>{t('Auto rotate x-axis label')}</Checkbox>
-                </FormItem>
-            </Col>
-
-            <Col span={6}>
-                <FormItem
-                    className={styles.formItem}
                     name={[fieldName, 'hideLegend']}
                     valuePropName="checked"
                     initialValue={values.hideLegend}
                 >
                     <Checkbox style={{marginTop: 24}}>{t('Hide legend')}</Checkbox>
-                </FormItem>
-            </Col>
-
-            <Col span={6}>
-                <FormItem
-                    className={styles.formItem}
-                    name={[fieldName, 'isStack']}
-                    valuePropName="checked"
-                    initialValue={values.isStack}
-                >
-                    <Checkbox style={{marginTop: 24}}>{t('Stack')}</Checkbox>
-                </FormItem>
-            </Col>
-
-            <Col span={6}>
-                <FormItem
-                    className={styles.formItem}
-                    name={[fieldName, 'isGroup']}
-                    valuePropName="checked"
-                    initialValue={values.isGroup}
-                >
-                    <Checkbox style={{marginTop: 24}}>{t('Group')}</Checkbox>
                 </FormItem>
             </Col>
 

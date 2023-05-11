@@ -90,7 +90,7 @@ export default function BarDash({dataset, dash, data}: DashRenderContext) {
                 formatter: (value: any) => formatValue(value, yColumn.type)
             }
         },
-        color: parseDashColor(seriesField == null),
+        color: seriesField ? parseDashColor(true) : (record, defaultColor) => (rulesService.getFieldColor(fieldRules, yField, record) ?? defaultColor as string),
         locale
     }
 

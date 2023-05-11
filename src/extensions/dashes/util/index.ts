@@ -10,15 +10,6 @@ export interface XYDashOptions {
     hideLegend?: boolean
 }
 
-export interface DoughnutDashOptions {
-    angleField?: string
-    colorField?: string
-    radius?: number
-    innerRadius?: number
-    legendPosition?: LegendPosition
-    hideLegend?: boolean
-}
-
 export interface BubbleDashOptions {
     xField?: string
     yField?: string
@@ -61,15 +52,6 @@ export const xyDashOptions: DashOption[] = [
     {name: 'yField', type: DashOptionType.string, label: 'y-axis field', required: true, fromDataset: true},
     {name: 'seriesField', type: DashOptionType.string, label: 'Series field', fromDataset: true},
     {name: 'legendPosition', type: DashOptionType.string, label: 'Legend position', enumSet: [...legendPositions], defaultValue: 'top-left'},
-    {name: 'hideLegend', type: DashOptionType.boolean, label: 'Hide legend'}
-]
-
-export const doughnutDashOptions: DashOption[] = [
-    {name: 'angleField', type: DashOptionType.string, label: 'Angle field', required: true, fromDataset: true},
-    {name: 'colorField', type: DashOptionType.string, label: 'Color field', required: true, fromDataset: true},
-    {name: 'radius', type: DashOptionType.number, label: 'Radius', min: 0, max: 1, defaultValue: 1},
-    {name: 'innerRadius', type: DashOptionType.number, label: 'Inner radius', min: 0, max: 1, defaultValue: 0},
-    {name: 'legendPosition', type: DashOptionType.string, label: 'Legend position', enumSet: [...legendPositions], defaultValue: 'right'},
     {name: 'hideLegend', type: DashOptionType.boolean, label: 'Hide legend'}
 ]
 

@@ -2,16 +2,35 @@ import {DashRenderContext} from '../index'
 import {Alert} from 'antd'
 import {Pie, PieConfig} from '@ant-design/charts'
 import {formatValue, parseDashColor} from '../../../util/bi'
-import {DoughnutDashOptions} from '../util'
+import {LegendPosition} from '../util'
 import biConfig from '../../../config/bi'
+import RulesService from '../../../services/rules'
+import {useMemo} from 'react'
 
-type PieDashOptions = Omit<DoughnutDashOptions, 'innerRadius'>
+interface PieDashOptions {
+    angleField?: string
+    colorField?: string
+    radius?: number
+    legendPosition?: LegendPosition
+    hideLegend?: boolean
+    rules?: string
+}
 
 const {locale, percentFractionDigits, dash: dashConfig} = biConfig
 const legendConfig = dashConfig?.all?.legend
+const rulesService = RulesService.getInstance()
 
 export default function PieDash({dataset, dash, data}: DashRenderContext) {
-    const {angleField, colorField, radius, hideLegend, legendPosition} = dash.optValues as PieDashOptions
+    const {
+        angleField,
+        colorField,
+        radius,
+        hideLegend,
+        legendPosition,
+        rules
+    } = dash.optValues as PieDashOptions
+    const fieldRules = useMemo(() => rulesService.parseRules(rules), [rules])
+
     if (!angleField)
         return <Alert message="angleField attribute not specified" type="error"/>
 

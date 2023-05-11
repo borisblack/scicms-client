@@ -4,6 +4,8 @@ import {Column, ColumnConfig} from '@ant-design/charts'
 import {formatValue, isTemporal, parseDashColor} from '../../../util/bi'
 import {LegendPosition} from '../util'
 import biConfig from '../../../config/bi'
+import {useMemo} from 'react'
+import RulesService from '../../../services/rules'
 
 interface ColumnDashOptions {
     xField?: string
@@ -14,11 +16,13 @@ interface ColumnDashOptions {
     xAxisLabelAutoRotate?: boolean
     isStack?: boolean
     isGroup?: boolean
+    rules?: string
 }
 
 const {dash: dashConfig, locale} = biConfig
 const axisLabelStyle = dashConfig?.all?.axisLabelStyle
 const legendConfig = dashConfig?.all?.legend
+const rulesService = RulesService.getInstance()
 
 export default function ColumnDash({dataset, dash, data}: DashRenderContext) {
     const {
@@ -29,8 +33,10 @@ export default function ColumnDash({dataset, dash, data}: DashRenderContext) {
         legendPosition,
         xAxisLabelAutoRotate,
         isStack,
-        isGroup
+        isGroup,
+        rules
     } = dash.optValues as ColumnDashOptions
+    const fieldRules = useMemo(() => rulesService.parseRules(rules), [rules])
 
     if (!xField)
         return <Alert message="xField attribute not specified" type="error"/>
@@ -84,7 +90,7 @@ export default function ColumnDash({dataset, dash, data}: DashRenderContext) {
                 formatter: (value: any) => formatValue(value, yColumn.type)
             }
         },
-        color: parseDashColor(seriesField == null),
+        color: seriesField ? parseDashColor(true) : (record, defaultColor) => (rulesService.getFieldColor(fieldRules, xField, record) ?? defaultColor as string),
         locale
     }
 
