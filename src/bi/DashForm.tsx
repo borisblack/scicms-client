@@ -5,7 +5,6 @@ import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {fromFormQueryBlock, generateQueryBlock, getCustomFunctionsInfo, toFormQueryBlock} from '../util/bi'
 import DatasetService from '../services/dataset'
 import {CheckboxChangeEvent} from 'antd/es/checkbox'
-import DashOptFieldWrapper from './DashOptFieldWrapper'
 import DashFilters from './dash-filters/DashFilters'
 import styles from './DashboardSpec.module.css'
 import {Dash, getDash, getDashIds} from '../extensions/dashes'
@@ -123,32 +122,14 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
         if (dashHandler == null)
             return null
 
-        const {options, renderOptionsForm} = dashHandler
-        if (renderOptionsForm != null)
-            return dataset && renderOptionsForm({
-                dataset,
-                availableColNames,
-                form,
-                fieldName: 'optValues',
-                values: dash.optValues ?? {}
-            })
-
-        if (options != null)
-            return (
-                <Row gutter={10}>
-                    {options.map(opt => (
-                        <Col key={opt.name} span={6}>
-                            <DashOptFieldWrapper
-                                dashOpt={opt}
-                                availableColumns={availableColNames}
-                                initialValue={dash.optValues ? dash.optValues[opt.name] : undefined}
-                            />
-                        </Col>
-                    ))}
-                </Row>
-            )
-
-        return null
+        const {renderOptionsForm} = dashHandler
+        return dataset && renderOptionsForm({
+            dataset,
+            availableColNames,
+            form,
+            fieldName: 'optValues',
+            values: dash.optValues ?? {}
+        })
     }
 
     return (

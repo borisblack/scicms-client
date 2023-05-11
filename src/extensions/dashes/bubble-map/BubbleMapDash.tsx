@@ -1,9 +1,12 @@
+import _ from 'lodash'
 import {DashRenderContext} from '../index'
-import {useRef} from 'react'
+import {useMemo, useRef} from 'react'
 import {Alert} from 'antd'
 import {BubbleMapController, ColorScale, GeoFeature, ProjectionScale, SizeScale} from 'chartjs-chart-geo'
 import Chart from 'chart.js/auto'
 import {LegendPosition} from '../util'
+import RulesService from '../../../services/rules'
+import {defaultDashColor, defaultDashColors} from '../../../util/bi'
 
 interface BubbleMapDashOptions {
     latitudeField?: string
@@ -13,9 +16,13 @@ interface BubbleMapDashOptions {
     colorField?: string
     legendPosition?: LegendPosition
     hideLegend?: boolean
+    xAxisLabelAutoRotate?: boolean
+    rules?: string
 }
 
 Chart.register(BubbleMapController, GeoFeature, ColorScale, ProjectionScale, SizeScale)
+
+const rulesService = RulesService.getInstance()
 
 export default function BubbleMapDash({pageKey, fullScreen, dataset, dash, data}: DashRenderContext) {
     const {
@@ -25,11 +32,17 @@ export default function BubbleMapDash({pageKey, fullScreen, dataset, dash, data}
         sizeField,
         colorField,
         hideLegend,
-        legendPosition
+        legendPosition,
+        xAxisLabelAutoRotate,
+        rules
     } = dash.optValues as BubbleMapDashOptions
     // const [countries, setCountries] = useState([])
     // const labels = useMemo(() => mapLabels(data, colorField), [data, colorField])
     // const preparedData = useMemo(() => map3dMapMetrics(dash, data), [data, dash])
+    const fieldRules = useMemo(() => rulesService.parseRules(rules), [rules])
+    const seriesData = colorField ? _.uniqBy(data, colorField) : []
+    const seriesColors = colorField ? rulesService.getSeriesColors(fieldRules, colorField, seriesData, defaultDashColors()) : []
+    const defaultColor = defaultDashColor()
     const canvasRef = useRef<HTMLCanvasElement>(null)
 
     if (!latitudeField)

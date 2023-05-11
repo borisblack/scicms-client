@@ -1,12 +1,11 @@
 import _ from 'lodash'
 import {ReactElement, ReactNode} from 'react'
-import {DashOption, DashOptionsFormProps, DashProps} from '../../bi'
+import {DashOptionsFormProps, DashProps} from '../../bi'
 import dashConfig from '../../config/dash'
 
 export interface Dash {
     id: string
-    options?: DashOption[]
-    renderOptionsForm?: (props: DashOptionsFormProps) => ReactNode
+    renderOptionsForm: (props: DashOptionsFormProps) => ReactNode
     icon: string
     height?: number
     render: (props: DashRenderProps) => ReactNode
