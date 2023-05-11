@@ -1,14 +1,32 @@
 import {DashRenderContext} from '../index'
 import {useRef} from 'react'
 import {Alert} from 'antd'
-import {BubbleMapController, ColorScale, GeoFeature, ProjectionScale, SizeScale, topojson} from 'chartjs-chart-geo'
+import {BubbleMapController, ColorScale, GeoFeature, ProjectionScale, SizeScale} from 'chartjs-chart-geo'
 import Chart from 'chart.js/auto'
-import {BubbleMapDashOptions} from '../util'
+import {LegendPosition} from '../util'
+
+interface BubbleMapDashOptions {
+    latitudeField?: string
+    longitudeField?: string
+    locationField?: string
+    sizeField?: string
+    colorField?: string
+    legendPosition?: LegendPosition
+    hideLegend?: boolean
+}
 
 Chart.register(BubbleMapController, GeoFeature, ColorScale, ProjectionScale, SizeScale)
 
 export default function BubbleMapDash({pageKey, fullScreen, dataset, dash, data}: DashRenderContext) {
-    const {latitudeField, longitudeField, locationField, sizeField, colorField, hideLegend, legendPosition} = dash.optValues as BubbleMapDashOptions
+    const {
+        latitudeField,
+        longitudeField,
+        locationField,
+        sizeField,
+        colorField,
+        hideLegend,
+        legendPosition
+    } = dash.optValues as BubbleMapDashOptions
     // const [countries, setCountries] = useState([])
     // const labels = useMemo(() => mapLabels(data, colorField), [data, colorField])
     // const preparedData = useMemo(() => map3dMapMetrics(dash, data), [data, dash])

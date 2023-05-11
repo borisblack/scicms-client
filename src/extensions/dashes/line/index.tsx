@@ -1,16 +1,12 @@
 import {Dash} from '../index'
 import LineDash from './LineDash'
-import {DashOptionType} from '../../../bi'
-import {xyDashOptions} from '../util'
+import LineDashOptionsForm from './LineDashOptionsForm'
 
 const DASH_ID = 'line'
 
 export const line: Dash = {
     id: DASH_ID,
-    options: [
-        ...xyDashOptions,
-        {name: 'xAxisLabelAutoRotate', type: DashOptionType.boolean, label: 'Auto rotate x-axis label'}
-    ],
+    renderOptionsForm: (props) => <LineDashOptionsForm {...props}/>,
     icon: 'LineChartOutlined',
     render: ({context}) => <LineDash {...context}/>
 }

@@ -1,12 +1,12 @@
 import {Dash} from '../index'
 import AreaDash from './AreaDash'
-import {xyDashOptions} from '../util'
+import AreaDashOptionsForm from './AreaDashOptionsForm'
 
 const DASH_ID = 'area'
 
 export const area: Dash = {
     id: DASH_ID,
-    options: [...xyDashOptions],
+    renderOptionsForm: (props) => <AreaDashOptionsForm {...props}/>,
     icon: 'AreaChartOutlined',
     render: ({context}) => <AreaDash {...context}/>
 }

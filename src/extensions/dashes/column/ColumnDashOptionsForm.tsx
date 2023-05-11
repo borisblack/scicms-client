@@ -65,22 +65,22 @@ export default function ColumnDashOptionsForm({dataset, availableColNames, field
             <Col span={6}>
                 <FormItem
                     className={styles.formItem}
-                    name={[fieldName, 'xAxisLabelAutoRotate']}
+                    name={[fieldName, 'hideLegend']}
                     valuePropName="checked"
-                    initialValue={values.xAxisLabelAutoRotate}
+                    initialValue={values.hideLegend}
                 >
-                    <Checkbox style={{marginTop: 24}}>{t('Auto rotate x-axis label')}</Checkbox>
+                    <Checkbox style={{marginTop: 24}}>{t('Hide legend')}</Checkbox>
                 </FormItem>
             </Col>
 
             <Col span={6}>
                 <FormItem
                     className={styles.formItem}
-                    name={[fieldName, 'hideLegend']}
+                    name={[fieldName, 'xAxisLabelAutoRotate']}
                     valuePropName="checked"
-                    initialValue={values.hideLegend}
+                    initialValue={values.xAxisLabelAutoRotate}
                 >
-                    <Checkbox style={{marginTop: 24}}>{t('Hide legend')}</Checkbox>
+                    <Checkbox style={{marginTop: 24}}>{t('Auto rotate x-axis label')}</Checkbox>
                 </FormItem>
             </Col>
 

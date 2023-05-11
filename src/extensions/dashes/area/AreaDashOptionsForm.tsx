@@ -10,7 +10,7 @@ import styles from '../DashOptionForm.module.css'
 const {Item: FormItem} = Form
 const {TextArea} = Input
 
-export default function BarDashOptionsForm({dataset, availableColNames, fieldName, values}: DashOptionsFormProps) {
+export default function AreaDashOptionsForm({dataset, availableColNames, fieldName, values}: DashOptionsFormProps) {
     const {t} = useTranslation()
     const datasetColumns = dataset.spec.columns ?? {}
 
@@ -81,28 +81,6 @@ export default function BarDashOptionsForm({dataset, availableColNames, fieldNam
                     initialValue={values.xAxisLabelAutoRotate}
                 >
                     <Checkbox style={{marginTop: 24}}>{t('Auto rotate x-axis label')}</Checkbox>
-                </FormItem>
-            </Col>
-
-            <Col span={6}>
-                <FormItem
-                    className={styles.formItem}
-                    name={[fieldName, 'isStack']}
-                    valuePropName="checked"
-                    initialValue={values.isStack}
-                >
-                    <Checkbox style={{marginTop: 24}}>{t('Stack')}</Checkbox>
-                </FormItem>
-            </Col>
-
-            <Col span={6}>
-                <FormItem
-                    className={styles.formItem}
-                    name={[fieldName, 'isGroup']}
-                    valuePropName="checked"
-                    initialValue={values.isGroup}
-                >
-                    <Checkbox style={{marginTop: 24}}>{t('Group')}</Checkbox>
                 </FormItem>
             </Col>
 

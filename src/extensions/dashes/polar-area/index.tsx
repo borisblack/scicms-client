@@ -1,12 +1,12 @@
 import {Dash} from '../index'
 import PolarAreaDash from './PolarAreaDash'
-import {xyDashOptions} from '../util'
+import PolarAreaDashOptionsForm from './PolarAreaDashOptionsForm'
 
 const DASH_ID = 'polarArea'
 
 export const polarArea: Dash = {
     id: DASH_ID,
-    options: [...xyDashOptions],
+    renderOptionsForm: (props) => <PolarAreaDashOptionsForm {...props}/>,
     icon: 'FaChartPie',
     render: ({context}) => <PolarAreaDash {...context}/>
 }

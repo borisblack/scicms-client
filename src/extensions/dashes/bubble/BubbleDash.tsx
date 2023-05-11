@@ -1,17 +1,35 @@
 import {Alert} from 'antd'
 import {Scatter, ScatterConfig} from '@ant-design/charts'
-import {isTemporal} from '../../../util/bi'
-import {formatValue, parseDashColor} from '../../../util/bi'
+import {formatValue, isTemporal, parseDashColor} from '../../../util/bi'
 import {DashRenderContext} from '../index'
-import {BubbleDashOptions} from '../util'
 import biConfig from '../../../config/bi'
+import {LegendPosition} from '../util'
+
+interface BubbleDashOptions {
+    xField?: string
+    yField?: string
+    sizeField?: string
+    colorField?: string
+    legendPosition?: LegendPosition
+    hideLegend?: boolean
+    xAxisLabelAutoRotate?: boolean
+}
 
 const {dash: dashConfig, locale} = biConfig
 const axisLabelStyle = dashConfig?.all?.axisLabelStyle
 const legendConfig = dashConfig?.all?.legend
 
 export default function BubbleDash({dataset, dash, data}: DashRenderContext) {
-    const {xField, yField, sizeField, colorField, hideLegend, legendPosition, xAxisLabelAutoRotate} = dash.optValues as BubbleDashOptions
+    const {
+        xField,
+        yField,
+        sizeField,
+        colorField,
+        hideLegend,
+        legendPosition,
+        xAxisLabelAutoRotate
+    } = dash.optValues as BubbleDashOptions
+
     if (!xField)
         return <Alert message="xField attribute not specified" type="error"/>
 
