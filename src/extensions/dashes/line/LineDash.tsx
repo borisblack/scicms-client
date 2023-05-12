@@ -34,7 +34,7 @@ export default function LineDash({dataset, dash, data}: DashRenderContext) {
         rules
     } = dash.optValues as LineDashOptions
     const fieldRules = useMemo(() => rulesService.parseRules(rules), [rules])
-    const seriesData = seriesField ? _.uniqBy(data, seriesField) : []
+    const seriesData = seriesField ? _.uniqBy(data, seriesField).map(r => r[seriesField]) : []
     const seriesColors = seriesField ? rulesService.getSeriesColors(fieldRules, seriesField, seriesData, defaultDashColors()) : []
     const defaultColor = defaultDashColor()
 

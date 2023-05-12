@@ -38,7 +38,7 @@ export default function ColumnDash({dataset, dash, data}: DashRenderContext) {
         rules
     } = dash.optValues as ColumnDashOptions
     const fieldRules = useMemo(() => rulesService.parseRules(rules), [rules])
-    const seriesData = seriesField ? _.uniqBy(data, seriesField) : []
+    const seriesData = seriesField ? _.uniqBy(data, seriesField).map(r => r[seriesField]) : []
     const seriesColors = seriesField ? rulesService.getSeriesColors(fieldRules, seriesField, seriesData, defaultDashColors()) : []
     const defaultColor = defaultDashColor()
 
