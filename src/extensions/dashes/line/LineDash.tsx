@@ -1,7 +1,7 @@
 import {DashRenderContext} from '../index'
 import {Alert} from 'antd'
 import {Line, LineConfig} from '@ant-design/charts'
-import {defaultDashColor, defaultDashColors, formatValue, isTemporal, parseDashColor} from '../../../util/bi'
+import {defaultDashColor, defaultDashColors, formatValue, isTemporal} from '../../../util/bi'
 import {LegendPosition} from '../util'
 import biConfig from '../../../config/bi'
 import RulesService from '../../../services/rules'
@@ -35,7 +35,7 @@ export default function LineDash({dataset, dash, data}: DashRenderContext) {
     } = dash.optValues as LineDashOptions
     const fieldRules = useMemo(() => rulesService.parseRules(rules), [rules])
     const seriesData = seriesField ? _.uniqBy(data, seriesField).map(r => r[seriesField]) : []
-    const seriesColors = seriesField ? rulesService.getSeriesColors(fieldRules, seriesField, seriesData, defaultDashColors()) : []
+    const seriesColors = seriesField ? rulesService.getSeriesColors(fieldRules, seriesField, seriesData, defaultDashColors(seriesData.length)) : []
     const defaultColor = defaultDashColor()
 
     if (!xField)

@@ -41,7 +41,7 @@ export default function BubbleMapDash({pageKey, fullScreen, dataset, dash, data}
     // const preparedData = useMemo(() => map3dMapMetrics(dash, data), [data, dash])
     const fieldRules = useMemo(() => rulesService.parseRules(rules), [rules])
     const seriesData = colorField ? _.uniqBy(data, colorField).map(r => r[colorField]) : []
-    const seriesColors = colorField ? rulesService.getSeriesColors(fieldRules, colorField, seriesData, defaultDashColors()) : []
+    const seriesColors = colorField ? rulesService.getSeriesColors(fieldRules, colorField, seriesData, defaultDashColors(seriesData.length)) : []
     const defaultColor = defaultDashColor()
     const canvasRef = useRef<HTMLCanvasElement>(null)
 

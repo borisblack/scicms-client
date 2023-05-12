@@ -118,19 +118,15 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
         setDashType(newDashType)
     }, [])
 
-    function renderDashOptions() {
-        if (dashHandler == null)
-            return null
-
-        const {renderOptionsForm} = dashHandler
-        return dataset && renderOptionsForm({
+    const renderDashOptions = () => (
+        dataset && dashHandler && dashHandler.renderOptionsForm({
             dataset,
             availableColNames,
             form,
             fieldName: 'optValues',
             values: dash.optValues ?? {}
         })
-    }
+    )
 
     return (
         <Form

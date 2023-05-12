@@ -161,14 +161,17 @@ export default class RulesService {
         return fieldColor
     }
 
-    getSeriesColors(fieldRules: FieldRule[], fieldName: string, seriesData: any[], defaultColors: string[]): string[] {
-        if (defaultColors.length === 0)
-            return []
+    getSeriesColors(fieldRules: FieldRule[], fieldName: string, seriesData: any[], defaultColors: string[] | undefined): string[] | undefined {
+        const isDefaultColorsEmpty = defaultColors == null || defaultColors.length === 0
+        const colors =
+            seriesData
+                .map((s, i) => {
+                    const color = this.getFieldColor(fieldRules, fieldName, {[fieldName]: s})
 
-        return seriesData.map((s, i) => {
-            const color = this.getFieldColor(fieldRules, fieldName, {[fieldName]: s})
+                    return color ?? (isDefaultColorsEmpty ? undefined : defaultColors[i % defaultColors.length])
+                })
+                .filter(c => c != null)
 
-            return color ?? defaultColors[i % defaultColors.length]
-        })
+        return colors.length === 0 ? undefined : (colors as string[])
     }
 }

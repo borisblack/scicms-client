@@ -37,7 +37,7 @@ export default function BubbleDash({dataset, dash, data}: DashRenderContext) {
     } = dash.optValues as BubbleDashOptions
     const fieldRules = useMemo(() => rulesService.parseRules(rules), [rules])
     const seriesData = colorField ? _.uniqBy(data, colorField).map(r => r[colorField]) : []
-    const seriesColors = colorField ? rulesService.getSeriesColors(fieldRules, colorField, seriesData, defaultDashColors()) : []
+    const seriesColors = colorField ? rulesService.getSeriesColors(fieldRules, colorField, seriesData, defaultDashColors(seriesData.length)) : []
     const defaultColor = defaultDashColor()
 
     if (!xField)

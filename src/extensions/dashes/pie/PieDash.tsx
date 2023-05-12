@@ -32,7 +32,7 @@ export default function PieDash({dataset, dash, data}: DashRenderContext) {
     } = dash.optValues as PieDashOptions
     const fieldRules = useMemo(() => rulesService.parseRules(rules), [rules])
     const seriesData = colorField ? _.uniqBy(data, colorField).map(r => r[colorField]) : []
-    const seriesColors = colorField ? rulesService.getSeriesColors(fieldRules, colorField, seriesData, defaultDashColors()) : []
+    const seriesColors = colorField ? rulesService.getSeriesColors(fieldRules, colorField, seriesData, defaultDashColors(seriesData.length)) : []
 
     if (!angleField)
         return <Alert message="angleField attribute not specified" type="error"/>

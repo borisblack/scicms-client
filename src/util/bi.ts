@@ -292,36 +292,18 @@ export const formatValue = (value: any, type: FieldType) => {
     }
 }
 
-export function parseDashColor(single: boolean = false): string | string[] | undefined {
-    const color = dashConfig?.all?.color
-    if (color == null)
-        return undefined
-
-    if (Array.isArray(color)) {
-        if (color.length === 0)
-            return undefined
-
-        if (single)
-            return color[0]
-    }
-
-    return color
-}
-
 export function defaultDashColor(): string | undefined {
     const colors = defaultDashColors()
-    return colors == null ? undefined : colors[0]
+    return (colors == null || colors.length === 0) ? undefined : colors[0]
 }
 
-export function defaultDashColors(): string[] {
-    const color = dashConfig?.all?.color
-    if (color == null)
-        return []
+export function defaultDashColors(cnt: number = 0): string[] | undefined {
+    const allDashConfig = dashConfig?.all ?? {}
+    const colors = (cnt <= 10) ? (allDashConfig.colors10 ?? allDashConfig.colors20) : (allDashConfig.colors20 ?? allDashConfig.colors10)
+    if (colors == null)
+        return undefined
 
-    if (Array.isArray(color))
-        return color.length === 0 ? [] : color
-
-    return [color]
+    return colors.length === 0 ? undefined : colors
 }
 
 export function toFormQueryBlock(dataset: Dataset, queryBlock?: QueryBlock): QueryBlock {
