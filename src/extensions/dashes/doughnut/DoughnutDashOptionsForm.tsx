@@ -60,7 +60,7 @@ export default function DoughnutDashOptionsForm({dataset, availableColNames, fie
                     className={styles.formItem}
                     name={[fieldName, 'innerRadius']}
                     label={t('Inner radius')}
-                    initialValue={values.radius}
+                    initialValue={values.innerRadius}
                     rules={[
                         {type: 'number', min: 0},
                         {type: 'number', max: 1}
