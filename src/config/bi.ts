@@ -39,6 +39,9 @@ interface BiConfig {
             labelStyle: {
                 [key: string]: any
             }
+            statistic?: {
+                title?: false
+            }
         },
         pie?: {
             labelStyle: {

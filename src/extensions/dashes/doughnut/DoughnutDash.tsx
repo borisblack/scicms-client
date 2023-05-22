@@ -70,6 +70,9 @@ export default function DoughnutDash({dataset, dash, data}: DashRenderContext) {
             content: ({ percent }) => `${(percent * 100).toFixed(percentFractionDigits)}%`,
             style: dashConfig?.doughnut?.labelStyle
         },
+        statistic: {
+            title: dashConfig?.doughnut?.statistic?.title,
+        },
         interactions: [{
             type: 'element-selected',
         }, {
