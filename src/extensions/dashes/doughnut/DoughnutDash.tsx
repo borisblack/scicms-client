@@ -20,6 +20,7 @@ export interface DoughnutDashOptions {
 
 const {locale, percentFractionDigits, dash: dashConfig} = biConfig
 const legendConfig = dashConfig?.all?.legend
+const statisticConfig = dashConfig?.doughnut?.statistic
 const rulesService = RulesService.getInstance()
 
 export default function DoughnutDash({dataset, dash, data}: DashRenderContext) {
@@ -48,6 +49,7 @@ export default function DoughnutDash({dataset, dash, data}: DashRenderContext) {
     if (angleColumn == null || colorColumn == null)
         return <Alert message="Invalid columns specification" type="error"/>
 
+    const statistic = statisticConfig?.title == null ? {} : {title: statisticConfig.title}
     const config: PieConfig = {
         appendPadding: 10,
         data,
@@ -70,9 +72,7 @@ export default function DoughnutDash({dataset, dash, data}: DashRenderContext) {
             content: ({ percent }) => `${(percent * 100).toFixed(percentFractionDigits)}%`,
             style: dashConfig?.doughnut?.labelStyle
         },
-        statistic: {
-            title: dashConfig?.doughnut?.statistic?.title,
-        },
+        statistic,
         interactions: [{
             type: 'element-selected',
         }, {
