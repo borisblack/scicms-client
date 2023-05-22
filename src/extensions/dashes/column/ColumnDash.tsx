@@ -76,13 +76,13 @@ export default function ColumnDash({dataset, dash, data}: DashRenderContext) {
                 autoRotate: xAxisLabelAutoRotate,
                 style: axisLabelStyle
             },
-            type: isTemporal(xColumn.type) ? 'time' : undefined
+            // type: isTemporal(xColumn.type) ? 'time' : undefined
         },
         yAxis: {
             label: {
                 style: axisLabelStyle
             },
-            type: isTemporal(yColumn.type) ? 'time' : undefined
+            // type: isTemporal(yColumn.type) ? 'time' : undefined
         },
         meta: {
             [xField]: {
