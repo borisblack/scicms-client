@@ -25,7 +25,7 @@ const customComponentConfig: CustomComponentConfig = {
         lifecycleSpec,
         datasetColumns,
         dashboardSpec,
-        dashboardPreview,
+        // dashboardPreview,
         userGroups // owner is a group
     ]
 }

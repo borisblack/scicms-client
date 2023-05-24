@@ -64,7 +64,7 @@ const biConfig: BiConfig = {
     minRefreshIntervalSeconds: 5,
     openFirstDashboard: true,
     percentFractionDigits: 2,
-    specRowHeight: 100,
+    specRowHeight: 300,
     viewRowHeight: 300,
     dateTime: {
         dateFormatString: 'DD.MM.YYYY',

@@ -53,7 +53,7 @@ export default function DashWrapper(props: DashProps) {
     const sessionFilters = useMemo(() => extract(extractSessionData(), ['dashboards', dashboard.id, 'dashes', dash.id, 'filters']), [dash.id, dashboard.id])
     const [filters, setFilters] = useState<QueryBlock>(sessionFilters ?? dash.defaultFilters ?? generateQueryBlock())
     const [filtersForm] = Form.useForm()
-    const dashHeight = (dashHandler.height ?? biConfig.viewRowHeight) * dash.h
+    const dashHeight = (dashHandler.height ?? biConfig.viewRowHeight) * dash.h - 130
 
     useEffect(() => {
         setFilters(sessionFilters ?? dash.defaultFilters ?? generateQueryBlock())

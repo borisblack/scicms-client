@@ -1,31 +1,32 @@
 .layout {
-    background-color: #eee;
     margin-top: 12px;
 }
 
+.layout:has(.editable) {
+    background-color: #eee;
+}
+
 .layout .dashWrapper {
+    padding: 8px;
     background-color: #fff;
-    border: 1px solid #ccc;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-content: center;
-    align-items: center;
-    justify-items: center;
-    flex-direction: row;
     user-select: none;
 }
 
+.layout .dashWrapper .editable {
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
 .layout .dashWrapper:hover {
-    background-color: #fefbd7;
+    /*background-color: #fefbd7;*/
 }
 
 .layout .dashWrapper.activeDash {
-    background-color: #fef7af;
+    /*background-color: #fef7af;*/
 }
 
 .layout .dashWrapper.activeDash:hover {
-    background-color: #fef386;
+    /*background-color: #fef386;*/
 }
 
 .dashModalFooter {

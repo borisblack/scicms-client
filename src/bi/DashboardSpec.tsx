@@ -1,6 +1,6 @@
-import {useMemo, useState} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 import RGL, {Layout, WidthProvider} from 'react-grid-layout'
-import {Button, Form, Modal} from 'antd'
+import {Alert, Button, Form, Modal} from 'antd'
 import {useTranslation} from 'react-i18next'
 import {v4 as uuidv4} from 'uuid'
 import 'react-grid-layout/css/styles.css'
@@ -9,24 +9,25 @@ import 'react-resizable/css/styles.css'
 import {CustomComponentRenderContext} from '../extensions/custom-components'
 import {DASHBOARD_ITEM_NAME, DEBUG} from '../config/constants'
 import PermissionService from '../services/permission'
-import {IDash, IDashboardSpec} from '../types'
+import {Dashboard, Dataset, IDash, IDashboardSpec} from '../types'
 import DashForm, {DashValues} from './DashForm'
 import {DeleteOutlined} from '@ant-design/icons'
 import {generateQueryBlock} from '../util/bi'
 import styles from './DashboardSpec.module.css'
-import {getDash} from '../extensions/dashes'
-import {allIcons} from '../util/icons'
 import biConfig from '../config/bi'
+import _ from 'lodash'
+import DatasetService from '../services/dataset'
+import DashWrapper from './DashWrapper'
 
 const ReactGridLayout = WidthProvider(RGL)
-
+const datasetService = DatasetService.getInstance()
 const initialSpec: IDashboardSpec = {
     dashes: []
 }
 
 let seqNum = 0
 
-export default function DashboardSpec({me, item, data, buffer, onBufferChange}: CustomComponentRenderContext) {
+export default function DashboardSpec({me, pageKey, item, data, buffer, onBufferChange}: CustomComponentRenderContext) {
     if (item.name !== DASHBOARD_ITEM_NAME)
         throw new Error('Illegal argument')
 
@@ -41,10 +42,18 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
     }, [data, isLockedByMe, isNew, item, me, permissionService])
     const [canEdit] = permissions
     const spec: IDashboardSpec = buffer.spec ?? data?.spec ?? initialSpec
+    const [datasets, setDatasets] = useState<{[name: string]: Dataset} | null>(null)
+    const dashboard = {...data, spec} as Dashboard
     const allDashes = spec.dashes ?? []
     const [activeDash, setActiveDash] = useState<IDash | null>(null)
     const [isDashModalVisible, setDashModalVisible] = useState(false)
     const [dashForm] = Form.useForm()
+
+    useEffect(() => {
+        datasetService.findAll().then(datasetList => {
+            setDatasets(_.mapKeys(datasetList, ds => ds.name))
+        })
+    }, [])
 
     function handleDashAdd() {
         const newSpec: IDashboardSpec = {
@@ -173,17 +182,44 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
     }
 
     function renderDash(dash: IDash) {
-        const dashHandler = getDash(dash.type)
-        const icon = dashHandler?.icon
-        const Icon = icon ? allIcons[icon] : null
+        // const dashHandler = getDash(dash.type)
+        // const icon = dashHandler?.icon
+        // const Icon = icon ? allIcons[icon] : null
+        // return (
+        //     <div
+        //         key={dash.name}
+        //         className={`${styles.dashWrapper} ${activeDash?.name === dash.name ? styles.activeDash : ''}`}
+        //         onClick={() => selectDash(dash)}
+        //         onDoubleClick={() => openDash(dash)}
+        //     >
+        //         {Icon && <Icon/>}&nbsp;{dash.name}&nbsp;({dash.type})
+        //     </div>
+        // )
+
+        if (datasets == null)
+            throw new Error('Illegal state')
+
+        const datasetName = dash.dataset
+        if (!datasetName)
+            return <Alert message="Dataset name not specified" type="error"/>
+
+        const dataset = datasets[datasetName]
+        if (!dataset)
+            return <Alert message="Dataset not found" type="error"/>
+
         return (
             <div
                 key={dash.name}
-                className={`${styles.dashWrapper} ${activeDash?.name === dash.name ? styles.activeDash : ''}`}
+                className={`${styles.dashWrapper} ${activeDash?.name === dash.name ? styles.activeDash : ''} ${canEdit ? styles.editable : ''}`}
                 onClick={() => selectDash(dash)}
                 onDoubleClick={() => openDash(dash)}
             >
-                {Icon && <Icon/>}&nbsp;{dash.name}&nbsp;({dash.type})
+                <DashWrapper
+                    pageKey={pageKey}
+                    dataset={dataset}
+                    dashboard={dashboard}
+                    dash={dash}
+                />
             </div>
         )
     }
@@ -193,7 +229,7 @@ export default function DashboardSpec({me, item, data, buffer, onBufferChange}: 
     return (
         <>
             <Button type="dashed" disabled={!canEdit} onClick={handleDashAdd}>{t('Add Dash')}</Button>
-            {allDashes.length > 0 && (
+            {datasets && allDashes.length > 0 && (
                 <ReactGridLayout
                     className={styles.layout}
                     layout={layout}
