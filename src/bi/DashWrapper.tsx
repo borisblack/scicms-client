@@ -3,7 +3,7 @@ import {Dropdown, Empty, Form, Modal, notification, Space, Spin, Tooltip} from '
 import {PageHeader} from '@ant-design/pro-layout'
 import {useTranslation} from 'react-i18next'
 import 'chartjs-adapter-luxon'
-import {DashProps} from './index'
+import {DashWrapperProps} from './index'
 import {
     ExclamationCircleOutlined,
     FilterOutlined,
@@ -35,7 +35,7 @@ const datasetService = DatasetService.getInstance()
 
 const extractSessionData = () => JSON.parse(localStorage.getItem('sessionData') ?? '{}')
 
-export default function DashWrapper(props: DashProps) {
+export default function DashWrapper(props: DashWrapperProps) {
     const {dataset, dashboard, dash} = props
     const dashHandler: Dash | undefined = useMemo(() => getDash(dash.type), [dash.type])
     if (dashHandler == null)
@@ -53,7 +53,7 @@ export default function DashWrapper(props: DashProps) {
     const sessionFilters = useMemo(() => extract(extractSessionData(), ['dashboards', dashboard.id, 'dashes', dash.id, 'filters']), [dash.id, dashboard.id])
     const [filters, setFilters] = useState<QueryBlock>(sessionFilters ?? dash.defaultFilters ?? generateQueryBlock())
     const [filtersForm] = Form.useForm()
-    const dashHeight = (dashHandler.height ?? biConfig.viewRowHeight) * dash.h - 130
+    const dashHeight = biConfig.rowHeight * dash.h - 50
 
     useEffect(() => {
         setFilters(sessionFilters ?? dash.defaultFilters ?? generateQueryBlock())
@@ -69,6 +69,9 @@ export default function DashWrapper(props: DashProps) {
     }, [dash.refreshIntervalSeconds])
 
     const fetchDatasetData = async () => {
+        if (!dataset)
+            return
+
         if (dash.isAggregate && !dash.aggregateType)
             throw new Error('aggregateType must be specified')
 
@@ -98,9 +101,7 @@ export default function DashWrapper(props: DashProps) {
             setFetchError(e.message)
             notification.error({
                 message: t('Loading error'),
-                description: e.message,
-                duration: appConfig.ui.notificationDuration,
-                placement: appConfig.ui.notificationPlacement
+                description: e.message
             })
         } finally {
             setLoading(false)
@@ -116,7 +117,7 @@ export default function DashWrapper(props: DashProps) {
     }
 
     const renderSubTitle = (): string | null =>
-        printQueryBlock(dataset, filters)
+        dataset ? printQueryBlock(dataset, filters) : ''
 
     const getSettingsMenuItems = () => [{
         key: 'filters',
@@ -125,6 +126,9 @@ export default function DashWrapper(props: DashProps) {
     }]
 
     async function handleFiltersFormFinish(values: FiltersFormValues) {
+        if (!dataset)
+            return
+
         const newFilters = fromFormQueryBlock(dataset, values.filters)
 
         // Set session data
@@ -166,47 +170,50 @@ export default function DashWrapper(props: DashProps) {
                     {datasetData.length === 0 ? (
                         <Spin spinning={loading}>
                             <div className={styles.centerChildContainer} style={{height: fullScreen ? '50vh' : dashHeight}}>
-                                <Empty/>
+                                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>
                             </div>
                         </Spin>
                     ) : (
-                        dashHandler.render({
+                        dataset && dashHandler.render({
                             context: {
                                 height: dashHeight,
                                 fullScreen,
                                 data: datasetData,
-                                ...props
+                                ...props,
+                                dataset
                             }
                         })
                     )}
                 </div>
             </FullScreen>
 
-            <Modal
-                title={(
-                    <Space style={{fontSize: 16}}>
-                        {t('Filters')}
-                        <Tooltip
-                            placement="rightBottom"
-                            overlayInnerStyle={{width: 400}}
-                            title={<>{getCustomFunctionsInfo().map((s, i) => <div key={i}>{s}</div>)}</>}
-                        >
-                            <QuestionCircleOutlined className="blue"/>
-                        </Tooltip>
-                    </Space>
-                )}
-                open={isFiltersModalVisible}
-                width={1280}
-                onOk={() => filtersForm.submit()}
-                onCancel={() => setFiltersModalVisible(false)}
-            >
-                <FiltersFom
-                    form={filtersForm}
-                    dataset={dataset}
-                    defaultFilters={filters}
-                    onFormFinish={handleFiltersFormFinish}
-                />
-            </Modal>
+            {dataset && (
+                <Modal
+                    title={(
+                        <Space style={{fontSize: 16}}>
+                            {t('Filters')}
+                            <Tooltip
+                                placement="rightBottom"
+                                overlayInnerStyle={{width: 400}}
+                                title={<>{getCustomFunctionsInfo().map((s, i) => <div key={i}>{s}</div>)}</>}
+                            >
+                                <QuestionCircleOutlined className="blue"/>
+                            </Tooltip>
+                        </Space>
+                    )}
+                    open={isFiltersModalVisible}
+                    width={1280}
+                    onOk={() => filtersForm.submit()}
+                    onCancel={() => setFiltersModalVisible(false)}
+                >
+                    <FiltersFom
+                        form={filtersForm}
+                        dataset={dataset}
+                        defaultFilters={filters}
+                        onFormFinish={handleFiltersFormFinish}
+                    />
+                </Modal>
+            )}
         </>
     )
 }

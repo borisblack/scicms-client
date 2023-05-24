@@ -1,13 +1,13 @@
 interface BiConfig {
     cols: number
+    rowHeight: number
     defaultDashType: string
+    defaultDashHeight: number
     defaultPageSize: number
     defaultRefreshIntervalSeconds: number
     locale: string
     maxPageSize: number
     minRefreshIntervalSeconds: number
-    specRowHeight: number
-    viewRowHeight: number
     openFirstDashboard: boolean
     percentFractionDigits: number
     dateTime: {
@@ -56,7 +56,9 @@ interface BiConfig {
 
 const biConfig: BiConfig = {
     cols: 24,
+    rowHeight: 100,
     defaultDashType: 'bar',
+    defaultDashHeight: 4,
     defaultPageSize: 100,
     defaultRefreshIntervalSeconds: 300,
     locale: 'ru-RU',
@@ -64,8 +66,6 @@ const biConfig: BiConfig = {
     minRefreshIntervalSeconds: 5,
     openFirstDashboard: true,
     percentFractionDigits: 2,
-    specRowHeight: 300,
-    viewRowHeight: 300,
     dateTime: {
         dateFormatString: 'DD.MM.YYYY',
         timeFormatString: 'HH:mm',

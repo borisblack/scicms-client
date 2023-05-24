@@ -8,6 +8,5 @@ export const report: Dash = {
     id: DASH_ID,
     renderOptionsForm: (props) => <ReportDashOptionsForm {...props}/>,
     icon: 'TableOutlined',
-    height: 500,
     render: ({context}) => <ReportDash {...context}/>
 }

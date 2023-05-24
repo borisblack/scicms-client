@@ -8,6 +8,5 @@ export const statistic: Dash = {
     id: DASH_ID,
     renderOptionsForm: (props) => <StatisticDashOptionsForm {...props}/>,
     icon: 'BarChartOutlined',
-    height: 100,
     render: ({context}) => <StatisticDash {...context}/>
 }

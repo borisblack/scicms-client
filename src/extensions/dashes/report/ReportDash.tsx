@@ -49,7 +49,7 @@ export default function ReportDash({dataset, dash, height, fullScreen, data}: Da
             dataSource={data}
             rowKey={keyColName ? keyColName : () => uuidv4()}
             pagination={false}
-            scroll={{y: fullScreen ? '80vh' : height - 100}}
+            // scroll={{y: fullScreen ? '80vh' : height}}
         />
     )
 }

@@ -1,11 +1,15 @@
 import {Dashboard, Dataset, IDash} from '../types'
 import {FormInstance} from 'antd'
 
-export interface DashProps {
+export interface DashWrapperProps {
     pageKey: string
-    dataset: Dataset
+    dataset?: Dataset
     dashboard: Dashboard
     dash: IDash
+}
+
+export interface DashProps extends DashWrapperProps {
+    dataset: Dataset
 }
 
 export interface DashOption {

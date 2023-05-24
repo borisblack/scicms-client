@@ -1,6 +1,6 @@
 import {useEffect, useMemo, useState} from 'react'
 import RGL, {Layout, WidthProvider} from 'react-grid-layout'
-import {Alert, Button, Form, Modal} from 'antd'
+import {Button, Form, Modal} from 'antd'
 import {useTranslation} from 'react-i18next'
 import {v4 as uuidv4} from 'uuid'
 import 'react-grid-layout/css/styles.css'
@@ -64,7 +64,7 @@ export default function DashboardSpec({me, pageKey, item, data, buffer, onBuffer
                     x: 0,
                     y: 0,
                     w: biConfig.cols / 2,
-                    h: 1,
+                    h: biConfig.defaultDashHeight,
                     type: biConfig.defaultDashType,
                     optValues: {},
                     defaultFilters: generateQueryBlock(),
@@ -182,30 +182,8 @@ export default function DashboardSpec({me, pageKey, item, data, buffer, onBuffer
     }
 
     function renderDash(dash: IDash) {
-        // const dashHandler = getDash(dash.type)
-        // const icon = dashHandler?.icon
-        // const Icon = icon ? allIcons[icon] : null
-        // return (
-        //     <div
-        //         key={dash.name}
-        //         className={`${styles.dashWrapper} ${activeDash?.name === dash.name ? styles.activeDash : ''}`}
-        //         onClick={() => selectDash(dash)}
-        //         onDoubleClick={() => openDash(dash)}
-        //     >
-        //         {Icon && <Icon/>}&nbsp;{dash.name}&nbsp;({dash.type})
-        //     </div>
-        // )
-
         if (datasets == null)
             throw new Error('Illegal state')
-
-        const datasetName = dash.dataset
-        if (!datasetName)
-            return <Alert message="Dataset name not specified" type="error"/>
-
-        const dataset = datasets[datasetName]
-        if (!dataset)
-            return <Alert message="Dataset not found" type="error"/>
 
         return (
             <div
@@ -216,7 +194,7 @@ export default function DashboardSpec({me, pageKey, item, data, buffer, onBuffer
             >
                 <DashWrapper
                     pageKey={pageKey}
-                    dataset={dataset}
+                    dataset={datasets[dash.dataset ?? '']}
                     dashboard={dashboard}
                     dash={dash}
                 />
@@ -234,7 +212,7 @@ export default function DashboardSpec({me, pageKey, item, data, buffer, onBuffer
                     className={styles.layout}
                     layout={layout}
                     cols={biConfig.cols}
-                    rowHeight={biConfig.specRowHeight}
+                    rowHeight={biConfig.rowHeight}
                     isDraggable={canEdit}
                     isDroppable={canEdit}
                     isResizable={canEdit}
