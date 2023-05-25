@@ -17,7 +17,6 @@ import {
 import FullScreen from '../components/fullscreen/FullScreen'
 import styles from './DashWrapper.module.css'
 import DatasetService, {DatasetInput} from '../services/dataset'
-import appConfig from '../config'
 import {
     fromFormQueryBlock,
     generateQueryBlock,
@@ -116,8 +115,8 @@ export default function DashWrapper(props: DashWrapperProps) {
         setFullScreen(fullScreen)
     }
 
-    const renderSubTitle = (): string | null =>
-        dataset ? printQueryBlock(dataset, filters) : ''
+    const renderSubTitle = () =>
+        <span style={{color: 'rgba(0, 0, 0, 0.65)'}}>{dataset ? printQueryBlock(dataset, filters) : ''}</span>
 
     const getSettingsMenuItems = () => [{
         key: 'filters',
@@ -152,7 +151,8 @@ export default function DashWrapper(props: DashWrapperProps) {
                             {(!loading && fetchError != null) && <>&nbsp;&nbsp;<ExclamationCircleOutlined className="red" title={fetchError}/></>}
                         </>
                     )}
-                    subTitle={renderSubTitle()}
+                    // subTitle={renderSubTitle()}
+                    footer={renderSubTitle()}
                     extra={[
                         <ReloadOutlined key="refresh" className={styles.toolbarBtn} title={t('Refresh')} onClick={() => fetchDatasetData()}/>,
                         <Dropdown key="settings" placement="bottomRight" trigger={['click']} menu={{items: getSettingsMenuItems()}}>
