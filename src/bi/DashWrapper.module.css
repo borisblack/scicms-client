@@ -2,6 +2,16 @@
     padding: 16px;
 }
 
+.title {
+    flex-wrap: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.subTitle {
+    color: rgba(0, 0, 0, 0.65);
+}
+
 .toolbarBtn {
     font-size: 18px;
     cursor: pointer;

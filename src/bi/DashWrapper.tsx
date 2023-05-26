@@ -116,7 +116,7 @@ export default function DashWrapper(props: DashWrapperProps) {
     }
 
     const renderSubTitle = () =>
-        <span style={{color: 'rgba(0, 0, 0, 0.65)'}}>{dataset ? printQueryBlock(dataset, filters) : ''}</span>
+        <span className={styles.subTitle}>{dataset ? printQueryBlock(dataset, filters) : ''}</span>
 
     const getSettingsMenuItems = () => [{
         key: 'filters',
@@ -145,11 +145,11 @@ export default function DashWrapper(props: DashWrapperProps) {
                 <PageHeader
                     className={styles.pageHeader}
                     title={(
-                        <>
+                        <div className={styles.title}>
                             {dash.name + (dash.unit ? `, ${dash.unit}` : '')}
                             {loading && <>&nbsp;&nbsp;<SyncOutlined spin className="blue"/></>}
                             {(!loading && fetchError != null) && <>&nbsp;&nbsp;<ExclamationCircleOutlined className="red" title={fetchError}/></>}
-                        </>
+                        </div>
                     )}
                     // subTitle={renderSubTitle()}
                     footer={renderSubTitle()}
