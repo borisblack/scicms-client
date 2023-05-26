@@ -461,7 +461,7 @@ function parseManualFilterValue(value?: string): any {
     }
 }
 
-export function printQueryBlock(dataset: Dataset, queryBlock: QueryBlock): string | null {
+export function printQueryBlock(dataset: Dataset, queryBlock: QueryBlock): string | undefined {
     let buf: string[]  = []
     const logicalOpTitle = logicalOpTitles[queryBlock.logicalOp ?? LogicalOp.$and]
     for (const queryFilter of queryBlock.filters) {
@@ -485,7 +485,7 @@ export function printQueryBlock(dataset: Dataset, queryBlock: QueryBlock): strin
         buf.push(`(${nestedQueryBlockContent})`)
     }
 
-    return buf.length === 0 ? null : buf.join(' ')
+    return buf.length === 0 ? undefined : buf.join(' ')
 }
 
 function printQueryFilter(dataset: Dataset, filter: QueryFilter): string {

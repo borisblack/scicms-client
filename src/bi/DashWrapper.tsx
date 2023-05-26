@@ -115,8 +115,12 @@ export default function DashWrapper(props: DashWrapperProps) {
         setFullScreen(fullScreen)
     }
 
-    const renderSubTitle = () =>
-        <span className={styles.subTitle}>{dataset ? printQueryBlock(dataset, filters) : ''}</span>
+    const renderTitle = () => dash.name + (dash.unit ? `, ${dash.unit}` : '')
+
+    const renderSubTitle = () => {
+        const queryBlock = dataset ? printQueryBlock(dataset, filters) : ''
+        return <span className={styles.subTitle} title={queryBlock}>{queryBlock}</span>
+    }
 
     const getSettingsMenuItems = () => [{
         key: 'filters',
@@ -139,14 +143,15 @@ export default function DashWrapper(props: DashWrapperProps) {
         setFiltersModalVisible(false)
     }
 
+    const title = renderTitle()
     return (
         <>
             <FullScreen active={fullScreen}>
                 <PageHeader
                     className={styles.pageHeader}
                     title={(
-                        <div className={styles.title}>
-                            {dash.name + (dash.unit ? `, ${dash.unit}` : '')}
+                        <div className={styles.title} title={title}>
+                            {title}
                             {loading && <>&nbsp;&nbsp;<SyncOutlined spin className="blue"/></>}
                             {(!loading && fetchError != null) && <>&nbsp;&nbsp;<ExclamationCircleOutlined className="red" title={fetchError}/></>}
                         </div>
