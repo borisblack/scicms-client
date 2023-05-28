@@ -108,7 +108,7 @@ export default class PermissionService {
 
     private permissions: PermissionCache = {}
 
-    async initialize(me?: UserInfo) {
+    async initialize(me?: UserInfo | null) {
         if (me) {
             const data = await this.findAllByIdentityNames([...me.roles, me.username])
             this.permissions = arrayToCache(data)

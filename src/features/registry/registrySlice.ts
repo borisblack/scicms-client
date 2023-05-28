@@ -20,7 +20,7 @@ const initialState: RegistryState = {
 
 const initializeIfNeeded = createAsyncThunk(
     'auth/initialize',
-    async (me?: UserInfo) => {
+    async (me?: UserInfo | null) => {
         await Promise.all([
             CoreConfigService.getInstance().initialize(),
             ItemTemplateService.getInstance().initialize(),

@@ -1,6 +1,4 @@
-.layout {
-    margin-top: 12px;
-}
+.layout {}
 
 .layout:has(.editable) {
     background-color: #eee;

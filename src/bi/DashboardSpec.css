@@ -1,0 +1,3 @@
+.react-grid-item:has(.full-screen-wrapper-active) {
+    transform: none !important;
+}

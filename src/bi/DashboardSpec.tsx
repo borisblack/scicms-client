@@ -13,11 +13,12 @@ import {Dashboard, Dataset, IDash, IDashboardSpec} from '../types'
 import DashForm, {DashValues} from './DashForm'
 import {DeleteOutlined} from '@ant-design/icons'
 import {generateQueryBlock} from '../util/bi'
-import styles from './DashboardSpec.module.css'
 import biConfig from '../config/bi'
 import _ from 'lodash'
 import DatasetService from '../services/dataset'
 import DashWrapper from './DashWrapper'
+import styles from './DashboardSpec.module.css'
+import './DashboardSpec.css'
 
 const ReactGridLayout = WidthProvider(RGL)
 const datasetService = DatasetService.getInstance()
@@ -25,9 +26,13 @@ const initialSpec: IDashboardSpec = {
     dashes: []
 }
 
+interface DashboardSpecProps extends CustomComponentRenderContext {
+    readOnly?: boolean
+}
+
 let seqNum = 0
 
-export default function DashboardSpec({me, pageKey, item, data, buffer, onBufferChange}: CustomComponentRenderContext) {
+export default function DashboardSpec({me, pageKey, item, data, buffer, readOnly, onBufferChange}: DashboardSpecProps) {
     if (item.name !== DASHBOARD_ITEM_NAME)
         throw new Error('Illegal argument')
 
@@ -46,6 +51,7 @@ export default function DashboardSpec({me, pageKey, item, data, buffer, onBuffer
     const dashboard = {...data, spec} as Dashboard
     const allDashes = spec.dashes ?? []
     const [activeDash, setActiveDash] = useState<IDash | null>(null)
+    const [isFullScreen, setFullScreen] = useState<boolean>(false)
     const [isDashModalVisible, setDashModalVisible] = useState(false)
     const [dashForm] = Form.useForm()
 
@@ -197,25 +203,27 @@ export default function DashboardSpec({me, pageKey, item, data, buffer, onBuffer
                     dataset={datasets[dash.dataset ?? '']}
                     dashboard={dashboard}
                     dash={dash}
+                    onFullScreenChange={setFullScreen}
                 />
             </div>
         )
     }
 
     const layout = allDashes.map(it => ({i: it.name, x: it.x, y: it.y, w: it.w, h: it.h}))
-
+    const isEditable = !readOnly && canEdit && !(activeDash && isFullScreen)
     return (
         <>
-            <Button type="dashed" disabled={!canEdit} onClick={handleDashAdd}>{t('Add Dash')}</Button>
+            {!readOnly && <Button type="dashed" style={{marginBottom: 12}} disabled={!isEditable} onClick={handleDashAdd}>{t('Add Dash')}</Button>}
+
             {datasets && allDashes.length > 0 && (
                 <ReactGridLayout
                     className={styles.layout}
                     layout={layout}
                     cols={biConfig.cols}
                     rowHeight={biConfig.rowHeight}
-                    isDraggable={canEdit}
-                    isDroppable={canEdit}
-                    isResizable={canEdit}
+                    isDraggable={isEditable}
+                    isDroppable={isEditable}
+                    isResizable={isEditable}
                     onLayoutChange={handleLayoutChange}
                 >
                     {allDashes.map(it => renderDash(it))}

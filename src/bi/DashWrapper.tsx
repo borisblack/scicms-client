@@ -30,12 +30,14 @@ import FiltersFom, {FiltersFormValues} from './FiltersForm'
 import {assign, extract} from '../util'
 import {QueryBlock} from '../types'
 
+const PAGE_HEADER_HEIGHT = 120
+
 const datasetService = DatasetService.getInstance()
 
 const extractSessionData = () => JSON.parse(localStorage.getItem('sessionData') ?? '{}')
 
 export default function DashWrapper(props: DashWrapperProps) {
-    const {dataset, dashboard, dash} = props
+    const {dataset, dashboard, dash, onFullScreenChange} = props
     const dashHandler: Dash | undefined = useMemo(() => getDash(dash.type), [dash.type])
     if (dashHandler == null)
         throw new Error('Illegal argument')
@@ -52,7 +54,7 @@ export default function DashWrapper(props: DashWrapperProps) {
     const sessionFilters = useMemo(() => extract(extractSessionData(), ['dashboards', dashboard.id, 'dashes', dash.id, 'filters']), [dash.id, dashboard.id])
     const [filters, setFilters] = useState<QueryBlock>(sessionFilters ?? dash.defaultFilters ?? generateQueryBlock())
     const [filtersForm] = Form.useForm()
-    const dashHeight = biConfig.rowHeight * dash.h - 50
+    const dashHeight = biConfig.rowHeight * dash.h - PAGE_HEADER_HEIGHT
 
     useEffect(() => {
         setFilters(sessionFilters ?? dash.defaultFilters ?? generateQueryBlock())
@@ -113,13 +115,14 @@ export default function DashWrapper(props: DashWrapperProps) {
 
     const handleFullScreenChange = (fullScreen: boolean) => {
         setFullScreen(fullScreen)
+        onFullScreenChange?.(fullScreen)
     }
 
     const renderTitle = () => dash.name + (dash.unit ? `, ${dash.unit}` : '')
 
     const renderSubTitle = () => {
         const queryBlock = dataset ? printQueryBlock(dataset, filters) : ''
-        return <span className={styles.subTitle} title={queryBlock}>{queryBlock}</span>
+        return <div className={styles.subTitle} title={queryBlock}>{queryBlock}</div>
     }
 
     const getSettingsMenuItems = () => [{
@@ -171,7 +174,7 @@ export default function DashWrapper(props: DashWrapperProps) {
                     ]}
                 />
 
-                <div style={{margin: fullScreen ? 16 : 0, height: fullScreen ? '90vh' : dashHeight}}>
+                <div style={{margin: fullScreen ? 16 : 0, height: fullScreen ? '85vh' : dashHeight}}>
                     {datasetData.length === 0 ? (
                         <Spin spinning={loading}>
                             <div className={styles.centerChildContainer} style={{height: fullScreen ? '50vh' : dashHeight}}>

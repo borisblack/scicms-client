@@ -1,5 +1,5 @@
 import {CSSProperties, ReactNode, useMemo} from 'react'
-import styles from './FullScreenWrapper.module.css'
+import './FullScreen.css'
 
 interface Props {
     active: boolean
@@ -32,7 +32,7 @@ export default function FullScreen({active, fullScreenStyle, normalStyle, childr
     )
 
     return (
-        <div className={`${styles.fullScreenWrapper} ${active ? styles.fullScreenWrapperActive : ''}`} style={wrapperStyle}>
+        <div className={`full-screen-wrapper ${active ? 'full-screen-wrapper-active' : ''}`} style={wrapperStyle}>
             {children}
         </div>
     )

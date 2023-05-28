@@ -7,7 +7,6 @@ import {userRoles} from '../extensions/custom-components/user/user-roles/user-ro
 import {lifecycleSpec} from '../extensions/custom-components/lifecycle/spec/lifecycle-spec'
 import {datasetColumns} from '../extensions/custom-components/dataset/columns/dataset-columns'
 import {dashboardSpec} from '../extensions/custom-components/dashboard/spec/dashboard-spec'
-import {dashboardPreview} from '../extensions/custom-components/dashboard/preview/dashboard-preview'
 import {userGroups} from '../extensions/custom-components/user/user-groups/user-groups'
 
 interface CustomComponentConfig {
@@ -25,7 +24,6 @@ const customComponentConfig: CustomComponentConfig = {
         lifecycleSpec,
         datasetColumns,
         dashboardSpec,
-        // dashboardPreview,
         userGroups // owner is a group
     ]
 }

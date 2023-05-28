@@ -1,0 +1,10 @@
+.full-screen-wrapper {
+    background-color: #fff;
+    overflow: auto;
+}
+
+.full-screen-wrapper-active {}
+
+body:has(.full-screen-wrapper-active) {
+    overflow-y: hidden
+}

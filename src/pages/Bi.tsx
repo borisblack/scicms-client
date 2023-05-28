@@ -7,14 +7,14 @@ import {Layout, Menu, Spin, Tabs} from 'antd'
 import {FundOutlined, LogoutOutlined, UserOutlined} from '@ant-design/icons'
 import {useAppDispatch, useAppSelector} from '../util/hooks'
 import {logout, selectIsExpired, selectMe} from '../features/auth/authSlice'
-import {reset as resetRegistry} from '../features/registry/registrySlice'
+import {initializeIfNeeded, reset as resetRegistry} from '../features/registry/registrySlice'
 import {reset as resetPages} from '../features/pages/pagesSlice'
 import DashboardService from '../services/dashboard'
 import {Dashboard} from '../types'
-import DashboardPanel from '../bi/DashboardPanel'
 import './Bi.css'
 import logo from '../logo.svg'
 import biConfig from '../config/bi'
+import DashboardSpecReadOnlyWrapper from '../bi/DashboardSpecReadOnlyWrapper'
 
 const {Content, Sider} = Layout
 
@@ -32,6 +32,10 @@ function Bi() {
     const [loading, setLoading] = useState<boolean>(false)
     const [tabPages, setTabPages] = useState<{[key: string]: Dashboard}>({})
     const [activeKey, setActiveKey] = useState<string | undefined>()
+
+    useEffect(() => {
+        dispatch(initializeIfNeeded(me))
+    }, [me, dispatch])
 
     useEffect(() => {
         setLoading(true)
@@ -83,7 +87,7 @@ function Bi() {
             closeTab(e as string)
     }, [closeTab])
 
-    const openDashboard = useCallback((dashboard: Dashboard) => {
+    function openDashboard(dashboard: Dashboard) {
         const key = dashboard.id
         if (!tabPages.hasOwnProperty(key)) {
             const newTabPages = _.clone(tabPages)
@@ -92,7 +96,7 @@ function Bi() {
         }
 
         setActiveKey(key)
-    }, [tabPages])
+    }
 
     if (!me || isExpired)
         return <Navigate to="/login?targetUrl=/bi"/>
@@ -105,7 +109,7 @@ function Bi() {
             style: {background: '#fff'},
             children: (
                 <div className="Bi-page-content">
-                    <DashboardPanel me={me} pageKey={key} dashboard={dashboard}/>
+                    <DashboardSpecReadOnlyWrapper me={me} pageKey={key} dashboard={dashboard}/>
                 </div>
             )
         }

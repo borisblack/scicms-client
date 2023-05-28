@@ -1,5 +1,5 @@
 .pageHeader {
-    padding: 16px;
+    padding: 0 8px;
 }
 
 .title {
@@ -10,6 +10,8 @@
 
 .subTitle {
     color: rgba(0, 0, 0, 0.65);
+    min-height: 22px;
+    margin-block-start: -16px;
 }
 
 .toolbarBtn {
