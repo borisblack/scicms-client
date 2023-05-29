@@ -31,7 +31,7 @@ import {QueryBlock} from '../types'
 import styles from './DashWrapper.module.css'
 import './DashWrapper.css'
 
-const PAGE_HEADER_HEIGHT = 120
+const PAGE_HEADER_HEIGHT = 80
 
 const datasetService = DatasetService.getInstance()
 
