@@ -209,11 +209,23 @@ export default function DashboardSpec({me, pageKey, item, data, buffer, readOnly
         )
     }
 
-    const layout = allDashes.map(it => ({i: it.name, x: it.x, y: it.y, w: it.w, h: it.h}))
-    const isEditable = !readOnly && canEdit && !(activeDash && isFullScreen)
+    const layout: Layout[] = allDashes.map(it => {
+        const isItemEditable = activeDash && it.id === activeDash.id && isFullScreen
+        return {
+            i: it.name,
+            x: it.x,
+            y: it.y,
+            w: it.w,
+            h: it.h,
+            isDraggable: isItemEditable ? false : undefined,
+            isResizable: isItemEditable ? false : undefined,
+        }
+    })
+
+    const isGridEditable = !readOnly && canEdit
     return (
         <>
-            {!readOnly && <Button type="dashed" style={{marginBottom: 12}} disabled={!isEditable} onClick={handleDashAdd}>{t('Add Dash')}</Button>}
+            {!readOnly && <Button type="dashed" style={{marginBottom: 12}} disabled={!isGridEditable} onClick={handleDashAdd}>{t('Add Dash')}</Button>}
 
             {datasets && allDashes.length > 0 && (
                 <ReactGridLayout
@@ -221,9 +233,9 @@ export default function DashboardSpec({me, pageKey, item, data, buffer, readOnly
                     layout={layout}
                     cols={biConfig.cols}
                     rowHeight={biConfig.rowHeight}
-                    isDraggable={isEditable}
-                    isDroppable={isEditable}
-                    isResizable={isEditable}
+                    isDraggable={isGridEditable}
+                    isDroppable={isGridEditable}
+                    isResizable={isGridEditable}
                     onLayoutChange={handleLayoutChange}
                 >
                     {allDashes.map(it => renderDash(it))}

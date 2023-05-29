@@ -153,11 +153,11 @@ export default function DashWrapper(props: DashWrapperProps) {
                 <PageHeader
                     className={styles.pageHeader}
                     title={(
-                        <div className={styles.title} title={title}>
+                        <span className={styles.title} title={title}>
                             {title}
                             {loading && <>&nbsp;&nbsp;<SyncOutlined spin className="blue"/></>}
                             {(!loading && fetchError != null) && <>&nbsp;&nbsp;<ExclamationCircleOutlined className="red" title={fetchError}/></>}
-                        </div>
+                        </span>
                     )}
                     // subTitle={renderSubTitle()}
                     footer={renderSubTitle()}
@@ -174,7 +174,7 @@ export default function DashWrapper(props: DashWrapperProps) {
                     ]}
                 />
 
-                <div style={{margin: fullScreen ? 16 : 0, height: fullScreen ? '85vh' : dashHeight}}>
+                <div className={styles.dashContent} style={{height: fullScreen ? '85vh' : dashHeight}}>
                     {datasetData.length === 0 ? (
                         <Spin spinning={loading}>
                             <div className={styles.centerChildContainer} style={{height: fullScreen ? '50vh' : dashHeight}}>

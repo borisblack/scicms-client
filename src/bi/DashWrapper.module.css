@@ -1,5 +1,5 @@
 .pageHeader {
-    padding: 0 8px;
+    padding: 0 16px;
 }
 
 .title {
@@ -24,4 +24,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.dashContent {
+    margin: 16px 16px 0 16px;
 }
