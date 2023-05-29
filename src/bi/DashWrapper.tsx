@@ -15,7 +15,6 @@ import {
     SyncOutlined
 } from '@ant-design/icons'
 import FullScreen from '../components/fullscreen/FullScreen'
-import styles from './DashWrapper.module.css'
 import DatasetService, {DatasetInput} from '../services/dataset'
 import {
     fromFormQueryBlock,
@@ -29,6 +28,8 @@ import biConfig from '../config/bi'
 import FiltersFom, {FiltersFormValues} from './FiltersForm'
 import {assign, extract} from '../util'
 import {QueryBlock} from '../types'
+import styles from './DashWrapper.module.css'
+import './DashWrapper.css'
 
 const PAGE_HEADER_HEIGHT = 120
 
