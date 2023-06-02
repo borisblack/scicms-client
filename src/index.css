@@ -39,24 +39,28 @@ a.badge-label, a.badge-label:active, a.badge-label:hover {
 }
 
 /* Colors */
-.black, .black:hover, .black:focus, a.black:hover, a.black:hover, a.black:focus {
+.black, .black:hover, .black:focus, a.black:hover, a.black:focus {
   color: #343a40;
 }
 
-.gray, .gray:hover, .gray:focus, a.gray:hover, a.gray:hover, a.gray:focus {
+.gray, .gray:hover, .gray:focus, a.gray:hover, a.gray:focus {
   color: #6c757d;
 }
 
-.red, .red:hover, .red:focus, a.red:hover, a.red:hover, a.red:focus {
+.red, .red:hover, .red:focus, a.red:hover, a.red:focus {
   color: #dc3545;
 }
 
-.green, .green:hover, .green:focus, a.green:hover, a.green:hover, a.green:focus {
+.green, .green:hover, .green:focus, a.green:hover, a.green:focus {
   color: #28a745;
 }
 
-.blue, .blue:hover, .blue:focus, a.blue:hover, a.blue:hover, a.blue:focus {
+.blue, .blue:hover, .blue:focus, a.blue:hover, a.blue:focus {
   color: #007bff;
+}
+
+.orange, .orange:hover, .orange:focus, a.orange:hover, a.orange:focus {
+  color: #faad14;
 }
 
 /*Ant Design*/

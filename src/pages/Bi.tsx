@@ -116,7 +116,7 @@ function Bi() {
         const {dashboard, extra} = tabPages[key]
         return {
             key,
-            label: <span>{dashboard.name}{extra && <InfoCircleOutlined/>}</span>,
+            label: <span>{dashboard.name}{extra && <InfoCircleOutlined className="orange"/>}</span>,
             style: {background: '#fff'},
             children: (
                 <div className="Bi-page-content">

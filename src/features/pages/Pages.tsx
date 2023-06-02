@@ -91,7 +91,7 @@ function Pages({me, onLogout}: Props) {
         const title = getLabel(page)
         return {
             key: page.key,
-            label: <span>{Icon && <Icon/>}{title}{page.extra && <InfoCircleOutlined/>}</span>,
+            label: <span>{Icon && <Icon/>}{title}{page.extra && <InfoCircleOutlined className="orange"/>}</span>,
             style: {background: '#fff'},
             children: (
                 <div className={styles.pageContent}>
