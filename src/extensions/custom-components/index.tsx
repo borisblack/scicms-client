@@ -50,12 +50,13 @@ export interface CustomComponentRenderContext {
     me: UserInfo
     pageKey: string
     item: Item
-    buffer: IBuffer
     data?: ItemData | null
+    extra?: Record<string, any>
+    buffer: IBuffer
     form?: FormInstance | null
     onBufferChange: (buffer: IBuffer) => void
     onItemCreate: (item: Item, initialData?: ItemData | null, cb?: Callback, observerKey?: string) => void
-    onItemView: (item: Item, id: string, cb?: Callback, observerKey?: string) => void
+    onItemView: (item: Item, id: string, extra?: Record<string, any>, cb?: Callback, observerKey?: string) => void
     onItemDelete: (itemName: string, id: string) => void
 }
 

@@ -325,6 +325,10 @@ export interface Dashboard extends DefaultItemTemplate {
     spec: IDashboardSpec
 }
 
+export interface DashboardExtra {
+    queryFilter?: QueryFilter
+}
+
 export interface IDashboardSpec {
     dashes: IDash[]
 }
@@ -347,10 +351,9 @@ export interface IDash {
     sortDirection?: string
     optValues: {[key: string]: any}
     defaultFilters: QueryBlock
+    relatedDashboardId?: string
     refreshIntervalSeconds: number
 }
-
-export type NumericType = FieldType.int | FieldType.long | FieldType.float | FieldType.double | FieldType.decimal
 
 export type TemporalType = FieldType.date | FieldType.time | FieldType.datetime | FieldType.timestamp
 

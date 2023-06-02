@@ -48,7 +48,7 @@ interface Props {
     setLockedByMe: (isLockedByMe: boolean) => void
     setLoading: (loading: boolean) => void
     closePage: () => void
-    onItemView: (item: Item, id: string, cb?: () => void, observerKey?: string) => void
+    onItemView: (item: Item, id: string, extra?: Record<string, any>, cb?: () => void, observerKey?: string) => void
     onUpdate: (data: ItemData) => void
     onItemDelete: (itemName: string, id: string) => void
     onHtmlExport: () => void

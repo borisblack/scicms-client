@@ -51,3 +51,22 @@ export function copyToClipboard(text: string) {
         notification.info({message: i18n.t('Copied to clipboard') as string, description: text})
     })
 }
+
+export function objectToHash(obj: Record<string, any>): number {
+    const str = JSON.stringify(obj)
+    return stringToHash(str)
+}
+
+export function stringToHash(str: string): number {
+    let hash = 0
+    if (str.length === 0)
+        return hash
+
+    for (let i = 0; i < str.length; i++) {
+        const ch = str.charCodeAt(i)
+        hash = ((hash << 5) - hash) + ch
+        hash = hash & hash
+    }
+
+    return hash
+}

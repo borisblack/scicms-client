@@ -24,7 +24,7 @@ interface Props {
     mappedByValue: any
     itemData?: ItemData | null
     onItemCreate: (item: Item, initialData?: ItemData | null, cb?: Callback, observerKey?: string) => void
-    onItemView: (item: Item, id: string, cb?: Callback, observerKey?: string) => void
+    onItemView: (item: Item, id: string, extra?: Record<string, any>, cb?: Callback, observerKey?: string) => void
     onItemDelete: (itemName: string, id: string) => void
 }
 
@@ -76,7 +76,7 @@ export default function OneToManyDataGridWrapper({me, pageKey, itemName, targetI
     }, [createManyToOneInitialData, onItemCreate, pageKey, targetItem])
 
     const openTarget = useCallback(
-        (id: string) => onItemView(targetItem, id, refresh, pageKey),
+        (id: string) => onItemView(targetItem, id, undefined, refresh, pageKey),
         [onItemView, targetItem, pageKey])
 
     const deleteTarget = useCallback(async (id: string, purge: boolean = false) => {

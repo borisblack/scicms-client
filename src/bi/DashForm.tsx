@@ -1,5 +1,6 @@
+import _ from 'lodash'
 import {Checkbox, Col, Collapse, Form, FormInstance, Input, InputNumber, Popover, Row, Select, Space} from 'antd'
-import {AggregateType, Column, Dataset, IDash, QueryBlock} from '../types'
+import {AggregateType, Column, Dashboard, Dataset, IDash, QueryBlock} from '../types'
 import {useTranslation} from 'react-i18next'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {fromFormQueryBlock, generateQueryBlock, getCustomFunctionsInfo, toFormQueryBlock} from '../util/bi'
@@ -10,6 +11,7 @@ import styles from './DashboardSpec.module.css'
 import {Dash, getDash, getDashIds} from '../extensions/dashes'
 import biConfig from '../config/bi'
 import {QuestionCircleOutlined} from '@ant-design/icons'
+import DashboardService from '../services/dashboard'
 
 interface Props {
     form: FormInstance
@@ -31,6 +33,7 @@ export interface DashValues {
     groupField?: string
     optValues: any
     defaultFilters: QueryBlock
+    relatedDashboardId?: string
     refreshIntervalSeconds: number
 }
 
@@ -39,6 +42,7 @@ const {Option: SelectOption} = Select
 const {Panel} = Collapse
 const dashTypes = getDashIds()
 const datasetService = DatasetService.getInstance()
+const dashboardService = DashboardService.getInstance()
 
 const prepareDashValues = (dashValues: DashValues, dataset?: Dataset): DashValues => ({
     ...dashValues,
@@ -54,6 +58,7 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
     const [isAggregate, setAggregate] = useState<boolean>(dash.isAggregate)
     const [aggregateField, setAggregateField] = useState<string | undefined>(dash.aggregateField)
     const [groupField, setGroupField] = useState<string | undefined>(dash.groupField)
+    const [dashboards, setDashboards] = useState<Dashboard[]>([])
     const availableColNames: string[] = useMemo(() => {
         if (!isAggregate || !aggregateField)
             return allColNames
@@ -67,6 +72,11 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
         datasetService.findAll()
             .then(datasets => {
                 setDatasets(datasets)
+            })
+
+        dashboardService.findAll()
+            .then(dashboards => {
+                setDashboards(_.sortBy(dashboards, d => d.name))
             })
     }, [])
 
@@ -274,6 +284,19 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                             >
                                 <Select onSelect={handleDashTypeChange}>
                                     {dashTypes.map(it => <SelectOption key={it} value={it}>{it}</SelectOption>)}
+                                </Select>
+                            </FormItem>
+                        </Col>
+
+                        <Col span={6}>
+                            <FormItem
+                                className={styles.formItem}
+                                name="relatedDashboardId"
+                                label={t('Related Dashboard')}
+                                initialValue={dash.relatedDashboardId}
+                            >
+                                <Select allowClear>
+                                    {dashboards.map(d => <SelectOption key={d.id} value={d.id}>{d.name}</SelectOption>)}
                                 </Select>
                             </FormItem>
                         </Col>

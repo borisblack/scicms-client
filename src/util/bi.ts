@@ -22,6 +22,8 @@ import {DateTime} from 'luxon'
 import _ from 'lodash'
 import {evaluate, getInfo} from '../extensions/functions'
 import {notification} from 'antd'
+import {PlotEvent} from '@ant-design/plots'
+import {Plot} from '@antv/g2plot'
 
 const {dash: dashConfig, dateTime: dateTimeConfig} = biConfig
 
@@ -402,6 +404,12 @@ export function toDatasetFiltersInput(dataset: Dataset, queryBlock: QueryBlock):
     return datasetFiltersInput
 }
 
+export const toSingleDatasetFiltersInput = (dataset: Dataset, queryFilter: QueryFilter): DatasetFiltersInput<any> => ({
+    [queryFilter.columnName]: {
+        [queryFilter.op]: toDatasetFilterInputValue(dataset, queryFilter)
+    }
+})
+
 function toDatasetFilterInputValue(dataset: Dataset, filter: QueryFilter): any {
     const {columnName} = filter
     const columns = dataset.spec?.columns ?? {}
@@ -534,4 +542,20 @@ export function getCustomFunctionsInfo(): string[] {
     }
 
     return buf
+}
+
+export function handleDashClick(chart: Plot<any>, event: PlotEvent, fieldName: string, cb: (queryFilter: QueryFilter) => void) {
+    if (event.type !== 'click')
+        return
+
+    const v = event.data?.data?.[fieldName]
+    if (v == null)
+        return
+
+    cb({
+        id: uuidv4(),
+        columnName: fieldName,
+        op: QueryOp.$eq,
+        value: v
+    })
 }

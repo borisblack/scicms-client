@@ -1,6 +1,6 @@
 import {useEffect, useMemo, useState} from 'react'
 import RGL, {Layout, WidthProvider} from 'react-grid-layout'
-import {Button, Form, Modal} from 'antd'
+import {Alert, Button, Form, Modal} from 'antd'
 import {useTranslation} from 'react-i18next'
 import {v4 as uuidv4} from 'uuid'
 import 'react-grid-layout/css/styles.css'
@@ -9,16 +9,17 @@ import 'react-resizable/css/styles.css'
 import {CustomComponentRenderContext} from '../extensions/custom-components'
 import {DASHBOARD_ITEM_NAME, DEBUG} from '../config/constants'
 import PermissionService from '../services/permission'
-import {Dashboard, Dataset, IDash, IDashboardSpec} from '../types'
+import {Dashboard, DashboardExtra, Dataset, IDash, IDashboardSpec, QueryFilter} from '../types'
 import DashForm, {DashValues} from './DashForm'
 import {DeleteOutlined} from '@ant-design/icons'
-import {generateQueryBlock} from '../util/bi'
+import {generateQueryBlock, queryOpTitles} from '../util/bi'
 import biConfig from '../config/bi'
 import _ from 'lodash'
 import DatasetService from '../services/dataset'
 import DashWrapper from './DashWrapper'
 import styles from './DashboardSpec.module.css'
 import './DashboardSpec.css'
+import ItemService from '../services/item'
 
 const ReactGridLayout = WidthProvider(RGL)
 const datasetService = DatasetService.getInstance()
@@ -27,18 +28,21 @@ const initialSpec: IDashboardSpec = {
 }
 
 interface DashboardSpecProps extends CustomComponentRenderContext {
+    extra?: DashboardExtra
     readOnly?: boolean
 }
 
 let seqNum = 0
 
-export default function DashboardSpec({me, pageKey, item, data, buffer, readOnly, onBufferChange}: DashboardSpecProps) {
+export default function DashboardSpec({me, pageKey, item, data, extra, buffer, readOnly, onBufferChange, onItemView}: DashboardSpecProps) {
     if (item.name !== DASHBOARD_ITEM_NAME)
         throw new Error('Illegal argument')
 
     const {t} = useTranslation()
     const isNew = !data?.id
     const isLockedByMe = data?.lockedBy?.data?.id === me.id
+    const itemService = useMemo(() => ItemService.getInstance(), [])
+    const dashboardItem = useMemo(() => itemService.getDashboard(), [])
     const permissionService = useMemo(() => PermissionService.getInstance(), [])
     const permissions = useMemo(() => {
         const acl = permissionService.getAcl(me, item, data)
@@ -91,7 +95,7 @@ export default function DashboardSpec({me, pageKey, item, data, buffer, readOnly
                 const {
                     id, name, dataset, type, unit,
                     isAggregate, aggregateType, aggregateField, groupField, sortField, sortDirection,
-                    optValues, defaultFilters, refreshIntervalSeconds
+                    optValues, defaultFilters, relatedDashboardId, refreshIntervalSeconds
                 } = curDash
 
                 return {
@@ -112,6 +116,7 @@ export default function DashboardSpec({me, pageKey, item, data, buffer, readOnly
                     sortDirection,
                     optValues,
                     defaultFilters,
+                    relatedDashboardId,
                     refreshIntervalSeconds
                 }
             })
@@ -150,7 +155,7 @@ export default function DashboardSpec({me, pageKey, item, data, buffer, readOnly
         const {
             name, dataset, type, unit,
             isAggregate, aggregateType, aggregateField, groupField, sortField, sortDirection,
-            optValues, defaultFilters, refreshIntervalSeconds
+            optValues, defaultFilters, relatedDashboardId, refreshIntervalSeconds
         } = newActiveDash
 
         const dashToUpdate: IDash = {
@@ -168,6 +173,7 @@ export default function DashboardSpec({me, pageKey, item, data, buffer, readOnly
             sortDirection,
             optValues,
             defaultFilters,
+            relatedDashboardId,
             refreshIntervalSeconds
         }
 
@@ -187,6 +193,10 @@ export default function DashboardSpec({me, pageKey, item, data, buffer, readOnly
         setDashModalVisible(false)
     }
 
+    function handleRelatedDashboardOpen(dashboardId: string, queryFilter: QueryFilter) {
+        onItemView(dashboardItem, dashboardId, {queryFilter})
+    }
+
     function renderDash(dash: IDash) {
         if (datasets == null)
             throw new Error('Illegal state')
@@ -202,12 +212,17 @@ export default function DashboardSpec({me, pageKey, item, data, buffer, readOnly
                     pageKey={pageKey}
                     dataset={datasets[dash.dataset ?? '']}
                     dashboard={dashboard}
+                    extra={extra}
                     dash={dash}
                     onFullScreenChange={setFullScreen}
+                    onRelatedDashboardOpen={handleRelatedDashboardOpen}
                 />
             </div>
         )
     }
+
+    const printExtraQueryFilter = (queryFilter: QueryFilter) =>
+        `${queryFilter.columnName} ${queryOpTitles[queryFilter.op]} ${queryFilter.value}`
 
     const layout: Layout[] = allDashes.map(it => {
         const isItemEditable = activeDash && it.id === activeDash.id && isFullScreen
@@ -225,6 +240,8 @@ export default function DashboardSpec({me, pageKey, item, data, buffer, readOnly
     const isGridEditable = !readOnly && canEdit
     return (
         <>
+            {extra && extra.queryFilter && <Alert message={t('Filtered')} description={printExtraQueryFilter(extra.queryFilter)} type="warning"/>}
+
             {!readOnly && <Button type="dashed" style={{marginBottom: 12}} disabled={!isGridEditable} onClick={handleDashAdd}>{t('Add Dash')}</Button>}
 
             {datasets && allDashes.length > 0 && (

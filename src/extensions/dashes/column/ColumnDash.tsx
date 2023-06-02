@@ -1,12 +1,12 @@
-import {DashRenderContext} from '../index'
+import _ from 'lodash'
+import {useMemo} from 'react'
 import {Alert} from 'antd'
+import {DashEventHandler, DashRenderContext} from '../index'
 import {Column, ColumnConfig} from '@ant-design/charts'
-import {defaultDashColor, defaultDashColors, formatValue, isTemporal} from '../../../util/bi'
+import {defaultDashColor, defaultDashColors, formatValue, handleDashClick} from '../../../util/bi'
 import {LegendPosition} from '../util'
 import biConfig from '../../../config/bi'
-import {useMemo} from 'react'
 import RulesService from '../../../services/rules'
-import _ from 'lodash'
 
 interface ColumnDashOptions {
     xField?: string
@@ -25,7 +25,8 @@ const axisLabelStyle = dashConfig?.all?.axisLabelStyle
 const legendConfig = dashConfig?.all?.legend
 const rulesService = RulesService.getInstance()
 
-export default function ColumnDash({dataset, dash, data}: DashRenderContext) {
+export default function ColumnDash({dataset, dash, data, onRelatedDashboardOpen}: DashRenderContext) {
+    const {optValues, relatedDashboardId} = dash
     const {
         xField,
         yField,
@@ -36,7 +37,7 @@ export default function ColumnDash({dataset, dash, data}: DashRenderContext) {
         isStack,
         isGroup,
         rules
-    } = dash.optValues as ColumnDashOptions
+    } = optValues as ColumnDashOptions
     const fieldRules = useMemo(() => rulesService.parseRules(rules), [rules])
     const seriesData = seriesField ? _.uniqBy(data, seriesField).map(r => r[seriesField]) : []
     const seriesColors = seriesField ? rulesService.getSeriesColors(fieldRules, seriesField, seriesData, defaultDashColors(seriesData.length)) : []
@@ -53,6 +54,11 @@ export default function ColumnDash({dataset, dash, data}: DashRenderContext) {
     const yColumn = columns[yField]
     if (xColumn == null || yColumn == null)
         return <Alert message="Invalid columns specification" type="error"/>
+
+    const handleEvent: DashEventHandler | undefined =
+        relatedDashboardId ?
+            (chart, event) => handleDashClick(chart, event, xField, queryFilter => onRelatedDashboardOpen(relatedDashboardId, queryFilter)) :
+            undefined
 
     const config: ColumnConfig = {
         data,
@@ -95,7 +101,8 @@ export default function ColumnDash({dataset, dash, data}: DashRenderContext) {
             }
         },
         color: seriesField ? seriesColors : (record => (rulesService.getFieldColor(fieldRules, xField, record) ?? (defaultColor as string))),
-        locale
+        locale,
+        onEvent: handleEvent
     }
 
     return <Column {...config} />

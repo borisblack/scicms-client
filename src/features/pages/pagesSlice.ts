@@ -5,12 +5,14 @@ import {Item, ItemData} from '../../types'
 import i18n from '../../i18n'
 import Mediator, {CallbackOperation} from '../../services/mediator'
 import {ID_ATTR_NAME} from '../../config/constants'
+import {objectToHash} from '../../util'
 
 export interface IPage {
     key: string
     item: Item
     viewType: ViewType
     data?: ItemData | null
+    extra?: Record<string, any>
 }
 
 export enum ViewType {
@@ -28,14 +30,21 @@ interface OpenPagePayload {
     item: Item
     viewType: ViewType
     data?: ItemData | null
+    extra?: Record<string, any>
+}
+
+interface UpdatePagePayload {
+    key: string,
+    data: ItemData,
+    extra?: Record<string, any>
 }
 
 const tempIds: {[itemName: string]: number} = {}
 const mediator = Mediator.getInstance()
 
-export function generateKey(itemName: string, viewType: ViewType, id?: string) {
+export function generateKey(itemName: string, viewType: ViewType, id?: string, suffix?: string) {
     let key = `${itemName}#${viewType}`
-    if (id !== undefined) {
+    if (id != null) {
         key += `#${id}`
     } else if (viewType === ViewType.view) {
         const tempId = (tempIds[itemName] ?? 0) + 1
@@ -43,7 +52,7 @@ export function generateKey(itemName: string, viewType: ViewType, id?: string) {
         key += `#${tempId}`
     }
 
-    return key
+    return suffix == null ? key : `${key}#${suffix}`
 }
 
 export function getLabel(page: IPage) {
@@ -80,15 +89,16 @@ const slice = createSlice({
         },
         openPage: (state, action: PayloadAction<OpenPagePayload>) => {
             const {pages} = state
-            const {key, item, viewType, data} = action.payload
-            const k = key ?? generateKey(item.name, viewType, data?.id)
+            const {key, item, viewType, data, extra} = action.payload
+            const suffix = extra == null ? undefined : objectToHash(extra).toString()
+            const k = key ?? generateKey(item.name, viewType, data?.id, suffix)
             if (!pages.hasOwnProperty(k))
                 pages[k] = {key: k, item, viewType, data}
 
             state.activeKey = k
         },
-        updatePage: (state, action: PayloadAction<{key: string, data: ItemData}>) => {
-            const {key, data} = action.payload
+        updatePage: (state, action: PayloadAction<UpdatePagePayload>) => {
+            const {key, data, extra} = action.payload
             const {pages, activeKey} = state
 
             const newPages: {[key: string]: IPage} = {}
@@ -98,7 +108,8 @@ const slice = createSlice({
 
                 const page = pages[k]
                 if (page.key === key) {
-                    const newKey = generateKey(page.item.name, page.viewType, data.id)
+                    const suffix = extra == null ? undefined : objectToHash(extra).toString()
+                    const newKey = generateKey(page.item.name, page.viewType, data.id, suffix)
                     newPages[newKey] = {
                         key: newKey,
                         item: page.item,
@@ -131,7 +142,8 @@ const slice = createSlice({
 
                 const page = pages[key]
                 if (page.key === activeKey) {
-                    const newKey = generateKey(page.item.name, page.viewType, itemData.id)
+                    const suffix = page.extra == null ? undefined : objectToHash(page.extra).toString()
+                    const newKey = generateKey(page.item.name, page.viewType, itemData.id, suffix)
                     newPages[newKey] = {
                         key: newKey,
                         item: page.item,
@@ -179,8 +191,7 @@ const slice = createSlice({
                 state.activeKey = undefined
         },
         reset: () => initialState
-    },
-    extraReducers: {}
+    }
 })
 
 export const selectPages = (state: RootState) => Object.values(state.pages.pages) as IPage[]

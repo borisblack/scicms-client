@@ -21,13 +21,14 @@ import {
     generateQueryBlock,
     getCustomFunctionsInfo,
     printQueryBlock,
-    toDatasetFiltersInput
+    toDatasetFiltersInput,
+    toSingleDatasetFiltersInput
 } from '../util/bi'
 import {Dash, getDash} from '../extensions/dashes'
 import biConfig from '../config/bi'
 import FiltersFom, {FiltersFormValues} from './FiltersForm'
 import {assign, extract} from '../util'
-import {QueryBlock} from '../types'
+import {DatasetFiltersInput, QueryBlock} from '../types'
 import styles from './DashWrapper.module.css'
 import './DashWrapper.css'
 
@@ -38,7 +39,7 @@ const datasetService = DatasetService.getInstance()
 const extractSessionData = () => JSON.parse(localStorage.getItem('sessionData') ?? '{}')
 
 export default function DashWrapper(props: DashWrapperProps) {
-    const {dataset, dashboard, dash, onFullScreenChange} = props
+    const {dataset, dashboard, extra, dash, onFullScreenChange} = props
     const dashHandler: Dash | undefined = useMemo(() => getDash(dash.type), [dash.type])
     if (dashHandler == null)
         throw new Error('Illegal argument')
@@ -81,6 +82,14 @@ export default function DashWrapper(props: DashWrapperProps) {
             filters: toDatasetFiltersInput(dataset, filters)
         }
 
+        const extraQueryFilter = extra?.queryFilter
+        if (extraQueryFilter != null && extraQueryFilter.columnName in dataset.spec.columns) {
+            const datasetFiltersInput = datasetInput.filters as DatasetFiltersInput<any>
+            const $and = datasetFiltersInput.$and ?? []
+            $and.push(toSingleDatasetFiltersInput(dataset, extraQueryFilter))
+            datasetFiltersInput.$and = $and
+        }
+
         if (dash.isAggregate) {
             datasetInput.aggregate = dash.aggregateType
             datasetInput.aggregateField = dash.aggregateField
@@ -116,7 +125,7 @@ export default function DashWrapper(props: DashWrapperProps) {
 
     const handleFullScreenChange = (fullScreen: boolean) => {
         setFullScreen(fullScreen)
-        onFullScreenChange?.(fullScreen)
+        onFullScreenChange(fullScreen)
     }
 
     const renderTitle = () => dash.name + (dash.unit ? `, ${dash.unit}` : '')

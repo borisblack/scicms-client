@@ -48,7 +48,7 @@ interface Props {
     page: IPage
     closePage: () => void
     onItemCreate: (item: Item, initialData?: ItemData | null, cb?: Callback, observerKey?: string) => void
-    onItemView: (item: Item, id: string, cb?: Callback, observerKey?: string) => void
+    onItemView: (item: Item, id: string, extra?: Record<string, any>, cb?: Callback, observerKey?: string) => void
     onItemDelete: (itemName: string, id: string) => void
     onUpdate: (data: ItemData) => void
     onLogout: () => void
@@ -102,12 +102,13 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
         item,
         buffer,
         data,
+        extra: page.extra,
         form,
         onBufferChange: handleBufferChange,
         onItemCreate,
         onItemView,
         onItemDelete
-    }), [buffer, data, form, handleBufferChange, item, me, onItemCreate, onItemDelete, onItemView, page.key])
+    }), [buffer, data, form, handleBufferChange, item, me, onItemCreate, onItemDelete, onItemView, page.extra, page.key])
 
     useEffect(() => {
         if (DEBUG)

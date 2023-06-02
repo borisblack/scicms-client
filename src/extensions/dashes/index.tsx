@@ -2,11 +2,12 @@ import _ from 'lodash'
 import {ReactElement, ReactNode} from 'react'
 import {DashOptionsFormProps, DashProps} from '../../bi'
 import dashConfig from '../../config/dash'
+import {Plot} from '@antv/g2plot'
+import {PlotEvent} from '@ant-design/plots'
 
 export interface Dash {
     id: string
     renderOptionsForm: (props: DashOptionsFormProps) => ReactNode
-    icon: string
     height?: number
     render: (props: DashRenderProps) => ReactNode
 }
@@ -20,6 +21,8 @@ export interface DashRenderContext extends DashProps {
     fullScreen: boolean
     data: any[]
 }
+
+export type DashEventHandler = (chart: Plot<any>, event: PlotEvent) => void
 
 const allDashes: Dash[] = dashConfig.dashes.sort((a, b) => {
     if (a.id < b.id)

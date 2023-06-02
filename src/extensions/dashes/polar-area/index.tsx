@@ -7,6 +7,5 @@ const DASH_ID = 'polarArea'
 export const polarArea: Dash = {
     id: DASH_ID,
     renderOptionsForm: (props) => <PolarAreaDashOptionsForm {...props}/>,
-    icon: 'FaChartPie',
     render: ({context}) => <PolarAreaDash {...context}/>
 }

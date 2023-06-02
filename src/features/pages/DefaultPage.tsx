@@ -28,7 +28,7 @@ interface Props {
     me: UserInfo
     page: IPage
     onItemCreate: (item: Item, initialData?: ItemData | null, cb?: Callback, observerKey?: string) => void
-    onItemView: (item: Item, id: string, cb?: Callback, observerKey?: string) => void
+    onItemView: (item: Item, id: string, extra?: Record<string, any>, cb?: Callback, observerKey?: string) => void
     onItemDelete: (itemName: string, id: string) => void
     onLogout: () => void
 }
@@ -64,12 +64,13 @@ function DefaultPage({me, page, onItemCreate, onItemView, onItemDelete, onLogout
         me,
         pageKey: page.key,
         item,
+        extra: page.extra,
         buffer,
         onBufferChange: handleBufferChange,
         onItemCreate,
         onItemView,
         onItemDelete
-    }), [buffer, handleBufferChange, item, me, onItemCreate, onItemDelete, onItemView, page.key])
+    }), [buffer, handleBufferChange, item, me, onItemCreate, onItemDelete, onItemView, page.extra, page.key])
 
     useEffect(() => {
         const headerNode = headerRef.current
@@ -109,7 +110,7 @@ function DefaultPage({me, page, onItemCreate, onItemView, onItemDelete, onLogout
 
     const handleView = useCallback(async (id: string) => {
         setLoading(true)
-        await onItemView(item, id, refresh, page.key)
+        await onItemView(item, id, undefined, refresh, page.key)
         setLoading(false)
     }, [item, page.key, onItemView])
 

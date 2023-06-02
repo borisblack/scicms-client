@@ -4,17 +4,23 @@ import {useTranslation} from 'react-i18next'
 import {Navigate} from 'react-router-dom'
 import {Tab} from 'rc-tabs/lib/interface'
 import {Layout, Menu, Spin, Tabs} from 'antd'
-import {FundOutlined, LogoutOutlined, UserOutlined} from '@ant-design/icons'
+import {FundOutlined, InfoCircleOutlined, LogoutOutlined, UserOutlined} from '@ant-design/icons'
 import {useAppDispatch, useAppSelector} from '../util/hooks'
 import {logout, selectIsExpired, selectMe} from '../features/auth/authSlice'
 import {initializeIfNeeded, reset as resetRegistry} from '../features/registry/registrySlice'
 import {reset as resetPages} from '../features/pages/pagesSlice'
 import DashboardService from '../services/dashboard'
-import {Dashboard} from '../types'
+import {Dashboard, DashboardExtra} from '../types'
 import './Bi.css'
 import logo from '../logo.svg'
 import biConfig from '../config/bi'
 import DashboardSpecReadOnlyWrapper from '../bi/DashboardSpecReadOnlyWrapper'
+import {objectToHash} from '../util'
+
+interface BiPage {
+    dashboard: Dashboard,
+    extra?: DashboardExtra
+}
 
 const {Content, Sider} = Layout
 
@@ -28,9 +34,9 @@ function Bi() {
     const me = useAppSelector(selectMe)
     const isExpired = useAppSelector(selectIsExpired)
     const [collapsed, setCollapsed] = useState(isNavbarCollapsed())
-    const [dashboards, setDashboards] = useState<Dashboard[]>([])
+    const [dashboards, setDashboards] = useState<Record<string, Dashboard>>({})
     const [loading, setLoading] = useState<boolean>(false)
-    const [tabPages, setTabPages] = useState<{[key: string]: Dashboard}>({})
+    const [tabPages, setTabPages] = useState<Record<string, BiPage>>({})
     const [activeKey, setActiveKey] = useState<string | undefined>()
 
     useEffect(() => {
@@ -41,7 +47,8 @@ function Bi() {
         setLoading(true)
         dashboardService.findAll()
             .then(data => {
-                setDashboards(data)
+                const dashboardsById: Record<string, Dashboard> = _.mapKeys(data, ds => ds.id)
+                setDashboards(dashboardsById)
                 return data
             })
             .then(data => {
@@ -87,11 +94,15 @@ function Bi() {
             closeTab(e as string)
     }, [closeTab])
 
-    function openDashboard(dashboard: Dashboard) {
-        const key = dashboard.id
+    const openDashboardById = (id: string, extra?: DashboardExtra) =>
+        openDashboard(dashboards[id], extra)
+
+    function openDashboard(dashboard: Dashboard, extra?: DashboardExtra) {
+        const suffix = extra == null ? undefined : objectToHash(extra).toString()
+        const key = suffix == null ? dashboard.id : `${dashboard.id}#${suffix}`
         if (!tabPages.hasOwnProperty(key)) {
             const newTabPages = _.clone(tabPages)
-            newTabPages[key] = dashboard
+            newTabPages[key] = {dashboard, extra}
             setTabPages(newTabPages)
         }
 
@@ -102,14 +113,20 @@ function Bi() {
         return <Navigate to="/login?targetUrl=/bi"/>
 
     const getTabs = (): Tab[] => Object.keys(tabPages).map(key => {
-        const dashboard = tabPages[key]
+        const {dashboard, extra} = tabPages[key]
         return {
             key,
-            label: dashboard.name,
+            label: <span>{dashboard.name}{extra && <InfoCircleOutlined/>}</span>,
             style: {background: '#fff'},
             children: (
                 <div className="Bi-page-content">
-                    <DashboardSpecReadOnlyWrapper me={me} pageKey={key} dashboard={dashboard}/>
+                    <DashboardSpecReadOnlyWrapper
+                        me={me}
+                        pageKey={key}
+                        dashboard={dashboard}
+                        extra={extra}
+                        onDashboardOpen={openDashboardById}
+                    />
                 </div>
             )
         }
@@ -143,7 +160,7 @@ function Bi() {
                             key: 'dashboards',
                             label: t('Dashboards'),
                             icon: <FundOutlined />,
-                            children: dashboards.map(d => ({
+                            children: Object.values(dashboards).map(d => ({
                                 key: d.name,
                                 label: d.name,
                                 onClick: () => openDashboard(d)

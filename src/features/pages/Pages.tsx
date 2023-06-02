@@ -1,7 +1,7 @@
 import React, {useCallback, useMemo} from 'react'
 import {useTranslation} from 'react-i18next'
 import {message, Tabs} from 'antd'
-import {SearchOutlined} from '@ant-design/icons'
+import {InfoCircleOutlined, SearchOutlined} from '@ant-design/icons'
 import {Tab} from 'rc-tabs/lib/interface'
 
 import {
@@ -63,7 +63,7 @@ function Pages({me, onLogout}: Props) {
         }
     }
 
-    const handleItemView = async (item: Item, id: string, cb?: Callback, observerKey?: string) => {
+    const handleItemView = async (item: Item, id: string, extra?: Record<string, any>, cb?: Callback, observerKey?: string) => {
         const refreshedData = await queryService.findById(item, id)
         if (refreshedData.data) {
             if (cb) {
@@ -91,7 +91,7 @@ function Pages({me, onLogout}: Props) {
         const title = getLabel(page)
         return {
             key: page.key,
-            label: Icon ? <span><Icon/>{title}</span> : title,
+            label: <span>{Icon && <Icon/>}{title}{page.extra && <InfoCircleOutlined/>}</span>,
             style: {background: '#fff'},
             children: (
                 <div className={styles.pageContent}>

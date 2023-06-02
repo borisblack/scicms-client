@@ -1,12 +1,14 @@
-import {Dashboard, Dataset, IDash} from '../types'
+import {Dashboard, DashboardExtra, Dataset, IDash, QueryFilter} from '../types'
 import {FormInstance} from 'antd'
 
 export interface DashWrapperProps {
     pageKey: string
     dataset?: Dataset
     dashboard: Dashboard
+    extra?: DashboardExtra
     dash: IDash
-    onFullScreenChange?: (fullScreen: boolean) => void
+    onFullScreenChange: (fullScreen: boolean) => void
+    onRelatedDashboardOpen: (dashboardId: string, queryFilter: QueryFilter) => void
 }
 
 export interface DashProps extends DashWrapperProps {

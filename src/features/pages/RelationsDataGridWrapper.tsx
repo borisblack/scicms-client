@@ -25,7 +25,7 @@ interface Props {
     relAttrName: string
     relAttribute: Attribute
     onItemCreate: (item: Item, initialData?: ItemData | null, cb?: Callback, observerKey?: string) => void
-    onItemView: (item: Item, id: string, cb?: Callback, observerKey?: string) => void
+    onItemView: (item: Item, id: string, extra?: Record<string, any>, cb?: Callback, observerKey?: string) => void
     onItemDelete: (itemName: string, id: string) => void
 }
 
@@ -177,7 +177,7 @@ export default function RelationsDataGridWrapper({me, pageKey, item, itemData, r
     }, [getSourceTargetAttrNames, itemData.id, itemService, mutationService, relAttribute])
 
     const openTarget = useCallback(
-        (id: string) => onItemView(target, id, isOneToMany ? refresh : processExistingManyToManyRelation, pageKey),
+        (id: string) => onItemView(target, id, undefined, isOneToMany ? refresh : processExistingManyToManyRelation, pageKey),
         [onItemView, target, isOneToMany, processExistingManyToManyRelation, pageKey])
 
     const deleteTarget = useCallback(async (id: string, purge: boolean = false) => {
