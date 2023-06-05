@@ -58,7 +58,7 @@ const biConfig: BiConfig = {
     cols: 24,
     rowHeight: 100,
     defaultDashType: 'bar',
-    defaultDashHeight: 4,
+    defaultDashHeight: 3,
     defaultPageSize: 100,
     defaultRefreshIntervalSeconds: 300,
     locale: 'ru-RU',

@@ -26,7 +26,9 @@ import {PlotEvent} from '@ant-design/plots'
 import {Plot} from '@antv/g2plot'
 
 const {dash: dashConfig, dateTime: dateTimeConfig} = biConfig
-
+const dateTimeRegExp = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.000)?(Z|([-+]00:00))?$/
+const dateRegExp = /^\d{4}-\d{2}-\d{2}$/
+const timeRegExp = /^\d{2}:\d{2}:\d{2}(\.000)?(Z|([-+]00:00))?$/
 export const stringTypes = [FieldType.string, FieldType.text, FieldType.uuid, FieldType.sequence, FieldType.email, FieldType.password, FieldType.array, FieldType.json, FieldType.media, FieldType.relation]
 export const numericTypes = [FieldType.int, FieldType.long, FieldType.float, FieldType.double, FieldType.decimal]
 export const temporalTypes = [FieldType.date, FieldType.time, FieldType.datetime, FieldType.timestamp]
@@ -530,6 +532,9 @@ function printQueryFilter(dataset: Dataset, filter: QueryFilter): string {
     return `${columnAlias} ${opTitle} ${isTemporal(column.type) ? formatTemporalDisplay(filterValue, columnType(column) as TemporalType) : filterValue}`
 }
 
+export const printSingleQueryFilter = (queryFilter: QueryFilter): string =>
+    `${queryFilter.columnName} ${queryOpTitles[queryFilter.op]} ${formatValue(queryFilter.value, guessType(queryFilter.value))}`
+
 export function getCustomFunctionsInfo(): string[] {
     const buf: string[] = []
     const categoryFunctionsInfo = _.groupBy(getInfo(), info => info.category)
@@ -558,4 +563,27 @@ export function handleDashClick(chart: Plot<any>, event: PlotEvent, fieldName: s
         op: QueryOp.$eq,
         value: v
     })
+}
+
+function guessType(value: string | number | boolean): FieldType {
+    const valueType = typeof value
+    if (valueType === 'boolean')
+        return FieldType.bool
+
+    if (valueType === 'number')
+        return FieldType.decimal
+
+    if (valueType === 'string') {
+        const strValue = value as string
+        if (strValue.match(dateRegExp))
+            return FieldType.date
+
+        if (strValue.match(timeRegExp))
+            return FieldType.time
+
+        if (strValue.match(dateTimeRegExp))
+            return FieldType.datetime
+    }
+
+    return FieldType.string
 }

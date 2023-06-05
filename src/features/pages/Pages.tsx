@@ -1,7 +1,7 @@
 import React, {useCallback, useMemo} from 'react'
 import {useTranslation} from 'react-i18next'
 import {message, Tabs} from 'antd'
-import {InfoCircleOutlined, SearchOutlined} from '@ant-design/icons'
+import {ExclamationCircleOutlined, SearchOutlined} from '@ant-design/icons'
 import {Tab} from 'rc-tabs/lib/interface'
 
 import {
@@ -64,14 +64,14 @@ function Pages({me, onLogout}: Props) {
     }
 
     const handleItemView = async (item: Item, id: string, extra?: Record<string, any>, cb?: Callback, observerKey?: string) => {
-        const refreshedData = await queryService.findById(item, id)
-        if (refreshedData.data) {
+        const actualData = await queryService.findById(item, id)
+        if (actualData.data) {
             if (cb) {
-                const key = generateKey(item.name, ViewType.view, refreshedData.data.id)
+                const key = generateKey(item.name, ViewType.view, actualData.data.id)
                 observerKey ? mediator.addObserver(observerKey, key, [cb]) : mediator.addObservable(key, [cb])
             }
 
-            dispatch(openPage({item, viewType: ViewType.view, data: refreshedData.data}))
+            dispatch(openPage({item, viewType: ViewType.view, data: actualData.data, extra}))
         } else {
             message.error(t('Item not found. It may have been removed'))
         }
@@ -91,7 +91,7 @@ function Pages({me, onLogout}: Props) {
         const title = getLabel(page)
         return {
             key: page.key,
-            label: <span>{Icon && <Icon/>}{title}{page.extra && <InfoCircleOutlined className="orange"/>}</span>,
+            label: <span>{Icon && <Icon/>}{title}{page.extra && <ExclamationCircleOutlined className="tab-label-suffix orange"/>}</span>,
             style: {background: '#fff'},
             children: (
                 <div className={styles.pageContent}>

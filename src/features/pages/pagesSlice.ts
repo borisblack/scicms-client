@@ -93,7 +93,7 @@ const slice = createSlice({
             const suffix = extra == null ? undefined : objectToHash(extra).toString()
             const k = key ?? generateKey(item.name, viewType, data?.id, suffix)
             if (!pages.hasOwnProperty(k))
-                pages[k] = {key: k, item, viewType, data}
+                pages[k] = {key: k, item, viewType, data, extra}
 
             state.activeKey = k
         },
@@ -114,7 +114,8 @@ const slice = createSlice({
                         key: newKey,
                         item: page.item,
                         viewType: page.viewType,
-                        data
+                        data,
+                        extra
                     }
 
                     if (page.key === activeKey)
@@ -148,7 +149,8 @@ const slice = createSlice({
                         key: newKey,
                         item: page.item,
                         viewType: page.viewType,
-                        data: itemData
+                        data: itemData,
+                        extra: page.extra
                     }
                     state.activeKey = newKey
 

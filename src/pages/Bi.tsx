@@ -4,7 +4,7 @@ import {useTranslation} from 'react-i18next'
 import {Navigate} from 'react-router-dom'
 import {Tab} from 'rc-tabs/lib/interface'
 import {Layout, Menu, Spin, Tabs} from 'antd'
-import {FundOutlined, InfoCircleOutlined, LogoutOutlined, UserOutlined} from '@ant-design/icons'
+import {ExclamationCircleOutlined, FundOutlined, LogoutOutlined, UserOutlined} from '@ant-design/icons'
 import {useAppDispatch, useAppSelector} from '../util/hooks'
 import {logout, selectIsExpired, selectMe} from '../features/auth/authSlice'
 import {initializeIfNeeded, reset as resetRegistry} from '../features/registry/registrySlice'
@@ -116,7 +116,7 @@ function Bi() {
         const {dashboard, extra} = tabPages[key]
         return {
             key,
-            label: <span>{dashboard.name}{extra && <InfoCircleOutlined className="orange"/>}</span>,
+            label: <span>{dashboard.name}{extra && <ExclamationCircleOutlined className="tab-label-suffix orange"/>}</span>,
             style: {background: '#fff'},
             children: (
                 <div className="Bi-page-content">

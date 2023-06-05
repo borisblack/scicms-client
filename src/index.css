@@ -38,6 +38,10 @@ a.badge-label, a.badge-label:active, a.badge-label:hover {
   text-align: right;
 }
 
+.tab-label-suffix {
+  margin: 0 0 0 8px !important;
+}
+
 /* Colors */
 .black, .black:hover, .black:focus, a.black:hover, a.black:focus {
   color: #343a40;

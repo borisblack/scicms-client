@@ -12,7 +12,7 @@ import PermissionService from '../services/permission'
 import {Dashboard, DashboardExtra, Dataset, IDash, IDashboardSpec, QueryFilter} from '../types'
 import DashForm, {DashValues} from './DashForm'
 import {DeleteOutlined} from '@ant-design/icons'
-import {generateQueryBlock, queryOpTitles} from '../util/bi'
+import {generateQueryBlock, printSingleQueryFilter, queryOpTitles} from '../util/bi'
 import biConfig from '../config/bi'
 import _ from 'lodash'
 import DatasetService from '../services/dataset'
@@ -221,9 +221,6 @@ export default function DashboardSpec({me, pageKey, item, data, extra, buffer, r
         )
     }
 
-    const printExtraQueryFilter = (queryFilter: QueryFilter) =>
-        `${queryFilter.columnName} ${queryOpTitles[queryFilter.op]} ${queryFilter.value}`
-
     const layout: Layout[] = allDashes.map(it => {
         const isItemEditable = activeDash && it.id === activeDash.id && isFullScreen
         return {
@@ -240,7 +237,9 @@ export default function DashboardSpec({me, pageKey, item, data, extra, buffer, r
     const isGridEditable = !readOnly && canEdit
     return (
         <>
-            {extra && extra.queryFilter && <Alert message={t('Filtered')} description={printExtraQueryFilter(extra.queryFilter)} type="warning"/>}
+            {extra && extra.queryFilter && (
+                <Alert style={{marginBottom: 16}} message={t('Filtered')} description={printSingleQueryFilter(extra.queryFilter)} type="warning"/>
+            )}
 
             {!readOnly && <Button type="dashed" style={{marginBottom: 12}} disabled={!isGridEditable} onClick={handleDashAdd}>{t('Add Dash')}</Button>}
 
