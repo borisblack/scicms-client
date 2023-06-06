@@ -206,7 +206,6 @@ export default function DashboardSpec({me, pageKey, item, data, extra, buffer, r
                 key={dash.name}
                 className={`${styles.dashWrapper} ${activeDash?.name === dash.name ? styles.activeDash : ''} ${canEdit ? styles.editable : ''}`}
                 onClick={() => selectDash(dash)}
-                onDoubleClick={() => openDash(dash)}
             >
                 <DashWrapper
                     pageKey={pageKey}
@@ -216,6 +215,7 @@ export default function DashboardSpec({me, pageKey, item, data, extra, buffer, r
                     dash={dash}
                     onFullScreenChange={setFullScreen}
                     onRelatedDashboardOpen={handleRelatedDashboardOpen}
+                    onEdit={() => openDash(dash)}
                 />
             </div>
         )

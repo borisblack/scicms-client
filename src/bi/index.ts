@@ -9,6 +9,7 @@ export interface DashWrapperProps {
     dash: IDash
     onFullScreenChange: (fullScreen: boolean) => void
     onRelatedDashboardOpen: (dashboardId: string, queryFilter: QueryFilter) => void
+    onEdit: () => void
 }
 
 export interface DashProps extends DashWrapperProps {

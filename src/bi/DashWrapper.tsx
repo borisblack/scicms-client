@@ -5,6 +5,7 @@ import {useTranslation} from 'react-i18next'
 import 'chartjs-adapter-luxon'
 import {DashWrapperProps} from './index'
 import {
+    EditOutlined,
     ExclamationCircleOutlined,
     FilterOutlined,
     FullscreenExitOutlined,
@@ -31,6 +32,7 @@ import {assign, extract} from '../util'
 import {DatasetFiltersInput, QueryBlock} from '../types'
 import styles from './DashWrapper.module.css'
 import './DashWrapper.css'
+import {ItemType} from 'antd/es/menu/hooks/useItems'
 
 const PAGE_HEADER_HEIGHT = 80
 
@@ -39,7 +41,7 @@ const datasetService = DatasetService.getInstance()
 const extractSessionData = () => JSON.parse(localStorage.getItem('sessionData') ?? '{}')
 
 export default function DashWrapper(props: DashWrapperProps) {
-    const {dataset, dashboard, extra, dash, onFullScreenChange} = props
+    const {dataset, dashboard, extra, dash, onFullScreenChange, onEdit} = props
     const dashHandler: Dash | undefined = useMemo(() => getDash(dash.type), [dash.type])
     if (dashHandler == null)
         throw new Error('Illegal argument')
@@ -135,10 +137,16 @@ export default function DashWrapper(props: DashWrapperProps) {
         return <div className={styles.subTitle} title={queryBlock}>{queryBlock}</div>
     }
 
-    const getSettingsMenuItems = () => [{
+    const getSettingsMenuItems = (): ItemType[] => [{
         key: 'filters',
         label: <Space><FilterOutlined/>{t('Filters')}</Space>,
         onClick: () => setFiltersModalVisible(true)
+    }, {
+        type: 'divider'
+    }, {
+        key: 'edit',
+        label: <Space><EditOutlined/>{t('Edit')}</Space>,
+        onClick: () => onEdit()
     }]
 
     async function handleFiltersFormFinish(values: FiltersFormValues) {
