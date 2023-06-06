@@ -215,7 +215,7 @@ export default function DashboardSpec({me, pageKey, item, data, extra, buffer, r
                     dash={dash}
                     onFullScreenChange={setFullScreen}
                     onRelatedDashboardOpen={handleRelatedDashboardOpen}
-                    onEdit={() => openDash(dash)}
+                    onEdit={readOnly ? undefined : () => openDash(dash)}
                 />
             </div>
         )

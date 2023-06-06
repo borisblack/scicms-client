@@ -137,17 +137,24 @@ export default function DashWrapper(props: DashWrapperProps) {
         return <div className={styles.subTitle} title={queryBlock}>{queryBlock}</div>
     }
 
-    const getSettingsMenuItems = (): ItemType[] => [{
-        key: 'filters',
-        label: <Space><FilterOutlined/>{t('Filters')}</Space>,
-        onClick: () => setFiltersModalVisible(true)
-    }, {
-        type: 'divider'
-    }, {
-        key: 'edit',
-        label: <Space><EditOutlined/>{t('Edit')}</Space>,
-        onClick: () => onEdit()
-    }]
+    const getSettingsMenuItems = (): ItemType[] => {
+        const menuItems: ItemType[] = [{
+            key: 'filters',
+            label: <Space><FilterOutlined/>{t('Filters')}</Space>,
+            onClick: () => setFiltersModalVisible(true)
+        }]
+
+        if (onEdit) {
+            menuItems.push({type: 'divider'})
+            menuItems.push({
+                key: 'edit',
+                label: <Space><EditOutlined/>{t('Edit')}</Space>,
+                onClick: () => onEdit()
+            })
+        }
+
+        return menuItems
+    }
 
     async function handleFiltersFormFinish(values: FiltersFormValues) {
         if (!dataset)
