@@ -262,7 +262,6 @@ const en = {
         'Relation Type': 'Relation Type',
         'Remove': 'Remove',
         'Remove Block': 'Remove Block',
-        'Remove Dash': 'Remove Dash',
         'Remove Filter': 'Remove Filter',
         'Required': 'Required',
         'Request error, data not changed by server': 'Request error, data not changed by server',

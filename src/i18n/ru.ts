@@ -262,7 +262,6 @@ const ru = {
         'Relation Type': 'Тип связи',
         'Remove': 'Удалить',
         'Remove Block': 'Удалить блок',
-        'Remove Dash': 'Удалить даш',
         'Remove Filter': 'Удалить фильтр',
         'Required': 'Обязательный',
         'Request error, data not changed by server': 'Ошибка запроса, данные не изменены сервером',

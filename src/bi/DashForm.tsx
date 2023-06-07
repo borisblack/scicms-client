@@ -183,7 +183,7 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                 </Col>
             </Row>
 
-            <Collapse defaultActiveKey={dashHandler ? ['queryOptions', 'dashOptions'] : ['queryOptions']}>
+            <Collapse defaultActiveKey={['queryOptions', 'dashOptions', 'defaultFilters']}>
                 <Panel header={t('Query Options')} key="queryOptions">
                     <Row gutter={10}>
                         <Col span={6}>

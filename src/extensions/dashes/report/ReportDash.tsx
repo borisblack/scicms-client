@@ -12,6 +12,7 @@ interface ReportDashOpts {
     rules?: string
 }
 
+const TABLE_HEADER_HEIGHT = 40
 const rulesService = RulesService.getInstance()
 
 export default function ReportDash({dataset, dash, height, fullScreen, data}: DashRenderContext) {
@@ -49,7 +50,7 @@ export default function ReportDash({dataset, dash, height, fullScreen, data}: Da
             dataSource={data}
             rowKey={keyColName ? keyColName : () => uuidv4()}
             pagination={false}
-            // scroll={{y: fullScreen ? '80vh' : height}}
+            scroll={{y: fullScreen ? '80vh' : height - TABLE_HEADER_HEIGHT}}
         />
     )
 }

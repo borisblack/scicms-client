@@ -7,9 +7,12 @@ export interface DashWrapperProps {
     dashboard: Dashboard
     extra?: DashboardExtra
     dash: IDash
+    readOnly: boolean
+    canEdit: boolean
     onFullScreenChange: (fullScreen: boolean) => void
     onRelatedDashboardOpen: (dashboardId: string, queryFilter: QueryFilter) => void
-    onEdit?: () => void
+    onEdit: () => void
+    onDelete: () => void
 }
 
 export interface DashProps extends DashWrapperProps {

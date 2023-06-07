@@ -11,8 +11,7 @@ import {DASHBOARD_ITEM_NAME, DEBUG} from '../config/constants'
 import PermissionService from '../services/permission'
 import {Dashboard, DashboardExtra, Dataset, IDash, IDashboardSpec, QueryFilter} from '../types'
 import DashForm, {DashValues} from './DashForm'
-import {DeleteOutlined} from '@ant-design/icons'
-import {generateQueryBlock, printSingleQueryFilter, queryOpTitles} from '../util/bi'
+import {generateQueryBlock, printSingleQueryFilter} from '../util/bi'
 import biConfig from '../config/bi'
 import _ from 'lodash'
 import DatasetService from '../services/dataset'
@@ -135,14 +134,14 @@ export default function DashboardSpec({me, pageKey, item, data, extra, buffer, r
         dashForm.resetFields()
     }
 
-    function removeDash(name: string) {
-        if (name === activeDash?.name) {
+    function removeDash(id: string) {
+        if (id === activeDash?.id) {
             setDashModalVisible(false)
             setActiveDash(null)
         }
 
         const newSpec = {
-            dashes: allDashes.filter(it => it.name !== name)
+            dashes: allDashes.filter(it => it.id !== id)
         }
 
         onBufferChange({spec: newSpec})
@@ -213,9 +212,12 @@ export default function DashboardSpec({me, pageKey, item, data, extra, buffer, r
                     dashboard={dashboard}
                     extra={extra}
                     dash={dash}
+                    readOnly={readOnly ?? false}
+                    canEdit={canEdit}
                     onFullScreenChange={setFullScreen}
                     onRelatedDashboardOpen={handleRelatedDashboardOpen}
-                    onEdit={readOnly ? undefined : () => openDash(dash)}
+                    onEdit={() => openDash(dash)}
+                    onDelete={() => removeDash(dash.id)}
                 />
             </div>
         )
@@ -275,11 +277,6 @@ export default function DashboardSpec({me, pageKey, item, data, extra, buffer, r
                             canEdit={canEdit}
                             onFormFinish={handleDashFormFinish}
                         />
-                        <div className={styles.dashModalFooter}>
-                            <Button type="primary" danger icon={<DeleteOutlined/>} disabled={!canEdit} onClick={() => removeDash(activeDash.name)}>
-                                {t('Remove Dash')}
-                            </Button>
-                        </div>
                     </>
                 )}
             </Modal>

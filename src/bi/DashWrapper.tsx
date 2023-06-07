@@ -5,6 +5,7 @@ import {useTranslation} from 'react-i18next'
 import 'chartjs-adapter-luxon'
 import {DashWrapperProps} from './index'
 import {
+    DeleteOutlined,
     EditOutlined,
     ExclamationCircleOutlined,
     FilterOutlined,
@@ -41,7 +42,17 @@ const datasetService = DatasetService.getInstance()
 const extractSessionData = () => JSON.parse(localStorage.getItem('sessionData') ?? '{}')
 
 export default function DashWrapper(props: DashWrapperProps) {
-    const {dataset, dashboard, extra, dash, onFullScreenChange, onEdit} = props
+    const {
+        dataset,
+        dashboard,
+        extra,
+        dash,
+        readOnly,
+        canEdit,
+        onFullScreenChange,
+        onEdit,
+        onDelete
+    } = props
     const dashHandler: Dash | undefined = useMemo(() => getDash(dash.type), [dash.type])
     if (dashHandler == null)
         throw new Error('Illegal argument')
@@ -144,12 +155,19 @@ export default function DashWrapper(props: DashWrapperProps) {
             onClick: () => setFiltersModalVisible(true)
         }]
 
-        if (onEdit) {
+        if (!readOnly) {
             menuItems.push({type: 'divider'})
             menuItems.push({
                 key: 'edit',
                 label: <Space><EditOutlined/>{t('Edit')}</Space>,
+                disabled: !canEdit,
                 onClick: () => onEdit()
+            })
+            menuItems.push({
+                key: 'delete',
+                label: <Space><DeleteOutlined className="red"/>{t('Delete')}</Space>,
+                disabled: !canEdit,
+                onClick: () => onDelete()
             })
         }
 
