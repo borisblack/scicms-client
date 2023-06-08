@@ -77,7 +77,16 @@ export default function DashWrapper(props: DashWrapperProps) {
 
     useEffect(() => {
         fetchDatasetData()
-    }, [dash, filters])
+    }, [
+        dataset,
+        dash.isAggregate,
+        dash.aggregateType,
+        dash.aggregateField,
+        dash.groupField,
+        dash.sortField,
+        dash.sortDirection,
+        filters
+    ])
 
     useEffect(() => {
         const interval = setInterval(fetchDatasetData, dash.refreshIntervalSeconds * 1000)
@@ -130,10 +139,6 @@ export default function DashWrapper(props: DashWrapperProps) {
         } finally {
             setLoading(false)
         }
-
-        if (fetchedData == null) {
-            return
-        }
     }
 
     const handleFullScreenChange = (fullScreen: boolean) => {
@@ -160,7 +165,7 @@ export default function DashWrapper(props: DashWrapperProps) {
             menuItems.push({
                 key: 'edit',
                 label: <Space><EditOutlined/>{t('Edit')}</Space>,
-                disabled: !canEdit,
+                // disabled: !canEdit,
                 onClick: () => onEdit()
             })
             menuItems.push({

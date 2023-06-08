@@ -105,5 +105,5 @@ export default function ColumnDash({dataset, dash, data, onRelatedDashboardOpen}
         onEvent: handleEvent
     }
 
-    return <Column {...config} />
+    return <Column {...config} key={relatedDashboardId}/>
 }

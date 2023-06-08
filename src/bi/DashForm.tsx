@@ -1,22 +1,21 @@
-import _ from 'lodash'
 import {Checkbox, Col, Collapse, Form, FormInstance, Input, InputNumber, Popover, Row, Select, Space} from 'antd'
 import {AggregateType, Column, Dashboard, Dataset, IDash, QueryBlock} from '../types'
 import {useTranslation} from 'react-i18next'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {fromFormQueryBlock, generateQueryBlock, getCustomFunctionsInfo, toFormQueryBlock} from '../util/bi'
-import DatasetService from '../services/dataset'
 import {CheckboxChangeEvent} from 'antd/es/checkbox'
 import DashFilters from './dash-filters/DashFilters'
 import styles from './DashboardSpec.module.css'
 import {Dash, getDash, getDashIds} from '../extensions/dashes'
 import biConfig from '../config/bi'
 import {QuestionCircleOutlined} from '@ant-design/icons'
-import DashboardService from '../services/dashboard'
 
 interface Props {
     form: FormInstance
     dash: IDash
     canEdit: boolean
+    datasets: Record<string, Dataset>
+    dashboards: Dashboard[]
     onFormFinish: (dash: DashValues) => void
 }
 
@@ -41,24 +40,20 @@ const {Item: FormItem} = Form
 const {Option: SelectOption} = Select
 const {Panel} = Collapse
 const dashTypes = getDashIds()
-const datasetService = DatasetService.getInstance()
-const dashboardService = DashboardService.getInstance()
 
 const prepareDashValues = (dashValues: DashValues, dataset?: Dataset): DashValues => ({
     ...dashValues,
     defaultFilters: dataset == null ? generateQueryBlock() : fromFormQueryBlock(dataset, dashValues.defaultFilters)
 })
 
-export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
+export default function DashForm({form, dash, canEdit, datasets, dashboards, onFormFinish}: Props) {
     const {t} = useTranslation()
-    const [datasets, setDatasets] = useState<Dataset[]>([])
     const [dataset, setDataset] = useState<Dataset | undefined>()
     const datasetColumns: {[name: string]: Column} = useMemo(() => dataset?.spec?.columns ?? {}, [dataset?.spec?.columns])
     const allColNames: string[] = useMemo(() => Object.keys(datasetColumns).sort(), [datasetColumns])
     const [isAggregate, setAggregate] = useState<boolean>(dash.isAggregate)
     const [aggregateField, setAggregateField] = useState<string | undefined>(dash.aggregateField)
     const [groupField, setGroupField] = useState<string | undefined>(dash.groupField)
-    const [dashboards, setDashboards] = useState<Dashboard[]>([])
     const availableColNames: string[] = useMemo(() => {
         if (!isAggregate || !aggregateField)
             return allColNames
@@ -69,19 +64,7 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
     const dashHandler: Dash | undefined = useMemo(() => getDash(dashType), [dashType])
 
     useEffect(() => {
-        datasetService.findAll()
-            .then(datasets => {
-                setDatasets(datasets)
-            })
-
-        dashboardService.findAll()
-            .then(dashboards => {
-                setDashboards(_.sortBy(dashboards, d => d.name))
-            })
-    }, [])
-
-    useEffect(() => {
-        setDataset(datasets.find(d => d.name === dash.dataset))
+        setDataset(dash.dataset ? datasets[dash.dataset] : undefined)
     }, [dash.dataset, datasets])
 
     const resetAggregateFormFields = useCallback(() => {
@@ -100,7 +83,7 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
         resetAggregateFormFields()
         resetSortAndOptValuesFormFields()
         form.setFieldValue('defaultFilters', generateQueryBlock())
-        setDataset(datasets.find(d => d.name === newDataset))
+        setDataset(datasets[newDataset])
     }, [datasets, form, resetAggregateFormFields, resetSortAndOptValuesFormFields])
 
     const handleAggregateChange = useCallback((evt: CheckboxChangeEvent) => {
@@ -167,7 +150,7 @@ export default function DashForm({form, dash, canEdit, onFormFinish}: Props) {
                         rules={[{required: true, message: t('Required field')}]}
                     >
                         <Select onSelect={handleDatasetChange}>
-                            {datasets.map(d => d.name).sort().map(d => <SelectOption key={d} value={d}>{d}</SelectOption>)}
+                            {Object.keys(datasets).sort().map(d => <SelectOption key={d} value={d}>{d}</SelectOption>)}
                         </Select>
                     </FormItem>
                 </Col>

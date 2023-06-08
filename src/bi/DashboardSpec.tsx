@@ -7,7 +7,7 @@ import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
 
 import {CustomComponentRenderContext} from '../extensions/custom-components'
-import {DASHBOARD_ITEM_NAME, DEBUG} from '../config/constants'
+import {DASHBOARD_ITEM_NAME} from '../config/constants'
 import PermissionService from '../services/permission'
 import {Dashboard, DashboardExtra, Dataset, IDash, IDashboardSpec, QueryFilter} from '../types'
 import DashForm, {DashValues} from './DashForm'
@@ -19,18 +19,19 @@ import DashWrapper from './DashWrapper'
 import styles from './DashboardSpec.module.css'
 import './DashboardSpec.css'
 import ItemService from '../services/item'
-
-const ReactGridLayout = WidthProvider(RGL)
-const datasetService = DatasetService.getInstance()
-const initialSpec: IDashboardSpec = {
-    dashes: []
-}
+import DashboardService from '../services/dashboard'
 
 interface DashboardSpecProps extends CustomComponentRenderContext {
     extra?: DashboardExtra
     readOnly?: boolean
 }
 
+const ReactGridLayout = WidthProvider(RGL)
+const datasetService = DatasetService.getInstance()
+const dashboardService = DashboardService.getInstance()
+const initialSpec: IDashboardSpec = {
+    dashes: []
+}
 let seqNum = 0
 
 export default function DashboardSpec({me, pageKey, item, data, extra, buffer, readOnly, onBufferChange, onItemView}: DashboardSpecProps) {
@@ -50,8 +51,9 @@ export default function DashboardSpec({me, pageKey, item, data, extra, buffer, r
     }, [data, isLockedByMe, isNew, item, me, permissionService])
     const [canEdit] = permissions
     const spec: IDashboardSpec = buffer.spec ?? data?.spec ?? initialSpec
-    const [datasets, setDatasets] = useState<{[name: string]: Dataset} | null>(null)
-    const dashboard = {...data, spec} as Dashboard
+    const [datasets, setDatasets] = useState<{[name: string]: Dataset}>({})
+    const [dashboards, setDashboards] = useState<Dashboard[]>([])
+    const currentDashboard = {...data, spec} as Dashboard
     const allDashes = spec.dashes ?? []
     const [activeDash, setActiveDash] = useState<IDash | null>(null)
     const [isFullScreen, setFullScreen] = useState<boolean>(false)
@@ -59,9 +61,15 @@ export default function DashboardSpec({me, pageKey, item, data, extra, buffer, r
     const [dashForm] = Form.useForm()
 
     useEffect(() => {
-        datasetService.findAll().then(datasetList => {
-            setDatasets(_.mapKeys(datasetList, ds => ds.name))
-        })
+        datasetService.findAll()
+            .then(datasetList => {
+                setDatasets(_.mapKeys(datasetList, ds => ds.name))
+            })
+
+        dashboardService.findAll()
+            .then(dashboards => {
+                setDashboards(_.sortBy(dashboards, db => db.name))
+            })
     }, [])
 
     function handleDashAdd() {
@@ -185,9 +193,6 @@ export default function DashboardSpec({me, pageKey, item, data, extra, buffer, r
     }
 
     function handleDashFormFinish(newDash: DashValues) {
-        if (DEBUG)
-            console.log(newDash)
-
         handleActiveDashChange(newDash)
         setDashModalVisible(false)
     }
@@ -209,7 +214,7 @@ export default function DashboardSpec({me, pageKey, item, data, extra, buffer, r
                 <DashWrapper
                     pageKey={pageKey}
                     dataset={datasets[dash.dataset ?? '']}
-                    dashboard={dashboard}
+                    dashboard={currentDashboard}
                     extra={extra}
                     dash={dash}
                     readOnly={readOnly ?? false}
@@ -275,6 +280,8 @@ export default function DashboardSpec({me, pageKey, item, data, extra, buffer, r
                             form={dashForm}
                             dash={activeDash}
                             canEdit={canEdit}
+                            datasets={datasets}
+                            dashboards={dashboards}
                             onFormFinish={handleDashFormFinish}
                         />
                     </>
