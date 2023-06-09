@@ -68,7 +68,7 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({pageKey, form, item, a
     const {t} = useTranslation()
     const [loading, setLoading] = useState<boolean>(false)
     const [isRelationModalVisible, setRelationModalVisible] = useState<boolean>(false)
-    const isDisabled = useMemo(() => attribute.keyed || attribute.readOnly || ((attrName === LIFECYCLE_ATTR_NAME || attrName === PERMISSION_ATTR_NAME) && !canAdmin), [attribute.keyed, attribute.readOnly])
+    const isDisabled = useMemo(() => attribute.keyed || attribute.readOnly || ((attrName === LIFECYCLE_ATTR_NAME || attrName === PERMISSION_ATTR_NAME) && !canAdmin), [attrName, attribute.keyed, attribute.readOnly, canAdmin])
     const additionalProps = useMemo((): any => {
         const additionalProps: any = {}
         if (isDisabled)
