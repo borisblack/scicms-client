@@ -9,6 +9,7 @@ interface BiConfig {
     maxPageSize: number
     minRefreshIntervalSeconds: number
     openFirstDashboard: boolean
+    fractionDigits: number
     percentFractionDigits: number
     dateTime: {
         dateFormatString: string
@@ -65,6 +66,7 @@ const biConfig: BiConfig = {
     maxPageSize: 1000,
     minRefreshIntervalSeconds: 5,
     openFirstDashboard: true,
+    fractionDigits: 2,
     percentFractionDigits: 2,
     dateTime: {
         dateFormatString: 'DD.MM.YYYY',

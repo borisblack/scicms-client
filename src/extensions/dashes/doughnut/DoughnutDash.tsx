@@ -18,7 +18,7 @@ export interface DoughnutDashOptions {
     rules?: string
 }
 
-const {locale, percentFractionDigits, dash: dashConfig} = biConfig
+const {locale, fractionDigits, percentFractionDigits, dash: dashConfig} = biConfig
 const legendConfig = dashConfig?.all?.legend
 const statisticConfig = dashConfig?.doughnut?.statistic
 const rulesService = RulesService.getInstance()
@@ -82,7 +82,7 @@ export default function DoughnutDash({dataset, dash, data}: DashRenderContext) {
         meta: {
             [angleField]: {
                 alias: angleColumn.alias || angleField,
-                formatter: (value: any) => formatValue(value, angleColumn.type)
+                formatter: (value: any) => formatValue(value?.toFixed(fractionDigits), angleColumn.type)
             },
             [colorField]: {
                 alias: colorColumn.alias || colorField,
