@@ -322,6 +322,7 @@ export interface NamedColumn extends Column {
 
 export interface Dashboard extends DefaultItemTemplate {
     name: string
+    isPublic: boolean
     spec: IDashboardSpec
 }
 

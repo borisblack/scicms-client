@@ -252,6 +252,7 @@ const en = {
         'Promote': 'Promote',
         'Promotion': 'Promotion',
         'Properties': 'Properties',
+        'Public': 'Public',
         'Query': 'Query',
         'Query Options': 'Query Options',
         'Radius': 'Radius',

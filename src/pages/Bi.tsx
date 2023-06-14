@@ -46,8 +46,9 @@ function Bi() {
     useEffect(() => {
         setLoading(true)
         dashboardService.findAll()
+            .then(data => data.filter(db => db.isPublic))
             .then(data => {
-                const dashboardsById: Record<string, Dashboard> = _.mapKeys(data, ds => ds.id)
+                const dashboardsById: Record<string, Dashboard> = _.mapKeys(data, db => db.id)
                 setDashboards(dashboardsById)
                 return data
             })

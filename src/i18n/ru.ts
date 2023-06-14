@@ -252,6 +252,7 @@ const ru = {
         'Promote': 'Переместить',
         'Promotion': 'Перемещение',
         'Properties': 'Свойства',
+        'Public': 'Открытый',
         'Query': 'Запрос',
         'Query Options': 'Параметры запроса',
         'Radius': 'Радиус',
