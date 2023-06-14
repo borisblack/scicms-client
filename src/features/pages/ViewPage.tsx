@@ -609,14 +609,18 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
                 >
                     {hasComponents('view.content.form.begin') && renderComponents('view.content.form.begin', customComponentContext)}
                     {hasComponents(`${item.name}.view.content.form.begin`) && renderComponents(`${item.name}.view.content.form.begin`, customComponentContext)}
-                    <Collapse defaultActiveKey={['mainAttributes']}>
-                        <Panel header={t('Main attributes')} key="mainAttributes">
-                            {renderAttributes(ownAttributes)}
-                        </Panel>
-                        <Panel header={t('Additional attributes')} key="additionalAttributes">
-                            {renderAttributes(templateAttributes)}
-                        </Panel>
-                    </Collapse>
+                    <Collapse
+                        defaultActiveKey={['mainAttributes']}
+                        items={[{
+                            key: 'mainAttributes',
+                            label: t('Main attributes'),
+                            children: renderAttributes(ownAttributes)
+                        }, {
+                            key: 'additionalAttributes',
+                            label: t('Additional attributes'),
+                            children: renderAttributes(templateAttributes)
+                        }]}
+                    />
                     {hasComponents('view.content.form.end') && renderComponents('view.content.form.end', customComponentContext)}
                     {hasComponents('view.content.form.end') && renderComponents('view.content.form.end', customComponentContext)}
                 </Form>
