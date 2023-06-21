@@ -1,8 +1,8 @@
 import _ from 'lodash'
 import {Alert} from 'antd'
 import {Bar, BarConfig} from '@ant-design/charts'
-import {defaultDashColor, defaultDashColors, formatValue, isTemporal} from '../../../util/bi'
-import {DashRenderContext} from '../index'
+import {defaultDashColor, defaultDashColors, formatValue, handleDashClick, isTemporal} from '../../../util/bi'
+import {DashEventHandler, DashRenderContext} from '../index'
 import {LegendPosition} from '../util'
 import biConfig from '../../../config/bi'
 import {useMemo} from 'react'
@@ -25,7 +25,8 @@ const axisLabelStyle = dashConfig?.all?.axisLabelStyle
 const legendConfig = dashConfig?.all?.legend
 const rulesService = RulesService.getInstance()
 
-export default function BarDash({dataset, dash, data}: DashRenderContext) {
+export default function BarDash({dataset, dash, data, onRelatedDashboardOpen}: DashRenderContext) {
+    const {optValues, relatedDashboardId} = dash
     const {
         xField,
         yField,
@@ -36,7 +37,7 @@ export default function BarDash({dataset, dash, data}: DashRenderContext) {
         isStack,
         isGroup,
         rules
-    } = dash.optValues as BarDashOpts
+    } = optValues as BarDashOpts
     const fieldRules = useMemo(() => rulesService.parseRules(rules), [rules])
     const seriesData = seriesField ? _.uniqBy(data, seriesField).map(r => r[seriesField]) : []
     const seriesColors = seriesField ? rulesService.getSeriesColors(fieldRules, seriesField, seriesData, defaultDashColors(seriesData.length)) : []
@@ -53,6 +54,11 @@ export default function BarDash({dataset, dash, data}: DashRenderContext) {
     const yColumn = columns[yField]
     if (xColumn == null || yColumn == null)
         return <Alert message="Invalid columns specification" type="error"/>
+
+    const handleEvent: DashEventHandler | undefined =
+        relatedDashboardId ?
+            (chart, event) => handleDashClick(chart, event, yField, queryFilter => onRelatedDashboardOpen(relatedDashboardId, queryFilter)) :
+            undefined
 
     const config: BarConfig = {
         data,
@@ -95,8 +101,9 @@ export default function BarDash({dataset, dash, data}: DashRenderContext) {
             }
         },
         color: seriesField ? seriesColors : (record => (rulesService.getFieldColor(fieldRules, yField, record) ?? (defaultColor as string))),
-        locale
+        locale,
+        onEvent: handleEvent
     }
 
-    return <Bar {...config} />
+    return <Bar {...config} key={relatedDashboardId}/>
 }
