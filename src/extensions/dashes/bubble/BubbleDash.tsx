@@ -1,7 +1,7 @@
 import {Alert} from 'antd'
 import {Scatter, ScatterConfig} from '@ant-design/charts'
-import {defaultDashColor, defaultDashColors, formatValue, isTemporal} from '../../../util/bi'
-import {DashRenderContext} from '../index'
+import {defaultDashColor, defaultDashColors, formatValue, handleDashClick, isTemporal} from '../../../util/bi'
+import {DashEventHandler, DashRenderContext} from '../index'
 import biConfig from '../../../config/bi'
 import {LegendPosition} from '../util'
 import RulesService from '../../../services/rules'
@@ -24,7 +24,8 @@ const axisLabelStyle = dashConfig?.all?.axisLabelStyle
 const legendConfig = dashConfig?.all?.legend
 const rulesService = RulesService.getInstance()
 
-export default function BubbleDash({dataset, dash, data}: DashRenderContext) {
+export default function BubbleDash({dataset, dash, data, onRelatedDashboardOpen}: DashRenderContext) {
+    const {optValues, relatedDashboardId} = dash
     const {
         xField,
         yField,
@@ -34,7 +35,7 @@ export default function BubbleDash({dataset, dash, data}: DashRenderContext) {
         legendPosition,
         xAxisLabelAutoRotate,
         rules
-    } = dash.optValues as BubbleDashOptions
+    } = optValues as BubbleDashOptions
     const fieldRules = useMemo(() => rulesService.parseRules(rules), [rules])
     const seriesData = colorField ? _.uniqBy(data, colorField).map(r => r[colorField]) : []
     const seriesColors = colorField ? rulesService.getSeriesColors(fieldRules, colorField, seriesData, defaultDashColors(seriesData.length)) : []
@@ -55,6 +56,11 @@ export default function BubbleDash({dataset, dash, data}: DashRenderContext) {
     const sizeColumn = columns[sizeField]
     if (xColumn == null || yColumn == null || sizeColumn == null)
         return <Alert message="Invalid columns specification" type="error"/>
+
+    const handleEvent: DashEventHandler | undefined =
+        relatedDashboardId ?
+            (chart, event) => handleDashClick(chart, event, colorField ?? xField, queryFilter => onRelatedDashboardOpen(relatedDashboardId, queryFilter)) :
+            undefined
 
     const config: ScatterConfig = {
         appendPadding: 10,
@@ -115,8 +121,9 @@ export default function BubbleDash({dataset, dash, data}: DashRenderContext) {
             }
         },
         color: colorField ? seriesColors : (record => (rulesService.getFieldColor(fieldRules, xField, record) ?? (defaultColor as string))),
-        locale
+        locale,
+        onEvent: handleEvent
     }
 
-    return <Scatter {...config} />
+    return <Scatter {...config} key={relatedDashboardId}/>
 }

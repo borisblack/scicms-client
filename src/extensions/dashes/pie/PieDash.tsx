@@ -1,7 +1,7 @@
-import {DashRenderContext} from '../index'
+import {DashEventHandler, DashRenderContext} from '../index'
 import {Alert} from 'antd'
 import {Pie, PieConfig} from '@ant-design/charts'
-import {defaultDashColor, defaultDashColors, formatValue} from '../../../util/bi'
+import {defaultDashColors, formatValue, handleDashClick} from '../../../util/bi'
 import {LegendPosition} from '../util'
 import biConfig from '../../../config/bi'
 import RulesService from '../../../services/rules'
@@ -21,7 +21,8 @@ const {locale, percentFractionDigits, dash: dashConfig} = biConfig
 const legendConfig = dashConfig?.all?.legend
 const rulesService = RulesService.getInstance()
 
-export default function PieDash({dataset, dash, data}: DashRenderContext) {
+export default function PieDash({dataset, dash, data, onRelatedDashboardOpen}: DashRenderContext) {
+    const {optValues, relatedDashboardId} = dash
     const {
         angleField,
         colorField,
@@ -29,7 +30,7 @@ export default function PieDash({dataset, dash, data}: DashRenderContext) {
         hideLegend,
         legendPosition,
         rules
-    } = dash.optValues as PieDashOptions
+    } = optValues as PieDashOptions
     const fieldRules = useMemo(() => rulesService.parseRules(rules), [rules])
     const seriesData = colorField ? _.uniqBy(data, colorField).map(r => r[colorField]) : []
     const seriesColors = colorField ? rulesService.getSeriesColors(fieldRules, colorField, seriesData, defaultDashColors(seriesData.length)) : []
@@ -45,6 +46,11 @@ export default function PieDash({dataset, dash, data}: DashRenderContext) {
     const colorColumn = columns[colorField]
     if (angleColumn == null || colorColumn == null)
         return <Alert message="Invalid columns specification" type="error"/>
+
+    const handleEvent: DashEventHandler | undefined =
+        relatedDashboardId ?
+            (chart, event) => handleDashClick(chart, event, colorField, queryFilter => onRelatedDashboardOpen(relatedDashboardId, queryFilter)) :
+            undefined
 
     const config: PieConfig = {
         appendPadding: 10,
@@ -84,8 +90,9 @@ export default function PieDash({dataset, dash, data}: DashRenderContext) {
             }
         },
         color: seriesColors,
-        locale
+        locale,
+        onEvent: handleEvent
     }
 
-    return <Pie {...config} />
+    return <Pie {...config} key={relatedDashboardId}/>
 }
