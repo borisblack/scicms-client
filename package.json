@@ -78,6 +78,7 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@types/lodash": "^4.14.168",
     "@types/luxon": "^3.2.0",
     "@types/styled-components": "^5.1.26",
