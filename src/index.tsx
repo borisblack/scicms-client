@@ -1,3 +1,7 @@
+/**
+ * Copyright Boris Chernysh
+ * 2022-07-28
+ */
 import React from 'react'
 import {createRoot} from 'react-dom/client'
 import {Provider} from 'react-redux'
