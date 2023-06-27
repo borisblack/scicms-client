@@ -7,7 +7,12 @@ import EditableCell from '../../../../components/datagrid/EditableCell'
 import SelectableCell from '../../../../components/datagrid/SelectableCell'
 import EditableNumberCell from '../../../../components/datagrid/EditableNumberCell'
 
-const formatOptions = [
+const numberFormatOptions = [
+    {label: 'int', value: 'int'},
+    {label: 'float', value: 'float'}
+]
+
+const dateTimeFormatOptions = [
     {label: 'date', value: 'date'},
     {label: 'time', value: 'time'},
     {label: 'datetime', value: 'datetime'}
@@ -31,8 +36,25 @@ export const getColumns = (canEdit: boolean, onChange: (value: NamedColumn) => v
         header: i18n.t('Format'),
         cell: info => {
             const {type} = info.row.original
-            if (canEdit && (type === FieldType.datetime || type === FieldType.timestamp))
-                return <SelectableCell value={info.getValue()} options={formatOptions} onChange={format => onChange({...info.row.original, format})}/>
+            if (canEdit) {
+                if (type === FieldType.float || type === FieldType.double || type === FieldType.decimal)
+                    return (
+                        <SelectableCell
+                            value={info.getValue()}
+                            options={numberFormatOptions}
+                            onChange={format => onChange({...info.row.original, format})}
+                        />
+                    )
+
+                if (type === FieldType.datetime || type === FieldType.timestamp)
+                    return (
+                        <SelectableCell
+                            value={info.getValue()}
+                            options={dateTimeFormatOptions}
+                            onChange={format => onChange({...info.row.original, format})}
+                        />
+                    )
+            }
 
             return info.getValue()
         },

@@ -310,9 +310,9 @@ export interface DatasetSpec {
 }
 
 export interface Column {
-    type: FieldType,
-    format?: FieldType.date | FieldType.time | FieldType.datetime,
-    alias?: string,
+    type: FieldType
+    format?: FieldType.int | FieldType.float | FieldType.date | FieldType.time | FieldType.datetime
+    alias?: string
     colWidth?: string | number | null
 }
 

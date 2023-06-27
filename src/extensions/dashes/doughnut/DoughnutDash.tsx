@@ -7,6 +7,7 @@ import biConfig from '../../../config/bi'
 import RulesService from '../../../services/rules'
 import {useMemo} from 'react'
 import _ from 'lodash'
+import {FieldType} from '../../../types'
 
 export interface DoughnutDashOptions {
     angleField?: string
@@ -88,7 +89,7 @@ export default function DoughnutDash({dataset, dash, data, onRelatedDashboardOpe
         meta: {
             [angleField]: {
                 alias: angleColumn.alias || angleField,
-                formatter: (value: any) => formatValue(value?.toFixed(fractionDigits), angleColumn.type)
+                formatter: (value: any) => formatValue(value?.toFixed(angleColumn.format === FieldType.int ? 0 : fractionDigits), angleColumn.type)
             },
             [colorField]: {
                 alias: colorColumn.alias || colorField,
