@@ -42,6 +42,7 @@ export default function DashboardSpec({me, pageKey, item, data, extra, buffer, r
     const isNew = !data?.id
     const isLockedByMe = data?.lockedBy?.data?.id === me.id
     const itemService = useMemo(() => ItemService.getInstance(), [])
+    const datasetItem = useMemo(() => itemService.getDataset(), [])
     const dashboardItem = useMemo(() => itemService.getDashboard(), [])
     const permissionService = useMemo(() => PermissionService.getInstance(), [])
     const permissions = useMemo(() => {
@@ -228,6 +229,11 @@ export default function DashboardSpec({me, pageKey, item, data, extra, buffer, r
         )
     }
 
+    async function handleDatasetView(id: string) {
+        await onItemView(datasetItem, id)
+        setDashModalVisible(false)
+    }
+
     const layout: Layout[] = allDashes.map(it => {
         const isItemEditable = activeDash && it.id === activeDash.id && isFullScreen
         return {
@@ -283,6 +289,7 @@ export default function DashboardSpec({me, pageKey, item, data, extra, buffer, r
                             datasets={datasets}
                             dashboards={dashboards}
                             onFormFinish={handleDashFormFinish}
+                            onDatasetView={handleDatasetView}
                         />
                     </>
                 )}

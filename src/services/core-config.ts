@@ -3,7 +3,10 @@ import {gql} from '@apollo/client'
 import i18n from '../i18n'
 import {apolloClient, extractGraphQLErrorMessages} from '.'
 
-interface CoreConfig {
+export interface CoreConfig {
+    data: {
+        dataSources: string[]
+    }
     i18n: {
         defaultLocale: string
     }
@@ -12,6 +15,9 @@ interface CoreConfig {
 const FETCH_CORE_CONFIG_QUERY = gql`
     query {
         config {
+            data {
+                dataSources
+            }
             i18n {
                 defaultLocale
             }

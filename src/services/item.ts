@@ -3,7 +3,13 @@ import {gql} from '@apollo/client'
 import i18n from '../i18n'
 import {apolloClient, extractGraphQLErrorMessages} from '.'
 import {FieldType, Item, RelType} from '../types'
-import {DASHBOARD_ITEM_NAME, FILENAME_ATTR_NAME, ID_ATTR_NAME, MEDIA_ITEM_NAME} from '../config/constants'
+import {
+    DASHBOARD_ITEM_NAME,
+    DATASET_ITEM_NAME,
+    FILENAME_ATTR_NAME,
+    ID_ATTR_NAME,
+    MEDIA_ITEM_NAME
+} from '../config/constants'
 
 interface ItemCache {
     [name: string]: Item
@@ -119,7 +125,7 @@ export default class ItemService {
 
     getMedia = (): Item => this.getByName(MEDIA_ITEM_NAME)
 
-    findDashboard = (): Item | null => this.findByName(DASHBOARD_ITEM_NAME)
+    getDataset = (): Item => this.getByName(DATASET_ITEM_NAME)
 
     getDashboard = (): Item => this.getByName(DASHBOARD_ITEM_NAME)
 

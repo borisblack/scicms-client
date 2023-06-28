@@ -2,9 +2,11 @@ import {FC} from 'react'
 import {Attribute, Item, ItemData, UserInfo} from '../../../types'
 import {FormInstance} from 'antd'
 import {Callback} from '../../../services/mediator'
+import {CoreConfig} from '../../../services/core-config'
 
 export interface AttributeFieldProps {
     me: UserInfo
+    coreConfig: CoreConfig
     pageKey: string
     form: FormInstance
     item: Item

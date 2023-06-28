@@ -54,7 +54,6 @@ interface Props {
     onLogout: () => void
 }
 
-const {Panel} = Collapse
 const {info} = Modal
 
 function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, onUpdate, onLogout}: Props) {
@@ -72,14 +71,13 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
     const tabsContentRef = useRef<HTMLDivElement>(null)
     const footerRef = useRef<HTMLDivElement>(null)
     const [form] = Form.useForm()
-
     const coreConfigService = useMemo(() => CoreConfigService.getInstance(), [])
     const itemTemplateService = useMemo(() => ItemTemplateService.getInstance(), [])
     const itemService = useMemo(() => ItemService.getInstance(), [])
     const permissionService = useMemo(() => PermissionService.getInstance(), [])
     const queryService = useMemo(() => QueryService.getInstance(), [])
     const mutationService = useMemo(() => MutationService.getInstance(), [])
-
+    const {coreConfig} = coreConfigService
     const permissions = useMemo(() => {
         const acl = permissionService.getAcl(me, item, data)
         const canEdit = (!isSystemItem || !data?.core) && !item.readOnly && (!item.versioned || !!data?.current) && acl.canWrite
@@ -363,6 +361,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
                         <Col span={span} key={attrName}>
                             <AttributeFieldWrapper
                                 me={me}
+                                coreConfig={coreConfig}
                                 pageKey={page.key}
                                 form={form}
                                 item={item}
@@ -394,7 +393,7 @@ function ViewPage({me, page, closePage, onItemView, onItemCreate, onItemDelete, 
             if (viewState !== ViewState.UPDATE && viewState !== ViewState.CREATE_VERSION)
                 return
 
-            if (isNew || (data.locale ?? coreConfigService.coreConfig.i18n.defaultLocale) === value)
+            if (isNew || (data.locale ?? coreConfig.i18n.defaultLocale) === value)
                 return
 
             setLoading(true)

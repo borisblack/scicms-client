@@ -1,4 +1,18 @@
-import {Checkbox, Col, Collapse, Form, FormInstance, Input, InputNumber, Popover, Row, Select, Space} from 'antd'
+import {
+    Button,
+    Checkbox,
+    Col,
+    Collapse,
+    Form,
+    FormInstance,
+    Input,
+    InputNumber,
+    Popover,
+    Row,
+    Select,
+    Space,
+    Tooltip
+} from 'antd'
 import {AggregateType, Column, Dashboard, Dataset, IDash, QueryBlock} from '../types'
 import {useTranslation} from 'react-i18next'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
@@ -8,7 +22,7 @@ import DashFilters from './dash-filters/DashFilters'
 import styles from './DashboardSpec.module.css'
 import {Dash, getDash, getDashIds} from '../extensions/dashes'
 import biConfig from '../config/bi'
-import {QuestionCircleOutlined} from '@ant-design/icons'
+import {FolderOpenOutlined, QuestionCircleOutlined} from '@ant-design/icons'
 
 interface Props {
     form: FormInstance
@@ -17,6 +31,7 @@ interface Props {
     datasets: Record<string, Dataset>
     dashboards: Dashboard[]
     onFormFinish: (dash: DashValues) => void
+    onDatasetView: (id: string) => void
 }
 
 export interface DashValues {
@@ -38,7 +53,6 @@ export interface DashValues {
 
 const {Item: FormItem} = Form
 const {Option: SelectOption} = Select
-const {Panel} = Collapse
 const dashTypes = getDashIds()
 
 const prepareDashValues = (dashValues: DashValues, dataset?: Dataset): DashValues => ({
@@ -46,7 +60,7 @@ const prepareDashValues = (dashValues: DashValues, dataset?: Dataset): DashValue
     defaultFilters: dataset == null ? generateQueryBlock() : fromFormQueryBlock(dataset, dashValues.defaultFilters)
 })
 
-export default function DashForm({form, dash, canEdit, datasets, dashboards, onFormFinish}: Props) {
+export default function DashForm({form, dash, canEdit, datasets, dashboards, onFormFinish, onDatasetView}: Props) {
     const {t} = useTranslation()
     const [dataset, setDataset] = useState<Dataset | undefined>()
     const datasetColumns: {[name: string]: Column} = useMemo(() => dataset?.spec?.columns ?? {}, [dataset?.spec?.columns])
@@ -145,7 +159,20 @@ export default function DashForm({form, dash, canEdit, datasets, dashboards, onF
                     <FormItem
                         className={styles.formItem}
                         name="dataset"
-                        label={t('Dataset')}
+                        label={(
+                            <Space>
+                                {t('Dataset')}
+                                {dataset && (
+                                    <Tooltip key="open" title={t('Open')}>
+                                        <Button
+                                            type="link"
+                                            icon={<FolderOpenOutlined/>}
+                                            onClick={() => onDatasetView(datasets[dataset.name].id)}
+                                        />
+                                    </Tooltip>
+                                )}
+                            </Space>
+                        )}
                         initialValue={dash.dataset}
                         rules={[{required: true, message: t('Required field')}]}
                     >
