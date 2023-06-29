@@ -1,10 +1,10 @@
+import _ from 'lodash'
 import {createSlice, PayloadAction} from '@reduxjs/toolkit'
-
 import {RootState} from '../../store'
 import {Item, ItemData} from '../../types'
 import i18n from '../../i18n'
 import Mediator, {CallbackOperation} from '../../services/mediator'
-import {ID_ATTR_NAME} from '../../config/constants'
+import {EMPTY_ARRAY, ID_ATTR_NAME} from '../../config/constants'
 import {objectToHash} from '../../util'
 
 export interface IPage {
@@ -196,7 +196,7 @@ const slice = createSlice({
     }
 })
 
-export const selectPages = (state: RootState) => Object.values(state.pages.pages) as IPage[]
+export const selectPages = (state: RootState) => _.isEmpty(state.pages.pages) ? EMPTY_ARRAY : Object.values(state.pages.pages) as IPage[]
 export const selectActiveKey = (state: RootState) => state.pages.activeKey
 
 export const {setActiveKey, openPage, closePage, closeActivePage, updatePage, updateActivePage, reset} = slice.actions
