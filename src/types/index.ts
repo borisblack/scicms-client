@@ -383,26 +383,18 @@ export interface QueryBlock {
 
 export enum TemporalPeriod {
     ARBITRARY = 'ARBITRARY',
-    LAST_5_MINUTES = 'LAST_5_MINUTES',
-    LAST_15_MINUTES = 'LAST_15_MINUTES',
-    LAST_30_MINUTES = 'LAST_30_MINUTES',
-    LAST_HOUR = 'LAST_HOUR',
-    LAST_3_HOURS = 'LAST_3_HOURS',
-    LAST_6_HOURS = 'LAST_6_HOURS',
-    LAST_12_HOURS = 'LAST_12_HOURS',
-    LAST_DAY = 'LAST_DAY',
-    LAST_3_DAYS = 'LAST_3_DAYS',
-    LAST_WEEK = 'LAST_WEEK',
-    LAST_2_WEEKS = 'LAST_2_WEEKS',
-    LAST_MONTH = 'LAST_MONTH',
-    LAST_3_MONTHS = 'LAST_3_MONTHS',
-    LAST_6_MONTHS = 'LAST_6_MONTHS',
-    LAST_YEAR = 'LAST_YEAR',
-    LAST_3_YEARS = 'LAST_3_YEARS',
-    LAST_5_YEARS = 'LAST_5_YEARS',
-    LAST_10_YEARS = 'LAST_10_YEARS',
-    LAST_20_YEARS = 'LAST_20_YEARS',
-    LAST_30_YEARS = 'LAST_30_YEARS'
+    LAST = 'LAST',
+    NEXT = 'NEXT'
+}
+
+export enum TemporalUnit {
+    SECOND = 'SECOND',
+    MINUTE = 'MINUTE',
+    HOUR = 'HOUR',
+    DAY = 'DAY',
+    WEEK = 'WEEK',
+    MONTH = 'MONTH',
+    YEAR = 'YEAR'
 }
 
 export interface ItemData extends DefaultItemTemplate {
