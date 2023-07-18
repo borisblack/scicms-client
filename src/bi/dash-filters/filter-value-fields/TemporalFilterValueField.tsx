@@ -1,9 +1,17 @@
 import React, {FC, useEffect, useState} from 'react'
-import {DatePicker, Form, Input, Select, Space, Switch, TimePicker} from 'antd'
+import {DatePicker, Form, Input, InputNumber, Select, Space, Switch, TimePicker} from 'antd'
 import {FunctionOutlined} from '@ant-design/icons'
 import {useTranslation} from 'react-i18next'
 import {FilterValueFieldProps} from './index'
-import {allTemporalPeriods, columnType, isTemporal, temporalPeriodTitles, timeTemporalPeriods} from '../../../util/bi'
+import {
+    allTemporalUnits,
+    columnType,
+    isTemporal,
+    temporalPeriods,
+    temporalPeriodTitles,
+    temporalUnitTitles,
+    timeTemporalUnits
+} from '../../../util/bi'
 import {FieldType, QueryOp, TemporalPeriod, TemporalType} from '../../../types'
 import appConfig from '../../../config'
 import styles from '../DashFilters.module.css'
@@ -98,15 +106,16 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
             <FormItem
                 className={styles.formItem}
                 name={[fieldName, 'extra', 'period']}
+                rules={[{required: true, message: ''}]}
             >
                 <Select
-                    style={{width: 180}}
-                    options={(temporalType === FieldType.time ? timeTemporalPeriods : allTemporalPeriods).map(k => ({value: k, label: temporalPeriodTitles[k]}))}
+                    style={{width: 140}}
+                    options={temporalPeriods.map(k => ({value: k, label: temporalPeriodTitles[k]}))}
                     onSelect={setPeriod}
                 />
             </FormItem>
 
-            {period === TemporalPeriod.ARBITRARY && (
+            {period === TemporalPeriod.ARBITRARY ? (
                 <>
                     <FormItem
                         className={styles.formItem}
@@ -182,6 +191,28 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
                             checkedChildren={<FunctionOutlined/>}
                             unCheckedChildren={<FunctionOutlined/>}
                             onChange={handleManualRightChange}
+                        />
+                    </FormItem>
+                </>
+            ) : (
+                <>
+                    <FormItem
+                        className={styles.formItem}
+                        name={[fieldName, 'extra', 'value']}
+                        rules={[{required: true, message: ''}]}
+                    >
+                        <InputNumber placeholder={t('Number')}/>
+                    </FormItem>
+
+                    <FormItem
+                        className={styles.formItem}
+                        name={[fieldName, 'extra', 'unit']}
+                        rules={[{required: true, message: ''}]}
+                    >
+                        <Select
+                            style={{width: 100}}
+                            options={(temporalType === FieldType.time ? timeTemporalUnits : allTemporalUnits).map(k => ({value: k, label: temporalUnitTitles[k]}))}
+                            onSelect={setPeriod}
                         />
                     </FormItem>
                 </>

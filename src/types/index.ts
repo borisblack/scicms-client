@@ -366,6 +366,8 @@ export interface QueryFilter {
     show?: boolean
     extra?: {
         period?: TemporalPeriod
+        unit?: TemporalUnit
+        value?: number
         isManual?: boolean
         isManualLeft?: boolean
         isManualRight?: boolean

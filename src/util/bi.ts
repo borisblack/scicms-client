@@ -121,6 +121,16 @@ export const temporalPeriodTitles: {[key: string]: string} = {
     [TemporalPeriod.NEXT]: i18n.t('next')
 }
 
+export const temporalUnitTitles: {[key: string]: string} = {
+    [TemporalUnit.SECOND]: i18n.t('second'),
+    [TemporalUnit.MINUTE]: i18n.t('minute'),
+    [TemporalUnit.HOUR]: i18n.t('hour'),
+    [TemporalUnit.DAY]: i18n.t('day'),
+    [TemporalUnit.WEEK]: i18n.t('week'),
+    [TemporalUnit.MONTH]: i18n.t('month'),
+    [TemporalUnit.YEAR]: i18n.t('year')
+}
+
 export const isString = (fieldType: FieldType) => stringTypeSet.has(fieldType)
 
 export const isNumeric = (fieldType: FieldType) => numericTypeSet.has(fieldType)
@@ -152,54 +162,45 @@ export const generateQueryBlock = (): QueryBlock => ({
     blocks: []
 })
 
-export function startTemporalFromPeriod(period: TemporalPeriod, temporalType: TemporalType): Dayjs {
-    switch (period) {
-        case TemporalPeriod.LAST_5_MINUTES:
-            return dayjs().subtract(5, 'minute')
-        case TemporalPeriod.LAST_15_MINUTES:
-            return dayjs().subtract(15, 'minute')
-        case TemporalPeriod.LAST_30_MINUTES:
-            return dayjs().subtract(30, 'minute')
-        case TemporalPeriod.LAST_HOUR:
-            return dayjs().subtract(1, 'hour')
-        case TemporalPeriod.LAST_3_HOURS:
-            return dayjs().subtract(3, 'hour')
-        case TemporalPeriod.LAST_6_HOURS:
-            return dayjs().subtract(6, 'hour')
-        case TemporalPeriod.LAST_12_HOURS:
-            return dayjs().subtract(12, 'hour')
-        default:
-            break
+export function intervalFromPeriod(period: TemporalPeriod, unit: TemporalUnit, value: number): Dayjs[] {
+    const now = dayjs()
+    if (period === TemporalPeriod.LAST) {
+        switch (unit) {
+            case TemporalUnit.SECOND:
+                return [dayjs().subtract(value, 'second'), now]
+            case TemporalUnit.MINUTE:
+                return [dayjs().subtract(value, 'minute'), now]
+            case TemporalUnit.HOUR:
+                return [dayjs().subtract(value, 'hour'), now]
+            case TemporalUnit.DAY:
+                return [dayjs().subtract(value, 'day'), now]
+            case TemporalUnit.WEEK:
+                return [dayjs().subtract(value, 'week'), now]
+            case TemporalUnit.MONTH:
+                return [dayjs().subtract(value, 'month'), now]
+            case TemporalUnit.YEAR:
+                return [dayjs().subtract(value, 'year'), now]
+            default:
+                break
+        }
     }
 
-    if (temporalType !== FieldType.time) {
-        switch (period) {
-            case TemporalPeriod.LAST_DAY:
-                return dayjs().subtract(1, 'day')
-            case TemporalPeriod.LAST_3_DAYS:
-                return dayjs().subtract(3, 'day')
-            case TemporalPeriod.LAST_WEEK:
-                return dayjs().subtract(1, 'week')
-            case TemporalPeriod.LAST_2_WEEKS:
-                return dayjs().subtract(2, 'week')
-            case TemporalPeriod.LAST_MONTH:
-                return dayjs().subtract(1, 'month')
-            case TemporalPeriod.LAST_3_MONTHS:
-                return dayjs().subtract(3, 'month')
-            case TemporalPeriod.LAST_6_MONTHS:
-                return dayjs().subtract(6, 'month')
-            case TemporalPeriod.LAST_YEAR:
-                return dayjs().subtract(1, 'year')
-            case TemporalPeriod.LAST_3_YEARS:
-                return dayjs().subtract(3, 'year')
-            case TemporalPeriod.LAST_5_YEARS:
-                return dayjs().subtract(5, 'year')
-            case TemporalPeriod.LAST_10_YEARS:
-                return dayjs().subtract(10, 'year')
-            case TemporalPeriod.LAST_20_YEARS:
-                return dayjs().subtract(20, 'year')
-            case TemporalPeriod.LAST_30_YEARS:
-                return dayjs().subtract(30, 'year')
+    if (period === TemporalPeriod.NEXT) {
+        switch (unit) {
+            case TemporalUnit.SECOND:
+                return [now, dayjs().add(value, 'second')]
+            case TemporalUnit.MINUTE:
+                return [now, dayjs().add(value, 'minute')]
+            case TemporalUnit.HOUR:
+                return [now, dayjs().add(value, 'hour')]
+            case TemporalUnit.DAY:
+                return [now, dayjs().add(value, 'day')]
+            case TemporalUnit.WEEK:
+                return [now, dayjs().add(value, 'week')]
+            case TemporalUnit.MONTH:
+                return [now, dayjs().add(value, 'month')]
+            case TemporalUnit.YEAR:
+                return [now, dayjs().add(value, 'year')]
             default:
                 break
         }
@@ -404,10 +405,9 @@ function parseFilterValue(type: FieldType, filter: QueryFilter): any {
                 return [left, right]
             } else {
                 const temporalType = type as TemporalType
-                return [
-                    formatTemporalIso(startTemporalFromPeriod(period, temporalType), temporalType),
-                    formatTemporalIso(dayjs(), temporalType)
-                ]
+                const temporalUnit = extra.unit as TemporalUnit
+                const temporalValue = extra.value as number
+                return intervalFromPeriod(period, temporalUnit, temporalValue).map(t => formatTemporalIso(t, temporalType))
             }
         } else {
             return [left, right]
