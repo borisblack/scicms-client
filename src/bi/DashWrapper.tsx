@@ -2,7 +2,6 @@ import React, {useEffect, useMemo, useState} from 'react'
 import {Dropdown, Empty, Form, Modal, notification, Space, Spin, Tooltip} from 'antd'
 import {PageHeader} from '@ant-design/pro-layout'
 import {useTranslation} from 'react-i18next'
-import 'chartjs-adapter-luxon'
 import {DashWrapperProps} from './index'
 import {
     DeleteOutlined,

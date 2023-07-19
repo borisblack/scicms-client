@@ -2,8 +2,6 @@ import _ from 'lodash'
 import {DashRenderContext} from '../index'
 import {useMemo, useRef} from 'react'
 import {Alert} from 'antd'
-import {BubbleMapController, ColorScale, GeoFeature, ProjectionScale, SizeScale} from 'chartjs-chart-geo'
-import Chart from 'chart.js/auto'
 import {LegendPosition} from '../util'
 import RulesService from '../../../services/rules'
 import {defaultDashColor, defaultDashColors} from '../../../util/bi'
@@ -19,8 +17,6 @@ interface BubbleMapDashOptions {
     xAxisLabelAutoRotate?: boolean
     rules?: string
 }
-
-Chart.register(BubbleMapController, GeoFeature, ColorScale, ProjectionScale, SizeScale)
 
 const rulesService = RulesService.getInstance()
 
@@ -58,15 +54,6 @@ export default function BubbleMapDash({pageKey, fullScreen, dataset, dash, data}
     if (!columns || !columns[latitudeField] || !columns[longitudeField] || !columns[sizeField])
         return <Alert message="The dataset does not contain a columns specification" type="error"/>
 
-    // useEffect(() => {
-    //     fetch('/countries-50m.json')
-    //         .then((r) => r.json())
-    //         .then((countriesData) => {
-    //             const parsedCountries = (topojson.feature(countriesData, countriesData.objects.countries) as any).features
-    //             setCountries(parsedCountries)
-    //         })
-    // }, [])
-    //
     // useEffect(() => {
     //     const canvas = canvasRef.current
     //     if (!canvas)
