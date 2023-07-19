@@ -1,4 +1,4 @@
-import React, {FC, useEffect, useState} from 'react'
+import React, {FC, useState} from 'react'
 import {DatePicker, Form, Input, InputNumber, Select, Space, Switch, TimePicker} from 'antd'
 import {FunctionOutlined} from '@ant-design/icons'
 import {useTranslation} from 'react-i18next'
@@ -32,15 +32,9 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
     const temporalType = columnType(column) as TemporalType
     const {t} = useTranslation()
     const [isManual, setManual] = useState(form.getFieldValue([...namePrefix, 'extra', 'isManual']))
-    const [period, setPeriod] = useState(TemporalPeriod.ARBITRARY)
+    const [period, setPeriod] = useState(form.getFieldValue([...namePrefix, 'extra', 'period']) ?? TemporalPeriod.ARBITRARY)
     const [isManualLeft, setManualLeft] = useState(form.getFieldValue([...namePrefix, 'extra', 'isManualLeft']))
     const [isManualRight, setManualRight] = useState(form.getFieldValue([...namePrefix, 'extra', 'isManualRight']))
-
-    useEffect(() => {
-        form.setFieldValue([...namePrefix, 'extra', 'period'], TemporalPeriod.ARBITRARY)
-        setPeriod(TemporalPeriod.ARBITRARY)
-    }, [op])
-
 
     function handleManualChange(newManual: boolean) {
         setManual(newManual)
@@ -201,7 +195,7 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
                         name={[fieldName, 'extra', 'value']}
                         rules={[{required: true, message: ''}]}
                     >
-                        <InputNumber placeholder={t('Number')}/>
+                        <InputNumber placeholder={t('number')}/>
                     </FormItem>
 
                     <FormItem
@@ -211,8 +205,8 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
                     >
                         <Select
                             style={{width: 100}}
+                            placeholder={t('unit')}
                             options={(temporalType === FieldType.time ? timeTemporalUnits : allTemporalUnits).map(k => ({value: k, label: temporalUnitTitles[k]}))}
-                            onSelect={setPeriod}
                         />
                     </FormItem>
                 </>

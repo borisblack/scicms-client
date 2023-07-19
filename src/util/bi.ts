@@ -122,13 +122,13 @@ export const temporalPeriodTitles: {[key: string]: string} = {
 }
 
 export const temporalUnitTitles: {[key: string]: string} = {
-    [TemporalUnit.SECOND]: i18n.t('second'),
-    [TemporalUnit.MINUTE]: i18n.t('minute'),
-    [TemporalUnit.HOUR]: i18n.t('hour'),
-    [TemporalUnit.DAY]: i18n.t('day'),
-    [TemporalUnit.WEEK]: i18n.t('week'),
-    [TemporalUnit.MONTH]: i18n.t('month'),
-    [TemporalUnit.YEAR]: i18n.t('year')
+    [TemporalUnit.SECOND]: i18n.t('seconds'),
+    [TemporalUnit.MINUTE]: i18n.t('minutes'),
+    [TemporalUnit.HOUR]: i18n.t('hours'),
+    [TemporalUnit.DAY]: i18n.t('days'),
+    [TemporalUnit.WEEK]: i18n.t('weeks'),
+    [TemporalUnit.MONTH]: i18n.t('months'),
+    [TemporalUnit.YEAR]: i18n.t('years')
 }
 
 export const isString = (fieldType: FieldType) => stringTypeSet.has(fieldType)
