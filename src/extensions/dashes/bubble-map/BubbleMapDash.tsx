@@ -1,10 +1,11 @@
 import _ from 'lodash'
-import {DashRenderContext} from '../index'
-import {useMemo, useRef} from 'react'
+import {useEffect, useMemo, useRef} from 'react'
 import {Alert} from 'antd'
-import {LegendPosition} from '../util'
+import L from 'leaflet'
+import {DashRenderContext} from '../index'
 import RulesService from '../../../services/rules'
 import {defaultDashColor, defaultDashColors} from '../../../util/bi'
+import 'leaflet/dist/leaflet.css'
 
 interface BubbleMapDashOptions {
     latitudeField?: string
@@ -12,24 +13,18 @@ interface BubbleMapDashOptions {
     locationField?: string
     sizeField?: string
     colorField?: string
-    legendPosition?: LegendPosition
-    hideLegend?: boolean
-    xAxisLabelAutoRotate?: boolean
     rules?: string
 }
 
 const rulesService = RulesService.getInstance()
 
-export default function BubbleMapDash({pageKey, fullScreen, dataset, dash, data}: DashRenderContext) {
+export default function BubbleMapDash({pageKey, fullScreen, dataset, dash, height, data}: DashRenderContext) {
     const {
         latitudeField,
         longitudeField,
         locationField,
         sizeField,
         colorField,
-        hideLegend,
-        legendPosition,
-        xAxisLabelAutoRotate,
         rules
     } = dash.optValues as BubbleMapDashOptions
     // const [countries, setCountries] = useState([])
@@ -39,7 +34,24 @@ export default function BubbleMapDash({pageKey, fullScreen, dataset, dash, data}
     const seriesData = colorField ? _.uniqBy(data, colorField).map(r => r[colorField]) : []
     const seriesColors = colorField ? rulesService.getSeriesColors(fieldRules, colorField, seriesData, defaultDashColors(seriesData.length)) : []
     const defaultColor = defaultDashColor()
-    const canvasRef = useRef<HTMLCanvasElement>(null)
+    const mapRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        const mapEl = mapRef.current
+        if (!mapEl)
+            return
+
+        const mapInstance = L.map(mapEl, {attributionControl: false}).setView([56.12, 93.0], 9)
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(mapInstance)
+
+        return () => {
+            mapInstance.off()
+            mapInstance.remove()
+        }
+    }, [fullScreen])
 
     if (!latitudeField)
         return <Alert message="latitudeField attribute not specified" type="error"/>
@@ -54,54 +66,5 @@ export default function BubbleMapDash({pageKey, fullScreen, dataset, dash, data}
     if (!columns || !columns[latitudeField] || !columns[longitudeField] || !columns[sizeField])
         return <Alert message="The dataset does not contain a columns specification" type="error"/>
 
-    // useEffect(() => {
-    //     const canvas = canvasRef.current
-    //     if (!canvas)
-    //         return
-    //
-    //     const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
-    //     const scales: any = {}
-    //
-    //     if (dash.metricType != null && isTemporal(dash.metricType)) {
-    //         scales.r = {
-    //             ...timeScaleProps,
-    //             // min: _.min(preparedData.map(it => it.y))?.toISOString()
-    //         }
-    //     }
-    //
-    //     const chart = new Chart(ctx, {
-    //         type: DashType.bubbleMap,
-    //         data: {
-    //             labels,
-    //             datasets: [{
-    //                 label: dash.name,
-    //                 outline: countries,
-    //                 showOutline: true,
-    //                 backgroundColor: 'steelblue',
-    //                 data: preparedData
-    //             }]
-    //         },
-    //         options: {
-    //             plugins: {
-    //                 legend: {
-    //                     display: false
-    //                 }
-    //             },
-    //             scales: {
-    //                 ...scales,
-    //                 xy: {
-    //                     projection: 'equalEarth',
-    //                 },
-    //                 // r: {
-    //                 //     size: [1, 20],
-    //                 // }
-    //             },
-    //             maintainAspectRatio: !fullScreen
-    //         }
-    //     })
-    //
-    //     return () => { chart.destroy() }
-    // }, [countries, dash.metricType, dash.name, fullScreen, labels, preparedData])
-
-    return <canvas id={`${pageKey}#${dash.name}`} ref={canvasRef}/>
+    return <div ref={mapRef} style={{height: fullScreen ? '85vh' : height}}/>
 }

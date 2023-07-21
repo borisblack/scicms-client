@@ -74,39 +74,6 @@ export default function BubbleMapDashOptionsForm({dataset, availableColNames, fi
                 </FormItem>
             </Col>
 
-            <Col span={6}>
-                <FormItem
-                    className={styles.formItem}
-                    name={[fieldName, 'legendPosition']}
-                    label={t('Legend position')}
-                    initialValue={values.legendPosition ?? 'top-left'}
-                >
-                    <Select allowClear options={legendPositions.map(p => ({value: p, label: p}))}/>
-                </FormItem>
-            </Col>
-
-            <Col span={6}>
-                <FormItem
-                    className={styles.formItem}
-                    name={[fieldName, 'hideLegend']}
-                    valuePropName="checked"
-                    initialValue={values.hideLegend}
-                >
-                    <Checkbox style={{marginTop: 24}}>{t('Hide legend')}</Checkbox>
-                </FormItem>
-            </Col>
-
-            <Col span={6}>
-                <FormItem
-                    className={styles.formItem}
-                    name={[fieldName, 'xAxisLabelAutoRotate']}
-                    valuePropName="checked"
-                    initialValue={values.xAxisLabelAutoRotate}
-                >
-                    <Checkbox style={{marginTop: 24}}>{t('Auto rotate x-axis label')}</Checkbox>
-                </FormItem>
-            </Col>
-
             <Col span={12}>
                 <FormItem
                     className={styles.formItem}
