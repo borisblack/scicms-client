@@ -1,57 +1,131 @@
 import _ from 'lodash'
 import {useEffect, useMemo, useRef} from 'react'
 import {Alert} from 'antd'
-import L from 'leaflet'
+import L, {LatLngExpression} from 'leaflet'
 import {DashRenderContext} from '../index'
 import RulesService from '../../../services/rules'
 import {defaultDashColor, defaultDashColors} from '../../../util/bi'
+import biConfig from '../../../config/bi'
+import {MAX_LAT, MAX_LNG, MIN_LAT, MIN_LNG} from '.'
 import 'leaflet/dist/leaflet.css'
+import {QueryFilter, QueryOp} from '../../../types'
+import {v4 as uuidv4} from 'uuid'
 
 interface BubbleMapDashOptions {
     latitudeField?: string
     longitudeField?: string
-    locationField?: string
     sizeField?: string
     colorField?: string
+    labelField?: string
+    centerLatitude?: number
+    centerLongitude?: number
+    defaultZoom?: number
     rules?: string
 }
 
+const mapConfig = biConfig.dash.map
 const rulesService = RulesService.getInstance()
+const defaultColor = defaultDashColor()
 
-export default function BubbleMapDash({pageKey, fullScreen, dataset, dash, height, data}: DashRenderContext) {
+export default function BubbleMapDash({pageKey, fullScreen, dataset, dash, height, data, onRelatedDashboardOpen}: DashRenderContext) {
+    const {relatedDashboardId} = dash
     const {
         latitudeField,
         longitudeField,
-        locationField,
         sizeField,
         colorField,
+        labelField,
+        centerLatitude,
+        centerLongitude,
+        defaultZoom,
         rules
     } = dash.optValues as BubbleMapDashOptions
     // const [countries, setCountries] = useState([])
     // const labels = useMemo(() => mapLabels(data, colorField), [data, colorField])
     // const preparedData = useMemo(() => map3dMapMetrics(dash, data), [data, dash])
     const fieldRules = useMemo(() => rulesService.parseRules(rules), [rules])
-    const seriesData = colorField ? _.uniqBy(data, colorField).map(r => r[colorField]) : []
-    const seriesColors = colorField ? rulesService.getSeriesColors(fieldRules, colorField, seriesData, defaultDashColors(seriesData.length)) : []
-    const defaultColor = defaultDashColor()
+    const seriesData = useMemo(() => colorField ? _.uniqBy(data, colorField).map(r => r[colorField]) : [], [colorField, data])
+    const seriesColors = useMemo(() => colorField ? rulesService.getSeriesColors(fieldRules, colorField, seriesData, defaultDashColors(seriesData.length)) : [], [colorField, fieldRules, seriesData])
     const mapRef = useRef<HTMLDivElement>(null)
+    const mapInstance = useRef<L.Map | null>(null)
 
     useEffect(() => {
         const mapEl = mapRef.current
         if (!mapEl)
             return
 
-        const mapInstance = L.map(mapEl, {attributionControl: false}).setView([56.12, 93.0], 9)
+        const centerPosition: LatLngExpression | undefined = ((centerLatitude == null && mapConfig.centerPosition?.latitude == null) || (centerLongitude == null && mapConfig.centerPosition?.longitude == null)) ?
+            undefined :
+            [centerLatitude ?? mapConfig.centerPosition?.latitude, centerLongitude ?? mapConfig.centerPosition?.longitude] as LatLngExpression
+        mapInstance.current = L.map(mapEl, {
+            attributionControl: false,
+            center: centerPosition,
+            zoom: defaultZoom ?? mapConfig.defaultZoom
+        })
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
+            maxZoom: mapConfig.maxZoom,
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        }).addTo(mapInstance)
+        }).addTo(mapInstance.current)
 
         return () => {
-            mapInstance.off()
-            mapInstance.remove()
+            mapInstance.current?.off()
+            mapInstance.current?.remove()
         }
-    }, [fullScreen])
+    }, [centerLatitude, centerLongitude, defaultZoom, fullScreen])
+
+    useEffect(() => {
+        if (mapInstance.current == null || latitudeField == null || longitudeField == null || sizeField == null)
+            return
+
+        const bubbles: L.Circle[] = []
+        data
+            .filter(row => {
+                const lat = row[latitudeField]
+                const lng = row[longitudeField]
+                return lat != null && lat >= MIN_LAT && lat <= MAX_LAT && lng != null && lng >= MIN_LNG && lng <= MAX_LNG
+            })
+            .forEach((row, i) => {
+                const color = colorField ? seriesColors ? seriesColors[i] : defaultColor : defaultColor
+                const size = row[sizeField]
+                const bubble = L.circle([row[latitudeField], row[longitudeField]], {
+                    color,
+                    fillColor: color,
+                    fillOpacity: 0.5,
+                    radius: size ?? mapConfig.defaultSize
+                }).addTo(mapInstance.current as L.Map)
+
+                if (labelField) {
+                    bubble.bindPopup(labelField)
+                }
+
+                if (relatedDashboardId && size != null) {
+                    bubble.on('click', evt => {
+                        handleBubbleClick(evt, sizeField, size, queryFilter => onRelatedDashboardOpen(relatedDashboardId, queryFilter))
+                    })
+                }
+                
+                bubbles.push(bubble)
+            })
+
+        return () => {
+            bubbles.forEach(bubble => {
+                bubble.off('click')
+                bubble.remove()
+            })
+        }
+    }, [data, latitudeField, longitudeField, colorField, sizeField, labelField, seriesColors, relatedDashboardId, onRelatedDashboardOpen])
+
+    function handleBubbleClick(evt: L.LeafletMouseEvent, fieldName: string, value: any, cb: (queryFilter: QueryFilter) => void) {
+        if (evt.type !== 'click' || value == null)
+            return
+
+        cb({
+            id: uuidv4(),
+            columnName: fieldName,
+            op: QueryOp.$eq,
+            value
+        })
+    }
 
     if (!latitudeField)
         return <Alert message="latitudeField attribute not specified" type="error"/>
@@ -66,5 +140,11 @@ export default function BubbleMapDash({pageKey, fullScreen, dataset, dash, heigh
     if (!columns || !columns[latitudeField] || !columns[longitudeField] || !columns[sizeField])
         return <Alert message="The dataset does not contain a columns specification" type="error"/>
 
-    return <div ref={mapRef} style={{height: fullScreen ? '85vh' : height}}/>
+    return (
+        <div
+            key={relatedDashboardId}
+            ref={mapRef}
+            style={{height: fullScreen ? '88vh' : height, width: fullScreen ? '98vw' : undefined}}
+        />
+    )
 }

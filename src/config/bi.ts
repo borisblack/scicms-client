@@ -16,7 +16,7 @@ interface BiConfig {
         timeFormatString: string
         dateTimeFormatString: string
     }
-    dash?: {
+    dash: {
         all?: {
             colors10?: string[]
             colors20?: string[]
@@ -35,7 +35,7 @@ interface BiConfig {
             axisLabelStyle?: {
                 [key: string]: any
             }
-        },
+        }
         doughnut?: {
             labelStyle: {
                 [key: string]: any
@@ -43,12 +43,21 @@ interface BiConfig {
             statistic?: {
                 title?: false
             }
-        },
+        }
+        map: {
+            defaultZoom: number
+            maxZoom: number
+            centerPosition?: {
+                latitude: number
+                longitude: number
+            }
+            defaultSize: number
+        }
         pie?: {
             labelStyle: {
                 [key: string]: any
             }
-        },
+        }
         statistic?: {
             color?: string
         }
@@ -115,6 +124,15 @@ const biConfig: BiConfig = {
                 textAlign: 'center',
                 fontSize: 14
             }
+        },
+        map: {
+            defaultZoom: 9,
+            maxZoom: 19,
+            centerPosition: {
+                latitude: 56.12,
+                longitude: 93.0
+            },
+            defaultSize: 100
         },
         pie: {
             labelStyle: {

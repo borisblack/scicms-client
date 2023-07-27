@@ -1,11 +1,11 @@
 import {DashOptionsFormProps} from '../../../bi'
-import {Checkbox, Col, Form, Input, Popover, Row, Select, Space} from 'antd'
+import {Col, Form, Input, InputNumber, Popover, Row, Select, Space} from 'antd'
 import React from 'react'
 import {useTranslation} from 'react-i18next'
-import {legendPositions} from '../util'
 import styles from '../DashOptionForm.module.css'
 import RulesHelp from '../../../bi/RulesHelp'
 import {QuestionCircleOutlined} from '@ant-design/icons'
+import {MAX_LAT, MAX_LNG, MIN_LAT, MIN_LNG} from './index'
 
 const {Item: FormItem} = Form
 const {TextArea} = Input
@@ -43,17 +43,6 @@ export default function BubbleMapDashOptionsForm({dataset, availableColNames, fi
             <Col span={6}>
                 <FormItem
                     className={styles.formItem}
-                    name={[fieldName, 'locationField']}
-                    label={t('Location field')}
-                    initialValue={values.locationField}
-                >
-                    <Select allowClear options={availableColNames.map(cn => ({value: cn, label: datasetColumns[cn]?.alias ?? cn}))}/>
-                </FormItem>
-            </Col>
-
-            <Col span={6}>
-                <FormItem
-                    className={styles.formItem}
                     name={[fieldName, 'sizeField']}
                     label={t('Size field')}
                     initialValue={values.sizeField}
@@ -71,6 +60,62 @@ export default function BubbleMapDashOptionsForm({dataset, availableColNames, fi
                     initialValue={values.colorField}
                 >
                     <Select allowClear options={availableColNames.map(cn => ({value: cn, label: datasetColumns[cn]?.alias ?? cn}))}/>
+                </FormItem>
+            </Col>
+
+            <Col span={6}>
+                <FormItem
+                    className={styles.formItem}
+                    name={[fieldName, 'labelField']}
+                    label={t('Label field')}
+                    initialValue={values.labelField}
+                >
+                    <Select allowClear options={availableColNames.map(cn => ({value: cn, label: datasetColumns[cn]?.alias ?? cn}))}/>
+                </FormItem>
+            </Col>
+
+            <Col span={6}>
+                <FormItem
+                    className={styles.formItem}
+                    name={[fieldName, 'centerLatitude']}
+                    label={t('Center latitude')}
+                    initialValue={values.centerLatitude}
+                    rules={[
+                        {type: 'number', min: MIN_LAT},
+                        {type: 'number', max: MAX_LAT}
+                    ]}
+                >
+                    <InputNumber style={{width: '100%'}} min={MIN_LAT} max={MAX_LAT} step={0.1}/>
+                </FormItem>
+            </Col>
+
+            <Col span={6}>
+                <FormItem
+                    className={styles.formItem}
+                    name={[fieldName, 'centerLongitude']}
+                    label={t('Center longitude')}
+                    initialValue={values.radius}
+                    rules={[
+                        {type: 'number', min: MIN_LNG},
+                        {type: 'number', max: MAX_LAT}
+                    ]}
+                >
+                    <InputNumber style={{width: '100%'}} min={MIN_LNG} max={MAX_LNG} step={0.1}/>
+                </FormItem>
+            </Col>
+
+            <Col span={6}>
+                <FormItem
+                    className={styles.formItem}
+                    name={[fieldName, 'defaultZoom']}
+                    label={t('Default zoom')}
+                    initialValue={values.radius}
+                    rules={[
+                        {type: 'number', min: 1},
+                        {type: 'number', max: 19}
+                    ]}
+                >
+                    <InputNumber style={{width: '100%'}} min={1} max={19} step={1}/>
                 </FormItem>
             </Col>
 
