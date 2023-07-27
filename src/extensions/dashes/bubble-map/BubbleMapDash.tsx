@@ -7,9 +7,9 @@ import RulesService from '../../../services/rules'
 import {defaultDashColor, defaultDashColors} from '../../../util/bi'
 import biConfig from '../../../config/bi'
 import {MAX_LAT, MAX_LNG, MIN_LAT, MIN_LNG} from '.'
-import 'leaflet/dist/leaflet.css'
 import {QueryFilter, QueryOp} from '../../../types'
 import {v4 as uuidv4} from 'uuid'
+import 'leaflet/dist/leaflet.css'
 
 interface BubbleMapDashOptions {
     latitudeField?: string
@@ -40,9 +40,6 @@ export default function BubbleMapDash({pageKey, fullScreen, dataset, dash, heigh
         defaultZoom,
         rules
     } = dash.optValues as BubbleMapDashOptions
-    // const [countries, setCountries] = useState([])
-    // const labels = useMemo(() => mapLabels(data, colorField), [data, colorField])
-    // const preparedData = useMemo(() => map3dMapMetrics(dash, data), [data, dash])
     const fieldRules = useMemo(() => rulesService.parseRules(rules), [rules])
     const seriesData = useMemo(() => colorField ? _.uniqBy(data, colorField).map(r => r[colorField]) : [], [colorField, data])
     const seriesColors = useMemo(() => colorField ? rulesService.getSeriesColors(fieldRules, colorField, seriesData, defaultDashColors(seriesData.length)) : [], [colorField, fieldRules, seriesData])
