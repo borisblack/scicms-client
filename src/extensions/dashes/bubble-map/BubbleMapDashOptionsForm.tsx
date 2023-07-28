@@ -85,7 +85,7 @@ export default function BubbleMapDashOptionsForm({dataset, availableColNames, fi
                         {type: 'number', max: MAX_LAT}
                     ]}
                 >
-                    <InputNumber style={{width: '100%'}} min={MIN_LAT} max={MAX_LAT} step={0.1}/>
+                    <InputNumber style={{width: '100%'}} min={MIN_LAT} max={MAX_LAT} step={0.01}/>
                 </FormItem>
             </Col>
 
@@ -94,13 +94,13 @@ export default function BubbleMapDashOptionsForm({dataset, availableColNames, fi
                     className={styles.formItem}
                     name={[fieldName, 'centerLongitude']}
                     label={t('Center longitude')}
-                    initialValue={values.radius}
+                    initialValue={values.centerLongitude}
                     rules={[
                         {type: 'number', min: MIN_LNG},
-                        {type: 'number', max: MAX_LAT}
+                        {type: 'number', max: MAX_LNG}
                     ]}
                 >
-                    <InputNumber style={{width: '100%'}} min={MIN_LNG} max={MAX_LNG} step={0.1}/>
+                    <InputNumber style={{width: '100%'}} min={MIN_LNG} max={MAX_LNG} step={0.01}/>
                 </FormItem>
             </Col>
 
@@ -109,7 +109,7 @@ export default function BubbleMapDashOptionsForm({dataset, availableColNames, fi
                     className={styles.formItem}
                     name={[fieldName, 'defaultZoom']}
                     label={t('Default zoom')}
-                    initialValue={values.radius}
+                    initialValue={values.defaultZoom}
                     rules={[
                         {type: 'number', min: 1},
                         {type: 'number', max: 19}

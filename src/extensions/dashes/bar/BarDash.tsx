@@ -100,7 +100,7 @@ export default function BarDash({dataset, dash, data, onRelatedDashboardOpen}: D
                 formatter: (value: any) => formatValue(value, yColumn.type)
             }
         },
-        color: seriesField ? seriesColors : (record => (rulesService.getFieldColor(fieldRules, yField, record) ?? (defaultColor as string))),
+        color: seriesField ? seriesColors : (record => (rulesService.getFieldColor(fieldRules, record) ?? (defaultColor as string))),
         locale,
         onEvent: handleEvent
     }

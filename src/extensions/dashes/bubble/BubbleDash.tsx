@@ -120,7 +120,7 @@ export default function BubbleDash({dataset, dash, data, onRelatedDashboardOpen}
                 formatter: (value: any) => formatValue(value, sizeColumn.type)
             }
         },
-        color: colorField ? seriesColors : (record => (rulesService.getFieldColor(fieldRules, xField, record) ?? (defaultColor as string))),
+        color: colorField ? seriesColors : (record => (rulesService.getFieldColor(fieldRules, record) ?? (defaultColor as string))),
         locale,
         onEvent: handleEvent
     }

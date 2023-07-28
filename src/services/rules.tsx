@@ -148,7 +148,7 @@ export default class RulesService {
         return fieldStyle
     }
 
-    getFieldColor(fieldRules: FieldRule[], fieldName: string, record: Record<string, any>): string | undefined {
+    getFieldColor(fieldRules: FieldRule[], record: Record<string, any>): string | undefined {
         let fieldColor: string | undefined = undefined
         for (const rule of fieldRules) {
             if (rule.condition == null || evaluateExpression(rule.condition, record)) {
@@ -166,7 +166,7 @@ export default class RulesService {
         const colors =
             seriesData
                 .map((s, i) => {
-                    const color = this.getFieldColor(fieldRules, fieldName, {[fieldName]: s})
+                    const color = this.getFieldColor(fieldRules, {[fieldName]: s})
 
                     return color ?? (isDefaultColorsEmpty ? undefined : defaultColors[i % defaultColors.length])
                 })

@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import {useEffect, useMemo, useRef} from 'react'
+import {useCallback, useEffect, useMemo, useRef} from 'react'
 import {Alert} from 'antd'
 import L, {LatLngExpression} from 'leaflet'
 import {DashRenderContext} from '../index'
@@ -28,6 +28,7 @@ const rulesService = RulesService.getInstance()
 const defaultColor = defaultDashColor()
 
 export default function BubbleMapDash({pageKey, fullScreen, dataset, dash, height, data, onRelatedDashboardOpen}: DashRenderContext) {
+    const {columns} = dataset.spec
     const {relatedDashboardId} = dash
     const {
         latitudeField,
@@ -70,6 +71,12 @@ export default function BubbleMapDash({pageKey, fullScreen, dataset, dash, heigh
         }
     }, [centerLatitude, centerLongitude, defaultZoom, fullScreen])
 
+    const renderTitle = useCallback((label: any, size: any) => {
+        const labelCol = labelField ? columns[labelField] : null
+        const sizeCol = sizeField ? columns[sizeField] : null
+        return `${labelCol ? `<div><b>${labelCol.alias || labelField}:</b> ${label}</div>` : ''}${sizeCol ? `<div><b>${sizeCol.alias || sizeField}:</b> ${size}</div>` : ''}`
+    }, [columns, labelField, sizeField])
+
     useEffect(() => {
         if (mapInstance.current == null || latitudeField == null || longitudeField == null || sizeField == null)
             return
@@ -91,9 +98,8 @@ export default function BubbleMapDash({pageKey, fullScreen, dataset, dash, heigh
                     radius: size ?? mapConfig.defaultSize
                 }).addTo(mapInstance.current as L.Map)
 
-                if (labelField) {
-                    bubble.bindPopup(labelField)
-                }
+                const label = labelField ? row[labelField] : null
+                bubble.bindPopup(renderTitle(label, size))
 
                 if (relatedDashboardId && size != null) {
                     bubble.on('click', evt => {
@@ -110,7 +116,7 @@ export default function BubbleMapDash({pageKey, fullScreen, dataset, dash, heigh
                 bubble.remove()
             })
         }
-    }, [data, latitudeField, longitudeField, colorField, sizeField, labelField, seriesColors, relatedDashboardId, onRelatedDashboardOpen])
+    }, [data, latitudeField, longitudeField, colorField, sizeField, labelField, seriesColors, relatedDashboardId, onRelatedDashboardOpen, renderTitle])
 
     function handleBubbleClick(evt: L.LeafletMouseEvent, fieldName: string, value: any, cb: (queryFilter: QueryFilter) => void) {
         if (evt.type !== 'click' || value == null)
@@ -133,8 +139,7 @@ export default function BubbleMapDash({pageKey, fullScreen, dataset, dash, heigh
     if (!sizeField)
         return <Alert message="sizeField attribute not specified" type="error"/>
 
-    const {columns} = dataset.spec
-    if (!columns || !columns[latitudeField] || !columns[longitudeField] || !columns[sizeField])
+    if (!columns || !columns[latitudeField] || !columns[longitudeField] || !columns[sizeField] || (labelField && !columns[labelField]))
         return <Alert message="The dataset does not contain a columns specification" type="error"/>
 
     return (

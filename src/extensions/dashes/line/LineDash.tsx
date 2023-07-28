@@ -94,7 +94,7 @@ export default function LineDash({dataset, dash, data, onRelatedDashboardOpen}: 
                 formatter: (value: any) => formatValue(value, yColumn.type)
             }
         },
-        color: seriesField ? seriesColors : (record => (rulesService.getFieldColor(fieldRules, xField, record) ?? (defaultColor as string))),
+        color: seriesField ? seriesColors : (record => (rulesService.getFieldColor(fieldRules, record) ?? (defaultColor as string))),
         locale,
         onEvent: handleEvent
     }
