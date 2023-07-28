@@ -42,7 +42,7 @@ export default function BubbleMapDash({pageKey, fullScreen, dataset, dash, heigh
         rules
     } = dash.optValues as BubbleMapDashOptions
     const fieldRules = useMemo(() => rulesService.parseRules(rules), [rules])
-    const seriesData = useMemo(() => colorField ? _.uniqBy(data, colorField).map(r => r[colorField]) : [], [colorField, data])
+    const seriesData = useMemo(() => colorField ? _.uniqBy(data, colorField) : [], [colorField, data])
     const seriesColors = useMemo(() => colorField ? rulesService.getSeriesColors(fieldRules, colorField, seriesData, defaultDashColors(seriesData.length)) : [], [colorField, fieldRules, seriesData])
     const mapRef = useRef<HTMLDivElement>(null)
     const mapInstance = useRef<L.Map | null>(null)

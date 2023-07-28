@@ -39,7 +39,7 @@ export default function BarDash({dataset, dash, data, onRelatedDashboardOpen}: D
         rules
     } = optValues as BarDashOpts
     const fieldRules = useMemo(() => rulesService.parseRules(rules), [rules])
-    const seriesData = seriesField ? _.uniqBy(data, seriesField).map(r => r[seriesField]) : []
+    const seriesData = seriesField ? _.uniqBy(data, seriesField) : []
     const seriesColors = seriesField ? rulesService.getSeriesColors(fieldRules, seriesField, seriesData, defaultDashColors(seriesData.length)) : []
     const defaultColor = defaultDashColor()
 

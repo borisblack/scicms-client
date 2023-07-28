@@ -35,7 +35,7 @@ export default function PolarAreaDash({dataset, dash, data, onRelatedDashboardOp
         rules
     } = optValues as PolarAreaDashOptions
     const fieldRules = useMemo(() => rulesService.parseRules(rules), [rules])
-    const seriesData = seriesField ? _.uniqBy(data, seriesField).map(r => r[seriesField]) : []
+    const seriesData = seriesField ? _.uniqBy(data, seriesField) : []
     const seriesColors = seriesField ? rulesService.getSeriesColors(fieldRules, seriesField, seriesData, defaultDashColors(seriesData.length)) : []
     const defaultColor = defaultDashColor()
 
