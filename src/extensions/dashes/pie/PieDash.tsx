@@ -32,7 +32,7 @@ export default function PieDash({dataset, dash, data, onRelatedDashboardOpen}: D
         rules
     } = optValues as PieDashOptions
     const fieldRules = useMemo(() => rulesService.parseRules(rules), [rules])
-    const seriesData = colorField ? _.uniqBy(data, colorField).map(r => r[colorField]) : []
+    const seriesData = colorField ? _.uniqBy(data, colorField) : []
     const seriesColors = colorField ? rulesService.getSeriesColors(fieldRules, colorField, seriesData, defaultDashColors(seriesData.length)) : []
 
     if (!angleField)

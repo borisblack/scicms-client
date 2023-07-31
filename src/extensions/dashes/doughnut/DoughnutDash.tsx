@@ -36,7 +36,7 @@ export default function DoughnutDash({dataset, dash, data, onRelatedDashboardOpe
         rules
     } = optValues as DoughnutDashOptions
     const fieldRules = useMemo(() => rulesService.parseRules(rules), [rules])
-    const seriesData = colorField ? _.uniqBy(data, colorField).map(r => r[colorField]) : []
+    const seriesData = colorField ? _.uniqBy(data, colorField) : []
     const seriesColors = colorField ? rulesService.getSeriesColors(fieldRules, colorField, seriesData, defaultDashColors(seriesData.length)) : []
 
     if (!angleField)
