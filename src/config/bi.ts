@@ -45,6 +45,7 @@ interface BiConfig {
             }
         }
         map: {
+            urlTemplate: string
             defaultZoom: number
             maxZoom: number
             centerPosition?: {
@@ -126,6 +127,7 @@ const biConfig: BiConfig = {
             }
         },
         map: {
+            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
             defaultZoom: 9,
             maxZoom: 19,
             centerPosition: {

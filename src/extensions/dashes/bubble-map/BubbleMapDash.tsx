@@ -60,7 +60,7 @@ export default function BubbleMapDash({pageKey, fullScreen, dataset, dash, heigh
             center: centerPosition,
             zoom: defaultZoom ?? mapConfig.defaultZoom
         })
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        L.tileLayer(mapConfig.urlTemplate, {
             maxZoom: mapConfig.maxZoom,
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         }).addTo(mapInstance.current)
