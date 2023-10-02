@@ -46,7 +46,6 @@ function Bi() {
     useEffect(() => {
         setLoading(true)
         dashboardService.findAll()
-            .then(data => data.filter(db => db.isPublic))
             .then(data => {
                 const dashboardsById: Record<string, Dashboard> = _.mapKeys(data, db => db.id)
                 setDashboards(dashboardsById)
@@ -161,7 +160,7 @@ function Bi() {
                             key: 'dashboards',
                             label: t('Dashboards'),
                             icon: <FundOutlined />,
-                            children: Object.values(dashboards).map(d => ({
+                            children: Object.values(dashboards).filter(d => d.isPublic).map(d => ({
                                 key: d.name,
                                 label: d.name,
                                 onClick: () => openDashboard(d)
