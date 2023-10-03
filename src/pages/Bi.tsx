@@ -52,8 +52,11 @@ function Bi() {
                 return data
             })
             .then(data => {
-                if (data.length > 0 && biConfig.openFirstDashboard)
-                    openDashboard(data[0])
+                if (biConfig.openFirstDashboard) {
+                    const publicData = data.filter(d => d.isPublic)
+                    if (publicData.length > 0)
+                        openDashboard(publicData[0])
+                }
             })
             .finally(() => {
                 setLoading(false)
