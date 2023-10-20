@@ -4,18 +4,21 @@ import {useTranslation} from 'react-i18next'
 import {Navigate} from 'react-router-dom'
 import {Tab} from 'rc-tabs/lib/interface'
 import {Layout, Menu, Spin, Tabs} from 'antd'
-import {ExclamationCircleOutlined, FundOutlined, LogoutOutlined, UserOutlined} from '@ant-design/icons'
+import {ExclamationCircleOutlined, FolderOutlined, FundOutlined, LogoutOutlined, UserOutlined} from '@ant-design/icons'
 import {useAppDispatch, useAppSelector} from '../util/hooks'
 import {logout, selectIsExpired, selectMe} from '../features/auth/authSlice'
 import {initializeIfNeeded, reset as resetRegistry} from '../features/registry/registrySlice'
 import {reset as resetPages} from '../features/pages/pagesSlice'
 import DashboardService from '../services/dashboard'
-import {Dashboard, DashboardExtra} from '../types'
+import {Dashboard, DashboardCategory, DashboardExtra} from '../types'
 import './Bi.css'
 import logo from '../logo.svg'
 import biConfig from '../config/bi'
 import DashboardSpecReadOnlyWrapper from '../bi/DashboardSpecReadOnlyWrapper'
 import {objectToHash} from '../util'
+import DashboardCategoryService from '../services/dashboard-category'
+import {ItemType} from 'antd/es/menu/hooks/useItems'
+import {allIcons} from '../util/icons'
 
 interface BiPage {
     dashboard: Dashboard,
@@ -27,6 +30,7 @@ const {Content, Sider} = Layout
 const isNavbarCollapsed = () => localStorage.getItem('biNavbarCollapsed') === '1'
 const setNavbarCollapsed = (collapsed: boolean) => localStorage.setItem('biNavbarCollapsed', collapsed ? '1' : '0')
 const dashboardService = DashboardService.getInstance()
+const dashboardCategoryService = DashboardCategoryService.getInstance()
 
 function Bi() {
     const {t} = useTranslation()
@@ -34,26 +38,30 @@ function Bi() {
     const me = useAppSelector(selectMe)
     const isExpired = useAppSelector(selectIsExpired)
     const [collapsed, setCollapsed] = useState(isNavbarCollapsed())
-    const [dashboards, setDashboards] = useState<Record<string, Dashboard>>({})
+    const [dashboardMap, setDashboardMap] = useState<Record<string, Dashboard>>({})
+    const [dashboardCategoryMap, setDashboardCategoryMap] = useState<Record<string, DashboardCategory>>({})
     const [loading, setLoading] = useState<boolean>(false)
     const [tabPages, setTabPages] = useState<Record<string, BiPage>>({})
     const [activeKey, setActiveKey] = useState<string | undefined>()
 
     useEffect(() => {
-        dispatch(initializeIfNeeded(me))
-    }, [me, dispatch])
-
-    useEffect(() => {
         setLoading(true)
-        dashboardService.findAll()
-            .then(data => {
-                const dashboardsById: Record<string, Dashboard> = _.mapKeys(data, db => db.id)
-                setDashboards(dashboardsById)
-                return data
-            })
-            .then(data => {
+        Promise.all([
+            dispatch(initializeIfNeeded(me)),
+            dashboardCategoryService.findAll(),
+            dashboardService.findAll()
+        ])
+            .then(([dispatchRes, dashboardCategoryList, dashboardList]) => {
+                const dashboardCategoryById: Record<string, DashboardCategory> = _.mapKeys(dashboardCategoryList, category => category.id)
+                setDashboardCategoryMap(dashboardCategoryById)
+
+                const dashboardsById: Record<string, Dashboard> = _.mapKeys(dashboardList, dashboard => dashboard.id)
+                setDashboardMap(dashboardsById)
+
                 if (biConfig.openFirstDashboard) {
-                    const publicData = data.filter(d => d.isPublic)
+                    const publicData =
+                        dashboardList.filter(dashboard => dashboard.isPublic && dashboard.categories.data.length === 0)
+
                     if (publicData.length > 0)
                         openDashboard(publicData[0])
                 }
@@ -98,7 +106,7 @@ function Bi() {
     }, [closeTab])
 
     const openDashboardById = (id: string, extra?: DashboardExtra) =>
-        openDashboard(dashboards[id], extra)
+        openDashboard(dashboardMap[id], extra)
 
     function openDashboard(dashboard: Dashboard, extra?: DashboardExtra) {
         const suffix = extra == null ? undefined : objectToHash(extra).toString()
@@ -111,6 +119,40 @@ function Bi() {
 
         setActiveKey(key)
     }
+
+    function getDashboardMenuItems(): ItemType[] {
+        const rootCategories =
+            Object.values(dashboardCategoryMap).filter(category => category.parentCategories.data.length === 0)
+        const rootDashboards =
+            Object.values(dashboardMap).filter(dashboard => dashboard.isPublic && dashboard.categories.data.length === 0)
+
+        return mapDashboardMenuItems('root', rootCategories, rootDashboards)
+    }
+
+    const mapDashboardMenuItems = (
+        rootCategoryId: string,
+        dashboardCategoryList: DashboardCategory[],
+        dashboardList: Dashboard[]
+    ): ItemType[] => ([
+        ...dashboardCategoryList.map(category => ({
+            key: `${rootCategoryId}#${category.id}`,
+            label: category.name,
+            icon: category.icon ? allIcons[category.icon] : <FolderOutlined />,
+            children: mapDashboardMenuItems(
+                category.id,
+                category.childCategories.data
+                    .map(childCategory => dashboardCategoryMap[childCategory.id]),
+                category.dashboards.data
+                    .filter(childDashboard => childDashboard.isPublic)
+                    .map(childDashboard => dashboardMap[childDashboard.id])
+            )
+        })),
+        ...dashboardList.map(dashboard => ({
+            key: `${rootCategoryId}#${dashboard.id}`,
+            label: dashboard.name,
+            onClick: () => openDashboard(dashboard)
+        }))
+    ])
 
     if (!me || isExpired)
         return <Navigate to="/login?targetUrl=/bi"/>
@@ -163,11 +205,7 @@ function Bi() {
                             key: 'dashboards',
                             label: t('Dashboards'),
                             icon: <FundOutlined />,
-                            children: Object.values(dashboards).filter(d => d.isPublic).map(d => ({
-                                key: d.name,
-                                label: d.name,
-                                onClick: () => openDashboard(d)
-                            }))
+                            children: getDashboardMenuItems()
                         }]}
                     />
                 </Spin>

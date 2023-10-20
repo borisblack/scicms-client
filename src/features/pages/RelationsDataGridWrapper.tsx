@@ -48,7 +48,13 @@ export default function RelationsDataGridWrapper({me, pageKey, item, itemData, r
     const permissionService = useMemo(() => PermissionService.getInstance(), [])
     const queryService = useMemo(() => QueryService.getInstance(), [])
     const mutationService = useMemo(() => MutationService.getInstance(), [])
-    const target = useMemo(() => itemService.getByName(relAttribute.target as string), [itemService, relAttribute.target])
+    const [target, intermediate] = useMemo(
+        () => ([
+            itemService.getByName(relAttribute.target as string),
+            relAttribute.intermediate ? itemService.getByName(relAttribute.intermediate) : null
+        ]),
+        [itemService, relAttribute.target, relAttribute.intermediate]
+    )
     const columns = useMemo(() => getColumns(target), [target])
     const isOneToMany = useMemo(() => relAttribute.relType === RelType.oneToMany, [relAttribute.relType])
 
@@ -70,6 +76,12 @@ export default function RelationsDataGridWrapper({me, pageKey, item, itemData, r
         return oppositeAttrName ? [...hiddenColumns, oppositeAttrName] : hiddenColumns
     }, [oppositeAttrName, target])
 
+    const [sourceAttrName, targetAttrName] = useMemo(
+        () => (relAttribute.inversedBy || (!relAttribute.inversedBy && !relAttribute.mappedBy)) ?
+            [SOURCE_ATTR_NAME, TARGET_ATTR_NAME] :
+            [TARGET_ATTR_NAME, SOURCE_ATTR_NAME],
+        [relAttribute])
+
     const handleRequest = useCallback(async (params: RequestParams) => {
         try {
             setLoading(true)
@@ -85,25 +97,11 @@ export default function RelationsDataGridWrapper({me, pageKey, item, itemData, r
 
     const refresh = () => setVersion(prevVersion => prevVersion + 1)
 
-    const getSourceTargetAttrNames = useCallback((): string[] => {
-        let sourceAttrName: string, targetAttrName: string
-        if (relAttribute.inversedBy || (!relAttribute.inversedBy && !relAttribute.mappedBy)) {
-            sourceAttrName = SOURCE_ATTR_NAME
-            targetAttrName = TARGET_ATTR_NAME
-        } else {
-            sourceAttrName = TARGET_ATTR_NAME
-            targetAttrName = SOURCE_ATTR_NAME
-        }
-        return [sourceAttrName, targetAttrName]
-    }, [relAttribute])
-
     const processExistingManyToManyRelation = useCallback(async (operation: CallbackOperation, id: string) => {
-        if (relAttribute.relType !== RelType.manyToMany || !relAttribute.intermediate)
+        if (relAttribute.relType !== RelType.manyToMany || !intermediate)
             throw Error('Illegal attribute')
 
         if (operation === CallbackOperation.DELETE) {
-            const intermediate = itemService.getByName(relAttribute.intermediate)
-            const [, targetAttrName] = getSourceTargetAttrNames()
             setLoading(true)
             try {
                 const intermediatesToDelete = await queryService.findAllBy(intermediate, {[targetAttrName]: {id: {eq: id}}} as unknown as ItemFiltersInput<ItemData>) // must be only one
@@ -119,15 +117,13 @@ export default function RelationsDataGridWrapper({me, pageKey, item, itemData, r
                 setLoading(false)
             }
         }
-    }, [getSourceTargetAttrNames, itemService, mutationService, queryService, relAttribute.intermediate, relAttribute.relType])
+    }, [targetAttrName, mutationService, queryService, intermediate, relAttribute.relType])
 
     const processCreatedManyToManyRelation = useCallback(async (operation: CallbackOperation, id: string) => {
-        if (relAttribute.relType !== RelType.manyToMany || !relAttribute.intermediate)
+        if (relAttribute.relType !== RelType.manyToMany || !intermediate)
             throw Error('Illegal attribute')
 
         if (operation === CallbackOperation.UPDATE && !createdIds.current.has(id)) {
-            const intermediate = itemService.getByName(relAttribute.intermediate)
-            const [sourceAttrName, targetAttrName] = getSourceTargetAttrNames()
             setLoading(true)
             try {
                 await mutationService.create(intermediate, {[sourceAttrName]: itemData.id, [targetAttrName]: id})
@@ -142,7 +138,7 @@ export default function RelationsDataGridWrapper({me, pageKey, item, itemData, r
         }
 
         await processExistingManyToManyRelation(operation, id)
-    }, [getSourceTargetAttrNames, itemData.id, itemService, mutationService, processExistingManyToManyRelation, relAttribute])
+    }, [sourceAttrName, targetAttrName, itemData.id, mutationService, processExistingManyToManyRelation, relAttribute, intermediate])
 
     const createManyToOneInitialData = useCallback((): ItemData | null => {
         if (relAttribute.relType !== RelType.oneToMany || !oppositeAttrName)
@@ -165,16 +161,14 @@ export default function RelationsDataGridWrapper({me, pageKey, item, itemData, r
     }, [createManyToOneInitialData, isOneToMany, onItemCreate, pageKey, processCreatedManyToManyRelation, target])
 
     const handleManyToManySelect = useCallback(async (selectedItemData: ItemData) => {
-        if (relAttribute.relType !== RelType.manyToMany || !relAttribute.intermediate)
+        if (relAttribute.relType !== RelType.manyToMany || !intermediate)
             throw Error('Illegal attribute')
 
-        const intermediate = itemService.getByName(relAttribute.intermediate)
-        const [sourceAttrName, targetAttrName] = getSourceTargetAttrNames()
         await mutationService.create(intermediate, {[sourceAttrName]: itemData.id, [targetAttrName]: selectedItemData.id})
 
         refresh()
         setSelectionModalVisible(false)
-    }, [getSourceTargetAttrNames, itemData.id, itemService, mutationService, relAttribute])
+    }, [sourceAttrName, targetAttrName, itemData.id, mutationService, relAttribute, intermediate])
 
     const openTarget = useCallback(
         (id: string) => onItemView(target, id, undefined, isOneToMany ? refresh : processExistingManyToManyRelation, pageKey),
@@ -197,6 +191,29 @@ export default function RelationsDataGridWrapper({me, pageKey, item, itemData, r
         }
     }, [mutationService, target, onItemDelete])
 
+    const deleteIntermediate = useCallback(async (targetId: string) => {
+        if (intermediate == null) {
+            console.log('Intermediate is null.')
+            return
+        }
+
+        setLoading(true)
+        try {
+            const intermediatesToDelete =
+                await queryService.findAllBy(intermediate, {[targetAttrName]: {id: {eq: targetId}}} as unknown as ItemFiltersInput<ItemData>) // must be only one
+            for (const intermediateToDelete of intermediatesToDelete) {
+                await mutationService.delete(intermediate, intermediateToDelete.id, appConfig.mutation.deletingStrategy)
+            }
+            createdIds.current.delete(targetId)
+            refresh()
+        } catch (e: any) {
+            console.error(e.message)
+            message.error(e.message)
+        } finally {
+            setLoading(false)
+        }
+    }, [intermediate, queryService, targetAttrName, mutationService])
+
     const getRowContextMenu = useCallback((row: Row<ItemData>) => {
         const items: ItemType[] = [{
             key: 'open',
@@ -209,27 +226,36 @@ export default function RelationsDataGridWrapper({me, pageKey, item, itemData, r
         const rowPermission = rowPermissionId ? permissionService.findById(rowPermissionId) : null
         const canDelete = !!rowPermission && ACL.canDelete(me, rowPermission) && !relAttribute.readOnly
         if (canDelete) {
-            if (target.versioned) {
-                items.push({
-                    key: 'delete',
-                    label: t('Delete'),
-                    icon: <DeleteTwoTone twoToneColor="#eb2f96"/>,
-                    children: [{
+            if (isOneToMany) {
+                if (target.versioned) {
+                    items.push({
                         key: 'delete',
-                        label: t('Current Version'),
+                        label: t('Delete'),
+                        icon: <DeleteTwoTone twoToneColor="#eb2f96"/>,
+                        children: [{
+                            key: 'delete',
+                            label: t('Current Version'),
+                            onClick: () => deleteTarget(row.original.id)
+                        }, {
+                            key: 'purge',
+                            label: t('All Versions'),
+                            onClick: () => deleteTarget(row.original.id, true)
+                        }]
+                    })
+                } else {
+                    items.push({
+                        key: 'delete',
+                        label: t('Delete'),
+                        icon: <DeleteTwoTone twoToneColor="#eb2f96"/>,
                         onClick: () => deleteTarget(row.original.id)
-                    }, {
-                        key: 'purge',
-                        label: t('All Versions'),
-                        onClick: () => deleteTarget(row.original.id, true)
-                    }]
-                })
-            } else {
+                    })
+                }
+            } else { // manyToMany
                 items.push({
                     key: 'delete',
                     label: t('Delete'),
                     icon: <DeleteTwoTone twoToneColor="#eb2f96"/>,
-                    onClick: () => deleteTarget(row.original.id)
+                    onClick: () => deleteIntermediate(row.original.id)
                 })
             }
         }
@@ -272,7 +298,7 @@ export default function RelationsDataGridWrapper({me, pageKey, item, itemData, r
             />
 
             <Modal
-                title={`${t('Select')} ${target.displayName}`}
+                title={`${t('Select')}: ${t(target.displayName)}`}
                 open={isSelectionModalVisible}
                 destroyOnClose
                 width={SELECTION_MODAL_WIDTH}

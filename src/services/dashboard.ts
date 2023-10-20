@@ -12,6 +12,13 @@ const FIND_ALL_QUERY = gql`
                 name
                 isPublic
                 spec
+                categories {
+                    data {
+                        id
+                        name
+                        icon
+                    }
+                }
             }
         }
     }

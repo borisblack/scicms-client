@@ -66,6 +66,8 @@ const menuConfig: MenuConfig = {
             itemName: 'dataset'
         }, {
             itemName: 'dashboard'
+        }, {
+            itemName: 'dashboardCategory'
         }]
     }, {
         key: 'design',

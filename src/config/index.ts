@@ -5,7 +5,12 @@ import ruRU from 'antd/locale/ru_RU'
 // import {Settings as LuxonSettings} from 'luxon'
 import 'dayjs/locale/ru'
 
-import {LUXON_DATE_FORMAT_STRING, LUXON_DATETIME_FORMAT_STRING, LUXON_TIME_FORMAT_STRING} from './constants'
+import {
+    DEFAULT_CORE_URL,
+    LUXON_DATE_FORMAT_STRING,
+    LUXON_DATETIME_FORMAT_STRING,
+    LUXON_TIME_FORMAT_STRING
+} from './constants'
 import {DeletingStrategy} from '../types'
 
 // LuxonSettings.defaultZone = UTC
@@ -49,7 +54,7 @@ interface AppConfig {
 
 const appConfig: AppConfig = {
     coreVersion: 'v1',
-    coreUrl: 'http://localhost:8079',
+    coreUrl: process.env.CORE_URL ?? DEFAULT_CORE_URL,
     i18nLng: 'ru',
     antdLocale: ruRU,
     dateTime: {

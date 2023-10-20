@@ -324,6 +324,7 @@ export interface Dashboard extends DefaultItemTemplate {
     name: string
     isPublic: boolean
     spec: IDashboardSpec
+    categories: {data: DashboardCategory[]}
 }
 
 export interface DashboardExtra {
@@ -354,6 +355,14 @@ export interface IDash {
     defaultFilters: QueryBlock
     relatedDashboardId?: string
     refreshIntervalSeconds: number
+}
+
+export interface DashboardCategory extends DefaultItemTemplate {
+    name: string
+    icon: string | null
+    dashboards: {data: Dashboard[]}
+    parentCategories: {data: DashboardCategory[]}
+    childCategories: {data: DashboardCategory[]}
 }
 
 export type TemporalType = FieldType.date | FieldType.time | FieldType.datetime | FieldType.timestamp
