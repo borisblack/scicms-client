@@ -45,6 +45,7 @@ function Bi() {
     const [activeKey, setActiveKey] = useState<string | undefined>()
 
     useEffect(() => {
+        document.title = t('SciCMS BI')
         setLoading(true)
         Promise.all([
             dispatch(initializeIfNeeded(me)),
