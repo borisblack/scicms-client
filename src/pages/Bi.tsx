@@ -61,7 +61,7 @@ function Bi() {
 
                 if (biConfig.openFirstDashboard) {
                     const publicData =
-                        dashboardList.filter(dashboard => dashboard.isPublic && dashboard.categories.data.length === 0)
+                        dashboardList.filter(dashboard => dashboard.isPublic /*&& dashboard.categories.data.length === 0*/)
 
                     if (publicData.length > 0)
                         openDashboard(publicData[0])
