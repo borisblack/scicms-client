@@ -131,16 +131,16 @@ function Bi() {
     }
 
     const mapDashboardMenuItems = (
-        rootCategoryId: string,
+        prefix: string,
         dashboardCategoryList: DashboardCategory[],
         dashboardList: Dashboard[]
     ): ItemType[] => ([
         ...dashboardCategoryList.map(category => ({
-            key: `${rootCategoryId}#${category.id}`,
+            key: `${prefix}#${category.id}`,
             label: category.name,
             icon: category.icon ? allIcons[category.icon] : <FolderOutlined />,
             children: mapDashboardMenuItems(
-                category.id,
+                `${prefix}#${category.id}`,
                 category.childCategories.data
                     .map(childCategory => dashboardCategoryMap[childCategory.id]),
                 category.dashboards.data
@@ -149,7 +149,7 @@ function Bi() {
             )
         })),
         ...dashboardList.map(dashboard => ({
-            key: `${rootCategoryId}#${dashboard.id}`,
+            key: `${prefix}#${dashboard.id}`,
             label: dashboard.name,
             onClick: () => openDashboard(dashboard)
         }))
