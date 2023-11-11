@@ -4,7 +4,7 @@ import {Scatter, ScatterConfig} from '@ant-design/charts'
 import {defaultDashColor, defaultDashColors, formatValue, handleDashClick, isTemporal} from '../../../util/bi'
 import {LegendPosition} from '../util'
 import biConfig from '../../../config/bi'
-import RulesService from '../../../services/rules'
+import * as RulesService from '../../../services/rules'
 import {useMemo} from 'react'
 import _ from 'lodash'
 
@@ -21,7 +21,6 @@ interface ScatterDashOptions {
 const {dash: dashConfig, locale} = biConfig
 const axisLabelStyle = dashConfig?.all?.axisLabelStyle
 const legendConfig = dashConfig?.all?.legend
-const rulesService = RulesService.getInstance()
 
 export default function ScatterDash({dataset, dash, data, onRelatedDashboardOpen}: DashRenderContext) {
     const {optValues, relatedDashboardId} = dash
@@ -34,9 +33,9 @@ export default function ScatterDash({dataset, dash, data, onRelatedDashboardOpen
         xAxisLabelAutoRotate,
         rules
     } = optValues as ScatterDashOptions
-    const fieldRules = useMemo(() => rulesService.parseRules(rules), [rules])
+    const fieldRules = useMemo(() => RulesService.parseRules(rules), [rules])
     const seriesData = colorField ? _.uniqBy(data, colorField) : []
-    const seriesColors = colorField ? rulesService.getSeriesColors(fieldRules, colorField, seriesData, defaultDashColors(seriesData.length)) : []
+    const seriesColors = colorField ? RulesService.getSeriesColors(fieldRules, colorField, seriesData, defaultDashColors(seriesData.length)) : []
     const defaultColor = defaultDashColor()
 
     if (!xField)
@@ -113,7 +112,7 @@ export default function ScatterDash({dataset, dash, data, onRelatedDashboardOpen
                 formatter: (value: any) => formatValue(value, yColumn.type)
             }
         },
-        color: colorField ? seriesColors : (record => (rulesService.getFieldColor(fieldRules, record) ?? (defaultColor as string))),
+        color: colorField ? seriesColors : (record => (RulesService.getFieldColor(fieldRules, record) ?? (defaultColor as string))),
         locale,
         onEvent: handleEvent
     }

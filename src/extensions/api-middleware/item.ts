@@ -2,12 +2,10 @@ import axios from 'axios'
 
 import {ApiMiddleware, ApiMiddlewareContext, ApiOperation} from './index'
 import {ITEM_ITEM_NAME, ITEM_MODEL_KIND} from '../../config/constants'
-import QueryService from '../../services/query'
+import * as QueryService from '../../services/query'
 import {extractAxiosErrorMessage} from '../../services'
 import {FlaggedResponse, Item, ItemData, ItemModel} from '../../types'
 import appConfig from '../../config'
-
-const queryService = QueryService.getInstance()
 
 export const itemMiddleware: ApiMiddleware = {
     id: 'itemMiddleware',
@@ -39,7 +37,7 @@ async function handleItemOperation(operation: ApiOperation, context: ApiMiddlewa
     }
 }
 
-async function apply({item, values}: ApiMiddlewareContext): Promise<ItemData> {
+async function apply({items, item, values}: ApiMiddlewareContext): Promise<ItemData> {
     let id: string
     try {
         const res = await axios.post('/api/model/apply', mapItem(values))
@@ -48,7 +46,7 @@ async function apply({item, values}: ApiMiddlewareContext): Promise<ItemData> {
         throw new Error(extractAxiosErrorMessage(e))
     }
 
-    const data = await queryService.findById(item, id)
+    const data = await QueryService.findById(items, item, id)
 
     return data.data
 }
@@ -83,9 +81,9 @@ const mapItem = (item: Item): ItemModel => ({
     spec: item.spec
 })
 
-async function remove({item, values}: ApiMiddlewareContext): Promise<ItemData> {
+async function remove({items, item, values}: ApiMiddlewareContext): Promise<ItemData> {
     const {id} = values
-    const data = await queryService.findById(item, id)
+    const data = await QueryService.findById(items, item, id)
     try {
         await axios.post(`/api/model/delete/item/${id}`)
     } catch (e: any) {
@@ -95,7 +93,7 @@ async function remove({item, values}: ApiMiddlewareContext): Promise<ItemData> {
     return data.data
 }
 
-async function lock({item, values}: ApiMiddlewareContext): Promise<FlaggedResponse> {
+async function lock({items, item, values}: ApiMiddlewareContext): Promise<FlaggedResponse> {
     const {id} = values
     try {
         await axios.post(`/api/model/lock/item/${id}`)
@@ -103,12 +101,12 @@ async function lock({item, values}: ApiMiddlewareContext): Promise<FlaggedRespon
         throw new Error(extractAxiosErrorMessage(e))
     }
 
-    const data = await queryService.findById(item, id)
+    const data = await QueryService.findById(items, item, id)
 
     return {success: true, data: data.data}
 }
 
-async function unlock({item, values}: ApiMiddlewareContext): Promise<FlaggedResponse> {
+async function unlock({items, item, values}: ApiMiddlewareContext): Promise<FlaggedResponse> {
     const {id} = values
     try {
         await axios.post(`/api/model/unlock/item/${id}`)
@@ -116,7 +114,7 @@ async function unlock({item, values}: ApiMiddlewareContext): Promise<FlaggedResp
         throw new Error(extractAxiosErrorMessage(e))
     }
 
-    const data = await queryService.findById(item, id)
+    const data = await QueryService.findById(items, item, id)
 
     return {success: true, data: data.data}
 }

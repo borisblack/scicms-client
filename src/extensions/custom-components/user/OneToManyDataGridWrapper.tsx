@@ -9,15 +9,18 @@ import {Item, ItemData, UserInfo} from '../../../types'
 import {useTranslation} from 'react-i18next'
 import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design/icons'
 import {Callback} from '../../../services/mediator'
-import MutationService from '../../../services/mutation'
+import * as MutationService from '../../../services/mutation'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
 import * as ACL from '../../../util/acl'
-import PermissionService from '../../../services/permission'
-import ItemService from '../../../services/item'
+import * as PermissionService from '../../../services/permission'
+import {ItemMap} from '../../../services/item'
+import {PermissionMap} from '../../../services/permission'
 
 interface Props {
     me: UserInfo
-    pageKey: string
+    uniqueKey: string
+    items: ItemMap
+    permissions: PermissionMap
     itemName: string
     targetItemName: string
     mappedBy: string
@@ -28,25 +31,24 @@ interface Props {
     onItemDelete: (itemName: string, id: string) => void
 }
 
-export default function OneToManyDataGridWrapper({me, pageKey, itemName, targetItemName, mappedBy, mappedByValue, itemData, onItemCreate, onItemView, onItemDelete}: Props) {
+export default function OneToManyDataGridWrapper({
+    me, uniqueKey, items: itemMap, permissions: permissionMap, itemName, targetItemName, mappedBy, mappedByValue, itemData, onItemCreate, onItemView, onItemDelete
+}: Props) {
     const {t} = useTranslation()
     const [loading, setLoading] = useState<boolean>(false)
     const [data, setData] = useState(getInitialData())
     const [version, setVersion] = useState<number>(0)
-    const itemService = useMemo(() => ItemService.getInstance(), [])
-    const permissionService = useMemo(() => PermissionService.getInstance(), [])
-    const mutationService = useMemo(() => MutationService.getInstance(), [])
-    const item = useMemo(() => itemService.getByName(itemName), [itemService, targetItemName])
-    const targetItem = useMemo(() => itemService.getByName(targetItemName), [itemService, targetItemName])
-    const columns = useMemo(() => getColumns(targetItem), [targetItem])
+    const item = useMemo(() => itemMap[itemName], [itemMap, itemName])
+    const targetItem = useMemo(() => itemMap[targetItemName], [itemMap, targetItemName])
+    const columns = useMemo(() => getColumns(itemMap, targetItem), [itemMap, targetItem])
 
     const isNew = !itemData?.id
     const isLockedByMe = itemData?.lockedBy?.data?.id === me.id
     const [canEdit] = useMemo(() => {
-        const acl = permissionService.getAcl(me, item, itemData)
+        const acl = PermissionService.getAcl(permissionMap, me, item, itemData)
         const canEdit = (isNew && acl.canCreate) || (isLockedByMe && acl.canWrite)
         return [canEdit]
-    }, [isLockedByMe, isNew, item, itemData, me, permissionService])
+    }, [isLockedByMe, isNew, item, itemData, me, permissionMap])
 
     const hiddenColumnsMemoized = useMemo(() => {
         const hiddenColumns = getHiddenColumns(targetItem)
@@ -56,7 +58,7 @@ export default function OneToManyDataGridWrapper({me, pageKey, itemName, targetI
     const handleRequest = useCallback(async (params: RequestParams) => {
         try {
             setLoading(true)
-            const dataWithPagination = await findAll(targetItem, params, {[mappedBy]: {eq: mappedByValue}})
+            const dataWithPagination = await findAll(itemMap, targetItem, params, {[mappedBy]: {eq: mappedByValue}})
             setData(dataWithPagination)
         } catch (e: any) {
             console.error(e.message)
@@ -64,7 +66,7 @@ export default function OneToManyDataGridWrapper({me, pageKey, itemName, targetI
         } finally {
             setLoading(false)
         }
-    }, [mappedBy, mappedByValue, targetItem])
+    }, [itemMap, mappedBy, mappedByValue, targetItem])
 
     const refresh = () => setVersion(prevVersion => prevVersion + 1)
 
@@ -72,20 +74,20 @@ export default function OneToManyDataGridWrapper({me, pageKey, itemName, targetI
 
     const handleCreate = useCallback(() => {
         const initialData = createManyToOneInitialData()
-        onItemCreate(targetItem, initialData, refresh, pageKey)
-    }, [createManyToOneInitialData, onItemCreate, pageKey, targetItem])
+        onItemCreate(targetItem, initialData, refresh, uniqueKey)
+    }, [createManyToOneInitialData, onItemCreate, uniqueKey, targetItem])
 
     const openTarget = useCallback(
-        (id: string) => onItemView(targetItem, id, undefined, refresh, pageKey),
-        [onItemView, targetItem, pageKey])
+        (id: string) => onItemView(targetItem, id, undefined, refresh, uniqueKey),
+        [onItemView, targetItem, uniqueKey])
 
     const deleteTarget = useCallback(async (id: string, purge: boolean = false) => {
         setLoading(true)
         try {
             if (purge)
-                await mutationService.purge(targetItem, id, appConfig.mutation.deletingStrategy)
+                await MutationService.purge(itemMap, targetItem, id, appConfig.mutation.deletingStrategy)
             else
-                await mutationService.delete(targetItem, id, appConfig.mutation.deletingStrategy)
+                await MutationService.remove(itemMap, targetItem, id, appConfig.mutation.deletingStrategy)
             await onItemDelete(targetItem.name, id)
             await refresh()
         } catch (e: any) {
@@ -94,7 +96,7 @@ export default function OneToManyDataGridWrapper({me, pageKey, itemName, targetI
         } finally {
             setLoading(false)
         }
-    }, [mutationService, targetItem, onItemDelete])
+    }, [itemMap, targetItem, onItemDelete])
 
     const getRowContextMenu = useCallback((row: Row<ItemData>) => {
         const items: ItemType[] = [{
@@ -105,7 +107,7 @@ export default function OneToManyDataGridWrapper({me, pageKey, itemName, targetI
         }]
 
         const rowPermissionId = row.original.permission?.data?.id
-        const rowPermission = rowPermissionId ? permissionService.findById(rowPermissionId) : null
+        const rowPermission = rowPermissionId ? permissionMap[rowPermissionId] : null
         const canDelete = !!rowPermission && ACL.canDelete(me, rowPermission)
         if (canDelete) {
             if (targetItem.versioned) {
@@ -134,14 +136,14 @@ export default function OneToManyDataGridWrapper({me, pageKey, itemName, targetI
         }
 
         return items
-    }, [t, permissionService, me, openTarget, targetItem.versioned, deleteTarget])
+    }, [t, permissionMap, me, openTarget, targetItem.versioned, deleteTarget])
 
     const renderToolbar = useCallback(() => {
         // if (!canEdit)
         //     return null
 
         const targetPermissionId = targetItem.permission.data?.id
-        const targetPermission = targetPermissionId ? permissionService.findById(targetPermissionId) : null
+        const targetPermission = targetPermissionId ? permissionMap[targetPermissionId] : null
         const canCreateTarget = !!targetPermission && ACL.canCreate(me, targetPermission)
 
         return (
@@ -149,7 +151,7 @@ export default function OneToManyDataGridWrapper({me, pageKey, itemName, targetI
                 {canCreateTarget && <Button type="primary" size="small" icon={<PlusCircleOutlined/>} onClick={handleCreate}>{t('Add')}</Button>}
             </Space>
         )
-    }, [canEdit, handleCreate, me, permissionService, t, targetItem.permission.data?.id])
+    }, [canEdit, handleCreate, me, permissionMap, t, targetItem.permission.data?.id])
 
     return (
         <>

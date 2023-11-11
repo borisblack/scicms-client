@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import {gql} from '@apollo/client'
 
 import i18n from '../i18n'
@@ -5,9 +6,7 @@ import {apolloClient, extractGraphQLErrorMessages} from '.'
 import {Item, ItemData, Permission, UserInfo} from '../types'
 import * as ACL from '../util/acl'
 
-interface PermissionCache {
-    [id: string]: Permission
-}
+export type PermissionMap = Record<string, Permission>
 
 interface Acl {
     canRead: boolean
@@ -87,75 +86,42 @@ const FIND_ALL_BY_IDENTITY_NAMES_QUERY = gql`
     }
 `
 
-function arrayToCache(permissions: Permission[]) {
-    const permissionCache: PermissionCache = {}
-    permissions.forEach(it => {
-        permissionCache[it.id] = it
-    })
-
-    return permissionCache
+export async function fetchPermissions(me: UserInfo): Promise<PermissionMap> {
+    const data = await findAllByIdentityNames([...me.roles, me.username])
+    return _.mapKeys(data, permission => permission.id)
 }
 
-export default class PermissionService {
-    private static instance: PermissionService | null = null
+const findAll = (): Promise<Permission[]> =>
+    apolloClient.query({query: FIND_ALL_QUERY})
+        .then(res => {
+            if (res.errors) {
+                console.error(extractGraphQLErrorMessages(res.errors))
+                throw new Error(i18n.t('An error occurred while executing the request'))
+            }
+            return res.data.permissions.data
+        })
 
-    static getInstance() {
-        if (!PermissionService.instance)
-            PermissionService.instance = new PermissionService()
+const findAllByIdentityNames = (identityNames: string[]): Promise<Permission[]> =>
+    apolloClient.query({query: FIND_ALL_BY_IDENTITY_NAMES_QUERY, variables: {identityNames}})
+        .then(res => {
+            if (res.errors) {
+                console.error(extractGraphQLErrorMessages(res.errors))
+                throw new Error(i18n.t('An error occurred while executing the request'))
+            }
+            return res.data.permissions.data
+        })
 
-        return PermissionService.instance
-    }
+export function getAcl(permissions: PermissionMap, me: UserInfo, item: Item, data?: ItemData | null): Acl {
+    const itemPermissionId = item.permission.data?.id
+    const itemPermission = itemPermissionId ? permissions[itemPermissionId] : null
+    const canCreate = !!itemPermission && ACL.canCreate(me, itemPermission)
 
-    private permissions: PermissionCache = {}
+    const dataPermissionId = data?.permission?.data?.id
+    const dataPermission = dataPermissionId ? permissions[dataPermissionId] : null
+    const canRead = !!dataPermission && ACL.canRead(me, dataPermission)
+    const canWrite = !!dataPermission && ACL.canWrite(me, dataPermission)
+    const canDelete = !!dataPermission && ACL.canDelete(me, dataPermission)
+    const canAdmin = !!dataPermission && ACL.canAdmin(me, dataPermission)
 
-    async initialize(me?: UserInfo | null) {
-        if (me) {
-            const data = await this.findAllByIdentityNames([...me.roles, me.username])
-            this.permissions = arrayToCache(data)
-        } else {
-            const data = await this.findAll()
-            this.permissions = arrayToCache(data)
-        }
-    }
-
-    reset() {
-        this.permissions = {}
-    }
-
-    findAll = (): Promise<Permission[]> =>
-        apolloClient.query({query: FIND_ALL_QUERY})
-            .then(res => {
-                if (res.errors) {
-                    console.error(extractGraphQLErrorMessages(res.errors))
-                    throw new Error(i18n.t('An error occurred while executing the request'))
-                }
-                return res.data.permissions.data
-            })
-
-    findAllByIdentityNames = (identityNames: string[]): Promise<Permission[]> =>
-        apolloClient.query({query: FIND_ALL_BY_IDENTITY_NAMES_QUERY, variables: {identityNames}})
-            .then(res => {
-                if (res.errors) {
-                    console.error(extractGraphQLErrorMessages(res.errors))
-                    throw new Error(i18n.t('An error occurred while executing the request'))
-                }
-                return res.data.permissions.data
-            })
-
-    findById = (id: string): Permission | null => this.permissions[id] ?? null
-
-    getAcl(me: UserInfo, item: Item, data?: ItemData | null): Acl {
-        const itemPermissionId = item.permission.data?.id
-        const itemPermission = itemPermissionId ? this.findById(itemPermissionId) : null
-        const canCreate = !!itemPermission && ACL.canCreate(me, itemPermission)
-
-        const dataPermissionId = data?.permission?.data?.id
-        const dataPermission = dataPermissionId ? this.findById(dataPermissionId) : null
-        const canRead = !!dataPermission && ACL.canRead(me, dataPermission)
-        const canWrite = !!dataPermission && ACL.canWrite(me, dataPermission)
-        const canDelete = !!dataPermission && ACL.canDelete(me, dataPermission)
-        const canAdmin = !!dataPermission && ACL.canAdmin(me, dataPermission)
-
-        return {canCreate, canRead, canWrite, canDelete, canAdmin}
-    }
+    return {canCreate, canRead, canWrite, canDelete, canAdmin}
 }

@@ -24,23 +24,12 @@ const FIND_ALL_QUERY = gql`
     }
 `
 
-export default class DashboardService {
-    private static instance: DashboardService | null = null
-
-    static getInstance() {
-        if (!DashboardService.instance)
-            DashboardService.instance = new DashboardService()
-
-        return DashboardService.instance
-    }
-
-    findAll = (): Promise<Dashboard[]> =>
-        apolloClient.query({query: FIND_ALL_QUERY})
-            .then(res => {
-                if (res.errors) {
-                    console.error(extractGraphQLErrorMessages(res.errors))
-                    throw new Error(i18n.t('An error occurred while executing the request'))
-                }
-                return res.data.dashboards.data
-            })
-}
+export const fetchDashboards = (): Promise<Dashboard[]> =>
+    apolloClient.query({query: FIND_ALL_QUERY})
+        .then(res => {
+            if (res.errors) {
+                console.error(extractGraphQLErrorMessages(res.errors))
+                throw new Error(i18n.t('An error occurred while executing the request'))
+            }
+            return res.data.dashboards.data
+        })

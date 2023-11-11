@@ -16,7 +16,7 @@ import {
     SyncOutlined
 } from '@ant-design/icons'
 import FullScreen from '../components/fullscreen/FullScreen'
-import DatasetService, {DatasetInput} from '../services/dataset'
+import * as DatasetService from '../services/dataset'
 import {
     fromFormQueryBlock,
     generateQueryBlock,
@@ -35,8 +35,6 @@ import './DashWrapper.css'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
 
 const PAGE_HEADER_HEIGHT = 80
-
-const datasetService = DatasetService.getInstance()
 
 const extractSessionData = () => JSON.parse(localStorage.getItem('sessionData') ?? '{}')
 
@@ -99,7 +97,7 @@ export default function DashWrapper(props: DashWrapperProps) {
         if (dash.isAggregate && !dash.aggregateType)
             throw new Error('aggregateType must be specified')
 
-        const datasetInput: DatasetInput<any> = {
+        const datasetInput: DatasetService.DatasetInput<any> = {
             filters: toDatasetFiltersInput(dataset, filters)
         }
 
@@ -126,7 +124,7 @@ export default function DashWrapper(props: DashWrapperProps) {
         setLoading(true)
         try {
             setFetchError(null)
-            const datasetResponse = await datasetService.loadData(dataset.name, datasetInput)
+            const datasetResponse = await DatasetService.loadData(dataset.name, datasetInput)
             fetchedData = datasetResponse.data
             setDatasetData(fetchedData)
         } catch (e: any) {

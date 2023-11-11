@@ -4,10 +4,15 @@ import {notification} from 'antd'
 import {RootState} from '../../store'
 import {getExpireAt, getJwt, removeExpireAt, removeJwt, storeExpireAt, storeJwt} from '../../services'
 import {DateTime} from 'luxon'
-import AuthService, {JwtTokenResponse} from '../../services/auth'
+import {
+    fetchMe as doFetchMe,
+    JwtTokenResponse,
+    login as doLogin,
+    logout as doLogout,
+    updateSessionData as doUpdateSessionData
+} from '../../services/auth'
 import {UserInfo} from '../../types'
 import i18n from '../../i18n'
-import appConfig from '../../config'
 
 export interface AuthState {
     loading: boolean
@@ -15,8 +20,6 @@ export interface AuthState {
     expireAt: number | null
     me: UserInfo | null
 }
-
-const authService = AuthService.getInstance()
 
 const initialState: AuthState = {
     loading: false,
@@ -29,13 +32,13 @@ const login = createAsyncThunk(
     'auth/login',
     (credentials: {username: string, password: string}) => {
         removeJwt()
-        return authService.login(credentials).then(tokenResponse => tokenResponse)
+        return doLogin(credentials).then(tokenResponse => tokenResponse)
     }
 )
 
 const fetchMeIfNeeded = createAsyncThunk(
     'auth/fetchMeIfNeeded',
-    () => authService.fetchMe().then(me => me),
+    () => doFetchMe().then(me => me),
     {
         condition: (credentials, {getState}) => shouldFetchMe(getState() as {auth: AuthState})
     }
@@ -48,12 +51,12 @@ const shouldFetchMe = (state: {auth: AuthState}) => {
 
 const logout = createAsyncThunk(
     'auth/logout',
-    () => authService.logout()
+    () => doLogout()
 )
 
 const updateSessionData = createAsyncThunk(
     'auth/updateSessionData',
-    authService.updateSessionData
+    doUpdateSessionData
 )
 
 const authSlice = createSlice({
@@ -79,9 +82,7 @@ const authSlice = createSlice({
                 state.loading = false
                 notification.error({
                     message: i18n.t('Login error') as string,
-                    description: action.error.message,
-                    duration: appConfig.ui.notificationDuration,
-                    placement: appConfig.ui.notificationPlacement
+                    description: action.error.message
                 })
             })
             .addCase(fetchMeIfNeeded.pending, state => {
@@ -96,9 +97,7 @@ const authSlice = createSlice({
                 state.loading = false
                 notification.error({
                     message: i18n.t('Error fetching user info') as string,
-                    description: action.error.message,
-                    duration: appConfig.ui.notificationDuration,
-                    placement: appConfig.ui.notificationPlacement
+                    description: action.error.message
                 })
             })
             .addCase(logout.pending, state => {
@@ -121,9 +120,7 @@ const authSlice = createSlice({
                 state.loading = false
                 notification.error({
                     message: i18n.t('Logout error') as string,
-                    description: action.error.message,
-                    duration: appConfig.ui.notificationDuration,
-                    placement: appConfig.ui.notificationPlacement
+                    description: action.error.message
                 })
             })
             .addCase(updateSessionData.pending, state => {
@@ -140,9 +137,7 @@ const authSlice = createSlice({
                 state.loading = false
                 notification.error({
                     message: i18n.t('Session data update error') as string,
-                    description: action.error.message,
-                    duration: appConfig.ui.notificationDuration,
-                    placement: appConfig.ui.notificationPlacement
+                    description: action.error.message
                 })
             })
     }

@@ -1,6 +1,6 @@
 import {FC, ReactElement, ReactNode} from 'react'
 import customAttributeFieldConfig from '../../config/custom-attribute-field'
-import {AttributeFieldProps} from '../../features/pages/attribute-fields'
+import {AttributeFieldProps} from '../../features/nav-tabs/attribute-fields'
 import {Attribute} from '../../types'
 
 export interface CustomAttributeField {

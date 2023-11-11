@@ -8,11 +8,9 @@ import appConfig from '../../../../config'
 import {getInitialData, processLocal} from '../../../../util/datagrid'
 import {Column, DatasetSpec, NamedColumn} from '../../../../types'
 import {getColumns} from './columns-datagrid'
-import PermissionService from '../../../../services/permission'
+import * as PermissionService from '../../../../services/permission'
 
-const permissionService = PermissionService.getInstance()
-
-export default function Columns({me, item, buffer, data, onBufferChange}: CustomComponentRenderContext) {
+export default function Columns({me, permissions: permissionMap, item, buffer, data, onBufferChange}: CustomComponentRenderContext) {
     if (item.name !== DATASET_ITEM_NAME)
         throw new Error('Illegal argument')
 
@@ -20,10 +18,10 @@ export default function Columns({me, item, buffer, data, onBufferChange}: Custom
     const isNew = !data?.id
     const isLockedByMe = data?.lockedBy?.data?.id === me.id
     const permissions = useMemo(() => {
-        const acl = permissionService.getAcl(me, item, data)
+        const acl = PermissionService.getAcl(permissionMap, me, item, data)
         const canEdit = (isNew && acl.canCreate) || (!data?.core && isLockedByMe && acl.canWrite)
         return [canEdit]
-    }, [data, isLockedByMe, isNew, item, me])
+    }, [data, isLockedByMe, isNew, item, me, permissionMap])
     const [canEdit] = permissions
     const spec: DatasetSpec = useMemo(() => data?.spec ?? buffer.spec ?? {}, [buffer.spec, data?.spec])
     const [namedColumns, setNamedColumns] = useState(getCurrentNamedColumns())

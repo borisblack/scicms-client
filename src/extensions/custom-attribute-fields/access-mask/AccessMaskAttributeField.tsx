@@ -9,7 +9,7 @@ import styles from '../CustomAttributeField.module.css'
 
 const FormItem = Form.Item
 
-const AccessMaskAttributeField: FC<CustomAttributeFieldRenderContext> = ({pageKey, form, item, attrName, attribute, value}) => {
+const AccessMaskAttributeField: FC<CustomAttributeFieldRenderContext> = ({uniqueKey, form, item, attrName, attribute, value}) => {
     if (item.name !== ACCESS_ITEM_NAME || attrName !== MASK_ATTR_NAME)
         throw new Error('Illegal attribute')
 
@@ -46,7 +46,7 @@ const AccessMaskAttributeField: FC<CustomAttributeFieldRenderContext> = ({pageKe
                 ]}
             >
                 <InputNumber
-                    id={`${pageKey}#${attrName}`}
+                    id={`${uniqueKey}#${attrName}`}
                     style={{display: 'none'}}
                     min={attribute.minRange}
                     max={attribute.maxRange}
@@ -63,11 +63,11 @@ const AccessMaskAttributeField: FC<CustomAttributeFieldRenderContext> = ({pageKe
                     </div>
                 </div>
             </div>
-            <Checkbox id={`${pageKey}#${attrName}.read`} defaultChecked={getBit(initialValue, 0)} onChange={evt => handleChange(evt.target.checked, 0)}><b>R</b>ead</Checkbox>
-            <Checkbox id={`${pageKey}#${attrName}.write`} defaultChecked={getBit(initialValue, 1)} onChange={evt => handleChange(evt.target.checked, 1)}><b>W</b>rite</Checkbox>
-            <Checkbox id={`${pageKey}#${attrName}.create`} defaultChecked={getBit(initialValue, 2)} onChange={evt => handleChange(evt.target.checked, 2)}><b>C</b>reate</Checkbox>
-            <Checkbox id={`${pageKey}#${attrName}.delete`} defaultChecked={getBit(initialValue, 3)} onChange={evt => handleChange(evt.target.checked, 3)}><b>D</b>elete</Checkbox>
-            <Checkbox id={`${pageKey}#${attrName}.administration`} defaultChecked={getBit(initialValue, 4)} onChange={evt => handleChange(evt.target.checked, 4)}><b>A</b>dministration</Checkbox>
+            <Checkbox id={`${uniqueKey}#${attrName}.read`} defaultChecked={getBit(initialValue, 0)} onChange={evt => handleChange(evt.target.checked, 0)}><b>R</b>ead</Checkbox>
+            <Checkbox id={`${uniqueKey}#${attrName}.write`} defaultChecked={getBit(initialValue, 1)} onChange={evt => handleChange(evt.target.checked, 1)}><b>W</b>rite</Checkbox>
+            <Checkbox id={`${uniqueKey}#${attrName}.create`} defaultChecked={getBit(initialValue, 2)} onChange={evt => handleChange(evt.target.checked, 2)}><b>C</b>reate</Checkbox>
+            <Checkbox id={`${uniqueKey}#${attrName}.delete`} defaultChecked={getBit(initialValue, 3)} onChange={evt => handleChange(evt.target.checked, 3)}><b>D</b>elete</Checkbox>
+            <Checkbox id={`${uniqueKey}#${attrName}.administration`} defaultChecked={getBit(initialValue, 4)} onChange={evt => handleChange(evt.target.checked, 4)}><b>A</b>dministration</Checkbox>
         </>
     )
 }

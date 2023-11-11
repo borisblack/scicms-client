@@ -2,13 +2,13 @@ import {configureStore} from '@reduxjs/toolkit'
 
 import authReducer from './features/auth/authSlice'
 import registryReducer from './features/registry/registrySlice'
-import pagesReducer from './features/pages/pagesSlice'
+import navTabsReducer from './features/nav-tabs/navTabsSlice'
 
 export const store = configureStore({
     reducer: {
         auth: authReducer,
         registry: registryReducer,
-        pages: pagesReducer
+        navTabs: navTabsReducer
     }
 })
 

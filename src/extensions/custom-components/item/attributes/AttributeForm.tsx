@@ -5,14 +5,15 @@ import {AutoComplete, Checkbox, Col, Form, FormInstance, Input, InputNumber, mes
 import {useTranslation} from 'react-i18next'
 import {FieldType, RelType} from '../../../../types'
 import styles from './Attributes.module.css'
-import SequenceService from '../../../../services/sequence'
-import ItemService from '../../../../services/item'
 import appConfig from '../../../../config'
 import {regExpRule} from '../../../../util/form'
 import {LOWERCASE_NO_WHITESPACE_PATTERN} from '../../../../config/constants'
 import {NamedAttribute} from '../../../../util/datagrid'
+import {ItemMap} from '../../../../services/item'
+import * as SequenceService from '../../../../services/sequence'
 
 interface Props {
+    items: ItemMap
     form: FormInstance
     attribute: NamedAttribute | null
     canEdit: boolean
@@ -31,7 +32,7 @@ const {Item: FormItem} = Form
 const {Option: SelectOption} = Select
 const {TextArea} = Input
 
-export default function AttributeForm({form, attribute, canEdit, onFormFinish}: Props) {
+export default function AttributeForm({items: itemMap, form, attribute, canEdit, onFormFinish}: Props) {
     const {t} = useTranslation()
     const [attrType, setAttrType] = useState<FieldType | undefined>(attribute?.type)
     const [relType, setRelType] = useState<RelType | undefined>(attribute?.relType)
@@ -41,9 +42,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
     const [intermediateOptions, setIntermediateOptions] = useState<OptionType[]>([])
     const [mappedByOptions, setMappedByOptions] = useState<OptionType[]>([])
     const [inversedByOptions, setInversedByOptions] = useState<OptionType[]>([])
-    const sequenceService = useMemo(() => SequenceService.getInstance(), [])
-    const itemService = useMemo(() => ItemService.getInstance(), [])
-    const itemNames = useMemo(() => itemService.getNames(), [itemService])
+    const itemNames = useMemo(() => Object.keys(itemMap), [itemMap])
     const isCollectionRelation = attrType === FieldType.relation && (relType === RelType.oneToMany || relType === RelType.manyToMany)
 
     useEffect(() => {
@@ -56,7 +55,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
             return
 
         try {
-            const sequences = await sequenceService.findAllByName(value)
+            const sequences = await SequenceService.fetchSequencesByName(value)
             setSeqNameOptions(sequences.map(it => ({label: it.name, value: it.name})))
         } catch (e: any) {
             message.error(e.message)
@@ -87,7 +86,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
         if (!target)
             return []
 
-        const allTargetAttributes = itemService.getByName(target).spec.attributes
+        const allTargetAttributes = itemMap[target].spec.attributes
         if (relType === RelType.oneToOne || relType === RelType.oneToMany) {
             return Object.keys(allTargetAttributes).filter(key => {
                 const targetAttribute = allTargetAttributes[key]
@@ -99,7 +98,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
                 return targetAttribute.relType === RelType.oneToOne || targetAttribute.relType === RelType.oneToMany
             })
         }
-    }, [itemService, relType, target])
+    }, [itemMap, relType, target])
 
     const handleMappedBySearch = _.debounce((value: string) => {
         setMappedByOptions([])

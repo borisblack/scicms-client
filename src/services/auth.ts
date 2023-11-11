@@ -28,46 +28,34 @@ const UPDATE_SESSION_DATA_MUTATION = gql`
     }
 `
 
-export default class AuthService {
-    private static instance: AuthService | null = null
+export async function login(credentials: { username: string, password: string }) {
+    const { username, password } = credentials
 
-    static getInstance() {
-        if (!AuthService.instance)
-            AuthService.instance = new AuthService()
+    try {
+        const res = await axios.post('/api/auth/local', {
+            identifier: encodeURI(username),
+            password: encodeURI(password)
+        })
 
-        return AuthService.instance
+        return res.data
+    } catch (e: any) {
+        throwAxiosResponseError(e)
     }
-
-    async login(credentials: { username: string, password: string }) {
-        const { username, password } = credentials
-
-        try {
-            const res = await axios.post('/api/auth/local', {
-                identifier: encodeURI(username),
-                password: encodeURI(password)
-            })
-
-            return res.data
-        } catch (e: any) {
-            throwAxiosResponseError(e)
-        }
-    }
-
-    async logout() {
-        try {
-            const res = await axios.post('/logout')
-
-            return res.data
-        } catch (e: any) {
-            throwAxiosResponseError(e)
-        }
-    }
-
-    fetchMe = (): Promise<UserInfo> => apolloClient.query({query: ME_QUERY})
-        .then(result => result.data.me)
-
-    updateSessionData = (sessionData: {[key: string]: any}): Promise<{[key: string]: any}> =>
-        apolloClient.mutate({mutation: UPDATE_SESSION_DATA_MUTATION, variables: {sessionData}})
-            .then(result => result.data.updateSessionData.data)
 }
 
+export async function logout() {
+    try {
+        const res = await axios.post('/logout')
+
+        return res.data
+    } catch (e: any) {
+        throwAxiosResponseError(e)
+    }
+}
+
+export const fetchMe = (): Promise<UserInfo> => apolloClient.query({query: ME_QUERY})
+    .then(result => result.data.me)
+
+export const updateSessionData = (sessionData: {[key: string]: any}): Promise<{[key: string]: any}> =>
+    apolloClient.mutate({mutation: UPDATE_SESSION_DATA_MUTATION, variables: {sessionData}})
+        .then(result => result.data.updateSessionData.data)

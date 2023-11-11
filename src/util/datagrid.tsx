@@ -6,13 +6,18 @@ import {DateTime} from 'luxon'
 
 import {Attribute, FieldType, Index, Item, ItemData, Media, RelType} from '../types'
 import appConfig from '../config'
-import ItemService from '../services/item'
 import {DataWithPagination, RequestParams} from '../components/datagrid/DataGrid'
-import QueryService, {ExtRequestParams, ItemFiltersInput} from '../services/query'
-import MediaService from '../services/media'
+import {
+    ExtRequestParams,
+    findAll as performFindAll,
+    findAllRelated as performFindAllRelated,
+    ItemFiltersInput
+} from '../services/query'
 import {ACCESS_ITEM_NAME, FILENAME_ATTR_NAME, MASK_ATTR_NAME, MEDIA_ITEM_NAME, UTC} from '../config/constants'
 import i18n from '../i18n'
 import {getBit} from './index'
+import {download} from '../services/media'
+import {ItemMap} from '../services/item'
 
 export interface NamedAttribute extends Attribute {
     name: string
@@ -24,9 +29,6 @@ export interface NamedIndex extends Index {
 
 const {luxonDisplayDateFormatString, luxonDisplayTimeFormatString, luxonDisplayDateTimeFormatString} = appConfig.dateTime
 const columnHelper = createColumnHelper<any>()
-const itemService = ItemService.getInstance()
-const mediaService = MediaService.getInstance()
-const queryService = QueryService.getInstance()
 
 export const getInitialData = (): DataWithPagination<any> => ({
     data: [],
@@ -37,7 +39,7 @@ export const getInitialData = (): DataWithPagination<any> => ({
     }
 })
 
-export function getColumns(item: Item): ColumnDef<any, any>[] {
+export function getColumns(items: ItemMap, item: Item): ColumnDef<any, any>[] {
     const columns: ColumnDef<any, any>[] = []
     const {attributes} = item.spec
     for (const attrName in attributes) {
@@ -50,7 +52,7 @@ export function getColumns(item: Item): ColumnDef<any, any>[] {
 
         const column = columnHelper.accessor(attrName, {
             header: i18n.t(attr.displayName) as string,
-            cell: info => renderCell(item, info.row.original, attrName, attr, info.getValue()),
+            cell: info => renderCell(items, item, info.row.original, attrName, attr, info.getValue()),
             size: attr.colWidth ?? appConfig.ui.dataGrid.colWidth,
             enableSorting: attr.type !== FieldType.text && attr.type !== FieldType.json && attr.type !== FieldType.array,
             enableColumnFilter: item.name !== ACCESS_ITEM_NAME || attrName !== MASK_ATTR_NAME
@@ -62,12 +64,12 @@ export function getColumns(item: Item): ColumnDef<any, any>[] {
     return columns
 }
 
-const renderCell = (item: Item, data: ItemData, attrName: string, attribute: Attribute, value: any): ReactElement | string | null => {
+const renderCell = (items: ItemMap, item: Item, data: ItemData, attrName: string, attribute: Attribute, value: any): ReactElement | string | null => {
     switch (attribute.type) {
         case FieldType.string:
             if (item.name === MEDIA_ITEM_NAME && attrName === FILENAME_ATTR_NAME && value != null) {
                 return (
-                    <Button type="link" size="small" style={{margin: 0, padding: 0}} onClick={() => mediaService.download(data.id, value)}>
+                    <Button type="link" size="small" style={{margin: 0, padding: 0}} onClick={() => download(data.id, value)}>
                         {value}
                     </Button>
                 )
@@ -109,13 +111,13 @@ const renderCell = (item: Item, data: ItemData, attrName: string, attribute: Att
         case FieldType.timestamp:
             return value ? DateTime.fromISO(value, {zone: UTC}).toFormat(luxonDisplayDateTimeFormatString) : null
         case FieldType.media:
-            const media = itemService.getMedia()
+            const media = items[MEDIA_ITEM_NAME]
             const mediaData: Media | null = value?.data
             if (!mediaData)
                 return null
 
             return (
-                <Button type="link" size="small" style={{margin: 0, padding: 0}} onClick={() => mediaService.download(mediaData.id, mediaData.filename)}>
+                <Button type="link" size="small" style={{margin: 0, padding: 0}} onClick={() => download(mediaData.id, mediaData.filename)}>
                     {(mediaData as any)[media.titleAttribute] ?? mediaData.filename}
                 </Button>
             )
@@ -126,7 +128,7 @@ const renderCell = (item: Item, data: ItemData, attrName: string, attribute: Att
             if (!attribute.target)
                 throw new Error('Illegal state')
 
-            const subItem = itemService.getByName(attribute.target)
+            const subItem = items[attribute.target]
             return (value && value.data) ? (value.data[subItem.titleAttribute] ?? value.data.id) : null
         default:
             throw new Error('Illegal attribute')
@@ -149,11 +151,12 @@ export function getHiddenColumns(item: Item): string[] {
 }
 
 export async function findAll(
+    items: ItemMap,
     item: Item,
     params: ExtRequestParams,
     extraFiltersInput?: ItemFiltersInput<ItemData>
 ): Promise<DataWithPagination<any>> {
-    const responseCollection = await queryService.findAll(item, params, extraFiltersInput)
+    const responseCollection = await performFindAll(items, item, params, extraFiltersInput)
     const {page, pageSize, total} = responseCollection.meta.pagination
     return {
         data: responseCollection.data,
@@ -162,6 +165,7 @@ export async function findAll(
 }
 
 export async function findAllRelated(
+    items: ItemMap,
     itemName: string,
     itemId: string,
     relAttrName: string,
@@ -169,7 +173,7 @@ export async function findAllRelated(
     params: ExtRequestParams,
     extraFiltersInput?: ItemFiltersInput<ItemData>
 ): Promise<DataWithPagination<any>> {
-    const responseCollection = await queryService.findAllRelated(itemName, itemId, relAttrName, target, params, extraFiltersInput)
+    const responseCollection = await performFindAllRelated(items, itemName, itemId, relAttrName, target, params, extraFiltersInput)
     const {page, pageSize, total} = responseCollection.meta.pagination
     return {
         data: responseCollection.data,

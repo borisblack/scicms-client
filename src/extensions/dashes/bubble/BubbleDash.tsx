@@ -4,7 +4,7 @@ import {defaultDashColor, defaultDashColors, formatValue, handleDashClick, isTem
 import {DashEventHandler, DashRenderContext} from '../index'
 import biConfig from '../../../config/bi'
 import {LegendPosition} from '../util'
-import RulesService from '../../../services/rules'
+import * as RulesService from '../../../services/rules'
 import {useMemo} from 'react'
 import _ from 'lodash'
 
@@ -22,7 +22,6 @@ interface BubbleDashOptions {
 const {dash: dashConfig, locale} = biConfig
 const axisLabelStyle = dashConfig?.all?.axisLabelStyle
 const legendConfig = dashConfig?.all?.legend
-const rulesService = RulesService.getInstance()
 
 export default function BubbleDash({dataset, dash, data, onRelatedDashboardOpen}: DashRenderContext) {
     const {optValues, relatedDashboardId} = dash
@@ -36,9 +35,9 @@ export default function BubbleDash({dataset, dash, data, onRelatedDashboardOpen}
         xAxisLabelAutoRotate,
         rules
     } = optValues as BubbleDashOptions
-    const fieldRules = useMemo(() => rulesService.parseRules(rules), [rules])
+    const fieldRules = useMemo(() => RulesService.parseRules(rules), [rules])
     const seriesData = colorField ? _.uniqBy(data, colorField) : []
-    const seriesColors = colorField ? rulesService.getSeriesColors(fieldRules, colorField, seriesData, defaultDashColors(seriesData.length)) : []
+    const seriesColors = colorField ? RulesService.getSeriesColors(fieldRules, colorField, seriesData, defaultDashColors(seriesData.length)) : []
     const defaultColor = defaultDashColor()
 
     if (!xField)
@@ -120,7 +119,7 @@ export default function BubbleDash({dataset, dash, data, onRelatedDashboardOpen}
                 formatter: (value: any) => formatValue(value, sizeColumn.type)
             }
         },
-        color: colorField ? seriesColors : (record => (rulesService.getFieldColor(fieldRules, record) ?? (defaultColor as string))),
+        color: colorField ? seriesColors : (record => (RulesService.getFieldColor(fieldRules, record) ?? (defaultColor as string))),
         locale,
         onEvent: handleEvent
     }

@@ -7,19 +7,18 @@ import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
 
 import {CustomComponentRenderContext} from '../extensions/custom-components'
-import {DASHBOARD_ITEM_NAME} from '../config/constants'
-import PermissionService from '../services/permission'
+import {DASHBOARD_ITEM_NAME, DATASET_ITEM_NAME} from '../config/constants'
+import * as PermissionService from '../services/permission'
 import {Dashboard, DashboardExtra, Dataset, IDash, IDashboardSpec, QueryFilter} from '../types'
 import DashForm, {DashValues} from './DashForm'
 import {generateQueryBlock, printSingleQueryFilter} from '../util/bi'
 import biConfig from '../config/bi'
 import _ from 'lodash'
-import DatasetService from '../services/dataset'
+import * as DatasetService from '../services/dataset'
 import DashWrapper from './DashWrapper'
 import styles from './DashboardSpec.module.css'
 import './DashboardSpec.css'
-import ItemService from '../services/item'
-import DashboardService from '../services/dashboard'
+import * as DashboardService from '../services/dashboard'
 
 interface DashboardSpecProps extends CustomComponentRenderContext {
     extra?: DashboardExtra
@@ -27,29 +26,27 @@ interface DashboardSpecProps extends CustomComponentRenderContext {
 }
 
 const ReactGridLayout = WidthProvider(RGL)
-const datasetService = DatasetService.getInstance()
-const dashboardService = DashboardService.getInstance()
 const initialSpec: IDashboardSpec = {
     dashes: []
 }
 let seqNum = 0
 
-export default function DashboardSpec({me, pageKey, item, data, extra, buffer, readOnly, onBufferChange, onItemView}: DashboardSpecProps) {
+export default function DashboardSpec({
+    me, uniqueKey, items: itemMap, permissions: permissionMap, item, data, extra, buffer, readOnly, onBufferChange, onItemView
+}: DashboardSpecProps) {
     if (item.name !== DASHBOARD_ITEM_NAME)
         throw new Error('Illegal argument')
 
     const {t} = useTranslation()
     const isNew = !data?.id
     const isLockedByMe = data?.lockedBy?.data?.id === me.id
-    const itemService = useMemo(() => ItemService.getInstance(), [])
-    const datasetItem = useMemo(() => itemService.getDataset(), [])
-    const dashboardItem = useMemo(() => itemService.getDashboard(), [])
-    const permissionService = useMemo(() => PermissionService.getInstance(), [])
+    const datasetItem = useMemo(() => itemMap[DATASET_ITEM_NAME], [itemMap])
+    const dashboardItem = useMemo(() => itemMap[DASHBOARD_ITEM_NAME], [itemMap])
     const permissions = useMemo(() => {
-        const acl = permissionService.getAcl(me, item, data)
+        const acl = PermissionService.getAcl(permissionMap, me, item, data)
         const canEdit = (isNew && acl.canCreate) || (isLockedByMe && acl.canWrite)
         return [canEdit]
-    }, [data, isLockedByMe, isNew, item, me, permissionService])
+    }, [data, isLockedByMe, isNew, item, me, permissionMap])
     const [canEdit] = permissions
     const spec: IDashboardSpec = buffer.spec ?? data?.spec ?? initialSpec
     const [datasets, setDatasets] = useState<{[name: string]: Dataset}>({})
@@ -62,12 +59,12 @@ export default function DashboardSpec({me, pageKey, item, data, extra, buffer, r
     const [dashForm] = Form.useForm()
 
     useEffect(() => {
-        datasetService.findAll()
+        DatasetService.fetchDatasets()
             .then(datasetList => {
                 setDatasets(_.mapKeys(datasetList, ds => ds.name))
             })
 
-        dashboardService.findAll()
+        DashboardService.fetchDashboards()
             .then(dashboards => {
                 setDashboards(_.sortBy(dashboards, db => db.name))
             })
@@ -213,7 +210,7 @@ export default function DashboardSpec({me, pageKey, item, data, extra, buffer, r
                 onClick={() => selectDash(dash)}
             >
                 <DashWrapper
-                    pageKey={pageKey}
+                    pageKey={uniqueKey}
                     dataset={datasets[dash.dataset ?? '']}
                     dashboard={currentDashboard}
                     extra={extra}

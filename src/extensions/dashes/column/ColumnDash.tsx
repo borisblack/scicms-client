@@ -6,7 +6,7 @@ import {Column, ColumnConfig} from '@ant-design/charts'
 import {defaultDashColor, defaultDashColors, formatValue, handleDashClick} from '../../../util/bi'
 import {LegendPosition} from '../util'
 import biConfig from '../../../config/bi'
-import RulesService from '../../../services/rules'
+import * as RulesService from '../../../services/rules'
 
 interface ColumnDashOptions {
     xField?: string
@@ -23,7 +23,6 @@ interface ColumnDashOptions {
 const {dash: dashConfig, locale} = biConfig
 const axisLabelStyle = dashConfig?.all?.axisLabelStyle
 const legendConfig = dashConfig?.all?.legend
-const rulesService = RulesService.getInstance()
 
 export default function ColumnDash({dataset, dash, data, onRelatedDashboardOpen}: DashRenderContext) {
     const {optValues, relatedDashboardId} = dash
@@ -38,9 +37,9 @@ export default function ColumnDash({dataset, dash, data, onRelatedDashboardOpen}
         isGroup,
         rules
     } = optValues as ColumnDashOptions
-    const fieldRules = useMemo(() => rulesService.parseRules(rules), [rules])
+    const fieldRules = useMemo(() => RulesService.parseRules(rules), [rules])
     const seriesData = seriesField ? _.uniqBy(data, seriesField) : []
-    const seriesColors = seriesField ? rulesService.getSeriesColors(fieldRules, seriesField, seriesData, defaultDashColors(seriesData.length)) : []
+    const seriesColors = seriesField ? RulesService.getSeriesColors(fieldRules, seriesField, seriesData, defaultDashColors(seriesData.length)) : []
     const defaultColor = defaultDashColor()
 
     if (!xField)
@@ -100,7 +99,7 @@ export default function ColumnDash({dataset, dash, data, onRelatedDashboardOpen}
                 formatter: (value: any) => formatValue(value, yColumn.type)
             }
         },
-        color: seriesField ? seriesColors : (record => (rulesService.getFieldColor(fieldRules, record) ?? (defaultColor as string))),
+        color: seriesField ? seriesColors : (record => (RulesService.getFieldColor(fieldRules, record) ?? (defaultColor as string))),
         locale,
         onEvent: handleEvent
     }

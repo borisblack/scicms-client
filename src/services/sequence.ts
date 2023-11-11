@@ -22,23 +22,12 @@ const FIND_ALL_BY_NAME_QUERY = gql`
     }
 `
 
-export default class SequenceService {
-    private static instance: SequenceService | null = null
-
-    static getInstance() {
-        if (!SequenceService.instance)
-            SequenceService.instance = new SequenceService()
-
-        return SequenceService.instance
+export async function fetchSequencesByName(name: string): Promise<Sequence[]> {
+    const res = await apolloClient.query({query: FIND_ALL_BY_NAME_QUERY, variables: {name}})
+    if (res.errors) {
+        console.error(extractGraphQLErrorMessages(res.errors))
+        throw new Error(i18n.t('An error occurred while executing the request'))
     }
 
-    async findAllByName(name: string): Promise<Sequence[]> {
-        const res = await apolloClient.query({query: FIND_ALL_BY_NAME_QUERY, variables: {name}})
-        if (res.errors) {
-            console.error(extractGraphQLErrorMessages(res.errors))
-            throw new Error(i18n.t('An error occurred while executing the request'))
-        }
-
-        return res.data.sequences.data
-    }
+    return res.data.sequences.data
 }

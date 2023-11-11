@@ -1,20 +1,26 @@
 import React from 'react'
 import {Dashboard, DashboardExtra, Item, UserInfo} from '../types'
 import DashboardSpec from './DashboardSpec'
-import ItemService from '../services/item'
+import {ItemMap} from '../services/item'
 import {DASHBOARD_ITEM_NAME} from '../config/constants'
+import {PermissionMap} from '../services/permission'
+import {ItemTemplateMap} from '../services/item-template'
 
 interface Props {
     me: UserInfo
-    pageKey: string
+    uniqueKey: string
+    itemTemplates: ItemTemplateMap
+    items: ItemMap
+    permissions: PermissionMap
     dashboard: Dashboard
     extra?: DashboardExtra
     onDashboardOpen: (id: string, extra?: DashboardExtra) => void
 }
 
-export default function DashboardSpecReadOnlyWrapper({me, pageKey, dashboard, extra, onDashboardOpen}: Props) {
-    const itemService = ItemService.getInstance()
-    const dashboardItem = itemService.getDashboard()
+export default function DashboardSpecReadOnlyWrapper({
+    me, uniqueKey, itemTemplates, items: itemMap, permissions: permissionMap, dashboard, extra, onDashboardOpen
+}: Props) {
+    const dashboardItem = itemMap[DASHBOARD_ITEM_NAME]
 
     function handleDashboardItemView(item: Item, id: string, extra?: DashboardExtra) {
         if (item.name !== DASHBOARD_ITEM_NAME)
@@ -26,7 +32,10 @@ export default function DashboardSpecReadOnlyWrapper({me, pageKey, dashboard, ex
     return (
         <DashboardSpec
             me={me}
-            pageKey={pageKey}
+            uniqueKey={uniqueKey}
+            itemTemplates={itemTemplates}
+            items={itemMap}
+            permissions={permissionMap}
             item={dashboardItem}
             buffer={{}}
             data={dashboard}

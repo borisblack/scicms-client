@@ -3,7 +3,7 @@ import {useCallback, useEffect, useMemo, useRef} from 'react'
 import {Alert} from 'antd'
 import L, {LatLngExpression} from 'leaflet'
 import {DashRenderContext} from '../index'
-import RulesService from '../../../services/rules'
+import * as RulesService from '../../../services/rules'
 import {defaultDashColor, defaultDashColors} from '../../../util/bi'
 import biConfig from '../../../config/bi'
 import {MAX_LAT, MAX_LNG, MIN_LAT, MIN_LNG} from '.'
@@ -24,7 +24,6 @@ interface BubbleMapDashOptions {
 }
 
 const mapConfig = biConfig.dash.map
-const rulesService = RulesService.getInstance()
 const defaultColor = defaultDashColor()
 
 export default function BubbleMapDash({pageKey, fullScreen, dataset, dash, height, data, onRelatedDashboardOpen}: DashRenderContext) {
@@ -41,9 +40,9 @@ export default function BubbleMapDash({pageKey, fullScreen, dataset, dash, heigh
         defaultZoom,
         rules
     } = dash.optValues as BubbleMapDashOptions
-    const fieldRules = useMemo(() => rulesService.parseRules(rules), [rules])
+    const fieldRules = useMemo(() => RulesService.parseRules(rules), [rules])
     const seriesData = useMemo(() => colorField ? _.uniqBy(data, colorField) : [], [colorField, data])
-    const seriesColors = useMemo(() => colorField ? rulesService.getSeriesColors(fieldRules, colorField, seriesData, defaultDashColors(seriesData.length)) : [], [colorField, fieldRules, seriesData])
+    const seriesColors = useMemo(() => colorField ? RulesService.getSeriesColors(fieldRules, colorField, seriesData, defaultDashColors(seriesData.length)) : [], [colorField, fieldRules, seriesData])
     const mapRef = useRef<HTMLDivElement>(null)
     const mapInstance = useRef<L.Map | null>(null)
 
@@ -106,7 +105,7 @@ export default function BubbleMapDash({pageKey, fullScreen, dataset, dash, heigh
                         handleBubbleClick(evt, sizeField, size, queryFilter => onRelatedDashboardOpen(relatedDashboardId, queryFilter))
                     })
                 }
-                
+
                 bubbles.push(bubble)
             })
 

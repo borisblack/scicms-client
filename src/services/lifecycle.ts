@@ -1,10 +1,27 @@
+import _ from 'lodash'
 import {gql} from '@apollo/client'
 import i18n from '../i18n'
 
 import {Lifecycle} from '../types'
 import {apolloClient, extractGraphQLErrorMessages} from './index'
 
+export type LifecycleMap = Record<string, Lifecycle>
+
 export const DEFAULT_LIFECYCLE_ID = 'ad051120-65cf-440a-8fc3-7a24ac8301d3'
+
+const FIND_ALL_QUERY = gql`
+    query {
+        lifecycles {
+            data {
+                id
+                name
+                displayName
+                description
+                spec
+            }
+        }
+    }
+`
 
 const FIND_BY_ID_QUERY = gql`
     query findLifecycle($id: ID!) {
@@ -20,29 +37,22 @@ const FIND_BY_ID_QUERY = gql`
     }
 `
 
-export default class LifecycleService {
-    private static instance: LifecycleService | null = null
-
-    static getInstance() {
-        if (!LifecycleService.instance)
-            LifecycleService.instance = new LifecycleService()
-
-        return LifecycleService.instance
+export const fetchLifecycles = async (): Promise<LifecycleMap> => {
+    const res = await apolloClient.query({query: FIND_ALL_QUERY})
+    if (res.errors) {
+        console.error(extractGraphQLErrorMessages(res.errors))
+        throw new Error(i18n.t('An error occurred while executing the request'))
     }
 
-    private cache: {[id: string]: Lifecycle} = {}
+    return  _.mapKeys(res.data.lifecycles.data, lifecycle => lifecycle.id)
+}
 
-    findById = async (id: string): Promise<Lifecycle> => {
-        if (!(id in this.cache)) {
-            const res = await apolloClient.query({query: FIND_BY_ID_QUERY, variables: {id}})
-            if (res.errors) {
-                console.error(extractGraphQLErrorMessages(res.errors))
-                throw new Error(i18n.t('An error occurred while executing the request'))
-            }
-
-            this.cache[id] = res.data.lifecycle.data
-        }
-
-        return this.cache[id]
+export const findLifecycleById = async (id: string): Promise<Lifecycle> => {
+    const res = await apolloClient.query({query: FIND_BY_ID_QUERY, variables: {id}})
+    if (res.errors) {
+        console.error(extractGraphQLErrorMessages(res.errors))
+        throw new Error(i18n.t('An error occurred while executing the request'))
     }
+
+    return  res.data.lifecycle.data
 }

@@ -1,13 +1,11 @@
+import _ from 'lodash'
 import {gql} from '@apollo/client'
 
 import i18n from '../i18n'
 import {apolloClient, extractGraphQLErrorMessages} from '.'
 import {ItemTemplate} from '../types'
-import {DEFAULT_ITEM_TEMPLATE_NAME} from '../config/constants'
 
-interface ItemTemplateCache {
-    [name: string]: ItemTemplate
-}
+export type ItemTemplateMap = Record<string, ItemTemplate>
 
 const FIND_ALL_QUERY = gql`
     query {
@@ -33,51 +31,13 @@ const FIND_ALL_QUERY = gql`
     }
 `
 
-export default class ItemTemplateService {
-    private static instance: ItemTemplateService | null = null
+export const fetchItemTemplates = (): Promise<ItemTemplateMap> =>
+    apolloClient.query({query: FIND_ALL_QUERY})
+        .then((res) => {
+            if (res.errors) {
+                console.error(extractGraphQLErrorMessages(res.errors))
+                throw new Error(i18n.t('An error occurred while executing the request'))
+            }
 
-    static getInstance() {
-        if (!ItemTemplateService.instance)
-            ItemTemplateService.instance = new ItemTemplateService()
-
-        return ItemTemplateService.instance
-    }
-
-    private itemTemplates: ItemTemplateCache = {}
-
-    async initialize() {
-        const itemTemplateList = await this.findAll()
-        const itemTemplates: ItemTemplateCache = {}
-        itemTemplateList.forEach(it => {
-            itemTemplates[it.name] = it
+            return _.mapKeys(res.data.itemTemplates.data, itemTemplate => itemTemplate.name)
         })
-        this.itemTemplates = itemTemplates
-    }
-
-    reset() {
-        this.itemTemplates = {}
-    }
-
-    private findAll = (): Promise<ItemTemplate[]> =>
-        apolloClient.query({query: FIND_ALL_QUERY})
-            .then(res => {
-                if (res.errors) {
-                    console.error(extractGraphQLErrorMessages(res.errors))
-                    throw new Error(i18n.t('An error occurred while executing the request'))
-                }
-
-                return res.data.itemTemplates.data
-            })
-
-    findByName = (name: string): ItemTemplate | null => this.itemTemplates[name] ?? null
-
-    getByName(name: string): ItemTemplate {
-        const itemTemplate = this.findByName(name)
-        if (!itemTemplate)
-            throw new Error(`Item template [${name}] not found`)
-
-        return itemTemplate
-    }
-
-    getDefault = () => this.getByName(DEFAULT_ITEM_TEMPLATE_NAME)
-}

@@ -433,7 +433,10 @@ function parseManualFilterValue(value?: string): any {
         return evaluate({expression: value})
     } catch (e: any) {
         // notifyErrorThrottled(i18n.t('Expression evaluation error'), e.message)
-        notification.error({message: i18n.t('Expression evaluation error') as string, description: e.message})
+        notification.error({
+            message: i18n.t('Expression evaluation error') as string,
+            description: e.message
+        })
         return undefined
     }
 }

@@ -3,7 +3,7 @@ import {Dayjs} from 'dayjs'
 import {DateTime} from 'luxon'
 
 import {Attribute, FieldType, Item, ItemData} from '../types'
-import MediaService from '../services/media'
+import * as MediaService from '../services/media'
 import {
     LOWERCASE_NO_WHITESPACE_MESSAGE,
     LOWERCASE_NO_WHITESPACE_PATTERN,
@@ -19,7 +19,6 @@ import util from 'util'
 import i18n from '../i18n'
 
 const {timeZone} = appConfig.dateTime
-const mediaService = MediaService.getInstance()
 
 interface FilteredItemData {
     majorRev?: string
@@ -109,13 +108,13 @@ async function parseMedia(attrName: string, data: ItemData | null | undefined, v
     const mediaId = values[`${attrName}.id`]
     if (mediaId) {
         if (itemPermissionId !== prevItemPermissionId) {
-            await mediaService.update(mediaId, {permission: itemPermissionId})
+            await MediaService.update(mediaId, {permission: itemPermissionId})
         }
         return mediaId
     } else {
         const fileList = (value as File[] | undefined) ?? []
         if (fileList.length > 0) {
-            const mediaInfo = await mediaService.uploadData({file: fileList[0], permission: itemPermissionId})
+            const mediaInfo = await MediaService.uploadData({file: fileList[0], permission: itemPermissionId})
             return mediaInfo.id
         }
         return null

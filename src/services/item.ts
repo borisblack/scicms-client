@@ -1,19 +1,12 @@
+import _ from 'lodash'
 import {gql} from '@apollo/client'
 
 import i18n from '../i18n'
 import {apolloClient, extractGraphQLErrorMessages} from '.'
 import {FieldType, Item, RelType} from '../types'
-import {
-    DASHBOARD_ITEM_NAME,
-    DATASET_ITEM_NAME,
-    FILENAME_ATTR_NAME,
-    ID_ATTR_NAME,
-    MEDIA_ITEM_NAME
-} from '../config/constants'
+import {FILENAME_ATTR_NAME, ID_ATTR_NAME, MEDIA_ITEM_NAME} from '../config/constants'
 
-interface ItemCache {
-    [name: string]: Item
-}
+export type ItemMap = Record<string, Item>
 
 const FIND_ALL_QUERY = gql`
     query {
@@ -78,113 +71,69 @@ const FIND_ALL_QUERY = gql`
     }
 `
 
-export default class ItemService {
-    private static instance: ItemService | null = null
-
-    static getInstance() {
-        if (!ItemService.instance)
-            ItemService.instance = new ItemService()
-
-        return ItemService.instance
-    }
-
-    private items: ItemCache = {}
-
-    async initialize() {
-        const data = await this.findAll()
-        const items: ItemCache = {}
-        data.forEach(it => {
-            items[it.name] = it
+export const fetchItems = (): Promise<ItemMap> =>
+    apolloClient.query({query: FIND_ALL_QUERY})
+        .then(res => {
+            if (res.errors) {
+                console.error(extractGraphQLErrorMessages(res.errors))
+                throw new Error(i18n.t('An error occurred while executing the request'))
+            }
+            return _.mapKeys(res.data.items.data, item => item.name)
         })
-        this.items = items
-    }
 
-    reset() {
-        this.items = {}
-    }
+export const listNonCollectionAttributes = (items: ItemMap, item: Item, attributesOverride: Record<string, string> = {}): string[] => {
+    const result: string[] = []
+    const {attributes} = item.spec
+    for (const attrName in attributes) {
+        if (!attributes.hasOwnProperty(attrName))
+            continue
 
-    private findAll = (): Promise<Item[]> =>
-        apolloClient.query({query: FIND_ALL_QUERY})
-            .then(res => {
-                if (res.errors) {
-                    console.error(extractGraphQLErrorMessages(res.errors))
-                    throw new Error(i18n.t('An error occurred while executing the request'))
-                }
-                return res.data.items.data
-            })
-
-    findByName = (name: string): Item | null => this.items[name] ?? null
-
-    getByName(name: string): Item {
-        const item = this.findByName(name)
-        if (!item)
-            throw new Error(`Item [${name}] not found`)
-
-        return item
-    }
-
-    getMedia = (): Item => this.getByName(MEDIA_ITEM_NAME)
-
-    getDataset = (): Item => this.getByName(DATASET_ITEM_NAME)
-
-    getDashboard = (): Item => this.getByName(DASHBOARD_ITEM_NAME)
-
-    getNames = (): string[] => Object.keys(this.items)
-
-    listNonCollectionAttributes = (item: Item, attributesOverride: {[name: string]: string} = {}): string[] => {
-        const result: string[] = []
-        const {attributes} = item.spec
-        for (const attrName in attributes) {
-            if (!attributes.hasOwnProperty(attrName))
-                continue
-
-            if (attrName in attributesOverride) {
-                result.push(attributesOverride[attrName])
-                continue
-            }
-
-            const attr = attributes[attrName]
-            if (attr.private || (attr.type === FieldType.relation && (attr.relType === RelType.oneToMany || attr.relType === RelType.manyToMany)))
-                continue
-
-            switch (attr.type) {
-                case FieldType.string:
-                case FieldType.text:
-                case FieldType.uuid:
-                case FieldType.email:
-                case FieldType.password:
-                case FieldType.sequence:
-                case FieldType.enum:
-                case FieldType.int:
-                case FieldType.long:
-                case FieldType.float:
-                case FieldType.double:
-                case FieldType.decimal:
-                case FieldType.bool:
-                case FieldType.date:
-                case FieldType.time:
-                case FieldType.datetime:
-                case FieldType.timestamp:
-                case FieldType.json:
-                case FieldType.array:
-                    result.push(attrName)
-                    break
-                case FieldType.media:
-                    const media = this.getMedia()
-                    result.push(`${attrName} { data { id ${media.titleAttribute === ID_ATTR_NAME ? '' : media.titleAttribute} ${media.titleAttribute === FILENAME_ATTR_NAME ? '' : FILENAME_ATTR_NAME} } }`)
-                    break
-                case FieldType.relation:
-                    if (!attr.target)
-                        throw new Error('Illegal attribute')
-
-                    const subItem = this.getByName(attr.target)
-                    result.push(`${attrName} { data { id ${subItem.titleAttribute === ID_ATTR_NAME ? '' : subItem.titleAttribute} } }`)
-                    break
-                default:
-                    throw Error('Illegal attribute')
-            }
+        if (attrName in attributesOverride) {
+            result.push(attributesOverride[attrName])
+            continue
         }
 
-        return result
+        const attr = attributes[attrName]
+        if (attr.private || (attr.type === FieldType.relation && (attr.relType === RelType.oneToMany || attr.relType === RelType.manyToMany)))
+            continue
+
+        switch (attr.type) {
+            case FieldType.string:
+            case FieldType.text:
+            case FieldType.uuid:
+            case FieldType.email:
+            case FieldType.password:
+            case FieldType.sequence:
+            case FieldType.enum:
+            case FieldType.int:
+            case FieldType.long:
+            case FieldType.float:
+            case FieldType.double:
+            case FieldType.decimal:
+            case FieldType.bool:
+            case FieldType.date:
+            case FieldType.time:
+            case FieldType.datetime:
+            case FieldType.timestamp:
+            case FieldType.json:
+            case FieldType.array:
+                result.push(attrName)
+                break
+            case FieldType.media:
+                const media = items[MEDIA_ITEM_NAME]
+                result.push(`${attrName} { data { id ${media.titleAttribute === ID_ATTR_NAME ? '' : media.titleAttribute} ${media.titleAttribute === FILENAME_ATTR_NAME ? '' : FILENAME_ATTR_NAME} } }`)
+                break
+            case FieldType.relation:
+                if (!attr.target)
+                    throw new Error('Illegal attribute')
+
+                const subItem = items[attr.target]
+                result.push(`${attrName} { data { id ${subItem.titleAttribute === ID_ATTR_NAME ? '' : subItem.titleAttribute} } }`)
+                break
+            default:
+                throw Error('Illegal attribute')
+        }
     }
+
+    return result
 }

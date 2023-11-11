@@ -4,7 +4,7 @@ import {Pie, PieConfig} from '@ant-design/charts'
 import {defaultDashColors, formatValue, handleDashClick} from '../../../util/bi'
 import {LegendPosition} from '../util'
 import biConfig from '../../../config/bi'
-import RulesService from '../../../services/rules'
+import * as RulesService from '../../../services/rules'
 import {useMemo} from 'react'
 import _ from 'lodash'
 import {FieldType} from '../../../types'
@@ -22,7 +22,6 @@ export interface DoughnutDashOptions {
 const {locale, fractionDigits, percentFractionDigits, dash: dashConfig} = biConfig
 const legendConfig = dashConfig?.all?.legend
 const statisticConfig = dashConfig?.doughnut?.statistic
-const rulesService = RulesService.getInstance()
 
 export default function DoughnutDash({dataset, dash, data, onRelatedDashboardOpen}: DashRenderContext) {
     const {optValues, relatedDashboardId} = dash
@@ -35,9 +34,9 @@ export default function DoughnutDash({dataset, dash, data, onRelatedDashboardOpe
         legendPosition,
         rules
     } = optValues as DoughnutDashOptions
-    const fieldRules = useMemo(() => rulesService.parseRules(rules), [rules])
+    const fieldRules = useMemo(() => RulesService.parseRules(rules), [rules])
     const seriesData = colorField ? _.uniqBy(data, colorField) : []
-    const seriesColors = colorField ? rulesService.getSeriesColors(fieldRules, colorField, seriesData, defaultDashColors(seriesData.length)) : []
+    const seriesColors = colorField ? RulesService.getSeriesColors(fieldRules, colorField, seriesData, defaultDashColors(seriesData.length)) : []
 
     if (!angleField)
         return <Alert message="angleField attribute not specified" type="error"/>

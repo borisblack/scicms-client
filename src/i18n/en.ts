@@ -151,6 +151,7 @@ const en = {
         'Indexed': 'Indexed',
         'Indexes': 'Indexes',
         'Initial Value': 'Initial Value',
+        'Initialization error': 'Initialization error',
         'Inner radius': 'Inner radius',
         'Intermediate Item': 'Intermediate Item',
         'Internal server error': 'Internal server error',

@@ -30,7 +30,9 @@ export function extract(src: Record<string, any>, path: string[]): any {
 
 export const notifyErrorThrottled =
     _.throttle(
-        (message: string, description: string) => notification.error({message, description}),
+        (message: string, description: string) => {
+            notification.error({message, description})
+        },
         appConfig.ui.notificationDuration * 1000,
         {trailing: false}
     )
@@ -48,7 +50,10 @@ export function assign(src: Record<string, any>, path: string[], value: any) {
 
 export function copyToClipboard(text: string) {
     navigator.clipboard.writeText(text).then(() => {
-        notification.info({message: i18n.t('Copied to clipboard') as string, description: text})
+        notification.info({
+            message: i18n.t('Copied to clipboard') as string,
+            description: text
+        })
     })
 }
 

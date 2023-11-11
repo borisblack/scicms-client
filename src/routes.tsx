@@ -1,8 +1,8 @@
-import App from './pages/App'
-import Bi from './pages/Bi'
+import App from './pages/app/App'
+import Bi from './pages/bi/Bi'
 import Login from './features/auth/Login'
 import {RouteObject} from 'react-router-dom'
-import ErrorFallback from './pages/ErrorFallback'
+import ErrorFallback from './pages/error/ErrorFallback'
 
 const routes: RouteObject[] = [{
     path: '/',

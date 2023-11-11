@@ -151,6 +151,7 @@ const ru = {
         'Indexed': 'Индексированный',
         'Indexes': 'Индексы',
         'Initial Value': 'Начальное значение',
+        'Initialization error': 'Ошибка инициализации',
         'Inner radius': 'Внутренний радиус',
         'Intermediate Item': 'Промежуточная сущность',
         'Internal server error': 'Внутренняя ошибка сервера',

@@ -6,17 +6,22 @@ import {useTranslation} from 'react-i18next'
 
 import {CustomComponentRenderContext} from '../../index'
 import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME} from '../../../../config/constants'
-import ItemTemplateService from '../../../../services/item-template'
 import {Index, ItemSpec} from '../../../../types'
-import PermissionService from '../../../../services/permission'
+import * as PermissionService from '../../../../services/permission'
 import DataGrid, {DataWithPagination, RequestParams} from '../../../../components/datagrid/DataGrid'
 import appConfig from '../../../../config'
-import {getHiddenIndexColumns, getIndexColumns, getInitialData, NamedIndex, processLocal} from '../../../../util/datagrid'
+import {
+    getHiddenIndexColumns,
+    getIndexColumns,
+    getInitialData,
+    NamedIndex,
+    processLocal
+} from '../../../../util/datagrid'
 import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design/icons'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
 import IndexForm from './IndexForm'
 
-export default function Indexes({me, item, data, buffer, onBufferChange}: CustomComponentRenderContext) {
+export default function Indexes({me, itemTemplates, permissions: permissionMap, item, data, buffer, onBufferChange}: CustomComponentRenderContext) {
     if (item.name !== ITEM_TEMPLATE_ITEM_NAME && item.name !== ITEM_ITEM_NAME)
         throw new Error('Illegal argument')
 
@@ -24,18 +29,16 @@ export default function Indexes({me, item, data, buffer, onBufferChange}: Custom
     const isLockedByMe = data?.lockedBy?.data?.id === me.id
     const {t} = useTranslation()
     const [version, setVersion] = useState<number>(0)
-    const itemTemplateService = useMemo(() => ItemTemplateService.getInstance(), [])
-    const permissionService = useMemo(() => PermissionService.getInstance(), [])
     const permissions = useMemo(() => {
-        const acl = permissionService.getAcl(me, item, data)
+        const acl = PermissionService.getAcl(permissionMap, me, item, data)
         const canEdit = (isNew && acl.canCreate) || (!data?.core && isLockedByMe && acl.canWrite)
         return [canEdit]
-    }, [data, isLockedByMe, isNew, item, me, permissionService])
+    }, [data, isLockedByMe, isNew, item, me, permissionMap])
 
     const [canEdit] = permissions
     const columns = useMemo(() => getIndexColumns(), [])
     const hiddenColumns = useMemo(() => getHiddenIndexColumns(), [])
-    const spec: ItemSpec = useMemo(() => buffer.spec ?? data?.spec ?? {}, [data])
+    const spec: ItemSpec = useMemo(() => buffer.spec ?? data?.spec ?? {}, [buffer.spec, data?.spec])
 
     const initialNamedIndexes = useMemo((): NamedIndex[] => {
         const indexes = spec.indexes ?? {}
@@ -45,7 +48,7 @@ export default function Indexes({me, item, data, buffer, onBufferChange}: Custom
         if (item.name !== ITEM_TEMPLATE_ITEM_NAME && namedIndexes.length > 0 && !isNew) {
             const excludedIndexNameSet = new Set()
             for (const itemTemplateName of data.includeTemplates) {
-                const itemTemplate = itemTemplateService.getByName(itemTemplateName)
+                const itemTemplate = itemTemplates[itemTemplateName]
                 for (const excludedIndexName in itemTemplate.spec.indexes)
                     excludedIndexNameSet.add(excludedIndexName)
             }
@@ -54,7 +57,7 @@ export default function Indexes({me, item, data, buffer, onBufferChange}: Custom
 
         return namedIndexes
 
-    }, [data?.includeTemplates, isNew, item.name, itemTemplateService, spec.indexes])
+    }, [data?.includeTemplates, isNew, item.name, itemTemplates, spec.indexes])
     const [namedIndexes, setNamedIndexes] = useState<NamedIndex[]>(initialNamedIndexes)
     const [filteredData, setFilteredData] = useState<DataWithPagination<NamedIndex>>(getInitialData())
     const [selectedIndex, setSelectedIndex] = useState<NamedIndex | null>(null)

@@ -2,11 +2,10 @@ import {Button, Form, Input, message, Modal, Tooltip} from 'antd'
 import {FC, useMemo, useState} from 'react'
 
 import {FieldType, ItemData} from '../../types'
-import ItemService from '../../services/item'
-import SearchDataGridWrapper from '../../features/pages/SearchDataGridWrapper'
+import SearchDataGridWrapper from '../../features/nav-tabs/SearchDataGridWrapper'
 import {useTranslation} from 'react-i18next'
 import {CloseCircleOutlined, FolderOpenOutlined} from '@ant-design/icons'
-import QueryService from '../../services/query'
+import * as QueryService from '../../services/query'
 import {CustomAttributeFieldRenderContext} from './index'
 import styles from './CustomAttributeField.module.css'
 
@@ -21,7 +20,7 @@ interface Props extends CustomAttributeFieldRenderContext {
     forceVisible?: boolean
 }
 
-const StringRelationAttributeField: FC<Props> = ({pageKey, form, item, attrName, attribute, target, value, forceVisible, onItemView}) => {
+const StringRelationAttributeField: FC<Props> = ({uniqueKey, items: itemMap, form, item, attrName, attribute, target, value, forceVisible, onItemView}) => {
     if (attribute.type !== FieldType.string)
         throw new Error('Illegal attribute')
 
@@ -38,9 +37,7 @@ const StringRelationAttributeField: FC<Props> = ({pageKey, form, item, attrName,
     }, [isDisabled])
 
     const [currentValue, setCurrentValue] = useState(value)
-    const itemService = useMemo(() => ItemService.getInstance(), [])
-    const queryService = useMemo(() => QueryService.getInstance(), [])
-    const targetItem = itemService.getByName(target)
+    const targetItem = itemMap[target]
 
     function handleRelationSelect(itemData: ItemData) {
         const selectedValue = itemData[targetItem.titleAttribute]
@@ -60,7 +57,7 @@ const StringRelationAttributeField: FC<Props> = ({pageKey, form, item, attrName,
             if (targetTitleAttrName.includes('.'))
                 return Promise.reject('Title attribute must belong to item')
 
-            const found = await queryService.findAllBy(targetItem, {[targetItem.titleAttribute]: {eq: currentValue}})
+            const found = await QueryService.findAllBy(itemMap, targetItem, {[targetItem.titleAttribute]: {eq: currentValue}})
             if (found.length !== 1)
                 return Promise.reject(`Illegal state. Found ${found.length} records`)
 
@@ -89,7 +86,7 @@ const StringRelationAttributeField: FC<Props> = ({pageKey, form, item, attrName,
                 rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
             >
                 <Search
-                    id={`${pageKey}#${attrName}`}
+                    id={`${uniqueKey}#${attrName}`}
                     readOnly
                     onSearch={() => setSearchModalVisible(true)}
                     addonAfter={currentValue && [
@@ -124,6 +121,7 @@ const StringRelationAttributeField: FC<Props> = ({pageKey, form, item, attrName,
                 onCancel={() => setSearchModalVisible(false)}
             >
                 <SearchDataGridWrapper
+                    items={itemMap}
                     item={targetItem}
                     onSelect={itemData => handleRelationSelect(itemData)}
                 />

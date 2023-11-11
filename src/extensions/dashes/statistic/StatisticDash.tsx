@@ -2,19 +2,17 @@ import {DashRenderContext} from '../index'
 import {Alert, Statistic} from 'antd'
 import biConfig from '../../../config/bi'
 import {useMemo} from 'react'
-import RulesService from '../../../services/rules'
+import * as RulesService from '../../../services/rules'
 
 interface StatisticDashOptions {
     statisticField?: string
     rules?: string
 }
 
-const rulesService = RulesService.getInstance()
-
 export default function StatisticDash({dataset, dash, data}: DashRenderContext) {
     const {statisticField, rules} = dash.optValues as StatisticDashOptions
-    const fieldRules = useMemo(() => rulesService.parseRules(rules), [rules])
-    const fieldStyle = statisticField ? rulesService.getFieldStyle(fieldRules, statisticField, data[0]) : {}
+    const fieldRules = useMemo(() => RulesService.parseRules(rules), [rules])
+    const fieldStyle = statisticField ? RulesService.getFieldStyle(fieldRules, statisticField, data[0]) : {}
 
     if (!statisticField)
         return <Alert message="statisticField attribute not specified" type="error"/>

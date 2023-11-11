@@ -25,40 +25,12 @@ const FETCH_CORE_CONFIG_QUERY = gql`
     }
 `
 
-export default class CoreConfigService {
-    private static instance: CoreConfigService | null = null
-
-    static getInstance() {
-        if (!CoreConfigService.instance)
-            CoreConfigService.instance = new CoreConfigService()
-
-        return CoreConfigService.instance
+export async function fetchCoreConfig(): Promise<CoreConfig> {
+    const res = await apolloClient.query({query: FETCH_CORE_CONFIG_QUERY})
+    if (res.errors) {
+        console.error(extractGraphQLErrorMessages(res.errors))
+        throw new Error(i18n.t('An error occurred while executing the request'))
     }
 
-    private _coreConfig: CoreConfig | null = null
-
-    get coreConfig(): CoreConfig {
-        if (!this._coreConfig)
-            throw new Error('Core configuration not initialized')
-
-        return this._coreConfig
-    }
-
-    async initialize() {
-        this._coreConfig = await this.fetchCoreConfig()
-    }
-
-    reset() {
-        this._coreConfig = null
-    }
-
-    private async fetchCoreConfig(): Promise<CoreConfig> {
-        const res = await apolloClient.query({query: FETCH_CORE_CONFIG_QUERY})
-        if (res.errors) {
-            console.error(extractGraphQLErrorMessages(res.errors))
-            throw new Error(i18n.t('An error occurred while executing the request'))
-        }
-
-        return res.data.config
-    }
+    return res.data.config
 }

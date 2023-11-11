@@ -6,9 +6,8 @@ import {useTranslation} from 'react-i18next'
 
 import {CustomComponentRenderContext} from '../../index'
 import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME} from '../../../../config/constants'
-import ItemTemplateService from '../../../../services/item-template'
 import {Attribute, ItemSpec} from '../../../../types'
-import PermissionService from '../../../../services/permission'
+import * as PermissionService from '../../../../services/permission'
 import DataGrid, {DataWithPagination, RequestParams} from '../../../../components/datagrid/DataGrid'
 import appConfig from '../../../../config'
 import {
@@ -24,9 +23,9 @@ import {ItemType} from 'antd/es/menu/hooks/useItems'
 
 const EDIT_MODAL_WIDTH = 800
 
-const permissionService = PermissionService.getInstance()
-
-export default function Attributes({me, item, data, buffer, onBufferChange}: CustomComponentRenderContext) {
+export default function Attributes({
+    me, itemTemplates, items: itemMap, permissions: permissionMap, item, data, buffer, onBufferChange
+}: CustomComponentRenderContext) {
     if (item.name !== ITEM_TEMPLATE_ITEM_NAME && item.name !== ITEM_ITEM_NAME)
         throw new Error('Illegal argument')
 
@@ -34,12 +33,11 @@ export default function Attributes({me, item, data, buffer, onBufferChange}: Cus
     const isLockedByMe = data?.lockedBy?.data?.id === me.id
     const {t} = useTranslation()
     const [version, setVersion] = useState<number>(0)
-    const itemTemplateService = useMemo(() => ItemTemplateService.getInstance(), [])
     const permissions = useMemo(() => {
-        const acl = permissionService.getAcl(me, item, data)
+        const acl = PermissionService.getAcl(permissionMap, me, item, data)
         const canEdit = (isNew && acl.canCreate) || (!data?.core && isLockedByMe && acl.canWrite)
         return [canEdit]
-    }, [data, isLockedByMe, isNew, item, me, permissionService])
+    }, [data, isLockedByMe, isNew, item, me, permissionMap])
 
     const [canEdit] = permissions
     const columns = useMemo(() => getAttributeColumns(), [])
@@ -54,7 +52,7 @@ export default function Attributes({me, item, data, buffer, onBufferChange}: Cus
         if (item.name !== ITEM_TEMPLATE_ITEM_NAME && namedAttributes.length > 0 && !isNew) {
             const excludedAttrNameSet = new Set()
             for (const itemTemplateName of data.includeTemplates) {
-                const itemTemplate = itemTemplateService.getByName(itemTemplateName)
+                const itemTemplate = itemTemplates[itemTemplateName]
                 for (const excludedAttrName in itemTemplate.spec.attributes)
                     excludedAttrNameSet.add(excludedAttrName)
             }
@@ -63,7 +61,7 @@ export default function Attributes({me, item, data, buffer, onBufferChange}: Cus
 
         return namedAttributes
 
-    }, [data?.includeTemplates, isNew, item.name, itemTemplateService, spec.attributes])
+    }, [data?.includeTemplates, isNew, item.name, itemTemplates, spec.attributes])
     const [namedAttributes, setNamedAttributes] = useState<NamedAttribute[]>(initialNamedAttributes)
     const [filteredData, setFilteredData] = useState<DataWithPagination<NamedAttribute>>(getInitialData())
     const [selectedAttribute, setSelectedAttribute] = useState<NamedAttribute | null>(null)
@@ -198,7 +196,13 @@ export default function Attributes({me, item, data, buffer, onBufferChange}: Cus
                 onOk={() => attributeForm.submit()}
                 onCancel={() => setEditModalVisible(false)}
             >
-                <AttributeForm form={attributeForm} attribute={selectedAttribute} canEdit={canEdit} onFormFinish={handleAttributeFormFinish}/>
+                <AttributeForm
+                    items={itemMap}
+                    form={attributeForm}
+                    attribute={selectedAttribute}
+                    canEdit={canEdit}
+                    onFormFinish={handleAttributeFormFinish}
+                />
             </Modal>
         </>
     )

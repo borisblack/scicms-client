@@ -1,6 +1,7 @@
 import {IBuffer, Item, UserInfo} from '../../types'
 import _ from 'lodash'
 import apiMiddlewareConfig from '../../config/api-middleware'
+import {ItemMap} from '../../services/item'
 
 export enum ApiOperation {
     FIND = 'FIND',
@@ -25,6 +26,7 @@ export interface ApiMiddleware {
 
 export interface ApiMiddlewareContext {
     me: UserInfo
+    items: ItemMap
     item: Item
     buffer: IBuffer
     values: any

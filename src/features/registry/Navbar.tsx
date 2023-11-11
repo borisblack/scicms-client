@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import React, {useCallback, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Layout, Menu, Spin} from 'antd'
 // import {gql, useQuery} from '@apollo/client'
@@ -10,9 +10,8 @@ import logo from '../../logo.svg'
 import menuConfig, {MenuItem, SubMenu} from '../../config/menu'
 import {useAppDispatch, useAppSelector} from '../../util/hooks'
 import {Item, UserInfo} from '../../types'
-import {initializeIfNeeded, selectIsInitialized, selectLoading} from './registrySlice'
-import {openPage, ViewType} from '../pages/pagesSlice'
-import ItemService from '../../services/item'
+import {selectItems, selectLoading} from './registrySlice'
+import {openNavTab, ViewType} from '../nav-tabs/navTabsSlice'
 import {allIcons} from '../../util/icons'
 import {LogoutOutlined, UserOutlined} from '@ant-design/icons'
 
@@ -31,14 +30,9 @@ const Navbar = ({me, onLogout}: Props) => {
     const {t} = useTranslation()
     const dispatch = useAppDispatch()
     const loading = useAppSelector(selectLoading)
-    const isInitialized = useAppSelector(selectIsInitialized)
-    const itemService = useMemo(() => ItemService.getInstance(), [])
+    const items = useAppSelector(selectItems)
     const [collapsed, setCollapsed] = useState(isNavbarCollapsed())
     // const { loading, error, data } = useQuery(ME_QUERY, {errorPolicy: 'all'})
-
-    useEffect(() => {
-        dispatch(initializeIfNeeded(me))
-    }, [isInitialized, me, dispatch])
 
     const handleToggle = useCallback(() => {
         setNavbarCollapsed(!collapsed)
@@ -46,12 +40,12 @@ const Navbar = ({me, onLogout}: Props) => {
     }, [collapsed])
 
     const handleItemClick = useCallback((item: Item) => {
-        dispatch(openPage({item, viewType: ViewType.default}))
+        dispatch(openNavTab({item, viewType: ViewType.default}))
     }, [dispatch])
 
     const toAntdMenuItems = useCallback((menuItems: (SubMenu | MenuItem)[]): ItemType[] => menuItems
         .filter(it => !('roles' in it) || _.intersection(it.roles, me.roles).length > 0)
-        .filter(it => !('itemName' in it) || itemService.findByName(it.itemName))
+        .filter(it => !('itemName' in it) || items[it.itemName])
         .map(it => {
             if ('children' in it) {
                 const Icon = it.icon ? allIcons[it.icon] : null
@@ -62,7 +56,7 @@ const Navbar = ({me, onLogout}: Props) => {
                     children: toAntdMenuItems(it.children)
                 }
             } else {
-                const item = itemService.getByName(it.itemName)
+                const item = items[it.itemName]
                 const Icon = item.icon ? allIcons[item.icon] : null
                 return {
                     key: item.id,
@@ -71,7 +65,7 @@ const Navbar = ({me, onLogout}: Props) => {
                     onClick: () => handleItemClick(item)
                 }
             }
-        }), [me.roles, itemService, t, handleItemClick])
+        }), [me.roles, items, t, handleItemClick])
 
     return (
         <Sider className="Navbar" collapsible collapsed={collapsed} width={275} onCollapse={handleToggle}>
