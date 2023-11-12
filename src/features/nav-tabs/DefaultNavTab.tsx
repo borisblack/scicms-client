@@ -27,7 +27,7 @@ import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME, MEDIA_ITEM_NAME} from '../../co
 import {Callback} from '../../services/mediator'
 import {PermissionMap} from '../../services/permission'
 import {ItemMap} from '../../services/item'
-import {purge as performPurge, remove as performRemove} from '../../services/mutation'
+import MutationManager from '../../services/mutation'
 import {ItemTemplateMap} from '../../services/item-template'
 import styles from './NavTabs.module.css'
 
@@ -60,7 +60,7 @@ function DefaultNavTab({
     const [buffer, setBuffer] = useState<IBuffer>({})
     const {item} = navTab
     const isSystemItem = item.name === ITEM_TEMPLATE_ITEM_NAME || item.name === ITEM_ITEM_NAME
-
+    const mutationManager = useMemo(() => new MutationManager(itemMap), [itemMap])
     const columnsMemoized = useMemo(() => getColumns(itemMap, item), [item, itemMap])
     const hiddenColumnsMemoized = useMemo(() => getHiddenColumns(item), [item])
     const handleBufferChange = useCallback((bufferChanges: IBuffer) => setBuffer({...buffer, ...bufferChanges}), [buffer])
@@ -144,9 +144,9 @@ function DefaultNavTab({
         setLoading(true)
         try {
             if (purge) {
-                await performPurge(itemMap, item, id, appConfig.mutation.deletingStrategy)
+                await mutationManager.purge(item, id, appConfig.mutation.deletingStrategy)
             } else {
-                const doDelete = async () => await performRemove(itemMap, item, id, appConfig.mutation.deletingStrategy)
+                const doDelete = async () => await mutationManager.remove(item, id, appConfig.mutation.deletingStrategy)
                 if (hasApiMiddleware(item.name)) {
                     const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values: {id}}
                     await handleApiMiddleware(item.name, ApiOperation.DELETE, apiMiddlewareContext, doDelete)
@@ -162,7 +162,7 @@ function DefaultNavTab({
         } finally {
             setLoading(false)
         }
-    }, [onItemDelete, item, logoutIfNeed, itemMap, me, buffer])
+    }, [onItemDelete, item, logoutIfNeed, mutationManager, me, itemMap, buffer])
 
     const getRowContextMenu = useCallback((row: Row<ItemData>) => {
         const items: ItemType[] = [{

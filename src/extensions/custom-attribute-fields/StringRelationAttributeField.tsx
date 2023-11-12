@@ -5,7 +5,7 @@ import {FieldType, ItemData} from '../../types'
 import SearchDataGridWrapper from '../../features/nav-tabs/SearchDataGridWrapper'
 import {useTranslation} from 'react-i18next'
 import {CloseCircleOutlined, FolderOpenOutlined} from '@ant-design/icons'
-import * as QueryService from '../../services/query'
+import QueryManager from '../../services/query'
 import {CustomAttributeFieldRenderContext} from './index'
 import styles from './CustomAttributeField.module.css'
 
@@ -27,6 +27,7 @@ const StringRelationAttributeField: FC<Props> = ({uniqueKey, items: itemMap, for
     const {t} = useTranslation()
     const [loading, setLoading] = useState<boolean>(false)
     const [isSearchModalVisible, setSearchModalVisible] = useState<boolean>(false)
+    const queryManager = useMemo(() => new QueryManager(itemMap), [itemMap])
     const isDisabled = useMemo(() => attribute.readOnly, [attribute.readOnly])
     const additionalProps = useMemo((): any => {
         const additionalProps: any = {}
@@ -57,7 +58,7 @@ const StringRelationAttributeField: FC<Props> = ({uniqueKey, items: itemMap, for
             if (targetTitleAttrName.includes('.'))
                 return Promise.reject('Title attribute must belong to item')
 
-            const found = await QueryService.findAllBy(itemMap, targetItem, {[targetItem.titleAttribute]: {eq: currentValue}})
+            const found = await queryManager.findAllBy(targetItem, {[targetItem.titleAttribute]: {eq: currentValue}})
             if (found.length !== 1)
                 return Promise.reject(`Illegal state. Found ${found.length} records`)
 

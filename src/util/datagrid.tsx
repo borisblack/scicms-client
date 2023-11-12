@@ -7,12 +7,7 @@ import {DateTime} from 'luxon'
 import {Attribute, FieldType, Index, Item, ItemData, Media, RelType} from '../types'
 import appConfig from '../config'
 import {DataWithPagination, RequestParams} from '../components/datagrid/DataGrid'
-import {
-    ExtRequestParams,
-    findAll as performFindAll,
-    findAllRelated as performFindAllRelated,
-    ItemFiltersInput
-} from '../services/query'
+import QueryManager, {ExtRequestParams, ItemFiltersInput} from '../services/query'
 import {ACCESS_ITEM_NAME, FILENAME_ATTR_NAME, MASK_ATTR_NAME, MEDIA_ITEM_NAME, UTC} from '../config/constants'
 import i18n from '../i18n'
 import {getBit} from './index'
@@ -156,7 +151,8 @@ export async function findAll(
     params: ExtRequestParams,
     extraFiltersInput?: ItemFiltersInput<ItemData>
 ): Promise<DataWithPagination<any>> {
-    const responseCollection = await performFindAll(items, item, params, extraFiltersInput)
+    const queryManager = new QueryManager(items)
+    const responseCollection = await queryManager.findAll(item, params, extraFiltersInput)
     const {page, pageSize, total} = responseCollection.meta.pagination
     return {
         data: responseCollection.data,
@@ -173,7 +169,8 @@ export async function findAllRelated(
     params: ExtRequestParams,
     extraFiltersInput?: ItemFiltersInput<ItemData>
 ): Promise<DataWithPagination<any>> {
-    const responseCollection = await performFindAllRelated(items, itemName, itemId, relAttrName, target, params, extraFiltersInput)
+    const queryManager = new QueryManager(items)
+    const responseCollection = await queryManager.findAllRelated(itemName, itemId, relAttrName, target, params, extraFiltersInput)
     const {page, pageSize, total} = responseCollection.meta.pagination
     return {
         data: responseCollection.data,

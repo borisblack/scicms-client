@@ -8,7 +8,6 @@ import 'react-resizable/css/styles.css'
 
 import {CustomComponentRenderContext} from '../extensions/custom-components'
 import {DASHBOARD_ITEM_NAME, DATASET_ITEM_NAME} from '../config/constants'
-import * as PermissionService from '../services/permission'
 import {Dashboard, DashboardExtra, Dataset, IDash, IDashboardSpec, QueryFilter} from '../types'
 import DashForm, {DashValues} from './DashForm'
 import {generateQueryBlock, printSingleQueryFilter} from '../util/bi'
@@ -19,6 +18,7 @@ import DashWrapper from './DashWrapper'
 import styles from './DashboardSpec.module.css'
 import './DashboardSpec.css'
 import * as DashboardService from '../services/dashboard'
+import PermissionManager from '../services/permission'
 
 interface DashboardSpecProps extends CustomComponentRenderContext {
     extra?: DashboardExtra
@@ -42,11 +42,12 @@ export default function DashboardSpec({
     const isLockedByMe = data?.lockedBy?.data?.id === me.id
     const datasetItem = useMemo(() => itemMap[DATASET_ITEM_NAME], [itemMap])
     const dashboardItem = useMemo(() => itemMap[DASHBOARD_ITEM_NAME], [itemMap])
+    const permissionManager = useMemo(() => new PermissionManager(permissionMap), [permissionMap])
     const permissions = useMemo(() => {
-        const acl = PermissionService.getAcl(permissionMap, me, item, data)
+        const acl = permissionManager.getAcl(me, item, data)
         const canEdit = (isNew && acl.canCreate) || (isLockedByMe && acl.canWrite)
         return [canEdit]
-    }, [data, isLockedByMe, isNew, item, me, permissionMap])
+    }, [data, isLockedByMe, isNew, item, me, permissionManager])
     const [canEdit] = permissions
     const spec: IDashboardSpec = buffer.spec ?? data?.spec ?? initialSpec
     const [datasets, setDatasets] = useState<{[name: string]: Dataset}>({})

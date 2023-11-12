@@ -36,15 +36,10 @@ import {
 } from '../../extensions/api-middleware'
 import {allIcons} from '../../util/icons'
 import {exportWinFeatures, exportWinStyle, renderValue} from '../../util/export'
-import {getAcl, PermissionMap} from '../../services/permission'
+import PermissionManager, {PermissionMap} from '../../services/permission'
 import {ItemMap} from '../../services/item'
-import {
-    create as performCreate,
-    createLocalization as performCreateLocalization,
-    createVersion as performCreateVersion,
-    update as performUpdate
-} from '../../services/mutation'
-import {findLocalization} from '../../services/query'
+import MutationManager from '../../services/mutation'
+import QueryManager from '../../services/query'
 import {ItemTemplateMap} from '../../services/item-template'
 import {CoreConfig} from '../../services/core-config'
 
@@ -83,12 +78,15 @@ function ViewNavTab({
     const tabsContentRef = useRef<HTMLDivElement>(null)
     const footerRef = useRef<HTMLDivElement>(null)
     const [form] = Form.useForm()
+    const queryManager = useMemo(() => new QueryManager(itemMap), [itemMap])
+    const mutationManager = useMemo(() => new MutationManager(itemMap), [itemMap])
+    const permissionManager = useMemo(() => new PermissionManager(permissionMap), [permissionMap])
     const permissions = useMemo(() => {
-        const acl = getAcl(permissionMap, me, item, data)
+        const acl = permissionManager.getAcl(me, item, data)
         const canEdit = (!isSystemItem || !data?.core) && !item.readOnly && (!item.versioned || !!data?.current) && acl.canWrite
         const canDelete = (!isSystemItem || !data?.core) && !item.readOnly && acl.canDelete
         return [acl.canCreate, canEdit, canDelete, acl.canAdmin]
-    }, [data, isSystemItem, item, me, permissionMap])
+    }, [data, isSystemItem, item, me, permissionManager])
     const [canCreate, canEdit, canDelete, canAdmin] = permissions
     const handleBufferChange = useCallback((bufferChanges: IBuffer) => setBuffer({...buffer, ...bufferChanges}), [buffer])
     const pluginContext: CustomPluginRenderContext = useMemo(() => ({
@@ -217,7 +215,7 @@ function ViewNavTab({
 
         setLoading(true)
         try {
-            const doCreate = async () => await performCreate(itemMap, item, values, majorRev, locale)
+            const doCreate = async () => await mutationManager.create(item, values, majorRev, locale)
             let created: ItemData
             if (hasApiMiddleware(item.name)) {
                 const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values}
@@ -252,7 +250,7 @@ function ViewNavTab({
 
         setLoading(true)
         try {
-            const doCreateVersion = async () => await performCreateVersion(itemMap, item, data.id, values, majorRev, locale, appConfig.mutation.copyCollectionRelations)
+            const doCreateVersion = async () => await mutationManager.createVersion(item, data.id, values, majorRev, locale, appConfig.mutation.copyCollectionRelations)
             let createdVersion: ItemData
             if (hasApiMiddleware(item.name)) {
                 const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values}
@@ -286,7 +284,7 @@ function ViewNavTab({
 
         setLoading(true)
         try {
-            const doCreateLocalization = async () => await performCreateLocalization(itemMap, item, data.id, values, locale, appConfig.mutation.copyCollectionRelations)
+            const doCreateLocalization = async () => await mutationManager.createLocalization(item, data.id, values, locale, appConfig.mutation.copyCollectionRelations)
             let createdLocalization: ItemData
             if (hasApiMiddleware(item.name)) {
                 const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values}
@@ -317,7 +315,7 @@ function ViewNavTab({
 
         setLoading(true)
         try {
-            const doUpdate = async () => await performUpdate(itemMap, item, data.id, values)
+            const doUpdate = async () => await mutationManager.update(item, data.id, values)
             let updated: ItemData
             if (hasApiMiddleware(item.name)) {
                 const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values}
@@ -398,7 +396,7 @@ function ViewNavTab({
 
             setLoading(true)
             try {
-                const existingLocalization = await findLocalization(itemMap, item, data.configId, data.majorRev, value)
+                const existingLocalization = await queryManager.findLocalization(item, data.configId, data.majorRev, value)
                 if (existingLocalization) {
                     if (viewState === ViewState.UPDATE)
                         setViewState(ViewState.CREATE_LOCALIZATION)

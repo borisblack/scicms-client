@@ -3,7 +3,7 @@ import {ITEM_TEMPLATE_ITEM_NAME, ITEM_TEMPLATE_MODEL_KIND} from '../../config/co
 import {FlaggedResponse, ItemData, ItemTemplate, ItemTemplateModel} from '../../types'
 import axios from 'axios'
 import {extractAxiosErrorMessage} from '../../services'
-import * as QueryService from '../../services/query'
+import QueryManager from '../../services/query'
 import appConfig from '../../config'
 
 export const itemTemplateMiddleware: ApiMiddleware = {
@@ -37,6 +37,7 @@ async function handleItemTemplateOperation(operation: ApiOperation, context: Api
 }
 
 async function apply({items, item, values}: ApiMiddlewareContext): Promise<ItemData> {
+    const queryManager = new QueryManager(items)
     let id: string
     try {
         const res = await axios.post('/api/model/apply', mapItemTemplate(values))
@@ -45,7 +46,7 @@ async function apply({items, item, values}: ApiMiddlewareContext): Promise<ItemD
         throw new Error(extractAxiosErrorMessage(e))
     }
 
-    const data = await QueryService.findById(items, item, id)
+    const data = await queryManager.findById(item, id)
 
     return data.data
 }
@@ -61,8 +62,9 @@ const mapItemTemplate = (item: ItemTemplate): ItemTemplateModel => ({
 })
 
 async function remove({items, item, values}: ApiMiddlewareContext): Promise<ItemData> {
+    const queryManager = new QueryManager(items)
     const {id} = values
-    const data = await QueryService.findById(items, item, id)
+    const data = await queryManager.findById(item, id)
     try {
         await axios.post(`/api/model/delete/itemTemplate/${id}`)
     } catch (e: any) {
@@ -73,6 +75,7 @@ async function remove({items, item, values}: ApiMiddlewareContext): Promise<Item
 }
 
 async function lock({items, item, values}: ApiMiddlewareContext): Promise<FlaggedResponse> {
+    const queryManager = new QueryManager(items)
     const {id} = values
     try {
         await axios.post(`/api/model/lock/itemTemplate/${id}`)
@@ -80,12 +83,13 @@ async function lock({items, item, values}: ApiMiddlewareContext): Promise<Flagge
         throw new Error(extractAxiosErrorMessage(e))
     }
 
-    const data = await QueryService.findById(items, item, id)
+    const data = await queryManager.findById(item, id)
 
     return {success: true, data: data.data}
 }
 
 async function unlock({items, item, values}: ApiMiddlewareContext): Promise<FlaggedResponse> {
+    const queryManager = new QueryManager(items)
     const {id} = values
     try {
         await axios.post(`/api/model/unlock/itemTemplate/${id}`)
@@ -93,7 +97,7 @@ async function unlock({items, item, values}: ApiMiddlewareContext): Promise<Flag
         throw new Error(extractAxiosErrorMessage(e))
     }
 
-    const data = await QueryService.findById(items, item, id)
+    const data = await queryManager.findById(item, id)
 
     return {success: true, data: data.data}
 }

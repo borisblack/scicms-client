@@ -86,12 +86,7 @@ const FIND_ALL_BY_IDENTITY_NAMES_QUERY = gql`
     }
 `
 
-export async function fetchPermissions(me: UserInfo): Promise<PermissionMap> {
-    const data = await findAllByIdentityNames([...me.roles, me.username])
-    return _.mapKeys(data, permission => permission.id)
-}
-
-const findAll = (): Promise<Permission[]> =>
+const fetchAllPermissions = (): Promise<Permission[]> =>
     apolloClient.query({query: FIND_ALL_QUERY})
         .then(res => {
             if (res.errors) {
@@ -100,6 +95,11 @@ const findAll = (): Promise<Permission[]> =>
             }
             return res.data.permissions.data
         })
+
+export async function fetchPermissions(me: UserInfo): Promise<PermissionMap> {
+    const data = await findAllByIdentityNames([...me.roles, me.username])
+    return _.mapKeys(data, permission => permission.id)
+}
 
 const findAllByIdentityNames = (identityNames: string[]): Promise<Permission[]> =>
     apolloClient.query({query: FIND_ALL_BY_IDENTITY_NAMES_QUERY, variables: {identityNames}})
@@ -111,17 +111,21 @@ const findAllByIdentityNames = (identityNames: string[]): Promise<Permission[]> 
             return res.data.permissions.data
         })
 
-export function getAcl(permissions: PermissionMap, me: UserInfo, item: Item, data?: ItemData | null): Acl {
-    const itemPermissionId = item.permission.data?.id
-    const itemPermission = itemPermissionId ? permissions[itemPermissionId] : null
-    const canCreate = !!itemPermission && ACL.canCreate(me, itemPermission)
+export default class PermissionManager {
+    constructor(private permissions: PermissionMap) {}
 
-    const dataPermissionId = data?.permission?.data?.id
-    const dataPermission = dataPermissionId ? permissions[dataPermissionId] : null
-    const canRead = !!dataPermission && ACL.canRead(me, dataPermission)
-    const canWrite = !!dataPermission && ACL.canWrite(me, dataPermission)
-    const canDelete = !!dataPermission && ACL.canDelete(me, dataPermission)
-    const canAdmin = !!dataPermission && ACL.canAdmin(me, dataPermission)
+    getAcl(me: UserInfo, item: Item, data?: ItemData | null): Acl {
+        const itemPermissionId = item.permission.data?.id
+        const itemPermission = itemPermissionId ? this.permissions[itemPermissionId] : null
+        const canCreate = !!itemPermission && ACL.canCreate(me, itemPermission)
 
-    return {canCreate, canRead, canWrite, canDelete, canAdmin}
+        const dataPermissionId = data?.permission?.data?.id
+        const dataPermission = dataPermissionId ? this.permissions[dataPermissionId] : null
+        const canRead = !!dataPermission && ACL.canRead(me, dataPermission)
+        const canWrite = !!dataPermission && ACL.canWrite(me, dataPermission)
+        const canDelete = !!dataPermission && ACL.canDelete(me, dataPermission)
+        const canAdmin = !!dataPermission && ACL.canAdmin(me, dataPermission)
+
+        return {canCreate, canRead, canWrite, canDelete, canAdmin}
+    }
 }

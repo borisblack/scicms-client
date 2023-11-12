@@ -7,7 +7,6 @@ import {useTranslation} from 'react-i18next'
 import {CustomComponentRenderContext} from '../../index'
 import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME} from '../../../../config/constants'
 import {Attribute, ItemSpec} from '../../../../types'
-import * as PermissionService from '../../../../services/permission'
 import DataGrid, {DataWithPagination, RequestParams} from '../../../../components/datagrid/DataGrid'
 import appConfig from '../../../../config'
 import {
@@ -20,6 +19,7 @@ import {
 import AttributeForm from './AttributeForm'
 import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design/icons'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
+import PermissionManager from '../../../../services/permission'
 
 const EDIT_MODAL_WIDTH = 800
 
@@ -33,11 +33,12 @@ export default function Attributes({
     const isLockedByMe = data?.lockedBy?.data?.id === me.id
     const {t} = useTranslation()
     const [version, setVersion] = useState<number>(0)
+    const permissionManager = useMemo(() => new PermissionManager(permissionMap), [permissionMap])
     const permissions = useMemo(() => {
-        const acl = PermissionService.getAcl(permissionMap, me, item, data)
+        const acl = permissionManager.getAcl(me, item, data)
         const canEdit = (isNew && acl.canCreate) || (!data?.core && isLockedByMe && acl.canWrite)
         return [canEdit]
-    }, [data, isLockedByMe, isNew, item, me, permissionMap])
+    }, [data, isLockedByMe, isNew, item, me, permissionManager])
 
     const [canEdit] = permissions
     const columns = useMemo(() => getAttributeColumns(), [])

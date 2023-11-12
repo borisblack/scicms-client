@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react'
+import React, {useCallback, useMemo} from 'react'
 import {useTranslation} from 'react-i18next'
 import {message, Tabs} from 'antd'
 import {ExclamationCircleOutlined, SearchOutlined} from '@ant-design/icons'
@@ -21,7 +21,7 @@ import DefaultNavTab from './DefaultNavTab'
 import ViewNavTab from './ViewNavTab'
 import Mediator, {Callback, CallbackOperation} from '../../services/mediator'
 import {allIcons} from '../../util/icons'
-import {findById} from '../../services/query'
+import QueryManager from '../../services/query'
 import {ItemMap} from '../../services/item'
 import {PermissionMap} from '../../services/permission'
 import {CoreConfig} from '../../services/core-config'
@@ -45,6 +45,7 @@ function NavTabs({me, coreConfig, itemTemplates, items, permissions, locales, on
     const {t} = useTranslation()
     const navTabs = useAppSelector(selectNavTabs)
     const activeKey = useAppSelector(selectActiveKey)
+    const queryManager = useMemo(() => new QueryManager(items), [items])
 
     const handleTabsChange = useCallback((activeKey: string) => {
         dispatch(setActiveKey(activeKey))
@@ -71,7 +72,7 @@ function NavTabs({me, coreConfig, itemTemplates, items, permissions, locales, on
     }
 
     const handleItemView = async (item: Item, id: string, extra?: Record<string, any>, cb?: Callback, observerKey?: string) => {
-        const actualData = await findById(items, item, id)
+        const actualData = await queryManager.findById(item, id)
         if (actualData.data) {
             if (cb) {
                 const key = generateKey(item.name, ViewType.view, actualData.data.id)

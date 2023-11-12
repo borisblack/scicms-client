@@ -9,12 +9,11 @@ import {Item, ItemData, UserInfo} from '../../../types'
 import {useTranslation} from 'react-i18next'
 import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design/icons'
 import {Callback} from '../../../services/mediator'
-import * as MutationService from '../../../services/mutation'
+import MutationManager from '../../../services/mutation'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
 import * as ACL from '../../../util/acl'
-import * as PermissionService from '../../../services/permission'
 import {ItemMap} from '../../../services/item'
-import {PermissionMap} from '../../../services/permission'
+import PermissionManager, {PermissionMap} from '../../../services/permission'
 
 interface Props {
     me: UserInfo
@@ -41,14 +40,16 @@ export default function OneToManyDataGridWrapper({
     const item = useMemo(() => itemMap[itemName], [itemMap, itemName])
     const targetItem = useMemo(() => itemMap[targetItemName], [itemMap, targetItemName])
     const columns = useMemo(() => getColumns(itemMap, targetItem), [itemMap, targetItem])
+    const mutationManager = useMemo(() => new MutationManager(itemMap), [itemMap])
+    const permissionManager = useMemo(() => new PermissionManager(permissionMap), [permissionMap])
 
     const isNew = !itemData?.id
     const isLockedByMe = itemData?.lockedBy?.data?.id === me.id
     const [canEdit] = useMemo(() => {
-        const acl = PermissionService.getAcl(permissionMap, me, item, itemData)
+        const acl = permissionManager.getAcl(me, item, itemData)
         const canEdit = (isNew && acl.canCreate) || (isLockedByMe && acl.canWrite)
         return [canEdit]
-    }, [isLockedByMe, isNew, item, itemData, me, permissionMap])
+    }, [isLockedByMe, isNew, item, itemData, me, permissionManager])
 
     const hiddenColumnsMemoized = useMemo(() => {
         const hiddenColumns = getHiddenColumns(targetItem)
@@ -85,9 +86,9 @@ export default function OneToManyDataGridWrapper({
         setLoading(true)
         try {
             if (purge)
-                await MutationService.purge(itemMap, targetItem, id, appConfig.mutation.deletingStrategy)
+                await mutationManager.purge(targetItem, id, appConfig.mutation.deletingStrategy)
             else
-                await MutationService.remove(itemMap, targetItem, id, appConfig.mutation.deletingStrategy)
+                await mutationManager.remove(targetItem, id, appConfig.mutation.deletingStrategy)
             await onItemDelete(targetItem.name, id)
             await refresh()
         } catch (e: any) {
@@ -96,7 +97,7 @@ export default function OneToManyDataGridWrapper({
         } finally {
             setLoading(false)
         }
-    }, [itemMap, targetItem, onItemDelete])
+    }, [mutationManager, targetItem, onItemDelete])
 
     const getRowContextMenu = useCallback((row: Row<ItemData>) => {
         const items: ItemType[] = [{

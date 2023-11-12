@@ -9,15 +9,13 @@ import {useTranslation} from 'react-i18next'
 import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined, SelectOutlined} from '@ant-design/icons'
 import {ID_ATTR_NAME, SOURCE_ATTR_NAME, TARGET_ATTR_NAME} from '../../config/constants'
 import {Callback, CallbackOperation} from '../../services/mediator'
-import * as MutationService from '../../services/mutation'
+import MutationManager from '../../services/mutation'
 import {ItemMap} from '../../services/item'
-import * as QueryService from '../../services/query'
-import {ItemFiltersInput} from '../../services/query'
+import QueryManager, {ItemFiltersInput} from '../../services/query'
 import SearchDataGridWrapper from './SearchDataGridWrapper'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
 import * as ACL from '../../util/acl'
-import * as PermissionService from '../../services/permission'
-import {PermissionMap} from '../../services/permission'
+import PermissionManager, {PermissionMap} from '../../services/permission'
 
 interface Props {
     me: UserInfo
@@ -50,6 +48,9 @@ export default function RelationsDataGridWrapper({
     const [version, setVersion] = useState<number>(0)
     const [isSelectionModalVisible, setSelectionModalVisible] = useState<boolean>(false)
     const createdIds = useRef<Set<string>>(new Set())
+    const queryManager = useMemo(() => new QueryManager(itemMap), [itemMap])
+    const mutationManager = useMemo(() => new MutationManager(itemMap), [itemMap])
+    const permissionManager = useMemo(() => new PermissionManager(permissionMap), [permissionMap])
     const [target, intermediate] = useMemo(
         () => ([
             itemMap[relAttribute.target as string],
@@ -63,10 +64,10 @@ export default function RelationsDataGridWrapper({
     const isNew = !itemData?.id
     const isLockedByMe = itemData?.lockedBy?.data?.id === me.id
     const [canEdit] = useMemo(() => {
-        const acl = PermissionService.getAcl(permissionMap, me, item, itemData)
+        const acl = permissionManager.getAcl(me, item, itemData)
         const canEdit = (isNew && acl.canCreate) || (isLockedByMe && acl.canWrite)
         return [canEdit]
-    }, [isLockedByMe, isNew, item, itemData, me, permissionMap])
+    }, [isLockedByMe, isNew, item, itemData, me, permissionManager])
 
     const oppositeAttrName = useMemo((): string | undefined => {
         const relAttribute = item.spec.attributes[relAttrName]
@@ -106,9 +107,9 @@ export default function RelationsDataGridWrapper({
         if (operation === CallbackOperation.DELETE) {
             setLoading(true)
             try {
-                const intermediatesToDelete = await QueryService.findAllBy(itemMap, intermediate, {[targetAttrName]: {id: {eq: id}}} as unknown as QueryService.ItemFiltersInput<ItemData>) // must be only one
+                const intermediatesToDelete = await queryManager.findAllBy(intermediate, {[targetAttrName]: {id: {eq: id}}} as unknown as ItemFiltersInput<ItemData>) // must be only one
                 for (const intermediateToDelete of intermediatesToDelete) {
-                    await MutationService.remove(itemMap, intermediate, intermediateToDelete.id, appConfig.mutation.deletingStrategy)
+                    await mutationManager.remove(intermediate, intermediateToDelete.id, appConfig.mutation.deletingStrategy)
                 }
                 createdIds.current.delete(id)
                 refresh()
@@ -119,7 +120,7 @@ export default function RelationsDataGridWrapper({
                 setLoading(false)
             }
         }
-    }, [targetAttrName, itemMap, intermediate, relAttribute.relType])
+    }, [relAttribute.relType, intermediate, queryManager, targetAttrName, mutationManager])
 
     const processCreatedManyToManyRelation = useCallback(async (operation: CallbackOperation, id: string) => {
         if (relAttribute.relType !== RelType.manyToMany || !intermediate)
@@ -128,7 +129,7 @@ export default function RelationsDataGridWrapper({
         if (operation === CallbackOperation.UPDATE && !createdIds.current.has(id)) {
             setLoading(true)
             try {
-                await MutationService.create(itemMap, intermediate, {[sourceAttrName]: itemData.id, [targetAttrName]: id})
+                await mutationManager.create(intermediate, {[sourceAttrName]: itemData.id, [targetAttrName]: id})
                 createdIds.current.add(id)
                 refresh()
             } catch (e: any) {
@@ -140,7 +141,7 @@ export default function RelationsDataGridWrapper({
         }
 
         await processExistingManyToManyRelation(operation, id)
-    }, [sourceAttrName, targetAttrName, itemData.id, itemMap, processExistingManyToManyRelation, relAttribute, intermediate])
+    }, [relAttribute.relType, intermediate, processExistingManyToManyRelation, mutationManager, sourceAttrName, itemData.id, targetAttrName])
 
     const createManyToOneInitialData = useCallback((): ItemData | null => {
         if (relAttribute.relType !== RelType.oneToMany || !oppositeAttrName)
@@ -166,11 +167,11 @@ export default function RelationsDataGridWrapper({
         if (relAttribute.relType !== RelType.manyToMany || !intermediate)
             throw Error('Illegal attribute')
 
-        await MutationService.create(itemMap, intermediate, {[sourceAttrName]: itemData.id, [targetAttrName]: selectedItemData.id})
+        await mutationManager.create(intermediate, {[sourceAttrName]: itemData.id, [targetAttrName]: selectedItemData.id})
 
         refresh()
         setSelectionModalVisible(false)
-    }, [sourceAttrName, targetAttrName, itemData.id, itemMap, relAttribute, intermediate])
+    }, [relAttribute.relType, intermediate, mutationManager, sourceAttrName, itemData.id, targetAttrName])
 
     const openTarget = useCallback(
         (id: string) => onItemView(target, id, undefined, isOneToMany ? refresh : processExistingManyToManyRelation, uniqueKey),
@@ -180,9 +181,9 @@ export default function RelationsDataGridWrapper({
         setLoading(true)
         try {
             if (purge)
-                await MutationService.purge(itemMap, target, id, appConfig.mutation.deletingStrategy)
+                await mutationManager.purge(target, id, appConfig.mutation.deletingStrategy)
             else
-                await MutationService.remove(itemMap, target, id, appConfig.mutation.deletingStrategy)
+                await mutationManager.remove(target, id, appConfig.mutation.deletingStrategy)
             await onItemDelete(target.name, id)
             await refresh()
         } catch (e: any) {
@@ -191,7 +192,7 @@ export default function RelationsDataGridWrapper({
         } finally {
             setLoading(false)
         }
-    }, [itemMap, target, onItemDelete])
+    }, [mutationManager, target, onItemDelete])
 
     const deleteIntermediate = useCallback(async (targetId: string) => {
         if (intermediate == null) {
@@ -202,9 +203,9 @@ export default function RelationsDataGridWrapper({
         setLoading(true)
         try {
             const intermediatesToDelete =
-                await QueryService.findAllBy(itemMap, intermediate, {[targetAttrName]: {id: {eq: targetId}}} as unknown as ItemFiltersInput<ItemData>) // must be only one
+                await queryManager.findAllBy(intermediate, {[targetAttrName]: {id: {eq: targetId}}} as unknown as ItemFiltersInput<ItemData>) // must be only one
             for (const intermediateToDelete of intermediatesToDelete) {
-                await MutationService.remove(itemMap, intermediate, intermediateToDelete.id, appConfig.mutation.deletingStrategy)
+                await mutationManager.remove(intermediate, intermediateToDelete.id, appConfig.mutation.deletingStrategy)
             }
             createdIds.current.delete(targetId)
             refresh()
@@ -214,7 +215,7 @@ export default function RelationsDataGridWrapper({
         } finally {
             setLoading(false)
         }
-    }, [intermediate, itemMap, targetAttrName])
+    }, [intermediate, mutationManager, queryManager, targetAttrName])
 
     const getRowContextMenu = useCallback((row: Row<ItemData>) => {
         const items: ItemType[] = [{

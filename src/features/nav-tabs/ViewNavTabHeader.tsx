@@ -1,4 +1,4 @@
-import React, {MouseEvent, ReactNode, useState} from 'react'
+import React, {MouseEvent, ReactNode, useMemo, useState} from 'react'
 import {Alert, Button, Dropdown, FormInstance, message, Modal, Popconfirm, Space} from 'antd'
 import {PageHeader} from '@ant-design/pro-layout'
 import * as icons from '@ant-design/icons'
@@ -22,13 +22,7 @@ import appConfig from '../../config'
 import {useTranslation} from 'react-i18next'
 import SearchDataGridWrapper from './SearchDataGridWrapper'
 import {ItemFiltersInput} from '../../services/query'
-import {
-    lock as performLock,
-    promote as performPromote,
-    purge as performPurge,
-    remove as performRemove,
-    unlock as performUnlock
-} from '../../services/mutation'
+import MutationManager from '../../services/mutation'
 import Promote from './Promote'
 import {
     ITEM_ITEM_NAME,
@@ -82,6 +76,7 @@ export default function ViewNavTabHeader({
     const {t} = useTranslation()
     const [isVersionsModalVisible, setVersionsModalVisible] = useState(false)
     const [isPromoteModalVisible, setPromoteModalVisible] = useState(false)
+    const mutationManager = useMemo(() => new MutationManager(itemMap), [itemMap])
 
     function handleSave(evt: MouseEvent) {
         form.submit()
@@ -94,7 +89,7 @@ export default function ViewNavTabHeader({
         setLoading(true)
         try {
             const id = data?.id as string
-            const doLock = async () => await performLock(itemMap, item, id)
+            const doLock = async () => await mutationManager.lock(item, id)
             let locked: FlaggedResponse
             if (hasApiMiddleware(item.name)) {
                 const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values: {id}}
@@ -124,7 +119,7 @@ export default function ViewNavTabHeader({
         setLoading(true)
         try {
             const id = data?.id as string
-            const doUnlock = async () => await performUnlock(itemMap, item, id)
+            const doUnlock = async () => await mutationManager.unlock(item, id)
             let unlocked
             if (hasApiMiddleware(item.name)) {
                 const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values: {id}}
@@ -157,7 +152,7 @@ export default function ViewNavTabHeader({
         setLoading(true)
         try {
             const id = data?.id as string
-            const doDelete = async () => await performRemove(itemMap, item, id, appConfig.mutation.deletingStrategy)
+            const doDelete = async () => await mutationManager.remove(item, id, appConfig.mutation.deletingStrategy)
             let deleted: ItemData
             if (hasApiMiddleware(item.name)) {
                 const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values: {id}}
@@ -187,7 +182,7 @@ export default function ViewNavTabHeader({
         setLoading(true)
         try {
             const id = data?.id as string
-            const doPurge = async () => await performPurge(itemMap, item, id, appConfig.mutation.deletingStrategy)
+            const doPurge = async () => await mutationManager.purge(item, id, appConfig.mutation.deletingStrategy)
             let purged: ResponseCollection<ItemData>
             if (hasApiMiddleware(item.name)) {
                 const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values: {id}}
@@ -217,7 +212,7 @@ export default function ViewNavTabHeader({
         setLoading(true)
         try {
             const id = data?.id as string
-            const doPromote = async () => await performPromote(itemMap, item, id, state)
+            const doPromote = async () => await mutationManager.promote(item, id, state)
             let promoted: ItemData
             if (hasApiMiddleware(item.name)) {
                 const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values: {id}}

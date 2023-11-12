@@ -9,7 +9,7 @@ import customTranslate from '../../../../diagram/i18s/custom-translate'
 import '../../../../diagram/bpmn-js.css'
 import styles from './LifecycleSpec.module.css'
 import {LIFECYCLE_ITEM_NAME} from '../../../../config/constants'
-import * as PermissionService from '../../../../services/permission'
+import PermissionManager from '../../../../services/permission'
 
 const customTranslateModule = {
     translate: [ 'value', customTranslate ]
@@ -21,11 +21,12 @@ export default function LifecycleSpec({me, permissions: permissionMap, item, dat
 
     const isNew = !data?.id
     const isLockedByMe = data?.lockedBy?.data?.id === me.id
+    const permissionManager = useMemo(() => new PermissionManager(permissionMap), [permissionMap])
     const permissions = useMemo(() => {
-        const acl = PermissionService.getAcl(permissionMap, me, item, data)
+        const acl = permissionManager.getAcl(me, item, data)
         const canEdit = (isNew && acl.canCreate) || (isLockedByMe && acl.canWrite)
         return [canEdit]
-    }, [data, isLockedByMe, isNew, item, me, permissionMap])
+    }, [data, isLockedByMe, isNew, item, me, permissionManager])
 
     const [canEdit] = permissions
     const container = useRef<HTMLDivElement>(null)
