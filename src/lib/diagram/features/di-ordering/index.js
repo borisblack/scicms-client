@@ -1,4 +1,4 @@
-import BpmnDiOrdering from '../di-ordering/BpmnDiOrdering'
+import BpmnDiOrdering from './BpmnDiOrdering'
 
 const diOrdering = {
   __init__: [

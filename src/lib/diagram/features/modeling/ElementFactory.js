@@ -15,7 +15,7 @@ import {
 
 import {
   isAny
-} from '../modeling/util/ModelingUtil';
+} from './util/ModelingUtil';
 
 import {
   isExpanded
