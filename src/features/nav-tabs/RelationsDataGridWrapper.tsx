@@ -16,6 +16,7 @@ import SearchDataGridWrapper from './SearchDataGridWrapper'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
 import * as ACL from '../../util/acl'
 import PermissionManager, {PermissionMap} from '../../services/permission'
+import {useAcl} from '../../util/hooks'
 
 interface Props {
     me: UserInfo
@@ -44,13 +45,11 @@ export default function RelationsDataGridWrapper({
 
     const {t} = useTranslation()
     const [loading, setLoading] = useState<boolean>(false)
-    const [data, setData] = useState(getInitialData())
     const [version, setVersion] = useState<number>(0)
     const [isSelectionModalVisible, setSelectionModalVisible] = useState<boolean>(false)
     const createdIds = useRef<Set<string>>(new Set())
     const queryManager = useMemo(() => new QueryManager(itemMap), [itemMap])
     const mutationManager = useMemo(() => new MutationManager(itemMap), [itemMap])
-    const permissionManager = useMemo(() => new PermissionManager(permissionMap), [permissionMap])
     const [target, intermediate] = useMemo(
         () => ([
             itemMap[relAttribute.target as string],
@@ -58,16 +57,10 @@ export default function RelationsDataGridWrapper({
         ]),
         [itemMap, relAttribute.target, relAttribute.intermediate]
     )
+    const [data, setData] = useState(getInitialData())
     const columns = useMemo(() => getColumns(itemMap, target), [itemMap, target])
     const isOneToMany = useMemo(() => relAttribute.relType === RelType.oneToMany, [relAttribute.relType])
-
-    const isNew = !itemData?.id
-    const isLockedByMe = itemData?.lockedBy?.data?.id === me.id
-    const [canEdit] = useMemo(() => {
-        const acl = permissionManager.getAcl(me, item, itemData)
-        const canEdit = (isNew && acl.canCreate) || (isLockedByMe && acl.canWrite)
-        return [canEdit]
-    }, [isLockedByMe, isNew, item, itemData, me, permissionManager])
+    const acl = useAcl(me, permissionMap, item, itemData)
 
     const oppositeAttrName = useMemo((): string | undefined => {
         const relAttribute = item.spec.attributes[relAttrName]
@@ -267,7 +260,7 @@ export default function RelationsDataGridWrapper({
     }, [t, permissionMap, me, relAttribute.readOnly, openTarget, isOneToMany, target.versioned, deleteTarget, deleteIntermediate])
 
     const renderToolbar = useCallback(() => {
-        if (/*!canEdit || */relAttribute.readOnly)
+        if (/*!acl.canWrite || */relAttribute.readOnly)
             return null
 
         const targetPermissionId = target.permission.data?.id

@@ -18,7 +18,7 @@ import DashWrapper from './DashWrapper'
 import styles from './DashboardSpec.module.css'
 import './DashboardSpec.css'
 import * as DashboardService from '../services/dashboard'
-import PermissionManager from '../services/permission'
+import {useAcl} from '../util/hooks'
 
 interface DashboardSpecProps extends CustomComponentRenderContext {
     extra?: DashboardExtra
@@ -38,17 +38,9 @@ export default function DashboardSpec({
         throw new Error('Illegal argument')
 
     const {t} = useTranslation()
-    const isNew = !data?.id
-    const isLockedByMe = data?.lockedBy?.data?.id === me.id
     const datasetItem = useMemo(() => itemMap[DATASET_ITEM_NAME], [itemMap])
     const dashboardItem = useMemo(() => itemMap[DASHBOARD_ITEM_NAME], [itemMap])
-    const permissionManager = useMemo(() => new PermissionManager(permissionMap), [permissionMap])
-    const permissions = useMemo(() => {
-        const acl = permissionManager.getAcl(me, item, data)
-        const canEdit = (isNew && acl.canCreate) || (isLockedByMe && acl.canWrite)
-        return [canEdit]
-    }, [data, isLockedByMe, isNew, item, me, permissionManager])
-    const [canEdit] = permissions
+    const acl = useAcl(me, permissionMap, item, data)
     const spec: IDashboardSpec = buffer.spec ?? data?.spec ?? initialSpec
     const [datasets, setDatasets] = useState<{[name: string]: Dataset}>({})
     const [dashboards, setDashboards] = useState<Dashboard[]>([])
@@ -155,7 +147,7 @@ export default function DashboardSpec({
     }
 
     function handleActiveDashChange(newActiveDash: DashValues) {
-        if (!canEdit || !activeDash)
+        if (!acl.canWrite || !activeDash)
             return
 
         const {
@@ -207,7 +199,7 @@ export default function DashboardSpec({
         return (
             <div
                 key={dash.name}
-                className={`${styles.dashWrapper} ${activeDash?.name === dash.name ? styles.activeDash : ''} ${canEdit ? styles.editable : ''}`}
+                className={`${styles.dashWrapper} ${activeDash?.name === dash.name ? styles.activeDash : ''} ${acl.canWrite ? styles.editable : ''}`}
                 onClick={() => selectDash(dash)}
             >
                 <DashWrapper
@@ -217,7 +209,7 @@ export default function DashboardSpec({
                     extra={extra}
                     dash={dash}
                     readOnly={readOnly ?? false}
-                    canEdit={canEdit}
+                    canEdit={acl.canWrite}
                     onFullScreenChange={setFullScreen}
                     onRelatedDashboardOpen={handleRelatedDashboardOpen}
                     onEdit={() => openDash(dash)}
@@ -245,7 +237,7 @@ export default function DashboardSpec({
         }
     })
 
-    const isGridEditable = !readOnly && canEdit
+    const isGridEditable = !readOnly && acl.canWrite
     return (
         <>
             {extra && extra.queryFilter && (
@@ -283,7 +275,7 @@ export default function DashboardSpec({
                         <DashForm
                             form={dashForm}
                             dash={activeDash}
-                            canEdit={canEdit}
+                            canEdit={acl.canWrite}
                             datasets={datasets}
                             dashboards={dashboards}
                             onFormFinish={handleDashFormFinish}

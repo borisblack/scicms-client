@@ -19,7 +19,7 @@ import {
 import AttributeForm from './AttributeForm'
 import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design/icons'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
-import PermissionManager from '../../../../services/permission'
+import {useItemAcl} from '../../../../util/hooks'
 
 const EDIT_MODAL_WIDTH = 800
 
@@ -30,17 +30,9 @@ export default function Attributes({
         throw new Error('Illegal argument')
 
     const isNew = !data?.id
-    const isLockedByMe = data?.lockedBy?.data?.id === me.id
     const {t} = useTranslation()
     const [version, setVersion] = useState<number>(0)
-    const permissionManager = useMemo(() => new PermissionManager(permissionMap), [permissionMap])
-    const permissions = useMemo(() => {
-        const acl = permissionManager.getAcl(me, item, data)
-        const canEdit = (isNew && acl.canCreate) || (!data?.core && isLockedByMe && acl.canWrite)
-        return [canEdit]
-    }, [data, isLockedByMe, isNew, item, me, permissionManager])
-
-    const [canEdit] = permissions
+    const acl = useItemAcl(me, permissionMap, item, data)
     const columns = useMemo(() => getAttributeColumns(), [])
     const hiddenColumns = useMemo(() => getHiddenAttributeColumns(), [])
     const spec: ItemSpec = useMemo(() => buffer.spec ?? data?.spec ?? {}, [buffer.spec, data?.spec])
@@ -118,7 +110,7 @@ export default function Attributes({
     const refresh = () => setVersion(prevVersion => prevVersion + 1)
 
     const handleAttributeFormFinish = useCallback((values: NamedAttribute) => {
-        if (!canEdit)
+        if (!acl.canWrite)
             return
 
         const parsedValues = parseValues(values)
@@ -133,7 +125,7 @@ export default function Attributes({
 
         refresh()
         setEditModalVisible(false)
-    }, [canEdit, handleNamedAttributesChange, namedAttributes, parseValues, spec.attributes])
+    }, [acl.canWrite, handleNamedAttributesChange, namedAttributes, parseValues, spec.attributes])
 
     const handleCreate = useCallback(() => {
         setSelectedAttribute(null)
@@ -143,10 +135,10 @@ export default function Attributes({
     const renderToolbar = useCallback(() => {
         return (
             <Space>
-                {canEdit && <Button type="primary" size="small" icon={<PlusCircleOutlined/>} onClick={handleCreate}>{t('Add')}</Button>}
+                {acl.canWrite && <Button type="primary" size="small" icon={<PlusCircleOutlined/>} onClick={handleCreate}>{t('Add')}</Button>}
             </Space>
         )
-    }, [canEdit, handleCreate, t])
+    }, [acl.canWrite, handleCreate, t])
 
     const deleteRow = useCallback((row: Row<NamedAttribute>) => {
         handleNamedAttributesChange(namedAttributes.filter(it => it.name !== row.original.name))
@@ -161,7 +153,7 @@ export default function Attributes({
             onClick: () => openRow(row)
         }]
 
-        if (canEdit) {
+        if (acl.canWrite) {
             items.push({
                 key: 'delete',
                 label: t('Delete'),
@@ -171,7 +163,7 @@ export default function Attributes({
         }
 
         return items
-    }, [t, canEdit, openRow, deleteRow])
+    }, [t, acl.canWrite, openRow, deleteRow])
 
     return (
         <>
@@ -201,7 +193,7 @@ export default function Attributes({
                     items={itemMap}
                     form={attributeForm}
                     attribute={selectedAttribute}
-                    canEdit={canEdit}
+                    canEdit={acl.canWrite}
                     onFormFinish={handleAttributeFormFinish}
                 />
             </Modal>

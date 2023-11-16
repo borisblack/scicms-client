@@ -475,7 +475,7 @@ function sortLocal(data: any[], sorting: SortingState): any[] {
     }
 }
 
-function paginateLocal(data: any[], page: number, pageSize: number): DataWithPagination<any> {
+function paginateLocal(data: any[], page: number = 1, pageSize: number = appConfig.query.defaultPageSize): DataWithPagination<any> {
     if (page < 1 && (pageSize < appConfig.query.minPageSize || pageSize > appConfig.query.maxPageSize))
         throw new Error('Illegal argument')
 

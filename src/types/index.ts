@@ -79,12 +79,6 @@ export interface ItemTemplate extends DefaultItemTemplate {
     name: string
     core: boolean | null
     spec: ItemSpec
-}
-
-export interface ItemTemplate extends DefaultItemTemplate {
-    name: string
-    core: boolean | null
-    spec: ItemSpec
     hash: string | null
 }
 

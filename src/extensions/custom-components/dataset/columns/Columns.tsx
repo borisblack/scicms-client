@@ -8,22 +8,14 @@ import appConfig from '../../../../config'
 import {getInitialData, processLocal} from '../../../../util/datagrid'
 import {Column, DatasetSpec, NamedColumn} from '../../../../types'
 import {getColumns} from './columns-datagrid'
-import PermissionManager from '../../../../services/permission'
+import {useAcl} from '../../../../util/hooks'
 
 export default function Columns({me, permissions: permissionMap, item, buffer, data, onBufferChange}: CustomComponentRenderContext) {
     if (item.name !== DATASET_ITEM_NAME)
         throw new Error('Illegal argument')
 
     const {t} = useTranslation()
-    const isNew = !data?.id
-    const isLockedByMe = data?.lockedBy?.data?.id === me.id
-    const permissionManager = useMemo(() => new PermissionManager(permissionMap), [permissionMap])
-    const permissions = useMemo(() => {
-        const acl = permissionManager.getAcl(me, item, data)
-        const canEdit = (isNew && acl.canCreate) || (!data?.core && isLockedByMe && acl.canWrite)
-        return [canEdit]
-    }, [data, isLockedByMe, isNew, item, me, permissionManager])
-    const [canEdit] = permissions
+    const acl = useAcl(me, permissionMap, item, data)
     const spec: DatasetSpec = useMemo(() => data?.spec ?? buffer.spec ?? {}, [buffer.spec, data?.spec])
     const [namedColumns, setNamedColumns] = useState(getCurrentNamedColumns())
     const [filteredData, setFilteredData] = useState<DataWithPagination<NamedColumn>>(getInitialData())
@@ -46,7 +38,7 @@ export default function Columns({me, permissions: permissionMap, item, buffer, d
     }
 
     function handleNamedColumnChange(namedCol: NamedColumn) {
-        if (!canEdit)
+        if (!acl.canWrite)
             return
 
         const newNamedColumns = namedColumns.map(nc => nc.name === namedCol.name ? {...namedCol} : nc)
@@ -70,7 +62,7 @@ export default function Columns({me, permissions: permissionMap, item, buffer, d
         setFilteredData(processLocal(namedColumns, params))
     }
 
-    const gridColumns = getColumns(canEdit, handleNamedColumnChange)
+    const gridColumns = getColumns(acl.canWrite, handleNamedColumnChange)
 
     return (
         <DataGrid

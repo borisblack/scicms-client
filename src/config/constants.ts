@@ -23,6 +23,7 @@ export const DEFAULT_CORE_URL = 'http://localhost:8079'
 export const ROLE_ADMIN: string = 'ROLE_ADMIN'
 export const ROLE_DESIGNER: string = 'ROLE_DESIGNER'
 export const ROLE_ANALYST: string = 'ROLE_ANALYST'
+export const ROLE_PROJECT_MANAGER: string = 'ROLE_PROJECT_MANAGER'
 export const ROLE_USER: string = 'ROLE_USER'
 export const PASSWORD_PLACEHOLDER = "********"
 

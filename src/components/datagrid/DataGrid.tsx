@@ -49,8 +49,8 @@ export interface RequestParams {
 }
 
 interface RequestPagination {
-    page: number,
-    pageSize: number
+    page?: number,
+    pageSize?: number
 }
 
 function DataGrid({loading = false, columns, data, initialState, hasFilters = true, version = 0, toolbar = null, title = '', getRowContextMenu, onRequest, onRowDoubleClick = () => {}}: Props) {
@@ -183,7 +183,7 @@ function DataGrid({loading = false, columns, data, initialState, hasFilters = tr
         // const exportWinUrl = URL.createObjectURL(new Blob([exportWinHtml], { type: "text/html" }))
         const exportWin = window.open('', 'Export HTML', exportWinFeatures) as Window
         exportWin.document.body.innerHTML = exportWinHtml
-    }, [columnVisibility, columns, data.data, renderHtmlTableRow, t, title])
+    }, [columnVisibility, columns, data.data, renderHtmlTableRow, title])
 
     return (
         <Spin spinning={loading}>

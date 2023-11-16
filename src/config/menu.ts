@@ -1,4 +1,4 @@
-import {ROLE_ADMIN, ROLE_ANALYST, ROLE_DESIGNER, ROLE_USER} from './constants'
+import {ROLE_ADMIN, ROLE_ANALYST, ROLE_DESIGNER, ROLE_PROJECT_MANAGER, ROLE_USER} from './constants'
 
 interface MenuConfig {
     items: (SubMenu | MenuItem)[]
@@ -82,6 +82,18 @@ const menuConfig: MenuConfig = {
             itemName: 'startSheet'
         }, {
             itemName: 'changeNotice'
+        }]
+    }, {
+        key: 'projectManagement',
+        label: 'Project Management',
+        icon: 'BuildOutlined',
+        roles: [ROLE_ADMIN, ROLE_PROJECT_MANAGER],
+        children: [{
+            itemName: 'project'
+        }, {
+            itemName: 'resource'
+        }, {
+            itemName: 'projectRole'
         }]
     }]
 }

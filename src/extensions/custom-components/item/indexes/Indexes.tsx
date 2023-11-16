@@ -19,24 +19,16 @@ import {
 import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design/icons'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
 import IndexForm from './IndexForm'
-import PermissionManager from '../../../../services/permission'
+import {useItemAcl} from '../../../../util/hooks'
 
 export default function Indexes({me, itemTemplates, permissions: permissionMap, item, data, buffer, onBufferChange}: CustomComponentRenderContext) {
     if (item.name !== ITEM_TEMPLATE_ITEM_NAME && item.name !== ITEM_ITEM_NAME)
         throw new Error('Illegal argument')
 
     const isNew = !data?.id
-    const isLockedByMe = data?.lockedBy?.data?.id === me.id
     const {t} = useTranslation()
     const [version, setVersion] = useState<number>(0)
-    const permissionManager = useMemo(() => new PermissionManager(permissionMap), [permissionMap])
-    const permissions = useMemo(() => {
-        const acl = permissionManager.getAcl(me, item, data)
-        const canEdit = (isNew && acl.canCreate) || (!data?.core && isLockedByMe && acl.canWrite)
-        return [canEdit]
-    }, [data, isLockedByMe, isNew, item, me, permissionManager])
-
-    const [canEdit] = permissions
+    const acl = useItemAcl(me, permissionMap, item, data)
     const columns = useMemo(() => getIndexColumns(), [])
     const hiddenColumns = useMemo(() => getHiddenIndexColumns(), [])
     const spec: ItemSpec = useMemo(() => buffer.spec ?? data?.spec ?? {}, [buffer.spec, data?.spec])
@@ -114,7 +106,7 @@ export default function Indexes({me, itemTemplates, permissions: permissionMap, 
     const refresh = () => setVersion(prevVersion => prevVersion + 1)
 
     const handleIndexFormFinish = useCallback((values: NamedIndex) => {
-        if (!canEdit)
+        if (!acl.canWrite)
             return
 
         const parsedValues = parseValues(values)
@@ -129,7 +121,7 @@ export default function Indexes({me, itemTemplates, permissions: permissionMap, 
 
         refresh()
         setEditModalVisible(false)
-    }, [canEdit, handleNamedIndexesChange, namedIndexes, parseValues, spec.indexes])
+    }, [acl.canWrite, handleNamedIndexesChange, namedIndexes, parseValues, spec.indexes])
 
     const handleCreate = useCallback(() => {
         setSelectedIndex(null)
@@ -139,10 +131,10 @@ export default function Indexes({me, itemTemplates, permissions: permissionMap, 
     const renderToolbar = useCallback(() => {
         return (
             <Space>
-                {canEdit && <Button type="primary" size="small" icon={<PlusCircleOutlined/>} onClick={handleCreate}>{t('Add')}</Button>}
+                {acl.canWrite && <Button type="primary" size="small" icon={<PlusCircleOutlined/>} onClick={handleCreate}>{t('Add')}</Button>}
             </Space>
         )
-    }, [canEdit, handleCreate, t])
+    }, [acl.canWrite, handleCreate, t])
 
     const deleteRow = useCallback((row: Row<NamedIndex>) => {
         handleNamedIndexesChange(namedIndexes.filter(it => it.name !== row.original.name))
@@ -157,7 +149,7 @@ export default function Indexes({me, itemTemplates, permissions: permissionMap, 
             onClick: () => openRow(row)
         }]
 
-        if (canEdit) {
+        if (acl.canWrite) {
             items.push({
                 key: 'delete',
                 label: t('Delete'),
@@ -167,7 +159,7 @@ export default function Indexes({me, itemTemplates, permissions: permissionMap, 
         }
 
         return items
-    }, [t, canEdit, openRow, deleteRow])
+    }, [t, acl.canWrite, openRow, deleteRow])
 
     return (
         <>
@@ -192,7 +184,7 @@ export default function Indexes({me, itemTemplates, permissions: permissionMap, 
                 onOk={() => indexForm.submit()}
                 onCancel={() => setEditModalVisible(false)}
             >
-                <IndexForm form={indexForm} index={selectedIndex} canEdit={canEdit} onFormFinish={handleIndexFormFinish}/>
+                <IndexForm form={indexForm} index={selectedIndex} canEdit={acl.canWrite} onFormFinish={handleIndexFormFinish}/>
             </Modal>
         </>
     )

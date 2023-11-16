@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useRef} from 'react'
+import {useEffect, useRef} from 'react'
 import 'diagram-js/assets/diagram-js.css'
 import 'bpmn-font/dist/css/bpmn-embedded.css'
 
@@ -9,7 +9,7 @@ import customTranslate from '../../../../lib/diagram/i18s/custom-translate'
 import '../../../../lib/diagram/bpmn-js.css'
 import styles from './LifecycleSpec.module.css'
 import {LIFECYCLE_ITEM_NAME} from '../../../../config/constants'
-import PermissionManager from '../../../../services/permission'
+import {useAcl} from '../../../../util/hooks'
 
 const customTranslateModule = {
     translate: [ 'value', customTranslate ]
@@ -19,16 +19,7 @@ export default function LifecycleSpec({me, permissions: permissionMap, item, dat
     if (item.name !== LIFECYCLE_ITEM_NAME)
         throw new Error('Illegal argument')
 
-    const isNew = !data?.id
-    const isLockedByMe = data?.lockedBy?.data?.id === me.id
-    const permissionManager = useMemo(() => new PermissionManager(permissionMap), [permissionMap])
-    const permissions = useMemo(() => {
-        const acl = permissionManager.getAcl(me, item, data)
-        const canEdit = (isNew && acl.canCreate) || (isLockedByMe && acl.canWrite)
-        return [canEdit]
-    }, [data, isLockedByMe, isNew, item, me, permissionManager])
-
-    const [canEdit] = permissions
+    const acl = useAcl(me, permissionMap, item, data)
     const container = useRef<HTMLDivElement>(null)
     const modeler = useRef<any>(null)
 
@@ -39,7 +30,7 @@ export default function LifecycleSpec({me, permissions: permissionMap, item, dat
         }
 
         let m: any
-        if (canEdit) {
+        if (acl.canWrite) {
             m = new Modeler(props)
             const eventBus = m.get('eventBus')
             eventBus.on('elements.changed', (context: any) => {
@@ -64,7 +55,7 @@ export default function LifecycleSpec({me, permissions: permissionMap, item, dat
             m = null
             modeler.current = null
         }
-    }, [canEdit, data?.spec])
+    }, [acl.canWrite, data?.spec])
 
     return (
         <div className={styles.bpmnDiagramWrapper}>

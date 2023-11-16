@@ -14,6 +14,7 @@ import {ItemType} from 'antd/es/menu/hooks/useItems'
 import * as ACL from '../../../util/acl'
 import {ItemMap} from '../../../services/item'
 import PermissionManager, {PermissionMap} from '../../../services/permission'
+import {useAcl} from '../../../util/hooks'
 
 interface Props {
     me: UserInfo
@@ -41,15 +42,7 @@ export default function OneToManyDataGridWrapper({
     const targetItem = useMemo(() => itemMap[targetItemName], [itemMap, targetItemName])
     const columns = useMemo(() => getColumns(itemMap, targetItem), [itemMap, targetItem])
     const mutationManager = useMemo(() => new MutationManager(itemMap), [itemMap])
-    const permissionManager = useMemo(() => new PermissionManager(permissionMap), [permissionMap])
-
-    const isNew = !itemData?.id
-    const isLockedByMe = itemData?.lockedBy?.data?.id === me.id
-    const [canEdit] = useMemo(() => {
-        const acl = permissionManager.getAcl(me, item, itemData)
-        const canEdit = (isNew && acl.canCreate) || (isLockedByMe && acl.canWrite)
-        return [canEdit]
-    }, [isLockedByMe, isNew, item, itemData, me, permissionManager])
+    const acl = useAcl(me, permissionMap, item, itemData)
 
     const hiddenColumnsMemoized = useMemo(() => {
         const hiddenColumns = getHiddenColumns(targetItem)
@@ -140,7 +133,7 @@ export default function OneToManyDataGridWrapper({
     }, [t, permissionMap, me, openTarget, targetItem.versioned, deleteTarget])
 
     const renderToolbar = useCallback(() => {
-        // if (!canEdit)
+        // if (!acl.canWrite)
         //     return null
 
         const targetPermissionId = targetItem.permission.data?.id
@@ -152,7 +145,7 @@ export default function OneToManyDataGridWrapper({
                 {canCreateTarget && <Button type="primary" size="small" icon={<PlusCircleOutlined/>} onClick={handleCreate}>{t('Add')}</Button>}
             </Space>
         )
-    }, [canEdit, handleCreate, me, permissionMap, t, targetItem.permission.data?.id])
+    }, [acl.canWrite, handleCreate, me, permissionMap, t, targetItem.permission.data?.id])
 
     return (
         <>

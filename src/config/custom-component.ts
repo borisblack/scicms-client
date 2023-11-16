@@ -8,6 +8,7 @@ import {lifecycleSpec} from '../extensions/custom-components/lifecycle/spec/life
 import {datasetColumns} from '../extensions/custom-components/dataset/columns/dataset-columns'
 import {dashboardSpec} from '../extensions/custom-components/dashboard/spec/dashboard-spec'
 import {userGroups} from '../extensions/custom-components/user/user-groups/user-groups'
+import {projectGantt} from '../extensions/custom-components/project/gantt/project-gantt'
 
 interface CustomComponentConfig {
     components: CustomComponent[]
@@ -24,7 +25,9 @@ const customComponentConfig: CustomComponentConfig = {
         lifecycleSpec,
         datasetColumns,
         dashboardSpec,
-        userGroups // owner is a group
+        userGroups, // owner is a group
+
+        projectGantt
     ]
 }
 

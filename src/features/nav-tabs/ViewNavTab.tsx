@@ -36,12 +36,13 @@ import {
 } from '../../extensions/api-middleware'
 import {allIcons} from '../../util/icons'
 import {exportWinFeatures, exportWinStyle, renderValue} from '../../util/export'
-import PermissionManager, {PermissionMap} from '../../services/permission'
+import {PermissionMap} from '../../services/permission'
 import {ItemMap} from '../../services/item'
 import MutationManager from '../../services/mutation'
 import QueryManager from '../../services/query'
 import {ItemTemplateMap} from '../../services/item-template'
 import {CoreConfig} from '../../services/core-config'
+import {useFormAcl} from '../../util/hooks'
 
 interface Props {
     me: UserInfo
@@ -80,14 +81,7 @@ function ViewNavTab({
     const [form] = Form.useForm()
     const queryManager = useMemo(() => new QueryManager(itemMap), [itemMap])
     const mutationManager = useMemo(() => new MutationManager(itemMap), [itemMap])
-    const permissionManager = useMemo(() => new PermissionManager(permissionMap), [permissionMap])
-    const permissions = useMemo(() => {
-        const acl = permissionManager.getAcl(me, item, data)
-        const canEdit = (!isSystemItem || !data?.core) && !item.readOnly && (!item.versioned || !!data?.current) && acl.canWrite
-        const canDelete = (!isSystemItem || !data?.core) && !item.readOnly && acl.canDelete
-        return [acl.canCreate, canEdit, canDelete, acl.canAdmin]
-    }, [data, isSystemItem, item, me, permissionManager])
-    const [canCreate, canEdit, canDelete, canAdmin] = permissions
+    const acl = useFormAcl(me, permissionMap, item, data)
     const handleBufferChange = useCallback((bufferChanges: IBuffer) => setBuffer({...buffer, ...bufferChanges}), [buffer])
     const pluginContext: CustomPluginRenderContext = useMemo(() => ({
         me,
@@ -210,7 +204,7 @@ function ViewNavTab({
     }
 
     async function create(values: ItemData, majorRev?: string | null, locale?: string | null) {
-        if (!canCreate)
+        if (!acl.canCreate)
             throw new Error('Cannot create such item')
 
         setLoading(true)
@@ -239,7 +233,7 @@ function ViewNavTab({
     }
 
     async function createVersion(values: ItemData, majorRev?: string | null, locale?: string | null) {
-        if (!canCreate)
+        if (!acl.canCreate)
             throw new Error('Cannot edit this item')
 
         if (!item.versioned)
@@ -273,7 +267,7 @@ function ViewNavTab({
     }
 
     async function createLocalization(values: ItemData, locale: string) {
-        if (!canCreate)
+        if (!acl.canCreate)
             throw new Error('Cannot edit this item')
 
         if (!item.localized)
@@ -307,7 +301,7 @@ function ViewNavTab({
     }
 
     async function update(values: ItemData) {
-        if (!canCreate)
+        if (!acl.canWrite)
             throw new Error('Cannot edit this item')
 
         if (isNew)
@@ -367,7 +361,7 @@ function ViewNavTab({
                                 attrName={attrName}
                                 attribute={attr}
                                 value={data ? data[attrName] : null}
-                                canAdmin={canAdmin}
+                                canAdmin={acl.canAdmin}
                                 setLoading={setLoading}
                                 onChange={(value: any) => handleFieldChange(attrName, value)}
                                 onItemCreate={onItemCreate}
@@ -578,9 +572,9 @@ function ViewNavTab({
                     navTab={navTab}
                     form={form}
                     buffer={buffer}
-                    canCreate={canCreate}
-                    canEdit={canEdit}
-                    canDelete={canDelete}
+                    canCreate={acl.canCreate}
+                    canEdit={acl.canWrite}
+                    canDelete={acl.canDelete}
                     viewState={viewState}
                     setViewState={setViewState}
                     isLockedByMe={isLockedByMe}
@@ -604,7 +598,7 @@ function ViewNavTab({
                     form={form}
                     size="small"
                     layout="vertical"
-                    disabled={(!canEdit || !isLockedByMe /*|| viewState === ViewState.VIEW*/) && (!canCreate || !isNew)}
+                    disabled={(!acl.canWrite || !isLockedByMe /*|| viewState === ViewState.VIEW*/) && (!acl.canCreate || !isNew)}
                     onFinish={handleFormFinish}
                 >
                     {hasComponents('view.content.form.begin') && renderComponents('view.content.form.begin', customComponentContext)}

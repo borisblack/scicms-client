@@ -8,7 +8,7 @@ import * as ACL from '../util/acl'
 
 export type PermissionMap = Record<string, Permission>
 
-interface Acl {
+export interface Acl {
     canRead: boolean
     canWrite: boolean
     canCreate: boolean

@@ -1,5 +1,5 @@
 import React, {MouseEvent, ReactNode, useMemo, useState} from 'react'
-import {Alert, Button, Dropdown, FormInstance, message, Modal, Popconfirm, Space} from 'antd'
+import {Alert, Button, Dropdown, FormInstance, Modal, notification, Popconfirm, Space} from 'antd'
 import {PageHeader} from '@ant-design/pro-layout'
 import * as icons from '@ant-design/icons'
 import {
@@ -100,13 +100,19 @@ export default function ViewNavTabHeader({
             if (locked.success)
                 await onUpdate(locked.data)
             else
-                message.warning(t('New item cannot be locked'))
+                notification.warning({
+                    message: 'Locking warning',
+                    description: t('New item cannot be locked')
+                })
 
             setLockedByMe(locked.success)
             setViewState(item.versioned ? ViewState.CREATE_VERSION : ViewState.UPDATE)
         } catch (e: any) {
             console.error(e.message)
-            message.error(e.message)
+            notification.error({
+                message: t('Locking error'),
+                description: e.message
+            })
         } finally {
             setLoading(false)
         }
@@ -127,16 +133,22 @@ export default function ViewNavTabHeader({
             } else {
                 unlocked = await doUnlock()
             }
-            if (unlocked.success)
+            if (unlocked.success) {
                 await onUpdate(unlocked.data)
-            else
-                message.warning(t('New item cannot be unlocked'))
-
+            } else {
+                notification.warning({
+                    message: 'Cancellation warning',
+                    description: t('New item cannot be unlocked')
+                })
+            }
             setLockedByMe(!unlocked)
             setViewState(ViewState.VIEW)
         } catch (e: any) {
             console.error(e.message)
-            message.error(e.message)
+            notification.error({
+                message: t('Cancellation error'),
+                description: e.message
+            })
         } finally {
             setLoading(false)
         }
@@ -166,7 +178,10 @@ export default function ViewNavTabHeader({
             logoutIfNeed()
         } catch (e: any) {
             console.error(e.message)
-            message.error(e.message)
+            notification.error({
+                message: t('Deletion error'),
+                description: e.message
+            })
         } finally {
             setLoading(false)
         }
@@ -196,7 +211,10 @@ export default function ViewNavTabHeader({
             onItemDelete(item.name, data?.id as string)
         } catch (e: any) {
             console.error(e.message)
-            message.error(e.message)
+            notification.error({
+                message: t('Purging error'),
+                description: e.message
+            })
         } finally {
             setLoading(false)
         }
@@ -224,7 +242,10 @@ export default function ViewNavTabHeader({
             setPromoteModalVisible(false)
         } catch (e: any) {
             console.error(e.message)
-            message.error(e.message)
+            notification.error({
+                message: t('Promotion error'),
+                description: e.message
+            })
         } finally {
             setLoading(false)
         }
