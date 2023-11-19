@@ -96,6 +96,8 @@ const en = {
         'Delete All Versions': 'Delete All Versions',
         'Delete Current Version': 'Delete Current Version',
         'Delete Item': 'Delete Item',
+        'Dependency': 'Dependency',
+        'Dependencies': 'Dependencies',
         'Description': 'Description',
         'Display Name': 'Display Name',
         'Display Plural Name': 'Display Plural Name',

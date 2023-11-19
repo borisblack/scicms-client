@@ -1,83 +1,120 @@
+import {Gantt, Task as GanttTask, ViewMode} from 'gantt-task-react'
 import {CustomComponentRenderContext} from '../../.'
-import {DefaultItemTemplate} from '../../../../types'
-import QueryManager from '../../../../services/query'
-import {useEffect, useMemo, useState} from 'react'
-import PermissionManager from '../../../../services/permission'
+import {useEffect, useState} from 'react'
 import {useAcl} from '../../../../util/hooks'
+import {getStartEndDateForProject, singletonTasks} from './helper'
+import ViewSwitcher from './ViewSwitcher'
+import appConfig from '../../../../config'
+import {TaskListHeader} from './TaskListHeader'
+import {fetchAllProjectTasks} from './taskService'
+import {Project} from './types'
+import {mapToGanttTask, mapToProjectTask} from './taskMapper'
+import 'gantt-task-react/dist/index.css'
+import styles from './ProjectGantt.module.css'
 
-enum TaskStatus {
-    STATUS_ACTIVE = 'STATUS_ACTIVE',
-    STATUS_DONE = 'STATUS_DONE',
-    STATUS_FAILED = 'STATUS_FAILED',
-    STATUS_SUSPENDED = 'STATUS_SUSPENDED',
-    STATUS_UNDEFINED = 'STATUS_UNDEFINED'
-}
-
-interface Project extends DefaultItemTemplate {
-    name: string
-    tasks?: {data: Task[]}
-}
-
-interface Task extends DefaultItemTemplate {
-    sortOrder: number | null
-    code: string
-    name: string
-    description: string | null
-    level: number
-    progress: number
-    start: string
-    end: string
-    duration: number
-    startIsMilestone: boolean | null
-    endIsMilestone: boolean | null
-    depends: string | null
-    status: TaskStatus
-    parent: {data: Task}
-    assignments: {data: Assignment[]}
-}
-
-interface Resource extends DefaultItemTemplate {
-    name: string
-}
-
-interface ProjectRole extends DefaultItemTemplate {
-    name: string
-}
-
-interface Assignment extends DefaultItemTemplate {
-    source: {data: Task}
-    target: {data: Resource}
-    role: {data: ProjectRole}
-    effort: number
-}
-
-const PROJECT_ITEM_NAME = 'project'
-const TASK_ITEM_NAME = 'task'
-
-export default function ProjectGantt({me, items: itemMap, permissions: permissionMap, item, data, onBufferChange}: CustomComponentRenderContext) {
-    const queryManager = useMemo(() => new QueryManager(itemMap), [itemMap])
+export default function ProjectGantt({me, uniqueKey, items: itemMap, permissions: permissionMap, item, data, onBufferChange}: CustomComponentRenderContext) {
+    const [view, setView] = useState<ViewMode>(ViewMode.Day)
+    const [isChecked, setIsChecked] = useState(true)
+    const [ganttTasks, setGanttTasks] = useState<GanttTask[]>(data?.id ? singletonTasks(data as Project) : [])
     const acl = useAcl(me, permissionMap, item, data)
-    const [tasks, setTasks] = useState<Task[]>([])
+    let columnWidth = 65;
+    if (view === ViewMode.Year) {
+        columnWidth = 350;
+    } else if (view === ViewMode.Month) {
+        columnWidth = 300;
+    } else if (view === ViewMode.Week) {
+        columnWidth = 250;
+    }
 
     useEffect(() => {
         if (!data?.id)
             return
 
-        queryManager.findAllRelated(
-            PROJECT_ITEM_NAME, data.id,
-            'tasks',
-            itemMap[TASK_ITEM_NAME],
-            {
-                sorting: [{id: 'sortOrder', desc: false}],
-                filters: [],
-                pagination: {}
-            }
-        ).then(tasks => setTasks(tasks.data))
+        fetchAllProjectTasks(data.id)
+            .then(tasks => {
+                const newTasks = [
+                    mapToProjectTask(data as Project),
+                    ...tasks.map(task => mapToGanttTask(task))
+                ]
+                setGanttTasks(newTasks)
+            })
     }, [data?.id])
 
+    const handleTaskChange = (task: GanttTask) => {
+        console.log('On date change Id:' + task.id)
+        let newTasks = ganttTasks.map(t => (t.id === task.id ? task : t))
+        if (task.project) {
+            const [start, end] = getStartEndDateForProject(newTasks, task.project)
+            const project = newTasks[newTasks.findIndex(t => t.id === task.project)]
+            if (
+                project.start.getTime() !== start.getTime() ||
+                project.end.getTime() !== end.getTime()
+            ) {
+                const changedProject = { ...project, start, end }
+                newTasks = newTasks.map(t =>
+                    t.id === task.project ? changedProject : t
+                )
+            }
+        }
+        setGanttTasks(newTasks)
+    }
+
+    const handleTaskDelete = (task: GanttTask) => {
+        const conf = window.confirm('Are you sure about ' + task.name + ' ?')
+        if (conf) {
+            setGanttTasks(ganttTasks.filter(t => t.id !== task.id))
+        }
+        return conf
+    }
+
+    const handleProgressChange = async (task: GanttTask) => {
+        setGanttTasks(ganttTasks.map(t => (t.id === task.id ? task : t)))
+        console.log('On progress change Id:' + task.id)
+    }
+
+    const handleDblClick = (task: GanttTask) => {
+        alert('On Double Click event Id:' + task.id)
+    }
+
+    const handleClick = (task: GanttTask) => {
+        console.log('On Click event Id:' + task.id)
+    }
+
+    const handleSelect = (task: GanttTask, isSelected: boolean) => {
+        console.log(task.name + ' has ' + (isSelected ? 'selected' : 'unselected'))
+    }
+
+    const handleExpanderClick = (task: GanttTask) => {
+        setGanttTasks(ganttTasks.map(t => (t.id === task.id ? task : t)));
+        console.log('On expander click Id:' + task.id);
+    }
+
+    if (!data)
+        return null
+
     return (
-        <div>
-            {tasks.map(task => <div key={task.name}>{task.name}</div>)}
+        <div className={styles.wrapper}>
+            <ViewSwitcher
+                onViewModeChange={viewMode => setView(viewMode)}
+                onViewListChange={setIsChecked}
+                isChecked={isChecked}
+            />
+            <h3>{data.name}</h3>
+            <Gantt
+                tasks={ganttTasks}
+                viewMode={view}
+                listCellWidth={isChecked ? '155px' : ''}
+                columnWidth={columnWidth}
+                locale={appConfig.i18nLng}
+                TaskListHeader={TaskListHeader}
+                onDateChange={handleTaskChange}
+                onDelete={handleTaskDelete}
+                onProgressChange={handleProgressChange}
+                onDoubleClick={handleDblClick}
+                onClick={handleClick}
+                onSelect={handleSelect}
+                onExpanderClick={handleExpanderClick}
+            />
         </div>
     )
 }
