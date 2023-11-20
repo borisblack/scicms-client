@@ -9,7 +9,7 @@ interface TaskListHeaderProps {
     fontSize: string
 }
 
-export const TaskListHeader: FC<TaskListHeaderProps> = ({ headerHeight, fontFamily, fontSize, rowWidth }) => {
+const TaskListHeader: FC<TaskListHeaderProps> = ({ headerHeight, fontFamily, fontSize, rowWidth }) => {
     const {t} = useTranslation()
 
     return (
@@ -68,3 +68,5 @@ export const TaskListHeader: FC<TaskListHeaderProps> = ({ headerHeight, fontFami
         </div>
     )
 }
+
+export default TaskListHeader

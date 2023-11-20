@@ -1,16 +1,18 @@
-import {Gantt, Task as GanttTask, ViewMode} from 'gantt-task-react'
+import {lazy, Suspense, useEffect, useState} from 'react'
+import {Task as GanttTask, ViewMode} from 'gantt-task-react'
 import {CustomComponentRenderContext} from '../../.'
-import {useEffect, useState} from 'react'
 import {useAcl} from '../../../../util/hooks'
 import {getStartEndDateForProject, singletonTasks} from './helper'
 import ViewSwitcher from './ViewSwitcher'
 import appConfig from '../../../../config'
-import {TaskListHeader} from './TaskListHeader'
+import TaskListHeader from './TaskListHeader'
 import {fetchAllProjectTasks} from './taskService'
 import {Project} from './types'
 import {mapToGanttTask, mapToProjectTask} from './taskMapper'
 import 'gantt-task-react/dist/index.css'
 import styles from './ProjectGantt.module.css'
+
+const Gantt = lazy(() => import('./Gantt'));
 
 export default function ProjectGantt({me, uniqueKey, items: itemMap, permissions: permissionMap, item, data, onBufferChange}: CustomComponentRenderContext) {
     const [view, setView] = useState<ViewMode>(ViewMode.Day)
@@ -100,21 +102,23 @@ export default function ProjectGantt({me, uniqueKey, items: itemMap, permissions
                 isChecked={isChecked}
             />
             <h3>{data.name}</h3>
-            <Gantt
-                tasks={ganttTasks}
-                viewMode={view}
-                listCellWidth={isChecked ? '155px' : ''}
-                columnWidth={columnWidth}
-                locale={appConfig.i18nLng}
-                TaskListHeader={TaskListHeader}
-                onDateChange={handleTaskChange}
-                onDelete={handleTaskDelete}
-                onProgressChange={handleProgressChange}
-                onDoubleClick={handleDblClick}
-                onClick={handleClick}
-                onSelect={handleSelect}
-                onExpanderClick={handleExpanderClick}
-            />
+            <Suspense fallback={null}>
+                <Gantt
+                    tasks={ganttTasks}
+                    viewMode={view}
+                    listCellWidth={isChecked ? '155px' : ''}
+                    columnWidth={columnWidth}
+                    locale={appConfig.i18nLng}
+                    TaskListHeader={TaskListHeader}
+                    onDateChange={handleTaskChange}
+                    onDelete={handleTaskDelete}
+                    onProgressChange={handleProgressChange}
+                    onDoubleClick={handleDblClick}
+                    onClick={handleClick}
+                    onSelect={handleSelect}
+                    onExpanderClick={handleExpanderClick}
+                />
+            </Suspense>
         </div>
     )
 }
