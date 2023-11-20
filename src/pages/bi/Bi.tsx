@@ -5,8 +5,8 @@ import {Navigate} from 'react-router-dom'
 import {Tab} from 'rc-tabs/lib/interface'
 import {Layout, Menu, Spin, Tabs} from 'antd'
 import {ExclamationCircleOutlined, FolderOutlined, FundOutlined, LogoutOutlined, UserOutlined} from '@ant-design/icons'
-import {useAppDispatch, useAppSelector} from '../../util/hooks'
-import {logout, selectIsExpired, selectMe} from '../../features/auth/authSlice'
+import {useAppDispatch, useAppSelector} from 'src/util/hooks'
+import {logout, selectIsExpired, selectMe} from 'src/features/auth/authSlice'
 import {
     initializeIfNeeded,
     reset as resetRegistry,
@@ -14,18 +14,18 @@ import {
     selectItems,
     selectItemTemplates,
     selectPermissions
-} from '../../features/registry/registrySlice'
-import {reset as resetNavTabs} from '../../features/nav-tabs/navTabsSlice'
-import * as DashboardService from '../../services/dashboard'
-import {Dashboard, DashboardCategory, DashboardExtra} from '../../types'
+} from 'src/features/registry/registrySlice'
+import {reset as resetNavTabs} from 'src/features/nav-tabs/navTabsSlice'
+import * as DashboardService from 'src/services/dashboard'
+import {Dashboard, DashboardCategory, DashboardExtra} from 'src/types'
 import './Bi.css'
-import logo from '../../logo.svg'
-import biConfig from '../../config/bi'
-import DashboardSpecReadOnlyWrapper from '../../bi/DashboardSpecReadOnlyWrapper'
-import {objectToHash} from '../../util'
-import * as DashboardCategoryService from '../../services/dashboard-category'
+import logo from 'src/logo.svg'
+import biConfig from 'src/config/bi'
+import DashboardSpecReadOnlyWrapper from 'src/bi/DashboardSpecReadOnlyWrapper'
+import {objectToHash} from 'src/util'
+import * as DashboardCategoryService from 'src/services/dashboard-category'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
-import {allIcons} from '../../util/icons'
+import {allIcons} from 'src/util/icons'
 
 interface BiPage {
     dashboard: Dashboard,

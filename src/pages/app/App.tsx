@@ -1,8 +1,8 @@
 import React, {useCallback, useEffect} from 'react'
 import {Navigate} from 'react-router-dom'
 import {Layout} from 'antd'
-import {useAppDispatch, useAppSelector} from '../../util/hooks'
-import {logout, selectIsExpired, selectMe} from '../../features/auth/authSlice'
+import {useAppDispatch, useAppSelector} from 'src/util/hooks'
+import {logout, selectIsExpired, selectMe} from 'src/features/auth/authSlice'
 import {
     initializeIfNeeded,
     reset as resetRegistry,
@@ -12,12 +12,12 @@ import {
     selectItemTemplates,
     selectLocales,
     selectPermissions
-} from '../../features/registry/registrySlice'
-import {reset as resetNavTabs} from '../../features/nav-tabs/navTabsSlice'
-import Navbar from '../../features/registry/Navbar'
-import NavTabs from '../../features/nav-tabs/NavTabs'
+} from 'src/features/registry/registrySlice'
+import {reset as resetNavTabs} from 'src/features/nav-tabs/navTabsSlice'
+import Navbar from 'src/features/registry/Navbar'
+import NavTabs from 'src/features/nav-tabs/NavTabs'
 import './App.css'
-import {CoreConfig} from '../../services/core-config'
+import {CoreConfig} from 'src/services/core-config'
 
 const {Content} = Layout
 
