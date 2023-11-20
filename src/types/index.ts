@@ -26,6 +26,15 @@ interface IntermediateItemTemplate {
     sortOrder: number | null
 }
 
+export interface Datasource extends DefaultItemTemplate {
+    name: string
+    connectionString: string
+    username: string
+    password: string
+    maxPoolSize: number | null
+    params: Record<string, any>
+}
+
 export interface Lifecycle extends DefaultItemTemplate {
     name: string
     displayName: string | null
@@ -106,6 +115,7 @@ export interface Item extends ItemTemplate {
     displayName: string
     pluralName: string
     displayPluralName: string
+    datasource: {data: Datasource | null}
     dataSource: string
     tableName: string | null
     query: string | null
@@ -291,6 +301,7 @@ export interface Locale extends DefaultItemTemplate {
 
 export interface Dataset extends DefaultItemTemplate {
     name: string
+    datasource: {data: Datasource | null}
     dataSource: string
     tableName: string | null
     query: string | null

@@ -17,6 +17,12 @@ const FIND_ALL_QUERY = gql`
                 displayName
                 pluralName
                 displayPluralName
+                datasource {
+                    data {
+                        id
+                        name
+                    }
+                }
                 dataSource
                 tableName
                 query

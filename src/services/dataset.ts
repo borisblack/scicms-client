@@ -30,6 +30,12 @@ const FIND_ALL_QUERY = gql`
             data {
                 id
                 name
+                datasource {
+                    data {
+                        id
+                        name
+                    }
+                }
                 dataSource
                 tableName
                 query

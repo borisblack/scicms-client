@@ -39,9 +39,11 @@ const menuConfig: MenuConfig = {
         }, {
             key: 'storage',
             label: 'Storage',
-            icon: 'DatabaseOutlined',
+            icon: 'FaDatabase',
             roles: [ROLE_ADMIN],
             children: [{
+                itemName: 'datasource'
+            }, {
                 itemName: 'media'
             }]
         }, {
