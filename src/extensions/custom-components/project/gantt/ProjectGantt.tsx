@@ -3,16 +3,17 @@ import {Task as GanttTask, ViewMode} from 'gantt-task-react'
 import {CustomComponentRenderContext} from '../../.'
 import {useAcl} from '../../../../util/hooks'
 import {getStartEndDateForProject, singletonTasks} from './helper'
-import ViewSwitcher from './ViewSwitcher'
+import ViewSwitcher from './components/ViewSwitcher'
 import appConfig from '../../../../config'
-import TaskListHeader from './TaskListHeader'
+import TaskListHeader from './components/TaskListHeader'
+import TooltipContent from './components/TooltipContent'
 import {fetchAllProjectTasks} from './taskService'
 import {Project} from './types'
 import {mapToGanttTask, mapToProjectTask} from './taskMapper'
 import 'gantt-task-react/dist/index.css'
 import styles from './ProjectGantt.module.css'
 
-const Gantt = lazy(() => import('./Gantt'));
+const Gantt = lazy(() => import('./components/Gantt'))
 
 export default function ProjectGantt({me, uniqueKey, items: itemMap, permissions: permissionMap, item, data, onBufferChange}: CustomComponentRenderContext) {
     const [view, setView] = useState<ViewMode>(ViewMode.Day)
@@ -109,6 +110,7 @@ export default function ProjectGantt({me, uniqueKey, items: itemMap, permissions
                     listCellWidth={isChecked ? '155px' : ''}
                     columnWidth={columnWidth}
                     locale={appConfig.i18nLng}
+                    TooltipContent={TooltipContent}
                     TaskListHeader={TaskListHeader}
                     onDateChange={handleTaskChange}
                     onDelete={handleTaskDelete}
