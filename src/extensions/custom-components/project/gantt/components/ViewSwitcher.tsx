@@ -2,14 +2,17 @@ import {ViewMode} from 'gantt-task-react'
 import 'gantt-task-react/dist/index.css'
 import styles from './ViewSwitcher.module.css'
 import {useTranslation} from 'react-i18next'
+import {ReloadOutlined} from '@ant-design/icons'
+import React from 'react'
 
 interface ViewSwitcherProps {
     isChecked: boolean
     onViewListChange: (isChecked: boolean) => void
     onViewModeChange: (viewMode: ViewMode) => void
+    onRefresh: () => void
 }
 
-export default function ViewSwitcher({isChecked, onViewModeChange, onViewListChange}: ViewSwitcherProps) {
+export default function ViewSwitcher({isChecked, onViewModeChange, onViewListChange, onRefresh}: ViewSwitcherProps) {
     const {t} = useTranslation()
 
     return (
@@ -43,6 +46,12 @@ export default function ViewSwitcher({isChecked, onViewModeChange, onViewListCha
                 </label>
                 {t('Show Task List')}
             </div>
+
+            <button className={styles.button} onClick={() => onRefresh()}>
+                <ReloadOutlined/>
+                &nbsp;
+                {t('Refresh')}
+            </button>
         </div>
     )
 }

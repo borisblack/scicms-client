@@ -13,21 +13,33 @@ import {mapToGanttTask, mapToProjectTask} from './taskMapper'
 import 'gantt-task-react/dist/index.css'
 import styles from './ProjectGantt.module.css'
 
+const DEFAULT_COLUMN_WIDTH = 65
+const YEAR_COLUMN_WIDTH = 350
+const MONTH_COLUMN_WIDTH = 300
+const WEEK_COLUMN_WIDTH = 250
+
 const Gantt = lazy(() => import('./components/Gantt'))
 
+function calculateColumnWidth(viewMode: ViewMode) {
+    if (viewMode === ViewMode.Year)
+        return YEAR_COLUMN_WIDTH
+
+    if (viewMode === ViewMode.Month)
+        return MONTH_COLUMN_WIDTH
+
+    if (viewMode === ViewMode.Week)
+        return WEEK_COLUMN_WIDTH
+
+    return DEFAULT_COLUMN_WIDTH
+}
+
 export default function ProjectGantt({me, uniqueKey, items: itemMap, permissions: permissionMap, item, data, onBufferChange}: CustomComponentRenderContext) {
-    const [view, setView] = useState<ViewMode>(ViewMode.Day)
+    const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.Day)
+    const columnWidth = calculateColumnWidth(viewMode)
     const [isChecked, setIsChecked] = useState(true)
     const [ganttTasks, setGanttTasks] = useState<GanttTask[]>(data?.id ? singletonTasks(data as Project) : [])
+    const [version, setVersion] = useState<number>(0)
     const acl = useAcl(me, permissionMap, item, data)
-    let columnWidth = 65;
-    if (view === ViewMode.Year) {
-        columnWidth = 350;
-    } else if (view === ViewMode.Month) {
-        columnWidth = 300;
-    } else if (view === ViewMode.Week) {
-        columnWidth = 250;
-    }
 
     useEffect(() => {
         if (!data?.id)
@@ -41,7 +53,7 @@ export default function ProjectGantt({me, uniqueKey, items: itemMap, permissions
                 ]
                 setGanttTasks(newTasks)
             })
-    }, [data?.id])
+    }, [data, version])
 
     const handleTaskChange = (task: GanttTask) => {
         console.log('On date change Id:' + task.id)
@@ -92,21 +104,24 @@ export default function ProjectGantt({me, uniqueKey, items: itemMap, permissions
         console.log('On expander click Id:' + task.id);
     }
 
+    const handleRefresh = () => setVersion(prevVersion => prevVersion + 1)
+
     if (!data)
         return null
 
     return (
         <div className={styles.wrapper}>
             <ViewSwitcher
-                onViewModeChange={viewMode => setView(viewMode)}
-                onViewListChange={setIsChecked}
                 isChecked={isChecked}
+                onViewModeChange={viewMode => setViewMode(viewMode)}
+                onViewListChange={setIsChecked}
+                onRefresh={handleRefresh}
             />
             <h3>{data.name}</h3>
             <Suspense fallback={null}>
                 <Gantt
                     tasks={ganttTasks}
-                    viewMode={view}
+                    viewMode={viewMode}
                     listCellWidth={isChecked ? '155px' : ''}
                     columnWidth={columnWidth}
                     locale={appConfig.i18nLng}
