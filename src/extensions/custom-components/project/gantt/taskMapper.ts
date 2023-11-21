@@ -20,7 +20,7 @@ export function mapToGanttTask(task: Task): GanttTask {
         start: new Date(task.start),
         end: new Date(task.end),
         progress: task.progress,
-        type: 'task',
+        type: task.isMilestone ? 'milestone' : 'task',
         project: task.project.data.id,
         displayOrder: task.sortOrder ?? undefined,
         dependencies: task.dependencies.data.map(dependency => dependency.target.data.id)

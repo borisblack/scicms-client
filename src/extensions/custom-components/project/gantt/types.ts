@@ -15,6 +15,7 @@ export interface Task extends DefaultItemTemplate {
     start: string
     end: string
     progress: number
+    isMilestone: boolean | null
     project: {data: Project}
     parent: {data: Task | null}
     children: {data: Task[]}

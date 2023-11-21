@@ -24,6 +24,7 @@ const FIND_ALL_BY_PROJECT_ID_QUERY = gql`
             start
             end
             progress
+            isMilestone
             project {
                 data {
                     id

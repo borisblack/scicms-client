@@ -15,6 +15,7 @@ const customRu = {
     'Gantt Chart': 'Диаграмма Ганта',
     'Half of Day': 'Полдня',
     'Hour': 'Час',
+    'Milestone': 'Веха',
     'Month': 'Месяц',
     'Notice Type': 'Тип извещения',
     'Ownership Type': 'Тип владения',

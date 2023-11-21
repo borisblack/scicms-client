@@ -16,6 +16,7 @@ const customEn = {
     'Half of Day': 'Half of Day',
     'Hour': 'Hour',
     'Notice Type': 'Notice Type',
+    'Milestone': 'Milestone',
     'Month': 'Month',
     'Ownership Type': 'Ownership Type',
     'Part': 'Part',
