@@ -32,6 +32,7 @@ export interface Datasource extends DefaultItemTemplate {
     username: string
     password: string
     maxPoolSize: number | null
+    minIdle: number | null
     params: Record<string, any>
 }
 
@@ -195,6 +196,7 @@ export interface Attribute {
     enumSet?: string[]
     seqName?: string
     confirm?: boolean
+    encode?: boolean
     relType?: RelType
     target?: string
     intermediate?: string

@@ -4,22 +4,18 @@ import {Row} from '@tanstack/react-table'
 import {Button, Form, Modal, Space} from 'antd'
 import {useTranslation} from 'react-i18next'
 
-import {CustomComponentRenderContext} from '../../index'
-import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME} from '../../../../config/constants'
-import {Index, ItemSpec} from '../../../../types'
-import DataGrid, {DataWithPagination, RequestParams} from '../../../../components/datagrid/DataGrid'
-import appConfig from '../../../../config'
-import {
-    getHiddenIndexColumns,
-    getIndexColumns,
-    getInitialData,
-    NamedIndex,
-    processLocal
-} from '../../../../util/datagrid'
+import {CustomComponentRenderContext} from 'src/extensions/custom-components/.'
+import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME} from 'src/config/constants'
+import {Index, ItemSpec} from 'src/types'
+import DataGrid, {DataWithPagination, RequestParams} from 'src/components/datagrid/DataGrid'
+import appConfig from 'src/config'
+import {getInitialData, processLocal} from 'src/util/datagrid'
 import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design/icons'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
 import IndexForm from './IndexForm'
-import {useItemAcl} from '../../../../util/hooks'
+import {useItemAcl} from 'src/util/hooks'
+import {getHiddenIndexColumns, getIndexColumns} from './indexColumns'
+import {NamedIndex} from './types'
 
 export default function Indexes({me, itemTemplates, permissions: permissionMap, item, data, buffer, onBufferChange}: CustomComponentRenderContext) {
     if (item.name !== ITEM_TEMPLATE_ITEM_NAME && item.name !== ITEM_ITEM_NAME)

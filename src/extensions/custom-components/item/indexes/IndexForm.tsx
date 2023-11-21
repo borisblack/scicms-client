@@ -2,9 +2,9 @@ import {useEffect} from 'react'
 import {Checkbox, Form, FormInstance, Input} from 'antd'
 
 import {useTranslation} from 'react-i18next'
-import appConfig from '../../../../config'
+import appConfig from 'src/config'
 import styles from './Indexes.module.css'
-import {NamedIndex} from '../../../../util/datagrid'
+import {NamedIndex} from './types'
 
 interface Props {
     form: FormInstance

@@ -9,17 +9,13 @@ import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME} from '../../../../config/consta
 import {Attribute, ItemSpec} from '../../../../types'
 import DataGrid, {DataWithPagination, RequestParams} from '../../../../components/datagrid/DataGrid'
 import appConfig from '../../../../config'
-import {
-    getAttributeColumns,
-    getHiddenAttributeColumns,
-    getInitialData,
-    NamedAttribute,
-    processLocal
-} from '../../../../util/datagrid'
+import {getInitialData, processLocal} from '../../../../util/datagrid'
 import AttributeForm from './AttributeForm'
 import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design/icons'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
 import {useItemAcl} from '../../../../util/hooks'
+import {getAttributeColumns, getHiddenAttributeColumns} from './attributeColumns'
+import {NamedAttribute} from './types'
 
 const EDIT_MODAL_WIDTH = 800
 

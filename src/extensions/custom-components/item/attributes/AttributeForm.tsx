@@ -3,14 +3,14 @@ import {useCallback, useEffect, useMemo, useState} from 'react'
 import {AutoComplete, Checkbox, Col, Form, FormInstance, Input, InputNumber, message, Row, Select} from 'antd'
 
 import {useTranslation} from 'react-i18next'
-import {FieldType, RelType} from '../../../../types'
+import {FieldType, RelType} from 'src/types'
 import styles from './Attributes.module.css'
-import appConfig from '../../../../config'
-import {regExpRule} from '../../../../util/form'
-import {LOWERCASE_NO_WHITESPACE_PATTERN} from '../../../../config/constants'
-import {NamedAttribute} from '../../../../util/datagrid'
-import {ItemMap} from '../../../../services/item'
-import * as SequenceService from '../../../../services/sequence'
+import appConfig from 'src/config'
+import {regExpRule} from 'src/util/form'
+import {LOWERCASE_NO_WHITESPACE_PATTERN} from 'src/config/constants'
+import {ItemMap} from 'src/services/item'
+import * as SequenceService from 'src/services/sequence'
+import {NamedAttribute} from './types'
 
 interface Props {
     items: ItemMap
@@ -255,6 +255,7 @@ export default function AttributeForm({items: itemMap, form, attribute, canEdit,
                     </FormItem>
 
                     {attrType === FieldType.password && (
+                        <>
                         <FormItem
                             className={styles.formItem}
                             name="confirm"
@@ -263,6 +264,16 @@ export default function AttributeForm({items: itemMap, form, attribute, canEdit,
                         >
                             <Checkbox>{t('Confirm')}</Checkbox>
                         </FormItem>
+
+                        <FormItem
+                            className={styles.formItem}
+                            name="encode"
+                            valuePropName="checked"
+                            initialValue={attribute?.encode}
+                        >
+                            <Checkbox>{t('Encode')}</Checkbox>
+                        </FormItem>
+                        </>
                     )}
                 </Col>
 
