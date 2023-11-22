@@ -1,12 +1,14 @@
 import _ from 'lodash'
 import {Alert} from 'antd'
-import {Bar, BarConfig} from '@ant-design/charts'
+import {BarConfig} from '@ant-design/charts'
 import {defaultDashColor, defaultDashColors, formatValue, handleDashClick, isTemporal} from '../../../util/bi'
 import {DashEventHandler, DashRenderContext} from '../index'
 import {LegendPosition} from '../util'
 import biConfig from '../../../config/bi'
-import {useMemo} from 'react'
+import {lazy, Suspense, useMemo} from 'react'
 import * as RulesService from '../../../services/rules'
+
+const Bar = lazy(() => import('./Bar'))
 
 interface BarDashOpts {
     xField?: string
@@ -104,5 +106,9 @@ export default function BarDash({dataset, dash, data, onRelatedDashboardOpen}: D
         onEvent: handleEvent
     }
 
-    return <Bar {...config} key={relatedDashboardId}/>
+    return (
+        <Suspense fallback={null}>
+            <Bar {...config} key={relatedDashboardId}/>
+        </Suspense>
+    )
 }

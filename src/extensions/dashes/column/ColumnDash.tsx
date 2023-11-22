@@ -1,12 +1,14 @@
 import _ from 'lodash'
-import {useMemo} from 'react'
+import {lazy, Suspense, useMemo} from 'react'
 import {Alert} from 'antd'
-import {DashEventHandler, DashRenderContext} from '../index'
-import {Column, ColumnConfig} from '@ant-design/charts'
-import {defaultDashColor, defaultDashColors, formatValue, handleDashClick} from '../../../util/bi'
+import {ColumnConfig} from '@ant-design/charts'
+import {DashEventHandler, DashRenderContext} from 'src/extensions/dashes'
+import {defaultDashColor, defaultDashColors, formatValue, handleDashClick} from 'src/util/bi'
 import {LegendPosition} from '../util'
-import biConfig from '../../../config/bi'
-import * as RulesService from '../../../services/rules'
+import biConfig from 'src/config/bi'
+import * as RulesService from 'src/services/rules'
+
+const Column = lazy(() => import('./Column'))
 
 interface ColumnDashOptions {
     xField?: string
@@ -104,5 +106,9 @@ export default function ColumnDash({dataset, dash, data, onRelatedDashboardOpen}
         onEvent: handleEvent
     }
 
-    return <Column {...config} key={relatedDashboardId}/>
+    return (
+        <Suspense fallback={null}>
+            <Column {...config} key={relatedDashboardId}/>
+        </Suspense>
+    )
 }
