@@ -36,7 +36,6 @@ const FIND_ALL_QUERY = gql`
                         name
                     }
                 }
-                dataSource
                 tableName
                 query
                 description

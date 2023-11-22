@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 import {ApiMiddleware, ApiMiddlewareContext, ApiOperation} from './index'
-import {ITEM_ITEM_NAME, ITEM_MODEL_KIND} from '../../config/constants'
+import {ITEM_ITEM_NAME, ITEM_MODEL_KIND, MAIN_DATASOURCE_NAME} from '../../config/constants'
 import QueryManager from '../../services/query'
 import {extractAxiosErrorMessage} from '../../services'
 import {FlaggedResponse, Item, ItemData, ItemModel} from '../../types'
@@ -62,7 +62,7 @@ const mapItem = (item: Item): ItemModel => ({
         displayName: item.displayName,
         pluralName: item.pluralName,
         displayPluralName: item.displayPluralName,
-        dataSource: item.dataSource,
+        dataSource: item.datasource.data?.id ?? MAIN_DATASOURCE_NAME,
         tableName: item.tableName,
         query: item.query,
         titleAttribute: item.titleAttribute,

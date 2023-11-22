@@ -27,6 +27,7 @@ export const ROLE_PROJECT_MANAGER: string = 'ROLE_PROJECT_MANAGER'
 export const ROLE_USER: string = 'ROLE_USER'
 export const PASSWORD_PLACEHOLDER = "********"
 
+export const MAIN_DATASOURCE_NAME = 'main'
 export const ITEM_TEMPLATE_MODEL_KIND = 'ItemTemplate'
 export const ITEM_MODEL_KIND = 'Item'
 export const DEFAULT_ITEM_TEMPLATE_NAME = 'default'

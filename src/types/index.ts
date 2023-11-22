@@ -117,7 +117,6 @@ export interface Item extends ItemTemplate {
     pluralName: string
     displayPluralName: string
     datasource: {data: Datasource | null}
-    dataSource: string
     tableName: string | null
     query: string | null
     titleAttribute: string
@@ -304,7 +303,6 @@ export interface Locale extends DefaultItemTemplate {
 export interface Dataset extends DefaultItemTemplate {
     name: string
     datasource: {data: Datasource | null}
-    dataSource: string
     tableName: string | null
     query: string | null
     description: string | null
