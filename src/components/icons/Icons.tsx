@@ -1,5 +1,5 @@
 import {Col, Row, Tabs} from 'antd'
-import {antdIcons, faIcons} from '../../util/icons'
+import {allFaIcons, antdIcons} from '../../util/icons'
 import {FC} from 'react'
 import {copyToClipboard} from '../../util'
 
@@ -28,7 +28,7 @@ export default function Icons({height, onSelect = copyToClipboard}: Props) {
     return (
         <Tabs type="card" items={[
             {key: 'antd', label: 'Ant Design', children: renderIcons(antdIcons)},
-            {key: 'fa', label: 'Font Awesome', children: renderIcons(faIcons)}
+            {key: 'fa', label: 'Font Awesome', children: renderIcons({...allFaIcons})}
         ]}/>
     )
 }

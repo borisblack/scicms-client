@@ -1,5 +1,5 @@
 import {FC, useMemo, useState} from 'react'
-import {Button, Form, Input, Modal, Space, Tooltip} from 'antd'
+import {Button, Form, Input, Modal, Tooltip} from 'antd'
 
 import {FieldType} from '../../../types'
 import {useTranslation} from 'react-i18next'
@@ -7,14 +7,15 @@ import {ICON_ATTR_NAME} from '../../../config/constants'
 import {CustomAttributeFieldRenderContext} from '../index'
 import styles from '../CustomAttributeField.module.css'
 import {CloseCircleOutlined} from '@ant-design/icons'
-import Icons from '../../../components/icons/Icons'
-import {allIcons} from '../../../util/icons'
+import Icon from 'src/components/icon/Icon'
+import Icons from 'src/components/icons/Icons'
 
 const FormItem = Form.Item
 const {Search} = Input
 
 const SUFFIX_BUTTON_WIDTH = 24
-const ICONS_MODAL_WIDTH = 1000
+const ICONS_MODAL_WIDTH = 1100
+const ICONS_COMPONENT_HEIGHT = 600
 
 const IconAttributeField: FC<CustomAttributeFieldRenderContext> = ({uniqueKey, form, attrName, attribute, value, onChange}) => {
     if (attrName !== ICON_ATTR_NAME || attribute.type !== FieldType.string)
@@ -44,23 +45,12 @@ const IconAttributeField: FC<CustomAttributeFieldRenderContext> = ({uniqueKey, f
         setIconsModalVisible(false)
     }
 
-    function renderCurrentIcon() {
-        if (!currentValue)
-            return null
-
-        const Icon = allIcons[currentValue]
-        if (!Icon)
-            return null
-
-        return <Icon/>
-    }
-
     return (
         <>
             <FormItem
                 className={styles.formItem}
                 name={attrName}
-                label={<span>{t(attribute.displayName)}&nbsp;{renderCurrentIcon()}</span>}
+                label={<span>{t(attribute.displayName)}&nbsp;<Icon iconName={currentValue}/></span>}
                 hidden={attribute.fieldHidden}
                 initialValue={value ?? attribute.defaultValue}
                 rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
@@ -91,7 +81,7 @@ const IconAttributeField: FC<CustomAttributeFieldRenderContext> = ({uniqueKey, f
                 footer={null}
                 onCancel={() => setIconsModalVisible(false)}
             >
-                <Icons height={600} onSelect={handleIconSelect}/>
+                <Icons height={ICONS_COMPONENT_HEIGHT} onSelect={handleIconSelect}/>
             </Modal>
         </>
     )
