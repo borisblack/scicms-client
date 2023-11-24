@@ -5,18 +5,19 @@ import {copyToClipboard} from '../../util'
 
 interface Props {
     height?: number | string
+    onSelect?: (iconName: string) => void
 }
 
-export default function Icons({height}: Props) {
+export default function Icons({height, onSelect = copyToClipboard}: Props) {
     const renderIcons = (icons: Record<string, FC>) => (
         <div style={{height, overflowY: 'scroll'}}>
             <Row>
-                {Object.keys(icons).map(k => {
-                    const Icon = icons[k]
+                {Object.keys(icons).map(iconName => {
+                    const Icon = icons[iconName]
 
                     return (
-                        <Col span={6} key={k}>
-                            <span style={{cursor: 'pointer'}} onClick={() => {copyToClipboard(k)}}><Icon/>&nbsp;{k}</span>
+                        <Col span={6} key={iconName}>
+                            <span style={{cursor: 'pointer'}} onClick={() => {onSelect(iconName)}}><Icon/>&nbsp;{iconName}</span>
                         </Col>
                     )
                 })}
