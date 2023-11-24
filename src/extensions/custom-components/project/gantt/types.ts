@@ -12,12 +12,13 @@ export interface Task extends DefaultItemTemplate {
     sortOrder: number | null
     name: string
     description: string | null
+    project: {data: Project}
+    parent: {data: Task | null}
+    level: number | null
     start: string
     end: string
     progress: number
     isMilestone: boolean | null
-    project: {data: Project}
-    parent: {data: Task | null}
     children: {data: Task[]}
     dependencies: {data: Dependency[]}
     assignments: {data: Assignment[]}

@@ -29,11 +29,13 @@ export interface ExtRequestParams extends RequestParams {
     state?: string | null
 }
 
-export type ItemFiltersInput<FiltersType extends ItemData> = {
-    and?: FiltersType[] | null
-    or?: FiltersType[] | null
-    not?: FiltersType | null
-} & {[name: string]: ItemFiltersInput<FiltersType> | ItemFilterInput<FiltersType, string | boolean | number>}
+type ItemDataKey<T extends ItemData> = keyof T
+
+export type ItemFiltersInput<T extends ItemData> = {
+    and?: T[] | null
+    or?: T[] | null
+    not?: T | null
+} | Partial<{[K in ItemDataKey<T>]: ItemFiltersInput<any> | ItemFilterInput<T, string | boolean | number>}>
 
 export type ItemFilterInput<FilterType extends ItemData, ElementType extends string | boolean | number> = {
     eq?: ElementType | null
@@ -383,7 +385,7 @@ export default class QueryManager {
             if (attr.private || (attr.type === FieldType.relation && (attr.relType === RelType.oneToMany || attr.relType === RelType.manyToMany)))
                 continue
 
-            filtersInput[filter.id] = this.buildAttributeFiltersInput(attr, filter.value)
+            (filtersInput as Record<string, any>)[filter.id] = this.buildAttributeFiltersInput(attr, filter.value)
         }
 
         return filtersInput

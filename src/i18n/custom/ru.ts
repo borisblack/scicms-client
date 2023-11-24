@@ -43,6 +43,7 @@ const customRu = {
     'Target Resource': 'Целевой ресурс',
     'Target Task': 'Целевая задача',
     'Tasks': 'Задачи',
+    'Top Level Tasks Only': 'Только задачи верхнего уровня',
     'Start Sheet': 'Листок запуска',
     'Start Sheets': 'Листки запуска',
     'Superseded Date': 'Когда замещен',

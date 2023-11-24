@@ -1,57 +1,64 @@
 import {ViewMode} from 'gantt-task-react'
-import 'gantt-task-react/dist/index.css'
-import styles from './ViewSwitcher.module.css'
 import {useTranslation} from 'react-i18next'
 import {ReloadOutlined} from '@ant-design/icons'
 import React from 'react'
+import {Button, Checkbox, Radio, Space} from 'antd'
+import {CheckboxChangeEvent} from 'antd/es/checkbox'
+import 'gantt-task-react/dist/index.css'
+import styles from './ViewSwitcher.module.css'
 
 interface ViewSwitcherProps {
-    isChecked: boolean
-    onViewListChange: (isChecked: boolean) => void
+    viewMode: ViewMode
+    showTaskList: boolean
+    topLevelTasksOnly: boolean
     onViewModeChange: (viewMode: ViewMode) => void
+    onShowTaskListChange: (showTaskList: boolean) => void
+    onTopLevelTasksOnly: (topLevelTasksOnly: boolean) => void
     onRefresh: () => void
 }
 
-export default function ViewSwitcher({isChecked, onViewModeChange, onViewListChange, onRefresh}: ViewSwitcherProps) {
+export default function ViewSwitcher(
+    {viewMode, showTaskList, topLevelTasksOnly, onViewModeChange, onShowTaskListChange, onTopLevelTasksOnly, onRefresh}: ViewSwitcherProps
+) {
     const {t} = useTranslation()
+
+    function handleShowTaskListChange(e: CheckboxChangeEvent) {
+        onShowTaskListChange(e.target.checked)
+    }
+
+    function handleTopLevelTasksOnlyChange(e: CheckboxChangeEvent) {
+        onTopLevelTasksOnly(e.target.checked)
+    }
 
     return (
         <div className={styles.viewContainer}>
-            <button className={styles.button} onClick={() => onViewModeChange(ViewMode.Hour)}>
-                {t('Hour')}
-            </button>
-            <button className={styles.button} onClick={() => onViewModeChange(ViewMode.QuarterDay)}>
-                {t('Quarter of Day')}
-            </button>
-            <button className={styles.button} onClick={() => onViewModeChange(ViewMode.HalfDay)}>
-                {t('Half of Day')}
-            </button>
-            <button className={styles.button} onClick={() => onViewModeChange(ViewMode.Day)}>
-                {t('Day')}
-            </button>
-            <button className={styles.button} onClick={() => onViewModeChange(ViewMode.Week)}>
-                {t('Week')}
-            </button>
-            <button className={styles.button} onClick={() => onViewModeChange(ViewMode.Month)}>
-                {t('Month')}
-            </button>
-            <button className={styles.button} onClick={() => onViewModeChange(ViewMode.Year)}>
-                {t('Year')}
-            </button>
+            <Space>
+                <Checkbox checked={showTaskList} onChange={handleShowTaskListChange}>
+                    {t('Show Task List')}
+                </Checkbox>
 
-            <div className={styles.switch}>
-                <label className={styles.switch_Toggle}>
-                    <input type="checkbox" defaultChecked={isChecked} onClick={() => onViewListChange(!isChecked)}/>
-                    <span className={styles.slider} />
-                </label>
-                {t('Show Task List')}
-            </div>
+                <Radio.Group
+                    size="small"
+                    value={viewMode}
+                    onChange={(e) => onViewModeChange(e.target.value)}
+                >
+                    <Radio.Button value={ViewMode.Hour}>{t('Hour')}</Radio.Button>
+                    <Radio.Button value={ViewMode.QuarterDay}>{t('Quarter of Day')}</Radio.Button>
+                    <Radio.Button value={ViewMode.HalfDay}>{t('Half of Day')}</Radio.Button>
+                    <Radio.Button value={ViewMode.Day}>{t('Day')}</Radio.Button>
+                    <Radio.Button value={ViewMode.Week}>{t('Week')}</Radio.Button>
+                    <Radio.Button value={ViewMode.Month}>{t('Month')}</Radio.Button>
+                    <Radio.Button value={ViewMode.Year}>{t('Year')}</Radio.Button>
+                </Radio.Group>
 
-            <button className={styles.button} onClick={() => onRefresh()}>
-                <ReloadOutlined/>
-                &nbsp;
-                {t('Refresh')}
-            </button>
+                <Checkbox checked={topLevelTasksOnly} onChange={handleTopLevelTasksOnlyChange}>
+                    {t('Top Level Tasks Only')}
+                </Checkbox>
+
+                <Button size="small" icon={<ReloadOutlined/>} onClick={onRefresh}>
+                    {t('Refresh')}
+                </Button>
+            </Space>
         </div>
     )
 }

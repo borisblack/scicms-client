@@ -2,16 +2,17 @@ import {lazy, Suspense, useEffect, useState} from 'react'
 import {Task as GanttTask, ViewMode} from 'gantt-task-react'
 import {CustomComponentRenderContext} from '../../.'
 import {useAcl} from '../../../../util/hooks'
-import {getStartEndDateForProject, singletonTasks} from './helper'
+import {getStartEndDateForProject, singletonTaskList} from './helper'
 import ViewSwitcher from './components/ViewSwitcher'
 import appConfig from '../../../../config'
 import TaskListHeader from './components/TaskListHeader'
 import TooltipContent from './components/TooltipContent'
-import {fetchAllProjectTasks} from './taskService'
+import {fetchAllTasksByFilter} from './taskService'
 import {Project} from './types'
 import {mapToGanttTask, mapToProjectTask} from './taskMapper'
 import 'gantt-task-react/dist/index.css'
 import styles from './ProjectGantt.module.css'
+import {Spin} from 'antd'
 
 const DEFAULT_COLUMN_WIDTH = 65
 const YEAR_COLUMN_WIDTH = 350
@@ -33,11 +34,14 @@ function calculateColumnWidth(viewMode: ViewMode) {
     return DEFAULT_COLUMN_WIDTH
 }
 
-export default function ProjectGantt({me, uniqueKey, items: itemMap, permissions: permissionMap, item, data, onBufferChange}: CustomComponentRenderContext) {
+export default function ProjectGantt({me, permissions: permissionMap, item, data, extra}: CustomComponentRenderContext) {
+    const {parentId} = extra ?? {}
+    const [loading, setLoading] = useState<boolean>(false)
     const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.Day)
     const columnWidth = calculateColumnWidth(viewMode)
     const [isChecked, setIsChecked] = useState(true)
-    const [ganttTasks, setGanttTasks] = useState<GanttTask[]>(data?.id ? singletonTasks(data as Project) : [])
+    const [topLevelTasksOnly, settTopLevelTasksOnly] = useState<boolean>(true)
+    const [ganttTasks, setGanttTasks] = useState<GanttTask[]>(data?.id ? singletonTaskList(data as Project) : [])
     const [version, setVersion] = useState<number>(0)
     const acl = useAcl(me, permissionMap, item, data)
 
@@ -45,7 +49,8 @@ export default function ProjectGantt({me, uniqueKey, items: itemMap, permissions
         if (!data?.id)
             return
 
-        fetchAllProjectTasks(data.id)
+        setLoading(true)
+        fetchAllTasksByFilter(data.id, topLevelTasksOnly ? 0 : -1, parentId)
             .then(tasks => {
                 const newTasks = [
                     mapToProjectTask(data as Project),
@@ -53,7 +58,10 @@ export default function ProjectGantt({me, uniqueKey, items: itemMap, permissions
                 ]
                 setGanttTasks(newTasks)
             })
-    }, [data, version])
+            .finally(() => {
+                setLoading(false)
+            })
+    }, [data, parentId, topLevelTasksOnly, version])
 
     const handleTaskChange = (task: GanttTask) => {
         console.log('On date change Id:' + task.id)
@@ -111,31 +119,37 @@ export default function ProjectGantt({me, uniqueKey, items: itemMap, permissions
 
     return (
         <div className={styles.wrapper}>
-            <ViewSwitcher
-                isChecked={isChecked}
-                onViewModeChange={viewMode => setViewMode(viewMode)}
-                onViewListChange={setIsChecked}
-                onRefresh={handleRefresh}
-            />
-            <h3>{data.name}</h3>
-            <Suspense fallback={null}>
-                <Gantt
-                    tasks={ganttTasks}
+            <Spin spinning={loading}>
+                <ViewSwitcher
                     viewMode={viewMode}
-                    listCellWidth={isChecked ? '155px' : ''}
-                    columnWidth={columnWidth}
-                    locale={appConfig.i18nLng}
-                    TooltipContent={TooltipContent}
-                    TaskListHeader={TaskListHeader}
-                    onDateChange={handleTaskChange}
-                    onDelete={handleTaskDelete}
-                    onProgressChange={handleProgressChange}
-                    onDoubleClick={handleDblClick}
-                    onClick={handleClick}
-                    onSelect={handleSelect}
-                    onExpanderClick={handleExpanderClick}
+                    showTaskList={isChecked}
+                    topLevelTasksOnly={topLevelTasksOnly}
+                    onViewModeChange={viewMode => setViewMode(viewMode)}
+                    onShowTaskListChange={setIsChecked}
+                    onTopLevelTasksOnly={settTopLevelTasksOnly}
+                    onRefresh={handleRefresh}
                 />
-            </Suspense>
+
+                <h3>{data.name}</h3>
+                <Suspense fallback={null}>
+                    <Gantt
+                        tasks={ganttTasks}
+                        viewMode={viewMode}
+                        listCellWidth={isChecked ? '155px' : ''}
+                        columnWidth={columnWidth}
+                        locale={appConfig.i18nLng}
+                        TooltipContent={TooltipContent}
+                        TaskListHeader={TaskListHeader}
+                        onDateChange={handleTaskChange}
+                        onDelete={handleTaskDelete}
+                        onProgressChange={handleProgressChange}
+                        onDoubleClick={handleDblClick}
+                        onClick={handleClick}
+                        onSelect={handleSelect}
+                        onExpanderClick={handleExpanderClick}
+                    />
+                </Suspense>
+            </Spin>
         </div>
     )
 }

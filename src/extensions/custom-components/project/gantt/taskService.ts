@@ -2,34 +2,30 @@ import {gql} from '@apollo/client'
 import {apolloClient, extractGraphQLErrorMessages} from '../../../../services'
 import i18n from '../../../../i18n'
 import {Task} from './types'
+import _ from 'lodash'
+import {ItemFiltersInput} from '../../../../services/query'
 
-const FIND_ALL_BY_PROJECT_ID_QUERY = gql`
-    query findAllTasksByProjectId(
-        $projectId: ID
+const FIND_ALL_BY_FILTER_QUERY = gql`
+    query findAllTasksByFilter(
+        $filters: TaskFiltersInput
     ) {
         tasks(
             sort: ["sortOrder:asc"]
-            filters: {
-                project: {
-                    id: {
-                        eq: $projectId
-                    }
-                }
-            }
+            filters: $filters
         ) {
         data {
             id
             name
             description
-            start
-            end
-            progress
-            isMilestone
             project {
                 data {
                     id
                 }
             }
+            start
+            end
+            progress
+            isMilestone
             dependencies {
                 data {
                     target {
@@ -44,11 +40,13 @@ const FIND_ALL_BY_PROJECT_ID_QUERY = gql`
     }
 `
 
-export async function fetchAllProjectTasks(projectId: string): Promise<Task[]> {
+export async function fetchAllTasksByFilter(projectId: string, level: number = -1, parentId?: string): Promise<Task[]> {
+    const filters: ItemFiltersInput<Task> = buildFetchAllProjectTasksFilters(projectId, level, parentId)
+
     const res = await apolloClient.query({
-        query: FIND_ALL_BY_PROJECT_ID_QUERY,
+        query: FIND_ALL_BY_FILTER_QUERY,
         variables: {
-            projectId
+            filters
         }
     })
 
@@ -58,4 +56,28 @@ export async function fetchAllProjectTasks(projectId: string): Promise<Task[]> {
     }
 
     return res.data.tasks.data
+}
+
+function buildFetchAllProjectTasksFilters(projectId: string, level: number, parentId?: string): ItemFiltersInput<Task> {
+    const filters: ItemFiltersInput<Task> = {
+        project: {
+            id: {
+                eq: projectId
+            }
+        }
+    }
+
+    if (level >= 0) {
+        filters.level = {
+            eq: level
+        }
+    }
+
+    if (parentId != null) {
+        filters.parent = {
+            eq: projectId
+        }
+    }
+
+    return filters
 }

@@ -43,6 +43,7 @@ const customEn = {
     'Target Resource': 'Target Resource',
     'Target Task': 'Target Task',
     'Tasks': 'Tasks',
+    'Top Level Tasks Only': 'Top Level Tasks Only',
     'Start Sheet': 'Start Sheet',
     'Start Sheets': 'Start Sheets',
     'Superseded Date': 'Superseded Date',
