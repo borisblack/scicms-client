@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import React, {ReactNode, useState} from 'react'
+import React, {ReactNode, useCallback, useState} from 'react'
 import {Tabs} from 'antd'
 import {TabsType} from 'antd/es/tabs'
 import {Tab} from 'rc-tabs/lib/interface'
@@ -48,7 +48,7 @@ export function useMDIContext<T>({initialItems}: MDIContextProps<T>): MDIContext
     const [items, setItems] = useState<Record<string, MDITab<T>>>(mapItems(initialItems))
     const [activeKey, setActiveKey] = useState<string>()
 
-    function openTab(item: MDITab<T>) {
+    const openTab = useCallback((item: MDITab<T>) => {
         const key = getKey(item)
         if (!items.hasOwnProperty(key)) {
             setItems(prevItems => ({...prevItems, [key]: {...item}}))
@@ -57,9 +57,9 @@ export function useMDIContext<T>({initialItems}: MDIContextProps<T>): MDIContext
         // Update active key
         if (key !== activeKey)
             setActiveKey(key)
-    }
+    }, [activeKey, items])
 
-    function updateTab(key: string, data: T) {
+    const updateTab = useCallback((key: string, data: T) => {
         const item = items[key]
         const newKey = getKey(item, data)
 
@@ -75,9 +75,9 @@ export function useMDIContext<T>({initialItems}: MDIContextProps<T>): MDIContext
             setActiveKey(newKey)
 
         item.onUpdate?.(item.data)
-    }
+    }, [activeKey, items])
 
-    function updateActiveTab(data: T) {
+    const updateActiveTab = useCallback((data: T) => {
         if (activeKey == null)
             return
 
@@ -96,9 +96,9 @@ export function useMDIContext<T>({initialItems}: MDIContextProps<T>): MDIContext
             setActiveKey(newKey)
 
         item.onUpdate?.(item.data)
-    }
+    }, [activeKey, items])
 
-    function closeTab(key: string) {
+    const closeTab = useCallback((key: string) => {
         // Reset active key
         if (key === activeKey)
             setActiveKey(undefined)
@@ -113,9 +113,9 @@ export function useMDIContext<T>({initialItems}: MDIContextProps<T>): MDIContext
             setActiveKey(keys[keys.length - 1])
 
         closedItem.onClose?.()
-    }
+    }, [activeKey, items])
 
-    function closeActiveTab() {
+    const closeActiveTab = useCallback(() => {
         if (activeKey == null)
             return
 
@@ -132,7 +132,7 @@ export function useMDIContext<T>({initialItems}: MDIContextProps<T>): MDIContext
             setActiveKey(keys[keys.length - 1])
 
         closedItem.onClose?.()
-    }
+    }, [activeKey, items])
 
     return {items, activeKey, setActiveKey, openTab, updateTab, updateActiveTab, closeTab, closeActiveTab}
 }
