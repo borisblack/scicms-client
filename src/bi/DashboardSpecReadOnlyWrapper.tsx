@@ -31,11 +31,7 @@ export default function DashboardSpecReadOnlyWrapper({
 
     return (
         <DashboardSpec
-            me={me}
             uniqueKey={uniqueKey}
-            itemTemplates={itemTemplates}
-            items={itemMap}
-            permissions={permissionMap}
             item={dashboardItem}
             buffer={{}}
             data={dashboard}

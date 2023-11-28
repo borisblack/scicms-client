@@ -8,12 +8,11 @@ import styles from './Attributes.module.css'
 import appConfig from 'src/config'
 import {regExpRule} from 'src/util/form'
 import {LOWERCASE_NO_WHITESPACE_PATTERN} from 'src/config/constants'
-import {ItemMap} from 'src/services/item'
 import * as SequenceService from 'src/services/sequence'
 import {NamedAttribute} from './types'
+import {useItems} from '../../../../util/hooks'
 
 interface Props {
-    items: ItemMap
     form: FormInstance
     attribute: NamedAttribute | null
     canEdit: boolean
@@ -32,7 +31,8 @@ const {Item: FormItem} = Form
 const {Option: SelectOption} = Select
 const {TextArea} = Input
 
-export default function AttributeForm({items: itemMap, form, attribute, canEdit, onFormFinish}: Props) {
+export default function AttributeForm({form, attribute, canEdit, onFormFinish}: Props) {
+    const itemMap = useItems()
     const {t} = useTranslation()
     const [attrType, setAttrType] = useState<FieldType | undefined>(attribute?.type)
     const [relType, setRelType] = useState<RelType | undefined>(attribute?.relType)

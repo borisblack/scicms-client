@@ -34,7 +34,7 @@ function calculateColumnWidth(viewMode: ViewMode) {
     return DEFAULT_COLUMN_WIDTH
 }
 
-export default function ProjectGantt({me, permissions: permissionMap, item, data, extra}: CustomComponentRenderContext) {
+export default function ProjectGantt({item, data, extra}: CustomComponentRenderContext) {
     const {parentId} = extra ?? {}
     const [loading, setLoading] = useState<boolean>(false)
     const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.Day)
@@ -43,7 +43,7 @@ export default function ProjectGantt({me, permissions: permissionMap, item, data
     const [topLevelTasksOnly, settTopLevelTasksOnly] = useState<boolean>(true)
     const [ganttTasks, setGanttTasks] = useState<GanttTask[]>(data?.id ? singletonTaskList(data as Project) : [])
     const [version, setVersion] = useState<number>(0)
-    const acl = useAcl(me, permissionMap, item, data)
+    const acl = useAcl(item, data)
 
     useEffect(() => {
         if (!data?.id)

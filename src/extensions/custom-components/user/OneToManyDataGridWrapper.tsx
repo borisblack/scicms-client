@@ -5,22 +5,17 @@ import {Button, message, Space} from 'antd'
 import appConfig from '../../../config'
 import DataGrid, {RequestParams} from '../../../components/datagrid/DataGrid'
 import {findAll, getColumns, getHiddenColumns, getInitialData} from '../../../util/datagrid'
-import {Item, ItemData, UserInfo} from '../../../types'
+import {Item, ItemData} from '../../../types'
 import {useTranslation} from 'react-i18next'
 import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design/icons'
 import {Callback} from '../../../services/mediator'
 import MutationManager from '../../../services/mutation'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
 import * as ACL from '../../../util/acl'
-import {ItemMap} from '../../../services/item'
-import PermissionManager, {PermissionMap} from '../../../services/permission'
-import {useAcl} from '../../../util/hooks'
+import {useAcl, useItems, useMe, usePermissions} from '../../../util/hooks'
 
 interface Props {
-    me: UserInfo
     uniqueKey: string
-    items: ItemMap
-    permissions: PermissionMap
     itemName: string
     targetItemName: string
     mappedBy: string
@@ -31,9 +26,10 @@ interface Props {
     onItemDelete: (itemName: string, id: string) => void
 }
 
-export default function OneToManyDataGridWrapper({
-    me, uniqueKey, items: itemMap, permissions: permissionMap, itemName, targetItemName, mappedBy, mappedByValue, itemData, onItemCreate, onItemView, onItemDelete
-}: Props) {
+export default function OneToManyDataGridWrapper({uniqueKey, itemName, targetItemName, mappedBy, mappedByValue, itemData, onItemCreate, onItemView, onItemDelete}: Props) {
+    const me = useMe()
+    const itemMap = useItems()
+    const permissionMap = usePermissions()
     const {t} = useTranslation()
     const [loading, setLoading] = useState<boolean>(false)
     const [data, setData] = useState(getInitialData())
@@ -42,7 +38,7 @@ export default function OneToManyDataGridWrapper({
     const targetItem = useMemo(() => itemMap[targetItemName], [itemMap, targetItemName])
     const columns = useMemo(() => getColumns(itemMap, targetItem), [itemMap, targetItem])
     const mutationManager = useMemo(() => new MutationManager(itemMap), [itemMap])
-    const acl = useAcl(me, permissionMap, item, itemData)
+    const acl = useAcl(item, itemData)
 
     const hiddenColumnsMemoized = useMemo(() => {
         const hiddenColumns = getHiddenColumns(targetItem)

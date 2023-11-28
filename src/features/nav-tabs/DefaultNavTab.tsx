@@ -5,7 +5,7 @@ import {Button, Checkbox, message, Modal} from 'antd'
 import {PageHeader} from '@ant-design/pro-layout'
 
 import appConfig from '../../config'
-import {IBuffer, Item, ItemData, Locale, UserInfo} from '../../types'
+import {IBuffer, Item, ItemData} from '../../types'
 import DataGrid, {RequestParams} from '../../components/datagrid/DataGrid'
 import {getLabel, INavTab} from './navTabsSlice'
 import {CustomPluginRenderContext, hasPlugins, renderPlugins} from '../../extensions/plugins'
@@ -25,18 +25,10 @@ import {
 } from '../../extensions/api-middleware'
 import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME, MEDIA_ITEM_NAME} from '../../config/constants'
 import {Callback} from '../../services/mediator'
-import {PermissionMap} from '../../services/permission'
-import {ItemMap} from '../../services/item'
-import MutationManager from '../../services/mutation'
-import {ItemTemplateMap} from '../../services/item-template'
 import styles from './NavTabs.module.css'
+import {useItems, useMe, useMutationManager, usePermissions} from '../../util/hooks'
 
 interface Props {
-    me: UserInfo
-    itemTemplates: ItemTemplateMap,
-    items: ItemMap
-    permissions: PermissionMap
-    locales: Locale[]
     navTab: INavTab
     onItemCreate: (item: Item, initialData?: ItemData | null, cb?: Callback, observerKey?: string) => void
     onItemView: (item: Item, id: string, extra?: Record<string, any>, cb?: Callback, observerKey?: string) => void
@@ -46,9 +38,11 @@ interface Props {
 
 const {info} = Modal
 
-function DefaultNavTab({
-    me,  items: itemMap, itemTemplates, permissions: permissionMap, locales, navTab, onItemCreate, onItemView, onItemDelete, onLogout
-}: Props) {
+function DefaultNavTab({navTab, onItemCreate, onItemView, onItemDelete, onLogout}: Props) {
+    const me = useMe()
+    const itemMap = useItems()
+    const permissionMap = usePermissions()
+    const mutationManager = useMutationManager()
     const {t} = useTranslation()
     const [loading, setLoading] = useState(false)
     const [data, setData] = useState(getInitialData())
@@ -60,23 +54,17 @@ function DefaultNavTab({
     const [buffer, setBuffer] = useState<IBuffer>({})
     const {item} = navTab
     const isSystemItem = item.name === ITEM_TEMPLATE_ITEM_NAME || item.name === ITEM_ITEM_NAME
-    const mutationManager = useMemo(() => new MutationManager(itemMap), [itemMap])
     const columnsMemoized = useMemo(() => getColumns(itemMap, item), [item, itemMap])
     const hiddenColumnsMemoized = useMemo(() => getHiddenColumns(item), [item])
     const handleBufferChange = useCallback((bufferChanges: IBuffer) => setBuffer({...buffer, ...bufferChanges}), [buffer])
     const pluginContext: CustomPluginRenderContext = useMemo(() => ({
-        me,
         item,
         buffer,
         onBufferChange: handleBufferChange,
-    }), [buffer, handleBufferChange, item, me])
+    }), [buffer, handleBufferChange, item])
 
     const customComponentContext: CustomComponentRenderContext = useMemo(() => ({
-        me,
         uniqueKey: navTab.key,
-        itemTemplates: itemTemplates,
-        items: itemMap,
-        permissions: permissionMap,
         item,
         extra: navTab.extra,
         buffer,
@@ -84,7 +72,7 @@ function DefaultNavTab({
         onItemCreate,
         onItemView,
         onItemDelete
-    }), [me, navTab.key, navTab.extra, itemTemplates, itemMap, permissionMap, item, buffer, handleBufferChange, onItemCreate, onItemView, onItemDelete])
+    }), [navTab.key, navTab.extra, item, buffer, handleBufferChange, onItemCreate, onItemView, onItemDelete])
 
     useEffect(() => {
         const headerNode = headerRef.current

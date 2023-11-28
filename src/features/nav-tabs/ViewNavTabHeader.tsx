@@ -1,4 +1,4 @@
-import React, {MouseEvent, ReactNode, useMemo, useState} from 'react'
+import React, {MouseEvent, ReactNode, useState} from 'react'
 import {Alert, Button, Dropdown, FormInstance, Modal, notification, Popconfirm, Space} from 'antd'
 import {PageHeader} from '@ant-design/pro-layout'
 import * as icons from '@ant-design/icons'
@@ -16,13 +16,12 @@ import {
     UnlockOutlined
 } from '@ant-design/icons'
 
-import {FlaggedResponse, IBuffer, Item, ItemData, ResponseCollection, UserInfo, ViewState} from '../../types'
+import {FlaggedResponse, IBuffer, Item, ItemData, ResponseCollection, ViewState} from '../../types'
 import {getLabel, INavTab} from './navTabsSlice'
 import appConfig from '../../config'
 import {useTranslation} from 'react-i18next'
 import SearchDataGridWrapper from './SearchDataGridWrapper'
 import {ItemFiltersInput} from '../../services/query'
-import MutationManager from '../../services/mutation'
 import Promote from './Promote'
 import {
     ITEM_ITEM_NAME,
@@ -37,12 +36,10 @@ import {
     handleApiMiddleware,
     hasApiMiddleware
 } from '../../extensions/api-middleware'
-import {ItemMap} from '../../services/item'
 import styles from './NavTabs.module.css'
+import {useItems, useMe, useMutationManager} from '../../util/hooks'
 
 interface Props {
-    me: UserInfo
-    items: ItemMap
     navTab: INavTab
     form: FormInstance
     buffer: IBuffer
@@ -67,16 +64,18 @@ const VERSIONS_MODAL_WIDTH = 800
 const {confirm} = Modal
 
 export default function ViewNavTabHeader({
-    me, items: itemMap, navTab, form, buffer, canCreate, canEdit, canDelete, viewState, setViewState, isLockedByMe,
-    setLockedByMe, setLoading, closePage, onItemView, onUpdate, onItemDelete, onHtmlExport, logoutIfNeed
+    navTab, form, buffer, canCreate, canEdit, canDelete, viewState, setViewState, isLockedByMe, setLockedByMe,
+    setLoading, closePage, onItemView, onUpdate, onItemDelete, onHtmlExport, logoutIfNeed
 }: Props) {
+    const me = useMe()
+    const itemMap = useItems()
     const {item, data} = navTab
     const isNew = !data?.id
     const Icon = item.icon ? (icons as any)[item.icon] : null
     const {t} = useTranslation()
     const [isVersionsModalVisible, setVersionsModalVisible] = useState(false)
     const [isPromoteModalVisible, setPromoteModalVisible] = useState(false)
-    const mutationManager = useMemo(() => new MutationManager(itemMap), [itemMap])
+    const mutationManager = useMutationManager()
 
     function handleSave(evt: MouseEvent) {
         form.submit()
@@ -386,7 +385,6 @@ export default function ViewNavTabHeader({
                 onCancel={() => setVersionsModalVisible(false)}
             >
                 <SearchDataGridWrapper
-                    items={itemMap}
                     item={item}
                     notHiddenColumns={[MAJOR_REV_ATTR_NAME, MINOR_REV_ATTR_NAME, LOCALE_ATTR_NAME]}
                     extraFiltersInput={getVersionsExtraFiltersInput()}

@@ -22,6 +22,7 @@ import {
     STATE_ATTR_NAME,
     USER_ITEM_NAME
 } from '../../../config/constants'
+import {useItems} from '../../../util/hooks'
 
 const SUFFIX_BUTTON_WIDTH = 24
 const RELATION_MODAL_WIDTH = 800
@@ -56,7 +57,7 @@ function getDefaultPermission(itemName: string): string {
     return DEFAULT_PERMISSION_ID
 }
 
-const RelationAttributeField: FC<AttributeFieldProps> = ({uniqueKey, items: itemMap, form, item, attrName, attribute, value, canAdmin, onItemView}) => {
+const RelationAttributeField: FC<AttributeFieldProps> = ({uniqueKey, form, item, attrName, attribute, value, canAdmin, onItemView}) => {
     if (attribute.type !== FieldType.relation || attribute.relType === RelType.oneToMany || attribute.relType === RelType.manyToMany)
         throw new Error('Illegal attribute')
 
@@ -64,6 +65,7 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({uniqueKey, items: item
     if (!target)
         throw new Error('Target is undefined')
 
+    const itemMap = useItems()
     const {t} = useTranslation()
     const [loading, setLoading] = useState<boolean>(false)
     const [isRelationModalVisible, setRelationModalVisible] = useState<boolean>(false)
@@ -178,7 +180,6 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({uniqueKey, items: item
                 onCancel={() => setRelationModalVisible(false)}
             >
                 <SearchDataGridWrapper
-                    items={itemMap}
                     item={targetItem}
                     extraFiltersInput={extraFiltersInput}
                     onSelect={itemData => handleRelationSelect(itemData)}

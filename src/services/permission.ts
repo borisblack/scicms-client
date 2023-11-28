@@ -114,7 +114,17 @@ const findAllByIdentityNames = (identityNames: string[]): Promise<Permission[]> 
 export default class PermissionManager {
     constructor(private permissions: PermissionMap) {}
 
-    getAcl(me: UserInfo, item: Item, data?: ItemData | null): Acl {
+    getAcl(me: UserInfo | null, item: Item, data?: ItemData | null): Acl {
+        if (me == null) {
+            return {
+                canCreate: false,
+                canRead: false,
+                canWrite: false,
+                canDelete: false,
+                canAdmin: false
+            }
+        }
+
         const itemPermissionId = item.permission.data?.id
         const itemPermission = itemPermissionId ? this.permissions[itemPermissionId] : null
         const canCreate = !!itemPermission && ACL.canCreate(me, itemPermission)

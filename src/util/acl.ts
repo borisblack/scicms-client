@@ -2,7 +2,10 @@ import dayjs from 'dayjs'
 import {Permission, UserInfo} from '../types'
 import {getBit} from '.'
 
-function hasAccess(user: UserInfo, permission: Permission, bit: number): boolean {
+function hasAccess(user: UserInfo | null, permission: Permission, bit: number): boolean {
+    if (user == null)
+        return false
+
     const accesses = permission.accesses.data
         .filter(acc => {
             if (!getBit(acc.mask, bit))
@@ -34,17 +37,20 @@ function hasAccess(user: UserInfo, permission: Permission, bit: number): boolean
     return accesses.length > 0 && accesses[0].granting
 }
 
-export function hasRole(user: UserInfo, role: string) {
+export function hasRole(user: UserInfo | null, role: string): boolean {
+    if (user == null)
+        return false
+
     const roleSet = new Set(user.roles)
     return roleSet.has(role)
 }
 
-export const canRead = (user: UserInfo, permission: Permission) => hasAccess(user, permission, 0)
+export const canRead = (user: UserInfo | null, permission: Permission) => hasAccess(user, permission, 0)
 
-export const canWrite = (user: UserInfo, permission: Permission) => hasAccess(user, permission, 1)
+export const canWrite = (user: UserInfo | null, permission: Permission) => hasAccess(user, permission, 1)
 
-export const canCreate = (user: UserInfo, permission: Permission) => hasAccess(user, permission, 2)
+export const canCreate = (user: UserInfo | null, permission: Permission) => hasAccess(user, permission, 2)
 
-export const canDelete = (user: UserInfo, permission: Permission) => hasAccess(user, permission, 3)
+export const canDelete = (user: UserInfo | null, permission: Permission) => hasAccess(user, permission, 3)
 
-export const canAdmin = (user: UserInfo, permission: Permission) => hasAccess(user, permission, 4)
+export const canAdmin = (user: UserInfo | null, permission: Permission) => hasAccess(user, permission, 4)

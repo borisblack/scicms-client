@@ -18,7 +18,7 @@ import DashWrapper from './DashWrapper'
 import styles from './DashboardSpec.module.css'
 import './DashboardSpec.css'
 import * as DashboardService from '../services/dashboard'
-import {useAcl} from '../util/hooks'
+import {useAcl, useItems} from '../util/hooks'
 
 interface DashboardSpecProps extends CustomComponentRenderContext {
     extra?: DashboardExtra
@@ -31,16 +31,15 @@ const initialSpec: IDashboardSpec = {
 }
 let seqNum = 0
 
-export default function DashboardSpec({
-    me, uniqueKey, items: itemMap, permissions: permissionMap, item, data, extra, buffer, readOnly, onBufferChange, onItemView
-}: DashboardSpecProps) {
+export default function DashboardSpec({uniqueKey, item, data, extra, buffer, readOnly, onBufferChange, onItemView}: DashboardSpecProps) {
     if (item.name !== DASHBOARD_ITEM_NAME)
         throw new Error('Illegal argument')
 
+    const itemMap = useItems()
     const {t} = useTranslation()
     const datasetItem = useMemo(() => itemMap[DATASET_ITEM_NAME], [itemMap])
     const dashboardItem = useMemo(() => itemMap[DASHBOARD_ITEM_NAME], [itemMap])
-    const acl = useAcl(me, permissionMap, item, data)
+    const acl = useAcl(item, data)
     const spec: IDashboardSpec = buffer.spec ?? data?.spec ?? initialSpec
     const [datasets, setDatasets] = useState<{[name: string]: Dataset}>({})
     const [dashboards, setDashboards] = useState<Dashboard[]>([])

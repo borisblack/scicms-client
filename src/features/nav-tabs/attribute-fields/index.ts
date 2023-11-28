@@ -1,16 +1,10 @@
 import {FC} from 'react'
-import {Attribute, Item, ItemData, Locale, UserInfo} from '../../../types'
 import {FormInstance} from 'antd'
-import {Callback} from '../../../services/mediator'
-import {CoreConfig} from '../../../services/core-config'
-import {ItemMap} from '../../../services/item'
+import {Attribute, Item, ItemData} from 'src/types'
+import {Callback} from 'src/services/mediator'
 
 export interface AttributeFieldProps {
-    me: UserInfo
     uniqueKey: string
-    coreConfig: CoreConfig
-    items: ItemMap
-    locales: Locale[]
     form: FormInstance
     item: Item
     data?: ItemData | null

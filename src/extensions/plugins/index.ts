@@ -1,7 +1,7 @@
 import _ from 'lodash'
 
-import {IBuffer, Item, ItemData, UserInfo} from '../../types'
-import pluginConfig from '../../config/plugin'
+import {IBuffer, Item, ItemData} from 'src/types'
+import pluginConfig from 'src/config/plugin'
 
 /* Plugin points:
 default.header
@@ -33,7 +33,6 @@ export interface CustomPluginRenderProps {
 }
 
 export interface CustomPluginRenderContext {
-    me: UserInfo
     item: Item
     buffer: IBuffer
     data?: ItemData | null

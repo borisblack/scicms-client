@@ -1,13 +1,10 @@
 import _ from 'lodash'
 import {ReactElement, ReactNode} from 'react'
 
-import {IBuffer, Item, ItemData, UserInfo} from '../../types'
+import {IBuffer, Item, ItemData} from '../../types'
 import customComponentConfig from '../../config/custom-component'
 import {FormInstance} from 'antd'
 import {Callback} from '../../services/mediator'
-import {ItemMap} from '../../services/item'
-import {PermissionMap} from '../../services/permission'
-import {ItemTemplateMap} from '../../services/item-template'
 
 /* Mount points:
 default.header
@@ -50,11 +47,7 @@ export interface CustomComponentRenderProps {
 }
 
 export interface CustomComponentRenderContext {
-    me: UserInfo
     uniqueKey: string
-    itemTemplates: ItemTemplateMap
-    items: ItemMap
-    permissions: PermissionMap
     item: Item
     data?: ItemData | null
     extra?: Record<string, any>

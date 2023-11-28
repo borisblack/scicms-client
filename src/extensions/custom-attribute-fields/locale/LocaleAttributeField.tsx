@@ -6,14 +6,16 @@ import {useTranslation} from 'react-i18next'
 import {LOCALE_ATTR_NAME} from '../../../config/constants'
 import {CustomAttributeFieldRenderContext} from '../index'
 import styles from '../CustomAttributeField.module.css'
+import {useLocales} from '../../../util/hooks'
 
 const FormItem = Form.Item
 const {Option: SelectOption} = Select
 
-const LocaleAttributeField: FC<CustomAttributeFieldRenderContext> = ({locales, attrName, attribute, value, onChange}) => {
+const LocaleAttributeField: FC<CustomAttributeFieldRenderContext> = ({attrName, attribute, value, onChange}) => {
     if (attribute.type !== FieldType.string || attrName !== LOCALE_ATTR_NAME)
         throw new Error('Illegal attribute')
 
+    const locales = useLocales()
     const {t} = useTranslation()
     const isDisabled = useMemo(() => attribute.keyed || attribute.readOnly, [attribute.keyed, attribute.readOnly])
     const additionalProps = useMemo((): any => {

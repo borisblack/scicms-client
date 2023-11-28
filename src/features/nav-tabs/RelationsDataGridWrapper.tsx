@@ -4,25 +4,20 @@ import {Button, message, Modal, Space} from 'antd'
 import appConfig from '../../config'
 import DataGrid, {RequestParams} from '../../components/datagrid/DataGrid'
 import {findAllRelated, getColumns, getHiddenColumns, getInitialData} from '../../util/datagrid'
-import {Attribute, Item, ItemData, RelType, UserInfo} from '../../types'
+import {Attribute, Item, ItemData, RelType} from '../../types'
 import {useTranslation} from 'react-i18next'
 import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined, SelectOutlined} from '@ant-design/icons'
 import {ID_ATTR_NAME, SOURCE_ATTR_NAME, TARGET_ATTR_NAME} from '../../config/constants'
 import {Callback, CallbackOperation} from '../../services/mediator'
 import MutationManager from '../../services/mutation'
-import {ItemMap} from '../../services/item'
 import QueryManager, {ItemFiltersInput} from '../../services/query'
 import SearchDataGridWrapper from './SearchDataGridWrapper'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
 import * as ACL from '../../util/acl'
-import PermissionManager, {PermissionMap} from '../../services/permission'
-import {useAcl} from '../../util/hooks'
+import {useAcl, useItems, useMe, usePermissions} from '../../util/hooks'
 
 interface Props {
-    me: UserInfo
     uniqueKey: string
-    items: ItemMap
-    permissions: PermissionMap
     item: Item
     itemData: ItemData
     relAttrName: string
@@ -34,9 +29,11 @@ interface Props {
 
 const SELECTION_MODAL_WIDTH = 800
 
-export default function RelationsDataGridWrapper({
-    me, uniqueKey, items: itemMap, permissions: permissionMap, item, itemData, relAttrName, relAttribute, onItemCreate, onItemView, onItemDelete
-}: Props) {
+export default function RelationsDataGridWrapper({uniqueKey, item, itemData, relAttrName, relAttribute, onItemCreate, onItemView, onItemDelete}: Props) {
+    const me = useMe()
+    const itemMap = useItems()
+    const permissionMap = usePermissions()
+
     if (!relAttribute.target || (relAttribute.relType !== RelType.oneToMany && relAttribute.relType !== RelType.manyToMany))
         throw Error('Illegal attribute')
 
@@ -60,7 +57,7 @@ export default function RelationsDataGridWrapper({
     const [data, setData] = useState(getInitialData())
     const columns = useMemo(() => getColumns(itemMap, target), [itemMap, target])
     const isOneToMany = useMemo(() => relAttribute.relType === RelType.oneToMany, [relAttribute.relType])
-    const acl = useAcl(me, permissionMap, item, itemData)
+    const acl = useAcl(item, itemData)
 
     const oppositeAttrName = useMemo((): string | undefined => {
         const relAttribute = item.spec.attributes[relAttrName]
@@ -302,7 +299,6 @@ export default function RelationsDataGridWrapper({
                 onCancel={() => setSelectionModalVisible(false)}
             >
                 <SearchDataGridWrapper
-                    items={itemMap}
                     item={target}
                     onSelect={itemData => handleManyToManySelect(itemData)}
                 />

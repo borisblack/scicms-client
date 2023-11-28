@@ -15,11 +15,11 @@ const customTranslateModule = {
     translate: [ 'value', customTranslate ]
 }
 
-export default function LifecycleSpec({me, permissions: permissionMap, item, data, onBufferChange}: CustomComponentRenderContext) {
+export default function LifecycleSpec({item, data, onBufferChange}: CustomComponentRenderContext) {
     if (item.name !== LIFECYCLE_ITEM_NAME)
         throw new Error('Illegal argument')
 
-    const acl = useAcl(me, permissionMap, item, data)
+    const acl = useAcl(item, data)
     const container = useRef<HTMLDivElement>(null)
     const modeler = useRef<any>(null)
 

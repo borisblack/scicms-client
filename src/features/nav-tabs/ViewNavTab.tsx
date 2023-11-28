@@ -1,19 +1,19 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {Col, Collapse, Form, Modal, notification, Row, Spin, Tabs} from 'antd'
 import {Tab} from 'rc-tabs/lib/interface'
-import {Attribute, FieldType, IBuffer, Item, ItemData, Locale, RelType, UserInfo, ViewState} from '../../types'
+import {Attribute, FieldType, IBuffer, Item, ItemData, RelType, ViewState} from 'src/types'
 import {useTranslation} from 'react-i18next'
 import {INavTab} from './navTabsSlice'
-import {CustomPluginRenderContext, hasPlugins, renderPlugins} from '../../extensions/plugins'
+import {CustomPluginRenderContext, hasPlugins, renderPlugins} from 'src/extensions/plugins'
 import {
     CustomComponentRenderContext,
     getComponents,
     hasComponents,
     renderComponents
-} from '../../extensions/custom-components'
+} from 'src/extensions/custom-components'
 import AttributeFieldWrapper from './AttributeFieldWrapper'
-import {filterValues, parseValues} from '../../util/form'
-import appConfig from '../../config'
+import {filterValues, parseValues} from 'src/util/form'
+import appConfig from 'src/config'
 import ViewNavTabHeader from './ViewNavTabHeader'
 import {
     ANTD_GRID_COLS,
@@ -25,32 +25,23 @@ import {
     LOCALE_ATTR_NAME,
     MAJOR_REV_ATTR_NAME,
     MINOR_REV_ATTR_NAME
-} from '../../config/constants'
+} from 'src/config/constants'
 import RelationsDataGridWrapper from './RelationsDataGridWrapper'
-import {Callback} from '../../services/mediator'
+import {Callback} from 'src/services/mediator'
+import {ApiMiddlewareContext, ApiOperation, handleApiMiddleware, hasApiMiddleware} from 'src/extensions/api-middleware'
+import {allIcons} from 'src/util/icons'
+import {exportWinFeatures, exportWinStyle, renderValue} from 'src/util/export'
 import {
-    ApiMiddlewareContext,
-    ApiOperation,
-    handleApiMiddleware,
-    hasApiMiddleware
-} from '../../extensions/api-middleware'
-import {allIcons} from '../../util/icons'
-import {exportWinFeatures, exportWinStyle, renderValue} from '../../util/export'
-import {PermissionMap} from '../../services/permission'
-import {ItemMap} from '../../services/item'
-import MutationManager from '../../services/mutation'
-import QueryManager from '../../services/query'
-import {ItemTemplateMap} from '../../services/item-template'
-import {CoreConfig} from '../../services/core-config'
-import {useFormAcl} from '../../util/hooks'
+    useCoreConfig,
+    useFormAcl,
+    useItems,
+    useItemTemplates,
+    useMe,
+    useMutationManager,
+    useQueryManager
+} from 'src/util/hooks'
 
 interface Props {
-    me: UserInfo
-    coreConfig: CoreConfig
-    itemTemplates: ItemTemplateMap,
-    items: ItemMap
-    permissions: PermissionMap
-    locales: Locale[]
     navTab: INavTab
     closeNavTab: () => void
     onItemCreate: (item: Item, initialData?: ItemData | null, cb?: Callback, observerKey?: string) => void
@@ -62,15 +53,17 @@ interface Props {
 
 const {info} = Modal
 
-function ViewNavTab({
-    me, coreConfig, itemTemplates, items: itemMap, permissions: permissionMap, locales, navTab, closeNavTab, onItemView, onItemCreate, onItemDelete, onUpdate, onLogout
-}: Props) {
+function ViewNavTab({navTab, closeNavTab, onItemView, onItemCreate, onItemDelete, onUpdate, onLogout}: Props) {
+    const me = useMe()
+    const coreConfig = useCoreConfig()
+    const itemTemplates = useItemTemplates()
+    const itemMap = useItems()
     const {item, data} = navTab
     const isNew = !data?.id
     const isSystemItem = item.name === ITEM_TEMPLATE_ITEM_NAME || item.name === ITEM_ITEM_NAME
     const {t} = useTranslation()
     const [loading, setLoading] = useState<boolean>(false)
-    const [isLockedByMe, setLockedByMe] = useState<boolean>(data?.lockedBy?.data?.id === me.id)
+    const [isLockedByMe, setLockedByMe] = useState<boolean>(!!me?.id && data?.lockedBy?.data?.id === me.id)
     const [viewState, setViewState] = useState<ViewState>(isNew ? ViewState.CREATE : (isLockedByMe ? (item.versioned ? ViewState.CREATE_VERSION : ViewState.UPDATE) : ViewState.VIEW))
     const [buffer, setBuffer] = useState<IBuffer>({})
     const headerRef = useRef<HTMLDivElement>(null)
@@ -79,24 +72,19 @@ function ViewNavTab({
     const tabsContentRef = useRef<HTMLDivElement>(null)
     const footerRef = useRef<HTMLDivElement>(null)
     const [form] = Form.useForm()
-    const queryManager = useMemo(() => new QueryManager(itemMap), [itemMap])
-    const mutationManager = useMemo(() => new MutationManager(itemMap), [itemMap])
-    const acl = useFormAcl(me, permissionMap, item, data)
+    const queryManager = useQueryManager()
+    const mutationManager = useMutationManager()
+    const acl = useFormAcl(item, data)
     const handleBufferChange = useCallback((bufferChanges: IBuffer) => setBuffer({...buffer, ...bufferChanges}), [buffer])
     const pluginContext: CustomPluginRenderContext = useMemo(() => ({
-        me,
         item,
         buffer,
         data,
         onBufferChange: handleBufferChange,
-    }), [buffer, data, handleBufferChange, item, me])
+    }), [buffer, data, handleBufferChange, item])
 
     const customComponentContext: CustomComponentRenderContext = useMemo(() => ({
-        me,
         uniqueKey: navTab.key,
-        itemTemplates: itemTemplates,
-        items: itemMap,
-        permissions: permissionMap,
         item,
         buffer,
         data,
@@ -106,7 +94,7 @@ function ViewNavTab({
         onItemCreate,
         onItemView,
         onItemDelete
-    }), [me, navTab.key, navTab.extra, itemTemplates, itemMap, permissionMap, item, buffer, data, form, handleBufferChange, onItemCreate, onItemView, onItemDelete])
+    }), [navTab.key, navTab.extra, item, buffer, data, form, handleBufferChange, onItemCreate, onItemView, onItemDelete])
 
     useEffect(() => {
         if (DEBUG)
@@ -350,11 +338,7 @@ function ViewNavTab({
                     return (
                         <Col span={span} key={attrName}>
                             <AttributeFieldWrapper
-                                me={me}
                                 uniqueKey={navTab.key}
-                                coreConfig={coreConfig}
-                                items={itemMap}
-                                locales={locales}
                                 form={form}
                                 item={item}
                                 data={data}
@@ -385,7 +369,7 @@ function ViewNavTab({
             if (viewState !== ViewState.UPDATE && viewState !== ViewState.CREATE_VERSION)
                 return
 
-            if (isNew || (data.locale ?? coreConfig.i18n.defaultLocale) === value)
+            if (isNew || (data.locale ?? coreConfig?.i18n?.defaultLocale) === value)
                 return
 
             setLoading(true)
@@ -499,10 +483,7 @@ function ViewNavTab({
                     label: TargetIcon ? <span><TargetIcon/>{title}</span> : title,
                     children: (
                         <RelationsDataGridWrapper
-                            me={me}
                             uniqueKey={navTab.key}
-                            items={itemMap}
-                            permissions={permissionMap}
                             item={item}
                             itemData={data}
                             relAttrName={key}
@@ -523,7 +504,7 @@ function ViewNavTab({
             tabs.push(...getComponentTabs(`${item.name}.tabs.end`))
 
         return tabs
-    }, [getComponentTabs, item, isNew, itemMap, t, me, navTab.key, permissionMap, data, onItemCreate, onItemView, onItemDelete])
+    }, [getComponentTabs, item, isNew, itemMap, t, navTab.key, data, onItemCreate, onItemView, onItemDelete])
 
     const renderTabs = useCallback(() => {
         const hasTabsContentPlugins = hasPlugins('tabs.content', `${item.name}.tabs.content`)
@@ -567,8 +548,6 @@ function ViewNavTab({
 
             {(!hasComponents('view.header', `${item.name}.view.header`) && !hasHeaderPlugins) && (
                 <ViewNavTabHeader
-                    me={me}
-                    items={itemMap}
                     navTab={navTab}
                     form={form}
                     buffer={buffer}

@@ -10,12 +10,12 @@ import {Column, DatasetSpec, NamedColumn} from '../../../../types'
 import {getColumns} from './columns-datagrid'
 import {useAcl} from '../../../../util/hooks'
 
-export default function Columns({me, permissions: permissionMap, item, buffer, data, onBufferChange}: CustomComponentRenderContext) {
+export default function Columns({item, buffer, data, onBufferChange}: CustomComponentRenderContext) {
     if (item.name !== DATASET_ITEM_NAME)
         throw new Error('Illegal argument')
 
     const {t} = useTranslation()
-    const acl = useAcl(me, permissionMap, item, data)
+    const acl = useAcl(item, data)
     const spec: DatasetSpec = useMemo(() => data?.spec ?? buffer.spec ?? {}, [buffer.spec, data?.spec])
     const [namedColumns, setNamedColumns] = useState(getCurrentNamedColumns())
     const [filteredData, setFilteredData] = useState<DataWithPagination<NamedColumn>>(getInitialData())

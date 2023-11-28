@@ -8,15 +8,14 @@ import {ItemType} from 'antd/lib/menu/hooks/useItems'
 import './Navbar.css'
 import logo from '../../logo.svg'
 import menuConfig, {MenuItem, SubMenu} from '../../config/menu'
-import {useAppDispatch, useAppSelector} from '../../util/hooks'
-import {Item, UserInfo} from '../../types'
+import {useAppDispatch, useAppSelector, useMe} from '../../util/hooks'
+import {Item} from '../../types'
 import {selectItems, selectLoading} from './registrySlice'
 import {openNavTab, ViewType} from '../nav-tabs/navTabsSlice'
 import {allIcons} from '../../util/icons'
 import {LogoutOutlined, UserOutlined} from '@ant-design/icons'
 
 type Props = {
-    me: UserInfo
     onLogout: () => void
 }
 
@@ -26,7 +25,8 @@ const isNavbarCollapsed = () => localStorage.getItem('navbarCollapsed') === '1'
 
 const setNavbarCollapsed = (collapsed: boolean) => localStorage.setItem('navbarCollapsed', collapsed ? '1' : '0')
 
-const Navbar = ({me, onLogout}: Props) => {
+const Navbar = ({onLogout}: Props) => {
+    const me = useMe()
     const {t} = useTranslation()
     const dispatch = useAppDispatch()
     const loading = useAppSelector(selectLoading)
@@ -44,7 +44,7 @@ const Navbar = ({me, onLogout}: Props) => {
     }, [dispatch])
 
     const toAntdMenuItems = useCallback((menuItems: (SubMenu | MenuItem)[]): ItemType[] => menuItems
-        .filter(it => !('roles' in it) || _.intersection(it.roles, me.roles).length > 0)
+        .filter(it => !('roles' in it) || _.intersection(it.roles, me?.roles).length > 0)
         .filter(it => !('itemName' in it) || items[it.itemName])
         .map(it => {
             if ('children' in it) {
@@ -65,7 +65,7 @@ const Navbar = ({me, onLogout}: Props) => {
                     onClick: () => handleItemClick(item)
                 }
             }
-        }), [me.roles, items, t, handleItemClick])
+        }), [me?.roles, items, t, handleItemClick])
 
     return (
         <Sider className="Navbar" collapsible collapsed={collapsed} width={275} onCollapse={handleToggle}>
@@ -79,14 +79,14 @@ const Navbar = ({me, onLogout}: Props) => {
                     theme="dark"
                     items={[{
                             key: 'profile',
-                            label: `${t('Profile')} (${me.username})`,
+                            label: `${t('Profile')} (${me?.username ?? 'Anonymous'})`,
                             icon: <UserOutlined />,
-                            children: [{
+                            children: !!me ? [{
                                 key: 'logout',
                                 label: t('Logout'),
                                 icon: <LogoutOutlined/>,
                                 onClick: onLogout
-                            }]
+                            }] : []
                         },
                         ...toAntdMenuItems(menuConfig.items)
                     ]}

@@ -100,6 +100,8 @@ export const selectItems = (state: RootState) => state.registry.items
 
 export const selectPermissions = (state: RootState) => state.registry.permissions
 
+export const selectLifecycles = (state: RootState) => state.registry.lifecycles
+
 export const selectLocales = (state: RootState) => state.registry.locales
 
 export const {reset} = registrySlice.actions

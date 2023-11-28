@@ -13,22 +13,21 @@ import {getInitialData, processLocal} from '../../../../util/datagrid'
 import AttributeForm from './AttributeForm'
 import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design/icons'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
-import {useItemAcl} from '../../../../util/hooks'
+import {useItemAcl, useItemTemplates} from '../../../../util/hooks'
 import {getAttributeColumns, getHiddenAttributeColumns} from './attributeColumns'
 import {NamedAttribute} from './types'
 
 const EDIT_MODAL_WIDTH = 800
 
-export default function Attributes({
-    me, itemTemplates, items: itemMap, permissions: permissionMap, item, data, buffer, onBufferChange
-}: CustomComponentRenderContext) {
+export default function Attributes({item, data, buffer, onBufferChange}: CustomComponentRenderContext) {
     if (item.name !== ITEM_TEMPLATE_ITEM_NAME && item.name !== ITEM_ITEM_NAME)
         throw new Error('Illegal argument')
 
+    const itemTemplates = useItemTemplates()
     const isNew = !data?.id
     const {t} = useTranslation()
     const [version, setVersion] = useState<number>(0)
-    const acl = useItemAcl(me, permissionMap, item, data)
+    const acl = useItemAcl(item, data)
     const columns = useMemo(() => getAttributeColumns(), [])
     const hiddenColumns = useMemo(() => getHiddenAttributeColumns(), [])
     const spec: ItemSpec = useMemo(() => buffer.spec ?? data?.spec ?? {}, [buffer.spec, data?.spec])
@@ -186,7 +185,6 @@ export default function Attributes({
                 onCancel={() => setEditModalVisible(false)}
             >
                 <AttributeForm
-                    items={itemMap}
                     form={attributeForm}
                     attribute={selectedAttribute}
                     canEdit={acl.canWrite}

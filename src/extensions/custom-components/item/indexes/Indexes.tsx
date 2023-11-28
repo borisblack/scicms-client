@@ -13,18 +13,19 @@ import {getInitialData, processLocal} from 'src/util/datagrid'
 import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design/icons'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
 import IndexForm from './IndexForm'
-import {useItemAcl} from 'src/util/hooks'
+import {useItemAcl, useItemTemplates} from 'src/util/hooks'
 import {getHiddenIndexColumns, getIndexColumns} from './indexColumns'
 import {NamedIndex} from './types'
 
-export default function Indexes({me, itemTemplates, permissions: permissionMap, item, data, buffer, onBufferChange}: CustomComponentRenderContext) {
+export default function Indexes({item, data, buffer, onBufferChange}: CustomComponentRenderContext) {
     if (item.name !== ITEM_TEMPLATE_ITEM_NAME && item.name !== ITEM_ITEM_NAME)
         throw new Error('Illegal argument')
 
+    const itemTemplates = useItemTemplates()
     const isNew = !data?.id
     const {t} = useTranslation()
     const [version, setVersion] = useState<number>(0)
-    const acl = useItemAcl(me, permissionMap, item, data)
+    const acl = useItemAcl(item, data)
     const columns = useMemo(() => getIndexColumns(), [])
     const hiddenColumns = useMemo(() => getHiddenIndexColumns(), [])
     const spec: ItemSpec = useMemo(() => buffer.spec ?? data?.spec ?? {}, [buffer.spec, data?.spec])

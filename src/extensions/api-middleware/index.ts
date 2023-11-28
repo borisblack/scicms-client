@@ -25,7 +25,7 @@ export interface ApiMiddleware {
 }
 
 export interface ApiMiddlewareContext {
-    me: UserInfo
+    me: UserInfo | null
     items: ItemMap
     item: Item
     buffer: IBuffer

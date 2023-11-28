@@ -5,9 +5,9 @@ import {FieldType, ItemData} from '../../types'
 import SearchDataGridWrapper from '../../features/nav-tabs/SearchDataGridWrapper'
 import {useTranslation} from 'react-i18next'
 import {CloseCircleOutlined, FolderOpenOutlined} from '@ant-design/icons'
-import QueryManager from '../../services/query'
 import {CustomAttributeFieldRenderContext} from './index'
 import styles from './CustomAttributeField.module.css'
+import {useItems, useQueryManager} from '../../util/hooks'
 
 const SUFFIX_BUTTON_WIDTH = 24
 const RELATION_MODAL_WIDTH = 800
@@ -20,14 +20,15 @@ interface Props extends CustomAttributeFieldRenderContext {
     forceVisible?: boolean
 }
 
-const StringRelationAttributeField: FC<Props> = ({uniqueKey, items: itemMap, form, item, attrName, attribute, target, value, forceVisible, onItemView}) => {
+const StringRelationAttributeField: FC<Props> = ({uniqueKey, form, item, attrName, attribute, target, value, forceVisible, onItemView}) => {
     if (attribute.type !== FieldType.string)
         throw new Error('Illegal attribute')
 
+    const itemMap = useItems()
     const {t} = useTranslation()
     const [loading, setLoading] = useState<boolean>(false)
     const [isSearchModalVisible, setSearchModalVisible] = useState<boolean>(false)
-    const queryManager = useMemo(() => new QueryManager(itemMap), [itemMap])
+    const queryManager = useQueryManager()
     const isDisabled = useMemo(() => attribute.readOnly, [attribute.readOnly])
     const additionalProps = useMemo((): any => {
         const additionalProps: any = {}
@@ -122,7 +123,6 @@ const StringRelationAttributeField: FC<Props> = ({uniqueKey, items: itemMap, for
                 onCancel={() => setSearchModalVisible(false)}
             >
                 <SearchDataGridWrapper
-                    items={itemMap}
                     item={targetItem}
                     onSelect={itemData => handleRelationSelect(itemData)}
                 />

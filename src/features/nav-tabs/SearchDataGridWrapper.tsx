@@ -9,10 +9,9 @@ import {Item, ItemData} from '../../types'
 import {ExtRequestParams, ItemFiltersInput} from '../../services/query'
 import {CheckboxChangeEvent} from 'antd/es/checkbox'
 import {useTranslation} from 'react-i18next'
-import {ItemMap} from '../../services/item'
+import {useItems} from '../../util/hooks'
 
 interface Props {
-    items: ItemMap
     item: Item
     notHiddenColumns?: string[]
     extraFiltersInput?: ItemFiltersInput<ItemData>
@@ -22,7 +21,8 @@ interface Props {
     onSelect: (itemData: ItemData) => void
 }
 
-export default function SearchDataGridWrapper({items, item, notHiddenColumns = [], extraFiltersInput, majorRev, locale, state, onSelect}: Props) {
+export default function SearchDataGridWrapper({item, notHiddenColumns = [], extraFiltersInput, majorRev, locale, state, onSelect}: Props) {
+    const itemMap = useItems()
     const {t} = useTranslation()
     const [loading, setLoading] = useState<boolean>(false)
     const [data, setData] = useState(getInitialData())
@@ -30,7 +30,7 @@ export default function SearchDataGridWrapper({items, item, notHiddenColumns = [
     const showAllLocalesRef = useRef<boolean>(false)
 
     const notHiddenColumnSet = useMemo(() => new Set(notHiddenColumns), [notHiddenColumns])
-    const columnsMemoized = useMemo(() => getColumns(items, item), [item, items])
+    const columnsMemoized = useMemo(() => getColumns(itemMap, item), [item, itemMap])
     const hiddenColumnsMemoized = useMemo(() => getHiddenColumns(item).filter(it => !notHiddenColumnSet.has(it)), [item, notHiddenColumnSet])
 
     const handleRequest = useCallback(async (params: RequestParams) => {
@@ -38,7 +38,7 @@ export default function SearchDataGridWrapper({items, item, notHiddenColumns = [
 
         try {
             setLoading(true)
-            const dataWithPagination = await findAll(items, item, allParams, extraFiltersInput)
+            const dataWithPagination = await findAll(itemMap, item, allParams, extraFiltersInput)
             setData(dataWithPagination)
         } catch (e: any) {
             console.error(e.message)
@@ -46,7 +46,7 @@ export default function SearchDataGridWrapper({items, item, notHiddenColumns = [
         } finally {
             setLoading(false)
         }
-    }, [majorRev, locale, state, items, item, extraFiltersInput])
+    }, [majorRev, locale, state, itemMap, item, extraFiltersInput])
 
     const handleLocalizationsCheckBoxChange = useCallback((e: CheckboxChangeEvent) => {
         showAllLocalesRef.current = e.target.checked
