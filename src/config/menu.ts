@@ -84,6 +84,12 @@ const menuConfig: MenuConfig = {
             itemName: 'startSheet'
         }, {
             itemName: 'changeNotice'
+        }, {
+            itemName: 'partLabelGroup'
+        }, {
+            itemName: 'partType'
+        }, {
+            itemName: 'department'
         }]
     }, {
         key: 'projectManagement',
