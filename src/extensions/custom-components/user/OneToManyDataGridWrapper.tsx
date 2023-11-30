@@ -5,31 +5,27 @@ import {Button, message, Space} from 'antd'
 import appConfig from '../../../config'
 import DataGrid, {RequestParams} from '../../../components/datagrid/DataGrid'
 import {findAll, getColumns, getHiddenColumns, getInitialData} from '../../../util/datagrid'
-import {Item, ItemData} from '../../../types'
+import {ItemData, ItemDataWrapper} from '../../../types'
 import {useTranslation} from 'react-i18next'
 import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design/icons'
-import {Callback} from '../../../services/mediator'
 import MutationManager from '../../../services/mutation'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
 import * as ACL from '../../../util/acl'
-import {useAcl, useItems, useMe, usePermissions} from '../../../util/hooks'
+import {useAcl, useAuth, useItemOperations, useRegistry} from '../../../util/hooks'
 
 interface Props {
-    uniqueKey: string
+    data: ItemDataWrapper
     itemName: string
     targetItemName: string
     mappedBy: string
     mappedByValue: any
-    itemData?: ItemData | null
-    onItemCreate: (item: Item, initialData?: ItemData | null, cb?: Callback, observerKey?: string) => void
-    onItemView: (item: Item, id: string, extra?: Record<string, any>, cb?: Callback, observerKey?: string) => void
-    onItemDelete: (itemName: string, id: string) => void
 }
 
-export default function OneToManyDataGridWrapper({uniqueKey, itemName, targetItemName, mappedBy, mappedByValue, itemData, onItemCreate, onItemView, onItemDelete}: Props) {
-    const me = useMe()
-    const itemMap = useItems()
-    const permissionMap = usePermissions()
+export default function OneToManyDataGridWrapper({data: dataWrapper, itemName, targetItemName, mappedBy, mappedByValue}: Props) {
+    const {data: itemData} = dataWrapper
+    const {me} = useAuth()
+    const {items: itemMap, permissions: permissionMap} = useRegistry()
+    const {create: createItem, open: openItem, remove: removeItem} = useItemOperations()
     const {t} = useTranslation()
     const [loading, setLoading] = useState<boolean>(false)
     const [data, setData] = useState(getInitialData())
@@ -64,12 +60,12 @@ export default function OneToManyDataGridWrapper({uniqueKey, itemName, targetIte
 
     const handleCreate = useCallback(() => {
         const initialData = createManyToOneInitialData()
-        onItemCreate(targetItem, initialData, refresh, uniqueKey)
-    }, [createManyToOneInitialData, onItemCreate, uniqueKey, targetItem])
+        createItem(targetItem, initialData, undefined, refresh, refresh)
+    }, [createManyToOneInitialData, createItem, targetItem])
 
     const openTarget = useCallback(
-        (id: string) => onItemView(targetItem, id, undefined, refresh, uniqueKey),
-        [onItemView, targetItem, uniqueKey])
+        (id: string) => openItem(targetItem, id, undefined, refresh, refresh),
+        [openItem, targetItem])
 
     const deleteTarget = useCallback(async (id: string, purge: boolean = false) => {
         setLoading(true)
@@ -78,15 +74,15 @@ export default function OneToManyDataGridWrapper({uniqueKey, itemName, targetIte
                 await mutationManager.purge(targetItem, id, appConfig.mutation.deletingStrategy)
             else
                 await mutationManager.remove(targetItem, id, appConfig.mutation.deletingStrategy)
-            await onItemDelete(targetItem.name, id)
-            await refresh()
+            removeItem(targetItem.name, id)
+            refresh()
         } catch (e: any) {
             console.error(e.message)
             message.error(e.message)
         } finally {
             setLoading(false)
         }
-    }, [mutationManager, targetItem, onItemDelete])
+    }, [mutationManager, targetItem, removeItem])
 
     const getRowContextMenu = useCallback((row: Row<ItemData>) => {
         const items: ItemType[] = [{

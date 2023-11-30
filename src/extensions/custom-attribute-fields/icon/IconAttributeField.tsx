@@ -1,14 +1,14 @@
 import {FC, useMemo, useState} from 'react'
-import {Button, Form, Input, Modal, Tooltip} from 'antd'
-
-import {FieldType} from '../../../types'
 import {useTranslation} from 'react-i18next'
-import {ICON_ATTR_NAME} from '../../../config/constants'
-import {CustomAttributeFieldRenderContext} from '../index'
-import styles from '../CustomAttributeField.module.css'
+import {Button, Form, Input, Modal, Tooltip} from 'antd'
 import {CloseCircleOutlined} from '@ant-design/icons'
+import {FieldType} from 'src/types'
+import {ICON_ATTR_NAME} from 'src/config/constants'
+import {CustomAttributeFieldRenderContext} from '..'
+import styles from '../CustomAttributeField.module.css'
 import Icon from 'src/components/icon/Icon'
 import Icons from 'src/components/icons/Icons'
+import {generateKey} from 'src/util/mdi'
 
 const FormItem = Form.Item
 const {Search} = Input
@@ -17,10 +17,11 @@ const SUFFIX_BUTTON_WIDTH = 24
 const ICONS_MODAL_WIDTH = 1100
 const ICONS_COMPONENT_HEIGHT = 600
 
-const IconAttributeField: FC<CustomAttributeFieldRenderContext> = ({uniqueKey, form, attrName, attribute, value, onChange}) => {
+const IconAttributeField: FC<CustomAttributeFieldRenderContext> = ({data: dataWrapper, form, attrName, attribute, value, onChange}) => {
     if (attrName !== ICON_ATTR_NAME || attribute.type !== FieldType.string)
         throw new Error('Illegal attribute')
 
+    const uniqueKey = generateKey(dataWrapper)
     const {t} = useTranslation()
     const [currentValue, setCurrentValue] = useState(value)
     const [isIconsModalVisible, setIconsModalVisible] = useState<boolean>(false)

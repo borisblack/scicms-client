@@ -15,7 +15,8 @@ const customTranslateModule = {
     translate: [ 'value', customTranslate ]
 }
 
-export default function LifecycleSpec({item, data, onBufferChange}: CustomComponentRenderContext) {
+export default function LifecycleSpec({data: dataWrapper, onBufferChange}: CustomComponentRenderContext) {
+    const {item, data} = dataWrapper
     if (item.name !== LIFECYCLE_ITEM_NAME)
         throw new Error('Illegal argument')
 

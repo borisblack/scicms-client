@@ -53,6 +53,7 @@ const customRu = {
     'Target Part': 'Целевая сост. часть',
     'Target Resource': 'Целевой ресурс',
     'Target Task': 'Целевая задача',
+    'Task': 'Задача',
     'Tasks': 'Задачи',
     'Top Level Tasks Only': 'Только задачи верхнего уровня',
     'Start Sheet': 'Листок запуска',

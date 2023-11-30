@@ -1,33 +1,27 @@
-import React, {useCallback, useEffect} from 'react'
+import React, {useEffect} from 'react'
 import {Navigate} from 'react-router-dom'
 import {Layout} from 'antd'
-import {useAppDispatch, useAppSelector} from 'src/util/hooks'
-import {logout, selectIsExpired, selectMe} from 'src/features/auth/authSlice'
-import {initializeIfNeeded, reset as resetRegistry, selectIsInitialized} from 'src/features/registry/registrySlice'
-import {reset as resetNavTabs} from 'src/features/nav-tabs/navTabsSlice'
+import {useAppDispatch, useAuth, useRegistry} from 'src/util/hooks'
+import {initializeIfNeeded} from 'src/features/registry/registrySlice'
 import Navbar from 'src/features/registry/Navbar'
-import NavTabs from 'src/features/nav-tabs/NavTabs'
+import {ItemDataWrapper} from 'src/types'
+import {useNewMDIContext} from 'src/components/mdi-tabs/hooks'
+import MDITabs from 'src/components/mdi-tabs/MDITabs'
 import './App.css'
 
 const {Content} = Layout
 
 function App() {
     const dispatch = useAppDispatch()
-    const me = useAppSelector(selectMe)
-    const isExpired = useAppSelector(selectIsExpired)
-    const isInitialized = useAppSelector(selectIsInitialized)
+    const {me, isExpired} = useAuth()
+    const {isInitialized} = useRegistry()
+    const mdiContext = useNewMDIContext<ItemDataWrapper>([])
 
     useEffect(() => {
         if (me) {
             dispatch(initializeIfNeeded(me))
         }
     }, [me, dispatch])
-
-    const handleLogout = useCallback(async () => {
-        await dispatch(logout())
-        await dispatch(resetNavTabs())
-        await dispatch(resetRegistry())
-    }, [dispatch])
 
     if (!me || isExpired)
         return <Navigate to="/login"/>
@@ -37,11 +31,15 @@ function App() {
 
     return (
         <Layout className="App">
-            <Navbar onLogout={handleLogout}/>
+            <Navbar ctx={mdiContext}/>
             <Layout>
                 <Content className="App-content-wrapper">
                     <div className="App-content">
-                        <NavTabs onLogout={handleLogout}/>
+                        <MDITabs
+                            ctx={mdiContext}
+                            className="pages"
+                            type="editable-card"
+                        />
                     </div>
                 </Content>
             </Layout>

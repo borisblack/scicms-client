@@ -16,12 +16,11 @@ import {
     UnlockOutlined
 } from '@ant-design/icons'
 
-import {FlaggedResponse, IBuffer, Item, ItemData, ResponseCollection, ViewState} from '../../types'
-import {getLabel, INavTab} from './navTabsSlice'
-import appConfig from '../../config'
+import {FlaggedResponse, IBuffer, ItemData, ItemDataWrapper, ResponseCollection, ViewState} from 'src/types'
+import appConfig from 'src/config'
 import {useTranslation} from 'react-i18next'
 import SearchDataGridWrapper from './SearchDataGridWrapper'
-import {ItemFiltersInput} from '../../services/query'
+import {ItemFiltersInput} from 'src/services/query'
 import Promote from './Promote'
 import {
     ITEM_ITEM_NAME,
@@ -29,18 +28,20 @@ import {
     LOCALE_ATTR_NAME,
     MAJOR_REV_ATTR_NAME,
     MINOR_REV_ATTR_NAME
-} from '../../config/constants'
+} from 'src/config/constants'
 import {
     ApiMiddlewareContext,
     ApiOperation,
     handleApiMiddleware,
     hasApiMiddleware
-} from '../../extensions/api-middleware'
+} from 'src/extensions/api-middleware'
+import {useAuth, useItemOperations, useMutationManager, useRegistry} from 'src/util/hooks'
+import {useMDIContext} from '../../components/mdi-tabs/hooks'
+import {getTitle} from 'src/util/mdi'
 import styles from './NavTabs.module.css'
-import {useItems, useMe, useMutationManager} from '../../util/hooks'
 
 interface Props {
-    navTab: INavTab
+    data: ItemDataWrapper
     form: FormInstance
     buffer: IBuffer
     canCreate: boolean
@@ -51,10 +52,6 @@ interface Props {
     isLockedByMe: boolean
     setLockedByMe: (isLockedByMe: boolean) => void
     setLoading: (loading: boolean) => void
-    closePage: () => void
-    onItemView: (item: Item, id: string, extra?: Record<string, any>, cb?: () => void, observerKey?: string) => void
-    onUpdate: (data: ItemData) => void
-    onItemDelete: (itemName: string, id: string) => void
     onHtmlExport: () => void
     logoutIfNeed: () => void
 }
@@ -64,12 +61,14 @@ const VERSIONS_MODAL_WIDTH = 800
 const {confirm} = Modal
 
 export default function ViewNavTabHeader({
-    navTab, form, buffer, canCreate, canEdit, canDelete, viewState, setViewState, isLockedByMe, setLockedByMe,
-    setLoading, closePage, onItemView, onUpdate, onItemDelete, onHtmlExport, logoutIfNeed
+    data: dataWrapper, form, buffer, canCreate, canEdit, canDelete, viewState, setViewState, isLockedByMe, setLockedByMe,
+    setLoading, onHtmlExport, logoutIfNeed
 }: Props) {
-    const me = useMe()
-    const itemMap = useItems()
-    const {item, data} = navTab
+    const {item, data} = dataWrapper
+    const {me} = useAuth()
+    const {items: itemMap} = useRegistry()
+    const ctx = useMDIContext<ItemDataWrapper>()
+    const {open: openItem, remove: removeItem} = useItemOperations()
     const isNew = !data?.id
     const Icon = item.icon ? (icons as any)[item.icon] : null
     const {t} = useTranslation()
@@ -97,7 +96,7 @@ export default function ViewNavTabHeader({
                 locked = await doLock()
             }
             if (locked.success)
-                await onUpdate(locked.data)
+                ctx.updateActiveTab({...dataWrapper, data: locked.data})
             else
                 notification.warning({
                     message: 'Locking warning',
@@ -133,7 +132,7 @@ export default function ViewNavTabHeader({
                 unlocked = await doUnlock()
             }
             if (unlocked.success) {
-                await onUpdate(unlocked.data)
+                ctx.updateActiveTab({...dataWrapper, data: unlocked.data})
             } else {
                 notification.warning({
                     message: 'Cancellation warning',
@@ -171,9 +170,9 @@ export default function ViewNavTabHeader({
             } else {
                 deleted = await doDelete()
             }
-            await onUpdate(deleted)
-            await setLockedByMe(false)
-            onItemDelete(item.name, data?.id as string)
+            ctx.updateActiveTab({...dataWrapper, data: deleted.data})
+            setLockedByMe(false)
+            removeItem(item.name, id, dataWrapper.extra)
             logoutIfNeed()
         } catch (e: any) {
             console.error(e.message)
@@ -205,9 +204,9 @@ export default function ViewNavTabHeader({
                 purged = await doPurge()
             }
             const deleted = purged.data.find(it => it.id === id) as ItemData
-            await onUpdate(deleted)
-            await setLockedByMe(false)
-            onItemDelete(item.name, data?.id as string)
+            ctx.updateActiveTab({...dataWrapper, data: deleted})
+            setLockedByMe(false)
+            removeItem(item.name, data?.id as string, dataWrapper.extra)
         } catch (e: any) {
             console.error(e.message)
             notification.error({
@@ -237,7 +236,7 @@ export default function ViewNavTabHeader({
             } else {
                 promoted = await doPromote()
             }
-            await onUpdate(promoted)
+            ctx.updateActiveTab({...dataWrapper, data: promoted})
             setPromoteModalVisible(false)
         } catch (e: any) {
             console.error(e.message)
@@ -307,7 +306,7 @@ export default function ViewNavTabHeader({
         if (isNew) {
             if (canCreate) {
                 extra.push(<Button key="save" type="primary" onClick={handleSave}><SaveOutlined/> {t('Save')}</Button>)
-                extra.push(<Button key="cancel" icon={<CloseCircleOutlined/>} onClick={closePage}>{t('Cancel')}</Button>)
+                extra.push(<Button key="cancel" icon={<CloseCircleOutlined/>} onClick={() => ctx.closeActiveTab()}>{t('Cancel')}</Button>)
             }
         } else {
             if (canEdit) {
@@ -362,12 +361,12 @@ export default function ViewNavTabHeader({
         return extra
     }
 
-    function handleVersionSelect(selectedItemData: ItemData) {
-        onItemView(item, selectedItemData.id)
+    async function handleVersionSelect(selectedItemData: ItemData) {
+        await openItem(item, selectedItemData.id)
         setVersionsModalVisible(false)
     }
 
-    const title = getLabel(navTab)
+    const title = getTitle(dataWrapper)
     return (
         <>
             {viewState === ViewState.CREATE_VERSION && <Alert type="warning" closable message={t('A new version will be created')}/>}

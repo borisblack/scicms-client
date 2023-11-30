@@ -534,3 +534,15 @@ export interface PaginationInput {
     start?: number,
     limit?: number
 }
+
+export enum ViewType {
+    default = 'default',
+    view = 'view'
+}
+
+export interface ItemDataWrapper {
+    item: Item
+    viewType: ViewType
+    data?: ItemData
+    extra?: Record<string, any>
+}

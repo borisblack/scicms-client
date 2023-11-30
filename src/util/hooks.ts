@@ -1,25 +1,29 @@
-import {useEffect, useMemo, useRef, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import type {TypedUseSelectorHook} from 'react-redux'
 import {useDispatch, useSelector} from 'react-redux'
 import type {AppDispatch, RootState} from 'src/store'
-import PermissionManager, {Acl, PermissionMap} from 'src/services/permission'
-import {Item, ItemData, Locale, UserInfo} from 'src/types'
+import PermissionManager, {Acl} from 'src/services/permission'
+import {Item, ItemData, ItemDataWrapper, UserInfo, ViewType} from 'src/types'
 import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME} from 'src/config/constants'
-import {selectMe} from 'src/features/auth/authSlice'
+import {logout as doLogout, selectIsExpired, selectMe} from 'src/features/auth/authSlice'
 import {
+    RegistryState,
+    reset as resetRegistry,
     selectCoreConfig,
+    selectIsInitialized,
     selectItems,
     selectItemTemplates,
     selectLifecycles,
+    selectLoading as selectRegistryLoading,
     selectLocales,
     selectPermissions
 } from 'src/features/registry/registrySlice'
-import {ItemMap} from 'src/services/item'
 import QueryManager from 'src/services/query'
 import MutationManager from 'src/services/mutation'
-import {ItemTemplateMap} from 'src/services/item-template'
-import {LifecycleMap} from 'src/services/lifecycle'
-import {CoreConfig} from 'src/services/core-config'
+import {useTranslation} from 'react-i18next'
+import {notification} from 'antd'
+import {useMDIContext} from '../components/mdi-tabs/hooks'
+import {createItemMDITab, generateKeyById} from './mdi'
 
 export const useAppDispatch: () => AppDispatch = useDispatch
 
@@ -54,40 +58,47 @@ export function useCache<T>(cb: () => Promise<T>) {
     return {loading, data}
 }
 
-export function useMe(): UserInfo | null {
-    return useAppSelector(selectMe)
+export function useAuth(): {me: UserInfo | null, isExpired: boolean, logout: () => Promise<void>} {
+    const dispatch = useAppDispatch()
+    const me = useAppSelector(selectMe)
+    const isExpired = useAppSelector(selectIsExpired)
+
+    const logout = useCallback(async () => {
+        await dispatch(doLogout())
+    }, [dispatch])
+
+    return {me, isExpired, logout}
 }
 
-export function useItemTemplates(): ItemTemplateMap {
-    return useAppSelector(selectItemTemplates)
+interface UseRegistry extends RegistryState {
+    reset: () => void
 }
 
-export function useItems(): ItemMap {
-    return useAppSelector(selectItems)
-}
+export function useRegistry(): UseRegistry {
+    const dispatch = useAppDispatch()
 
-export function usePermissions(): PermissionMap {
-    return useAppSelector(selectPermissions)
-}
+    const loading = useAppSelector(selectRegistryLoading)
+    const isInitialized = useAppSelector(selectIsInitialized)
+    const coreConfig = useAppSelector(selectCoreConfig)
+    const items = useAppSelector(selectItems)
+    const itemTemplates = useAppSelector(selectItemTemplates)
+    const permissions = useAppSelector(selectPermissions)
+    const lifecycles = useAppSelector(selectLifecycles)
+    const locales = useAppSelector(selectLocales)
 
-export function useLifecycles(): LifecycleMap {
-    return useAppSelector(selectLifecycles)
-}
+    const reset = useCallback(async () => {
+        dispatch(resetRegistry())
+    }, [dispatch])
 
-export function useLocales(): Locale[] {
-    return useAppSelector(selectLocales)
-}
-
-export function useCoreConfig(): CoreConfig | undefined {
-    return useAppSelector(selectCoreConfig)
+    return {loading, isInitialized, coreConfig, items, itemTemplates, permissions, lifecycles, locales, reset}
 }
 
 export function useAcl(item: Item, data?: ItemData | null): Acl {
-    const me = useMe()
-    const permissionMap = usePermissions()
+    const {me} = useAuth()
+    const {permissions} = useRegistry()
     const isNew = !data?.id
     const isLockedByMe = !!me?.id && data?.lockedBy?.data?.id === me.id
-    const permissionManager = useMemo(() => new PermissionManager(permissionMap), [permissionMap])
+    const permissionManager = useMemo(() => new PermissionManager(permissions), [permissions])
 
     return useMemo(() => {
         const acl = permissionManager.getAcl(me, item, data)
@@ -97,11 +108,11 @@ export function useAcl(item: Item, data?: ItemData | null): Acl {
 }
 
 export function useItemAcl(item: Item, data?: ItemData | null): Acl {
-    const me = useMe()
-    const permissionMap = usePermissions()
+    const {me} = useAuth()
+    const {permissions} = useRegistry()
     const isNew = !data?.id
     const isLockedByMe = !!me?.id && data?.lockedBy?.data?.id === me.id
-    const permissionManager = useMemo(() => new PermissionManager(permissionMap), [permissionMap])
+    const permissionManager = useMemo(() => new PermissionManager(permissions), [permissions])
     return  useMemo(() => {
         const acl = permissionManager.getAcl(me, item, data)
         acl.canWrite = (isNew && acl.canCreate) || (!data?.core && isLockedByMe && acl.canWrite)
@@ -110,9 +121,9 @@ export function useItemAcl(item: Item, data?: ItemData | null): Acl {
 }
 
 export function useFormAcl(item: Item, data?: ItemData | null): Acl {
-    const me = useMe()
-    const permissionMap = usePermissions()
-    const permissionManager = useMemo(() => new PermissionManager(permissionMap), [permissionMap])
+    const {me} = useAuth()
+    const {permissions} = useRegistry()
+    const permissionManager = useMemo(() => new PermissionManager(permissions), [permissions])
     const isSystemItem = item.name === ITEM_TEMPLATE_ITEM_NAME || item.name === ITEM_ITEM_NAME
     return  useMemo(() => {
         const acl = permissionManager.getAcl(me, item, data)
@@ -123,13 +134,64 @@ export function useFormAcl(item: Item, data?: ItemData | null): Acl {
 }
 
 export function useQueryManager(): QueryManager {
-    const items = useItems()
+    const {items} = useRegistry()
 
     return useMemo(() => new QueryManager(items), [items])
 }
 
 export function useMutationManager(): MutationManager {
-    const items = useItems()
+    const {items} = useRegistry()
 
     return useMemo(() => new MutationManager(items), [items])
+}
+
+export function useItemOperations() {
+    const ctx = useMDIContext<ItemDataWrapper>()
+    const queryManager = useQueryManager()
+    const {t} = useTranslation()
+
+    const create = useCallback((
+        item: Item,
+        initialData?: ItemData,
+        extra?: Record<string, any>,
+        onUpdate?: (updatedData: ItemDataWrapper) => void,
+        onClose?: (closedData: ItemDataWrapper, remove: boolean) => void
+    ) => {
+        ctx.openTab(createItemMDITab({
+            item,
+            viewType: ViewType.view,
+            data: initialData,
+            extra
+        }, onUpdate, onClose))
+    }, [ctx])
+
+    const open = useCallback(async (
+        item: Item,
+        id: string,
+        extra?: Record<string, any>,
+        onUpdate?: (updatedData: ItemDataWrapper) => void,
+        onClose?: (closedData: ItemDataWrapper, remove: boolean) => void
+    ) => {
+        const actualData = await queryManager.findById(item, id)
+        if (actualData.data) {
+            ctx.openTab(createItemMDITab({
+                item,
+                viewType: ViewType.view,
+                data: actualData.data,
+                extra
+            }, onUpdate, onClose))
+        } else {
+            notification.error({
+                message: t('Opening error'),
+                description: t('Item not found. It may have been removed.')
+            })
+        }
+    }, [ctx, queryManager, t])
+
+    const remove = useCallback((itemName: string, id: string, extra?: Record<string, any>) => {
+        const key = generateKeyById(itemName, ViewType.view, id, extra)
+        ctx.closeTab(key, true)
+    }, [ctx])
+
+    return {create, open, remove}
 }

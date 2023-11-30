@@ -1,18 +1,19 @@
 import {Form, Input} from 'antd'
-import {useTranslation} from 'react-i18next'
-
-import {AttributeFieldProps} from '.'
-import {FieldType} from '../../../types'
-import styles from './AttributeField.module.css'
 import {FC, useMemo} from 'react'
+import {useTranslation} from 'react-i18next'
+import {AttributeFieldProps} from '.'
+import {FieldType} from 'src/types'
+import styles from './AttributeField.module.css'
+import {generateKey} from 'src/util/mdi'
 
 const FormItem = Form.Item
 const {Password} = Input
 
-const PasswordAttributeField: FC<AttributeFieldProps> = ({uniqueKey, attrName, attribute, value}) => {
+const PasswordAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrName, attribute, value}) => {
     if (attribute.type !== FieldType.password)
         throw new Error('Illegal attribute')
 
+    const uniqueKey = generateKey(dataWrapper)
     const {t} = useTranslation()
     const isDisabled = useMemo(() => attribute.keyed || attribute.readOnly, [attribute.keyed, attribute.readOnly])
     const additionalProps = useMemo((): any => {

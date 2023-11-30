@@ -8,7 +8,7 @@ import 'react-resizable/css/styles.css'
 
 import {CustomComponentRenderContext} from '../extensions/custom-components'
 import {DASHBOARD_ITEM_NAME, DATASET_ITEM_NAME} from '../config/constants'
-import {Dashboard, DashboardExtra, Dataset, IDash, IDashboardSpec, QueryFilter} from '../types'
+import {Dashboard, DashboardExtra, Dataset, IDash, IDashboardSpec, Item, QueryFilter} from '../types'
 import DashForm, {DashValues} from './DashForm'
 import {generateQueryBlock, printSingleQueryFilter} from '../util/bi'
 import biConfig from '../config/bi'
@@ -18,7 +18,8 @@ import DashWrapper from './DashWrapper'
 import styles from './DashboardSpec.module.css'
 import './DashboardSpec.css'
 import * as DashboardService from '../services/dashboard'
-import {useAcl, useItems} from '../util/hooks'
+import {useAcl, useItemOperations, useRegistry} from '../util/hooks'
+import {generateKey} from '../util/mdi'
 
 interface DashboardSpecProps extends CustomComponentRenderContext {
     extra?: DashboardExtra
@@ -31,11 +32,14 @@ const initialSpec: IDashboardSpec = {
 }
 let seqNum = 0
 
-export default function DashboardSpec({uniqueKey, item, data, extra, buffer, readOnly, onBufferChange, onItemView}: DashboardSpecProps) {
+export default function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: DashboardSpecProps) {
+    const {item, data, extra} = dataWrapper
     if (item.name !== DASHBOARD_ITEM_NAME)
         throw new Error('Illegal argument')
 
-    const itemMap = useItems()
+    const uniqueKey = generateKey(dataWrapper)
+    const {items: itemMap} = useRegistry()
+    const {open: openItem} = useItemOperations()
     const {t} = useTranslation()
     const datasetItem = useMemo(() => itemMap[DATASET_ITEM_NAME], [itemMap])
     const dashboardItem = useMemo(() => itemMap[DASHBOARD_ITEM_NAME], [itemMap])
@@ -127,8 +131,8 @@ export default function DashboardSpec({uniqueKey, item, data, extra, buffer, rea
     }
 
     async function openDash(dash: IDash) {
-        await setActiveDash(dash)
-        await setDashModalVisible(true)
+        setActiveDash(dash)
+        setDashModalVisible(true)
         dashForm.resetFields()
     }
 
@@ -187,8 +191,8 @@ export default function DashboardSpec({uniqueKey, item, data, extra, buffer, rea
         setDashModalVisible(false)
     }
 
-    function handleRelatedDashboardOpen(dashboardId: string, queryFilter: QueryFilter) {
-        onItemView(dashboardItem, dashboardId, {queryFilter})
+    async function handleRelatedDashboardOpen(dashboardId: string, queryFilter: QueryFilter) {
+        await openItem(dashboardItem, dashboardId, {queryFilter})
     }
 
     function renderDash(dash: IDash) {
@@ -219,7 +223,7 @@ export default function DashboardSpec({uniqueKey, item, data, extra, buffer, rea
     }
 
     async function handleDatasetView(id: string) {
-        await onItemView(datasetItem, id)
+        await openItem(datasetItem, id)
         setDashModalVisible(false)
     }
 

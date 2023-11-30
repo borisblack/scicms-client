@@ -5,9 +5,8 @@ import {Button, Checkbox, message, Modal} from 'antd'
 import {PageHeader} from '@ant-design/pro-layout'
 
 import appConfig from '../../config'
-import {IBuffer, Item, ItemData} from '../../types'
+import {IBuffer, ItemData, ItemDataWrapper} from '../../types'
 import DataGrid, {RequestParams} from '../../components/datagrid/DataGrid'
-import {getLabel, INavTab} from './navTabsSlice'
 import {CustomPluginRenderContext, hasPlugins, renderPlugins} from '../../extensions/plugins'
 import {CustomComponentRenderContext, hasComponents, renderComponents} from '../../extensions/custom-components'
 import * as icons from '@ant-design/icons'
@@ -15,33 +14,26 @@ import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design
 import * as ACL from '../../util/acl'
 import {findAll, getColumns, getHiddenColumns, getInitialData} from '../../util/datagrid'
 import {CheckboxChangeEvent} from 'antd/es/checkbox'
-import {ExtRequestParams} from '../../services/query'
+import {ExtRequestParams} from 'src/services/query'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
-import {
-    ApiMiddlewareContext,
-    ApiOperation,
-    handleApiMiddleware,
-    hasApiMiddleware
-} from '../../extensions/api-middleware'
-import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME, MEDIA_ITEM_NAME} from '../../config/constants'
-import {Callback} from '../../services/mediator'
+import {ApiMiddlewareContext, ApiOperation, handleApiMiddleware, hasApiMiddleware} from 'src/extensions/api-middleware'
+import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME, MEDIA_ITEM_NAME} from 'src/config/constants'
+import {useAuth, useItemOperations, useMutationManager, useRegistry} from 'src/util/hooks'
+import {useMDIContext} from 'src/components/mdi-tabs/hooks'
+import {generateLabel} from 'src/util/mdi'
 import styles from './NavTabs.module.css'
-import {useItems, useMe, useMutationManager, usePermissions} from '../../util/hooks'
 
 interface Props {
-    navTab: INavTab
-    onItemCreate: (item: Item, initialData?: ItemData | null, cb?: Callback, observerKey?: string) => void
-    onItemView: (item: Item, id: string, extra?: Record<string, any>, cb?: Callback, observerKey?: string) => void
-    onItemDelete: (itemName: string, id: string) => void
-    onLogout: () => void
+    data: ItemDataWrapper
 }
 
 const {info} = Modal
 
-function DefaultNavTab({navTab, onItemCreate, onItemView, onItemDelete, onLogout}: Props) {
-    const me = useMe()
-    const itemMap = useItems()
-    const permissionMap = usePermissions()
+function DefaultNavTab({data: dataWrapper}: Props) {
+    const {me, logout} = useAuth()
+    const {items: itemMap, permissions: permissionMap, reset: resetRegistry} = useRegistry()
+    const ctx = useMDIContext<ItemDataWrapper>()
+    const {create: createItem, open: openItem, remove: removeItem} = useItemOperations()
     const mutationManager = useMutationManager()
     const {t} = useTranslation()
     const [loading, setLoading] = useState(false)
@@ -52,7 +44,7 @@ function DefaultNavTab({navTab, onItemCreate, onItemView, onItemDelete, onLogout
     const contentRef = useRef<HTMLDivElement>(null)
     const footerRef = useRef<HTMLDivElement>(null)
     const [buffer, setBuffer] = useState<IBuffer>({})
-    const {item} = navTab
+    const {item} = dataWrapper
     const isSystemItem = item.name === ITEM_TEMPLATE_ITEM_NAME || item.name === ITEM_ITEM_NAME
     const columnsMemoized = useMemo(() => getColumns(itemMap, item), [item, itemMap])
     const hiddenColumnsMemoized = useMemo(() => getHiddenColumns(item), [item])
@@ -64,15 +56,10 @@ function DefaultNavTab({navTab, onItemCreate, onItemView, onItemDelete, onLogout
     }), [buffer, handleBufferChange, item])
 
     const customComponentContext: CustomComponentRenderContext = useMemo(() => ({
-        uniqueKey: navTab.key,
-        item,
-        extra: navTab.extra,
+        data: dataWrapper,
         buffer,
         onBufferChange: handleBufferChange,
-        onItemCreate,
-        onItemView,
-        onItemDelete
-    }), [navTab.key, navTab.extra, item, buffer, handleBufferChange, onItemCreate, onItemView, onItemDelete])
+    }), [dataWrapper, buffer, handleBufferChange])
 
     useEffect(() => {
         const headerNode = headerRef.current
@@ -94,6 +81,11 @@ function DefaultNavTab({navTab, onItemCreate, onItemView, onItemDelete, onLogout
         }
     }, [item.name, pluginContext])
 
+    const handleLogout = useCallback(async () => {
+        await logout()
+        resetRegistry()
+    }, [logout, resetRegistry])
+
     const refresh = () => setVersion(prevVersion => prevVersion + 1)
 
     const handleRequest = useCallback(async (params: RequestParams) => {
@@ -112,9 +104,9 @@ function DefaultNavTab({navTab, onItemCreate, onItemView, onItemDelete, onLogout
 
     const handleView = useCallback(async (id: string) => {
         setLoading(true)
-        await onItemView(item, id, undefined, refresh, navTab.key)
+        await openItem(item, id, undefined, refresh, refresh)
         setLoading(false)
-    }, [item, navTab.key, onItemView])
+    }, [item, openItem])
 
     const handleRowDoubleClick = useCallback((row: Row<ItemData>) => handleView(row.original.id), [handleView])
 
@@ -124,9 +116,9 @@ function DefaultNavTab({navTab, onItemCreate, onItemView, onItemDelete, onLogout
 
         info({
             title: `${t('You must sign in again to apply the changes')}`,
-            onOk: onLogout
+            onOk: handleLogout
         })
-    }, [isSystemItem, onLogout, t])
+    }, [isSystemItem, handleLogout, t])
 
     const handleDelete = useCallback(async (id: string, purge: boolean = false) => {
         setLoading(true)
@@ -142,15 +134,15 @@ function DefaultNavTab({navTab, onItemCreate, onItemView, onItemDelete, onLogout
                     await doDelete()
                 }
             }
-            await onItemDelete(item.name, id)
-            await refresh()
+            removeItem(item.name, id)
+            refresh()
             logoutIfNeed()
         } catch (e: any) {
             message.error(e.message)
         } finally {
             setLoading(false)
         }
-    }, [onItemDelete, item, logoutIfNeed, mutationManager, me, itemMap, buffer])
+    }, [removeItem, item, logoutIfNeed, mutationManager, me, itemMap, buffer])
 
     const getRowContextMenu = useCallback((row: Row<ItemData>) => {
         const items: ItemType[] = [{
@@ -193,8 +185,8 @@ function DefaultNavTab({navTab, onItemCreate, onItemView, onItemDelete, onLogout
     }, [t, me, permissionMap, handleView, item.versioned, handleDelete])
 
     const handleCreate = useCallback(() => {
-        onItemCreate(item, null,refresh, navTab.key)
-    }, [item, onItemCreate, navTab.key])
+        createItem(item, undefined, undefined, refresh, refresh)
+    }, [createItem, item])
 
     const renderPageHeader = useCallback((): ReactNode => {
         const Icon = item.icon ? (icons as any)[item.icon] : null
@@ -205,11 +197,11 @@ function DefaultNavTab({navTab, onItemCreate, onItemView, onItemDelete, onLogout
         return (
             <PageHeader
                 className={styles.pageHeader}
-                title={<span>{Icon ? <Icon/> : null}&nbsp;&nbsp;{getLabel(navTab)}</span>}
+                title={<span>{Icon ? <Icon/> : null}&nbsp;&nbsp;{generateLabel(dataWrapper)}</span>}
                 extra={canCreate && <Button type="primary" onClick={handleCreate}><PlusCircleOutlined /> {t('Create')}</Button>}
             />
         )
-    }, [handleCreate, item, me, navTab, permissionMap, t])
+    }, [handleCreate, item, me, permissionMap, t, dataWrapper])
 
     const handleLocalizationsCheckBoxChange = useCallback((e: CheckboxChangeEvent) => {
         showAllLocalesRef.current = e.target.checked

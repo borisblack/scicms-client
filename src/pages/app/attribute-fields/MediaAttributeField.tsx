@@ -3,18 +3,20 @@ import {useTranslation} from 'react-i18next'
 import {Button, Form, Input, message, Upload} from 'antd'
 import {UploadOutlined} from '@ant-design/icons'
 import {RcFile, UploadFile} from 'antd/es/upload/interface'
-
-import {FieldType, Media, MediaInfo} from '../../../types'
+import {FieldType, Media, MediaInfo} from 'src/types'
 import {AttributeFieldProps} from '.'
-import * as MediaService from '../../../services/media'
+import * as MediaService from 'src/services/media'
+import {generateKey} from 'src/util/mdi'
 import styles from './AttributeField.module.css'
 
 const {Item: FormItem} = Form
 
-const MediaAttributeField: FC<AttributeFieldProps> = ({uniqueKey, form, item, attrName, attribute, value, setLoading}) => {
+const MediaAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, form, attrName, attribute, value, setLoading}) => {
     if (attribute.type !== FieldType.media)
         throw new Error('Illegal attribute')
 
+    const {item} = dataWrapper
+    const uniqueKey = generateKey(dataWrapper)
     const mediaData = (value?.data ?? attribute.defaultValue) as Media | null | undefined
     const {t} = useTranslation()
     const [fileList, setFileList] = useState<UploadFile[]>(getInitialUploadFileList())

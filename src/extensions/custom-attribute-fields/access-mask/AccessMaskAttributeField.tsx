@@ -1,18 +1,20 @@
 import {FC, useCallback, useMemo} from 'react'
 import {Checkbox, Form, InputNumber} from 'antd'
-
 import {useTranslation} from 'react-i18next'
-import {ACCESS_ITEM_NAME, MASK_ATTR_NAME} from '../../../config/constants'
-import {clearBit, getBit, setBit} from '../../../util'
-import {CustomAttributeFieldRenderContext} from '../index'
+import {ACCESS_ITEM_NAME, MASK_ATTR_NAME} from 'src/config/constants'
+import {clearBit, getBit, setBit} from 'src/util'
+import {CustomAttributeFieldRenderContext} from '..'
+import {generateKey} from 'src/util/mdi'
 import styles from '../CustomAttributeField.module.css'
 
 const FormItem = Form.Item
 
-const AccessMaskAttributeField: FC<CustomAttributeFieldRenderContext> = ({uniqueKey, form, item, attrName, attribute, value}) => {
+const AccessMaskAttributeField: FC<CustomAttributeFieldRenderContext> = ({data: dataWrapper, form, attrName, attribute, value}) => {
+    const {item} = dataWrapper
     if (item.name !== ACCESS_ITEM_NAME || attrName !== MASK_ATTR_NAME)
         throw new Error('Illegal attribute')
 
+    const uniqueKey = generateKey(dataWrapper)
     const {t} = useTranslation()
     const isDisabled = useMemo(() => attribute.readOnly, [attribute.readOnly])
     const additionalProps = useMemo((): any => {

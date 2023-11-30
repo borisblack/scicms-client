@@ -237,6 +237,7 @@ const ru = {
         'number': 'число',
         'Oops! An error has occurred': 'Ой! Произошла ошибка',
         'Open': 'Открыть',
+        'Opening error': 'Ошибка открытия',
         'Operator': 'Оператор',
         'Owned By': 'Владелец',
         'or': 'или',

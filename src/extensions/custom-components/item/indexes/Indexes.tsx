@@ -13,15 +13,16 @@ import {getInitialData, processLocal} from 'src/util/datagrid'
 import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design/icons'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
 import IndexForm from './IndexForm'
-import {useItemAcl, useItemTemplates} from 'src/util/hooks'
+import {useItemAcl, useRegistry} from 'src/util/hooks'
 import {getHiddenIndexColumns, getIndexColumns} from './indexColumns'
 import {NamedIndex} from './types'
 
-export default function Indexes({item, data, buffer, onBufferChange}: CustomComponentRenderContext) {
+export default function Indexes({data: dataWrapper, buffer, onBufferChange}: CustomComponentRenderContext) {
+    const {item, data} = dataWrapper
     if (item.name !== ITEM_TEMPLATE_ITEM_NAME && item.name !== ITEM_ITEM_NAME)
         throw new Error('Illegal argument')
 
-    const itemTemplates = useItemTemplates()
+    const {itemTemplates} = useRegistry()
     const isNew = !data?.id
     const {t} = useTranslation()
     const [version, setVersion] = useState<number>(0)

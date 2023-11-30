@@ -1,7 +1,7 @@
 import {FC, ReactElement, ReactNode} from 'react'
-import customAttributeFieldConfig from '../../config/custom-attribute-field'
-import {AttributeFieldProps} from '../../features/nav-tabs/attribute-fields'
-import {Attribute} from '../../types'
+import customAttributeFieldConfig from 'src/config/custom-attribute-field'
+import {AttributeFieldProps} from 'src/pages/app/attribute-fields'
+import {Attribute} from 'src/types'
 
 export interface CustomAttributeField {
     id: string
@@ -24,7 +24,7 @@ export const getAttributeField = (itemName: string, attrName: string, attribute:
     attributeFields.find(af => af.supports(itemName, attrName, attribute))
 
 export function renderAttributeField(context: CustomAttributeFieldRenderContext, defaultRender: FC<CustomAttributeFieldRenderContext>): ReactElement | null {
-    const attributeField = getAttributeField(context.item.name, context.attrName, context.attribute)
+    const attributeField = getAttributeField(context.data.item.name, context.attrName, context.attribute)
 
     return <>{attributeField ? attributeField.render({context}) : defaultRender(context)}</>
 }

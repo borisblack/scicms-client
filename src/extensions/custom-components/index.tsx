@@ -1,10 +1,9 @@
 import _ from 'lodash'
 import {ReactElement, ReactNode} from 'react'
 
-import {IBuffer, Item, ItemData} from '../../types'
+import {IBuffer, ItemDataWrapper} from '../../types'
 import customComponentConfig from '../../config/custom-component'
 import {FormInstance} from 'antd'
-import {Callback} from '../../services/mediator'
 
 /* Mount points:
 default.header
@@ -47,16 +46,10 @@ export interface CustomComponentRenderProps {
 }
 
 export interface CustomComponentRenderContext {
-    uniqueKey: string
-    item: Item
-    data?: ItemData | null
-    extra?: Record<string, any>
-    buffer: IBuffer
+    data: ItemDataWrapper,
     form?: FormInstance | null
+    buffer: IBuffer
     onBufferChange: (buffer: IBuffer) => void
-    onItemCreate: (item: Item, initialData?: ItemData | null, cb?: Callback, observerKey?: string) => void
-    onItemView: (item: Item, id: string, extra?: Record<string, any>, cb?: Callback, observerKey?: string) => void
-    onItemDelete: (itemName: string, id: string) => void
 }
 
 const customComponents: CustomComponent[] = customComponentConfig.components.sort((a, b) => a.priority - b.priority)

@@ -10,7 +10,7 @@ import i18n from '../../i18n'
 import {fetchLocales} from '../../services/locale'
 import {fetchLifecycles, LifecycleMap} from '../../services/lifecycle'
 
-interface RegistryState {
+export interface RegistryState {
     isInitialized: boolean
     loading: boolean
     coreConfig?: CoreConfig

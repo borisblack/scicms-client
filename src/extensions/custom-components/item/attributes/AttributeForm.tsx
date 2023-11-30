@@ -10,7 +10,7 @@ import {regExpRule} from 'src/util/form'
 import {LOWERCASE_NO_WHITESPACE_PATTERN} from 'src/config/constants'
 import * as SequenceService from 'src/services/sequence'
 import {NamedAttribute} from './types'
-import {useItems} from '../../../../util/hooks'
+import {useRegistry} from '../../../../util/hooks'
 
 interface Props {
     form: FormInstance
@@ -32,7 +32,7 @@ const {Option: SelectOption} = Select
 const {TextArea} = Input
 
 export default function AttributeForm({form, attribute, canEdit, onFormFinish}: Props) {
-    const itemMap = useItems()
+    const {items: itemMap} = useRegistry()
     const {t} = useTranslation()
     const [attrType, setAttrType] = useState<FieldType | undefined>(attribute?.type)
     const [relType, setRelType] = useState<RelType | undefined>(attribute?.relType)

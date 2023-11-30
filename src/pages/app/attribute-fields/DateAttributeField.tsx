@@ -1,20 +1,24 @@
-import _ from 'lodash'
 import {FC, useCallback, useMemo} from 'react'
 import {useTranslation} from 'react-i18next'
-import {Form, Input} from 'antd'
-
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import {DatePicker, Form} from 'antd'
+import appConfig from 'src/config'
+import {FieldType} from 'src/types'
 import {AttributeFieldProps} from '.'
-import {FieldType} from '../../../types'
+import {generateKey} from 'src/util/mdi'
 import styles from './AttributeField.module.css'
-import appConfig from '../../../config'
+
+dayjs.extend(utc)
 
 const FormItem = Form.Item
-const {TextArea} = Input
+const {momentDisplayDateFormatString} = appConfig.dateTime
 
-const ArrayAttributeField: FC<AttributeFieldProps> = ({uniqueKey, attrName, attribute, value}) => {
-    if (attribute.type !== FieldType.array)
+const DateAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrName, attribute, value}) => {
+    if (attribute.type !== FieldType.date)
         throw new Error('Illegal attribute')
 
+    const uniqueKey = generateKey(dataWrapper)
     const {t} = useTranslation()
     const isDisabled = useMemo(() => attribute.keyed || attribute.readOnly, [attribute.keyed, attribute.readOnly])
     const additionalProps = useMemo((): any => {
@@ -25,22 +29,7 @@ const ArrayAttributeField: FC<AttributeFieldProps> = ({uniqueKey, attrName, attr
         return additionalProps
     }, [isDisabled])
 
-    const parseValue = useCallback((val: any) => {
-        if (val == null)
-            return null
-
-        if (!_.isArray(val))
-            throw new Error('Illegal attribute')
-
-        const arr = val.map(it => {
-            if (_.isObject(it))
-                return JSON.stringify(it)
-
-            return it
-        })
-
-        return arr.join('\n')
-    }, [])
+    const parseValue = useCallback((val: string | null | undefined) => val == null ? null : dayjs.utc(val), [])
 
     return (
         <FormItem
@@ -48,16 +37,17 @@ const ArrayAttributeField: FC<AttributeFieldProps> = ({uniqueKey, attrName, attr
             name={attrName}
             label={t(attribute.displayName)}
             hidden={attribute.fieldHidden}
-            initialValue={parseValue(value) ?? (attribute.defaultValue ? parseValue(JSON.parse(attribute.defaultValue)) : null)}
+            initialValue={parseValue(value) ?? parseValue(attribute.defaultValue)}
             rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
         >
-            <TextArea
+            <DatePicker
                 id={`${uniqueKey}#${attrName}`}
-                rows={appConfig.ui.form.textAreaRows}
+                style={{width: '100%'}}
+                format={momentDisplayDateFormatString}
                 {...additionalProps}
             />
         </FormItem>
     )
 }
 
-export default ArrayAttributeField
+export default DateAttributeField

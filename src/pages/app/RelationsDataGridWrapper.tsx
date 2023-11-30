@@ -1,38 +1,33 @@
 import {useCallback, useMemo, useRef, useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import {Row} from '@tanstack/react-table'
 import {Button, message, Modal, Space} from 'antd'
-import appConfig from '../../config'
-import DataGrid, {RequestParams} from '../../components/datagrid/DataGrid'
-import {findAllRelated, getColumns, getHiddenColumns, getInitialData} from '../../util/datagrid'
-import {Attribute, Item, ItemData, RelType} from '../../types'
-import {useTranslation} from 'react-i18next'
-import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined, SelectOutlined} from '@ant-design/icons'
-import {ID_ATTR_NAME, SOURCE_ATTR_NAME, TARGET_ATTR_NAME} from '../../config/constants'
-import {Callback, CallbackOperation} from '../../services/mediator'
-import MutationManager from '../../services/mutation'
-import QueryManager, {ItemFiltersInput} from '../../services/query'
-import SearchDataGridWrapper from './SearchDataGridWrapper'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
-import * as ACL from '../../util/acl'
-import {useAcl, useItems, useMe, usePermissions} from '../../util/hooks'
+import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined, SelectOutlined} from '@ant-design/icons'
+import appConfig from 'src/config'
+import DataGrid, {RequestParams} from 'src/components/datagrid/DataGrid'
+import {findAllRelated, getColumns, getHiddenColumns, getInitialData} from 'src/util/datagrid'
+import {Attribute, ItemData, ItemDataWrapper, RelType} from 'src/types'
+import {ID_ATTR_NAME, SOURCE_ATTR_NAME, TARGET_ATTR_NAME} from 'src/config/constants'
+import MutationManager from 'src/services/mutation'
+import QueryManager, {ItemFiltersInput} from 'src/services/query'
+import SearchDataGridWrapper from './SearchDataGridWrapper'
+import * as ACL from 'src/util/acl'
+import {useAcl, useAuth, useItemOperations, useRegistry} from 'src/util/hooks'
 
 interface Props {
-    uniqueKey: string
-    item: Item
-    itemData: ItemData
+    data: ItemDataWrapper
     relAttrName: string
     relAttribute: Attribute
-    onItemCreate: (item: Item, initialData?: ItemData | null, cb?: Callback, observerKey?: string) => void
-    onItemView: (item: Item, id: string, extra?: Record<string, any>, cb?: Callback, observerKey?: string) => void
-    onItemDelete: (itemName: string, id: string) => void
 }
 
 const SELECTION_MODAL_WIDTH = 800
 
-export default function RelationsDataGridWrapper({uniqueKey, item, itemData, relAttrName, relAttribute, onItemCreate, onItemView, onItemDelete}: Props) {
-    const me = useMe()
-    const itemMap = useItems()
-    const permissionMap = usePermissions()
+export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName, relAttribute}: Props) {
+    const {item, data: itemData} = dataWrapper
+    const {me} = useAuth()
+    const {items: itemMap, permissions: permissionMap} = useRegistry()
+    const {create: createItem, open: openItem, remove: removeItem} = useItemOperations()
 
     if (!relAttribute.target || (relAttribute.relType !== RelType.oneToMany && relAttribute.relType !== RelType.manyToMany))
         throw Error('Illegal attribute')
@@ -76,6 +71,9 @@ export default function RelationsDataGridWrapper({uniqueKey, item, itemData, rel
         [relAttribute])
 
     const handleRequest = useCallback(async (params: RequestParams) => {
+        if (itemData?.id == null)
+            throw new Error('Item ID is null.')
+
         try {
             setLoading(true)
             const dataWithPagination = await findAllRelated(itemMap, item.name, itemData.id, relAttrName, target, params)
@@ -86,15 +84,19 @@ export default function RelationsDataGridWrapper({uniqueKey, item, itemData, rel
         } finally {
             setLoading(false)
         }
-    }, [item.name, itemData.id, itemMap, relAttrName, target])
+    }, [item.name, itemData?.id, itemMap, relAttrName, target])
 
     const refresh = () => setVersion(prevVersion => prevVersion + 1)
 
-    const processExistingManyToManyRelation = useCallback(async (operation: CallbackOperation, id: string) => {
+    const processExistingManyToManyRelation = useCallback(async (updatedItem: ItemDataWrapper, remove: boolean = false) => {
         if (relAttribute.relType !== RelType.manyToMany || !intermediate)
-            throw Error('Illegal attribute')
+            throw new Error('Illegal attribute.')
 
-        if (operation === CallbackOperation.DELETE) {
+        const id = updatedItem.data?.id
+        if (id == null)
+            throw new Error('ID of updated item must be set.')
+
+        if (remove) {
             setLoading(true)
             try {
                 const intermediatesToDelete = await queryManager.findAllBy(intermediate, {[targetAttrName]: {id: {eq: id}}} as unknown as ItemFiltersInput<ItemData>) // must be only one
@@ -112,11 +114,18 @@ export default function RelationsDataGridWrapper({uniqueKey, item, itemData, rel
         }
     }, [relAttribute.relType, intermediate, queryManager, targetAttrName, mutationManager])
 
-    const processCreatedManyToManyRelation = useCallback(async (operation: CallbackOperation, id: string) => {
-        if (relAttribute.relType !== RelType.manyToMany || !intermediate)
-            throw Error('Illegal attribute')
+    const processCreatedManyToManyRelation = useCallback(async (updatedItem: ItemDataWrapper, remove: boolean = false) => {
+        if (itemData?.id == null)
+            throw new Error('Item ID is null.')
 
-        if (operation === CallbackOperation.UPDATE && !createdIds.current.has(id)) {
+        if (relAttribute.relType !== RelType.manyToMany || !intermediate)
+            throw new Error('Illegal attribute.')
+
+        const id = updatedItem.data?.id
+        if (id == null)
+            throw new Error('ID of updated item must be set.')
+
+        if (!remove && !createdIds.current.has(id)) {
             setLoading(true)
             try {
                 await mutationManager.create(intermediate, {[sourceAttrName]: itemData.id, [targetAttrName]: id})
@@ -130,12 +139,15 @@ export default function RelationsDataGridWrapper({uniqueKey, item, itemData, rel
             }
         }
 
-        await processExistingManyToManyRelation(operation, id)
-    }, [relAttribute.relType, intermediate, processExistingManyToManyRelation, mutationManager, sourceAttrName, itemData.id, targetAttrName])
+        await processExistingManyToManyRelation(updatedItem, remove)
+    }, [relAttribute.relType, intermediate, processExistingManyToManyRelation, mutationManager, sourceAttrName, itemData?.id, targetAttrName])
 
-    const createManyToOneInitialData = useCallback((): ItemData | null => {
+    const createManyToOneInitialData = useCallback((): ItemData | undefined => {
+        if (itemData?.id == null)
+            throw new Error('Item ID is null.')
+
         if (relAttribute.relType !== RelType.oneToMany || !oppositeAttrName)
-            throw new Error('Illegal attribute')
+            throw new Error('Illegal attribute.')
 
         const initialData: any = {id: itemData.id}
         if (item.titleAttribute !== ID_ATTR_NAME)
@@ -147,25 +159,29 @@ export default function RelationsDataGridWrapper({uniqueKey, item, itemData, rel
     const handleCreate = useCallback(() => {
         if (isOneToMany) {
             const initialData = createManyToOneInitialData()
-            onItemCreate(target, initialData, refresh, uniqueKey)
+            createItem(target, initialData, undefined, refresh, refresh)
         } else {
-            onItemCreate(target, null, processCreatedManyToManyRelation, uniqueKey)
+            createItem(target, undefined, undefined, processCreatedManyToManyRelation, processCreatedManyToManyRelation)
         }
-    }, [createManyToOneInitialData, isOneToMany, onItemCreate, uniqueKey, processCreatedManyToManyRelation, target])
+    }, [createManyToOneInitialData, isOneToMany, createItem, processCreatedManyToManyRelation, target])
 
     const handleManyToManySelect = useCallback(async (selectedItemData: ItemData) => {
+        if (itemData?.id == null)
+            throw new Error('Item ID is null.')
+
         if (relAttribute.relType !== RelType.manyToMany || !intermediate)
-            throw Error('Illegal attribute')
+            throw new Error('Illegal attribute.')
 
         await mutationManager.create(intermediate, {[sourceAttrName]: itemData.id, [targetAttrName]: selectedItemData.id})
 
         refresh()
         setSelectionModalVisible(false)
-    }, [relAttribute.relType, intermediate, mutationManager, sourceAttrName, itemData.id, targetAttrName])
+    }, [relAttribute.relType, intermediate, mutationManager, sourceAttrName, itemData?.id, targetAttrName])
 
-    const openTarget = useCallback(
-        (id: string) => onItemView(target, id, undefined, isOneToMany ? refresh : processExistingManyToManyRelation, uniqueKey),
-        [onItemView, target, isOneToMany, processExistingManyToManyRelation, uniqueKey])
+    const openTarget = useCallback(async (id: string) => {
+        const cb = isOneToMany ? refresh : processExistingManyToManyRelation
+        await openItem(target, id, undefined, cb, cb)
+    }, [openItem, target, isOneToMany, processExistingManyToManyRelation])
 
     const deleteTarget = useCallback(async (id: string, purge: boolean = false) => {
         setLoading(true)
@@ -174,15 +190,15 @@ export default function RelationsDataGridWrapper({uniqueKey, item, itemData, rel
                 await mutationManager.purge(target, id, appConfig.mutation.deletingStrategy)
             else
                 await mutationManager.remove(target, id, appConfig.mutation.deletingStrategy)
-            await onItemDelete(target.name, id)
-            await refresh()
+            removeItem(target.name, id)
+            refresh()
         } catch (e: any) {
             console.error(e.message)
             message.error(e.message)
         } finally {
             setLoading(false)
         }
-    }, [mutationManager, target, onItemDelete])
+    }, [mutationManager, target, removeItem])
 
     const deleteIntermediate = useCallback(async (targetId: string) => {
         if (intermediate == null) {

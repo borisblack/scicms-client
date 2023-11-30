@@ -1,13 +1,13 @@
 import {Button, Form, Input, message, Modal, Tooltip} from 'antd'
 import {FC, useMemo, useState} from 'react'
-
-import {FieldType, ItemData} from '../../types'
-import SearchDataGridWrapper from '../../features/nav-tabs/SearchDataGridWrapper'
 import {useTranslation} from 'react-i18next'
 import {CloseCircleOutlined, FolderOpenOutlined} from '@ant-design/icons'
-import {CustomAttributeFieldRenderContext} from './index'
+import {CustomAttributeFieldRenderContext} from '.'
+import {FieldType, ItemData} from 'src/types'
+import SearchDataGridWrapper from 'src/pages/app/SearchDataGridWrapper'
+import {useItemOperations, useQueryManager, useRegistry} from 'src/util/hooks'
+import {generateKey} from 'src/util/mdi'
 import styles from './CustomAttributeField.module.css'
-import {useItems, useQueryManager} from '../../util/hooks'
 
 const SUFFIX_BUTTON_WIDTH = 24
 const RELATION_MODAL_WIDTH = 800
@@ -20,11 +20,13 @@ interface Props extends CustomAttributeFieldRenderContext {
     forceVisible?: boolean
 }
 
-const StringRelationAttributeField: FC<Props> = ({uniqueKey, form, item, attrName, attribute, target, value, forceVisible, onItemView}) => {
+const StringRelationAttributeField: FC<Props> = ({data: dataWrapper, form, attrName, attribute, target, value, forceVisible}) => {
     if (attribute.type !== FieldType.string)
         throw new Error('Illegal attribute')
 
-    const itemMap = useItems()
+    const uniqueKey = generateKey(dataWrapper)
+    const {items: itemMap} = useRegistry()
+    const {open: openItem} = useItemOperations()
     const {t} = useTranslation()
     const [loading, setLoading] = useState<boolean>(false)
     const [isSearchModalVisible, setSearchModalVisible] = useState<boolean>(false)
@@ -63,7 +65,7 @@ const StringRelationAttributeField: FC<Props> = ({uniqueKey, form, item, attrNam
             if (found.length !== 1)
                 return Promise.reject(`Illegal state. Found ${found.length} records`)
 
-            onItemView(targetItem, found[0].id)
+            await openItem(targetItem, found[0].id)
         } catch (e: any) {
             console.error(e.message)
             message.error(e.message)

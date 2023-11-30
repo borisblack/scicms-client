@@ -1,18 +1,19 @@
-import {AttributeFieldProps} from '.'
-import styles from './AttributeField.module.css'
-import {Form, Input} from 'antd'
+import {FC, useMemo} from 'react'
+import {Form, Select} from 'antd'
 import {useTranslation} from 'react-i18next'
-import {FieldType} from '../../../types'
-import {FC, useCallback, useMemo} from 'react'
-import appConfig from '../../../config'
+import {AttributeFieldProps} from '.'
+import {FieldType} from 'src/types'
+import {generateKey} from 'src/util/mdi'
+import styles from './AttributeField.module.css'
 
 const FormItem = Form.Item
-const {TextArea} = Input
+const {Option: SelectOption} = Select
 
-const JsonAttributeField: FC<AttributeFieldProps> = ({uniqueKey, attrName, attribute, value}) => {
-    if (attribute.type !== FieldType.json && attribute.type !== FieldType.array)
+const EnumAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrName, attribute, value}) => {
+    if (attribute.type !== FieldType.enum || !attribute.enumSet)
         throw new Error('Illegal attribute')
 
+    const uniqueKey = generateKey(dataWrapper)
     const {t} = useTranslation()
     const isDisabled = useMemo(() => attribute.keyed || attribute.readOnly, [attribute.keyed, attribute.readOnly])
     const additionalProps = useMemo((): any => {
@@ -23,24 +24,20 @@ const JsonAttributeField: FC<AttributeFieldProps> = ({uniqueKey, attrName, attri
         return additionalProps
     }, [isDisabled])
 
-    const parseValue = useCallback((val: any) => val == null ? null : JSON.stringify(val), [])
-
     return (
         <FormItem
             className={styles.formItem}
             name={attrName}
             label={t(attribute.displayName)}
             hidden={attribute.fieldHidden}
-            initialValue={parseValue(value) ?? attribute.defaultValue}
+            initialValue={value ?? attribute.defaultValue}
             rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
         >
-            <TextArea
-                id={`${uniqueKey}#${attrName}`}
-                rows={appConfig.ui.form.textAreaRows}
-                {...additionalProps}
-            />
+            <Select id={`${uniqueKey}#${attrName}`} {...additionalProps}>
+                {attribute.enumSet.map(it => <SelectOption key={it} value={it}>{it}</SelectOption>)}
+            </Select>
         </FormItem>
     )
 }
 
-export default JsonAttributeField
+export default EnumAttributeField

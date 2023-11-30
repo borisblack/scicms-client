@@ -13,17 +13,18 @@ import {getInitialData, processLocal} from '../../../../util/datagrid'
 import AttributeForm from './AttributeForm'
 import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design/icons'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
-import {useItemAcl, useItemTemplates} from '../../../../util/hooks'
+import {useItemAcl, useRegistry} from '../../../../util/hooks'
 import {getAttributeColumns, getHiddenAttributeColumns} from './attributeColumns'
 import {NamedAttribute} from './types'
 
 const EDIT_MODAL_WIDTH = 800
 
-export default function Attributes({item, data, buffer, onBufferChange}: CustomComponentRenderContext) {
+export default function Attributes({data: dataWrapper, buffer, onBufferChange}: CustomComponentRenderContext) {
+    const {item, data} = dataWrapper
     if (item.name !== ITEM_TEMPLATE_ITEM_NAME && item.name !== ITEM_ITEM_NAME)
         throw new Error('Illegal argument')
 
-    const itemTemplates = useItemTemplates()
+    const {itemTemplates} = useRegistry()
     const isNew = !data?.id
     const {t} = useTranslation()
     const [version, setVersion] = useState<number>(0)

@@ -2,21 +2,21 @@ import _ from 'lodash'
 import React, {useCallback, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Layout, Menu, Spin} from 'antd'
+import {LogoutOutlined, UserOutlined} from '@ant-design/icons'
 // import {gql, useQuery} from '@apollo/client'
 import {ItemType} from 'antd/lib/menu/hooks/useItems'
 
 import './Navbar.css'
-import logo from '../../logo.svg'
-import menuConfig, {MenuItem, SubMenu} from '../../config/menu'
-import {useAppDispatch, useAppSelector, useMe} from '../../util/hooks'
-import {Item} from '../../types'
-import {selectItems, selectLoading} from './registrySlice'
-import {openNavTab, ViewType} from '../nav-tabs/navTabsSlice'
-import {allIcons} from '../../util/icons'
-import {LogoutOutlined, UserOutlined} from '@ant-design/icons'
+import logo from 'src/logo.svg'
+import menuConfig, {MenuItem, SubMenu} from 'src/config/menu'
+import {useAuth, useRegistry} from 'src/util/hooks'
+import {Item, ItemDataWrapper, ViewType} from 'src/types'
+import {allIcons} from 'src/util/icons'
+import {createItemMDITab} from 'src/util/mdi'
+import {MDIContext} from '../../components/mdi-tabs'
 
 type Props = {
-    onLogout: () => void
+    ctx: MDIContext<ItemDataWrapper>
 }
 
 const {Sider} = Layout
@@ -25,14 +25,17 @@ const isNavbarCollapsed = () => localStorage.getItem('navbarCollapsed') === '1'
 
 const setNavbarCollapsed = (collapsed: boolean) => localStorage.setItem('navbarCollapsed', collapsed ? '1' : '0')
 
-const Navbar = ({onLogout}: Props) => {
-    const me = useMe()
+const Navbar = ({ctx}: Props) => {
+    const {me, logout} = useAuth()
+    const {items, loading, reset: resetRegistry} = useRegistry()
     const {t} = useTranslation()
-    const dispatch = useAppDispatch()
-    const loading = useAppSelector(selectLoading)
-    const items = useAppSelector(selectItems)
     const [collapsed, setCollapsed] = useState(isNavbarCollapsed())
     // const { loading, error, data } = useQuery(ME_QUERY, {errorPolicy: 'all'})
+
+    const handleLogout = useCallback(async () => {
+        await logout()
+        resetRegistry()
+    }, [logout, resetRegistry])
 
     const handleToggle = useCallback(() => {
         setNavbarCollapsed(!collapsed)
@@ -40,8 +43,11 @@ const Navbar = ({onLogout}: Props) => {
     }, [collapsed])
 
     const handleItemClick = useCallback((item: Item) => {
-        dispatch(openNavTab({item, viewType: ViewType.default}))
-    }, [dispatch])
+        ctx.openTab(createItemMDITab({
+            item,
+            viewType: ViewType.default
+        }))
+    }, [ctx])
 
     const toAntdMenuItems = useCallback((menuItems: (SubMenu | MenuItem)[]): ItemType[] => menuItems
         .filter(it => !('roles' in it) || _.intersection(it.roles, me?.roles).length > 0)
@@ -85,7 +91,7 @@ const Navbar = ({onLogout}: Props) => {
                                 key: 'logout',
                                 label: t('Logout'),
                                 icon: <LogoutOutlined/>,
-                                onClick: onLogout
+                                onClick: handleLogout
                             }] : []
                         },
                         ...toAntdMenuItems(menuConfig.items)

@@ -6,7 +6,8 @@ import {FILENAME_ATTR_NAME, MEDIA_ITEM_NAME} from '../../../config/constants'
 import * as MediaService from '../../../services/media'
 import {CustomAttributeFieldRenderContext} from '../index'
 
-const MediaFileAttributeField: FC<CustomAttributeFieldRenderContext> = ({form, item, data, attrName, attribute, value}) => {
+const MediaFileAttributeField: FC<CustomAttributeFieldRenderContext> = ({data: dataWrapper, attrName, attribute, value}) => {
+    const {item, data} = dataWrapper
     if (item.name !== MEDIA_ITEM_NAME || attrName !== FILENAME_ATTR_NAME || data == null || value == null)
         throw new Error('Illegal attribute')
 

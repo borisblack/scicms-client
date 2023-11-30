@@ -237,6 +237,7 @@ const en = {
         'number': 'number',
         'Oops! An error has occurred': 'Oops! An error has occurred',
         'Open': 'Open',
+        'Opening error': 'Opening error',
         'Operator': 'Operator',
         'Owned By': 'Owned By',
         'or': 'or',

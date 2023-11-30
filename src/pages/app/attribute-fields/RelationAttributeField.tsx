@@ -1,15 +1,12 @@
 import {Button, Form, Input, Modal, Tooltip} from 'antd'
 import {FC, useMemo, useState} from 'react'
-
-import {FieldType, ItemData, Lifecycle, Permission, RelType} from '../../../types'
-import SearchDataGridWrapper from '../SearchDataGridWrapper'
 import {useTranslation} from 'react-i18next'
-import {AttributeFieldProps} from '.'
 import {CloseCircleOutlined, FolderOpenOutlined} from '@ant-design/icons'
-import {DEFAULT_LIFECYCLE_ID} from '../../../services/lifecycle'
-import {BI_PERMISSION_ID, DEFAULT_PERMISSION_ID, SECURITY_PERMISSION_ID} from '../../../services/permission'
-import {ItemFiltersInput} from '../../../services/query'
-import styles from './AttributeField.module.css'
+import {FieldType, ItemData, Lifecycle, Permission, RelType} from 'src/types'
+import {AttributeFieldProps} from '.'
+import {DEFAULT_LIFECYCLE_ID} from 'src/services/lifecycle'
+import {BI_PERMISSION_ID, DEFAULT_PERMISSION_ID, SECURITY_PERMISSION_ID} from 'src/services/permission'
+import {ItemFiltersInput} from 'src/services/query'
 import {
     DASHBOARD_ITEM_NAME,
     DATASET_ITEM_NAME,
@@ -21,8 +18,11 @@ import {
     ROLE_ITEM_NAME,
     STATE_ATTR_NAME,
     USER_ITEM_NAME
-} from '../../../config/constants'
-import {useItems} from '../../../util/hooks'
+} from 'src/config/constants'
+import {useItemOperations, useRegistry} from 'src/util/hooks'
+import SearchDataGridWrapper from '../SearchDataGridWrapper'
+import {generateKey} from 'src/util/mdi'
+import styles from './AttributeField.module.css'
 
 const SUFFIX_BUTTON_WIDTH = 24
 const RELATION_MODAL_WIDTH = 800
@@ -57,7 +57,7 @@ function getDefaultPermission(itemName: string): string {
     return DEFAULT_PERMISSION_ID
 }
 
-const RelationAttributeField: FC<AttributeFieldProps> = ({uniqueKey, form, item, attrName, attribute, value, canAdmin, onItemView}) => {
+const RelationAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, form, attrName, attribute, value, canAdmin}) => {
     if (attribute.type !== FieldType.relation || attribute.relType === RelType.oneToMany || attribute.relType === RelType.manyToMany)
         throw new Error('Illegal attribute')
 
@@ -65,7 +65,10 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({uniqueKey, form, item,
     if (!target)
         throw new Error('Target is undefined')
 
-    const itemMap = useItems()
+    const {item} = dataWrapper
+    const uniqueKey = generateKey(dataWrapper)
+    const {items: itemMap} = useRegistry()
+    const {open: openItem} = useItemOperations()
     const {t} = useTranslation()
     const [loading, setLoading] = useState<boolean>(false)
     const [isRelationModalVisible, setRelationModalVisible] = useState<boolean>(false)
@@ -118,7 +121,7 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({uniqueKey, form, item,
 
         setLoading(true)
         try {
-            onItemView(targetItem, currentId)
+            await openItem(targetItem, currentId)
         } finally {
             setLoading(false)
         }

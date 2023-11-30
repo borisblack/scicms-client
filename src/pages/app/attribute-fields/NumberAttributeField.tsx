@@ -1,19 +1,20 @@
 import {FC, useMemo} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Form, InputNumber} from 'antd'
-
 import {AttributeFieldProps} from '.'
+import {FieldType} from 'src/types'
+import {generateKey} from 'src/util/mdi'
 import styles from './AttributeField.module.css'
-import {FieldType} from '../../../types'
 
 const FormItem = Form.Item
 
-const NumberAttributeField: FC<AttributeFieldProps> = ({uniqueKey, attrName, attribute, value}) => {
+const NumberAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrName, attribute, value}) => {
     if (attribute.type !== FieldType.int && attribute.type !== FieldType.long
         && attribute.type !== FieldType.float && attribute.type !== FieldType.double
         && attribute.type !== FieldType.decimal)
         throw new Error('Illegal attribute')
 
+    const uniqueKey = generateKey(dataWrapper)
     const {t} = useTranslation()
     const isDisabled = useMemo(() => attribute.keyed || attribute.readOnly, [attribute.keyed, attribute.readOnly])
     const additionalProps = useMemo((): any => {

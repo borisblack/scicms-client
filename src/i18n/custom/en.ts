@@ -53,6 +53,7 @@ const customEn = {
     'Target Part': 'Target Part',
     'Target Resource': 'Target Resource',
     'Target Task': 'Target Task',
+    'Task': 'Task',
     'Tasks': 'Tasks',
     'Top Level Tasks Only': 'Top Level Tasks Only',
     'Start Sheet': 'Start Sheet',

@@ -9,7 +9,7 @@ import {Item, ItemData} from '../../types'
 import {ExtRequestParams, ItemFiltersInput} from '../../services/query'
 import {CheckboxChangeEvent} from 'antd/es/checkbox'
 import {useTranslation} from 'react-i18next'
-import {useItems} from '../../util/hooks'
+import {useRegistry} from 'src/util/hooks'
 
 interface Props {
     item: Item
@@ -22,7 +22,7 @@ interface Props {
 }
 
 export default function SearchDataGridWrapper({item, notHiddenColumns = [], extraFiltersInput, majorRev, locale, state, onSelect}: Props) {
-    const itemMap = useItems()
+    const {items: itemMap} = useRegistry()
     const {t} = useTranslation()
     const [loading, setLoading] = useState<boolean>(false)
     const [data, setData] = useState(getInitialData())

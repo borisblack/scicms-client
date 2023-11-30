@@ -1,17 +1,18 @@
 import {FC, useCallback, useMemo} from 'react'
 import {Checkbox, Form} from 'antd'
-
 import {AttributeFieldProps} from '.'
-import {FieldType} from '../../../types'
-import styles from './AttributeField.module.css'
+import {FieldType} from 'src/types'
 import {useTranslation} from 'react-i18next'
+import {generateKey} from 'src/util/mdi'
+import styles from './AttributeField.module.css'
 
 const FormItem = Form.Item
 
-const BoolAttributeField: FC<AttributeFieldProps> = ({uniqueKey, attrName, attribute, value}) => {
+const BoolAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrName, attribute, value}) => {
     if (attribute.type !== FieldType.bool)
         throw new Error('Illegal attribute')
 
+    const uniqueKey = generateKey(dataWrapper)
     const {t} = useTranslation()
     const isDisabled = useMemo(() => attribute.keyed || attribute.readOnly, [attribute.keyed, attribute.readOnly])
 

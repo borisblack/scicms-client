@@ -1,18 +1,19 @@
-import {FC, useMemo} from 'react'
-import {Form, Select} from 'antd'
-
-import {AttributeFieldProps} from '.'
-import {FieldType} from '../../../types'
+import {AttributeFieldProps} from './index'
 import styles from './AttributeField.module.css'
+import {Form, Input} from 'antd'
 import {useTranslation} from 'react-i18next'
+import {FieldType} from '../../../types'
+import {FC, useMemo} from 'react'
+import {generateKey} from 'src/util/mdi'
 
 const FormItem = Form.Item
-const {Option: SelectOption} = Select
+const {TextArea} = Input
 
-const EnumAttributeField: FC<AttributeFieldProps> = ({uniqueKey, attrName, attribute, value}) => {
-    if (attribute.type !== FieldType.enum || !attribute.enumSet)
+const TextAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrName, attribute, value}) => {
+    if (attribute.type !== FieldType.text)
         throw new Error('Illegal attribute')
 
+    const uniqueKey = generateKey(dataWrapper)
     const {t} = useTranslation()
     const isDisabled = useMemo(() => attribute.keyed || attribute.readOnly, [attribute.keyed, attribute.readOnly])
     const additionalProps = useMemo((): any => {
@@ -32,11 +33,13 @@ const EnumAttributeField: FC<AttributeFieldProps> = ({uniqueKey, attrName, attri
             initialValue={value ?? attribute.defaultValue}
             rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
         >
-            <Select id={`${uniqueKey}#${attrName}`} {...additionalProps}>
-                {attribute.enumSet.map(it => <SelectOption key={it} value={it}>{it}</SelectOption>)}
-            </Select>
+            <TextArea
+                id={`${uniqueKey}#${attrName}`}
+                rows={4}
+                {...additionalProps}
+            />
         </FormItem>
     )
 }
 
-export default EnumAttributeField
+export default TextAttributeField

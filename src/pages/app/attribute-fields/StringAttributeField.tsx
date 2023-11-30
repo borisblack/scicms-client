@@ -2,19 +2,22 @@ import {FC, useCallback, useMemo} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Form, FormRule, Input} from 'antd'
 
-import {AttributeFieldProps} from '.'
-import {FieldType} from '../../../types'
+import {AttributeFieldProps} from './index'
+import {FieldType} from 'src/types'
 import styles from './AttributeField.module.css'
-import {MAJOR_REV_ATTR_NAME, STATE_ATTR_NAME} from '../../../config/constants'
-import {regExpRule} from '../../../util/form'
+import {MAJOR_REV_ATTR_NAME, STATE_ATTR_NAME} from 'src/config/constants'
+import {regExpRule} from 'src/util/form'
+import {generateKey} from 'src/util/mdi'
 
 const FormItem = Form.Item
 
-const StringAttributeField: FC<AttributeFieldProps> = ({uniqueKey, item, attrName, attribute, value}) => {
+const StringAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrName, attribute, value}) => {
     if (attribute.type !== FieldType.string && attribute.type !== FieldType.uuid
         && attribute.type !== FieldType.email && attribute.type !== FieldType.sequence)
         throw new Error('Illegal attribute')
 
+    const {item} = dataWrapper
+    const uniqueKey = generateKey(dataWrapper)
     const {t} = useTranslation()
 
     const isEnabled = useCallback((): boolean => {

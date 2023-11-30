@@ -1,9 +1,8 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {Col, Collapse, Form, Modal, notification, Row, Spin, Tabs} from 'antd'
 import {Tab} from 'rc-tabs/lib/interface'
-import {Attribute, FieldType, IBuffer, Item, ItemData, RelType, ViewState} from 'src/types'
+import {Attribute, FieldType, IBuffer, ItemData, ItemDataWrapper, RelType, ViewState} from 'src/types'
 import {useTranslation} from 'react-i18next'
-import {INavTab} from './navTabsSlice'
 import {CustomPluginRenderContext, hasPlugins, renderPlugins} from 'src/extensions/plugins'
 import {
     CustomComponentRenderContext,
@@ -27,38 +26,23 @@ import {
     MINOR_REV_ATTR_NAME
 } from 'src/config/constants'
 import RelationsDataGridWrapper from './RelationsDataGridWrapper'
-import {Callback} from 'src/services/mediator'
 import {ApiMiddlewareContext, ApiOperation, handleApiMiddleware, hasApiMiddleware} from 'src/extensions/api-middleware'
 import {allIcons} from 'src/util/icons'
 import {exportWinFeatures, exportWinStyle, renderValue} from 'src/util/export'
-import {
-    useCoreConfig,
-    useFormAcl,
-    useItems,
-    useItemTemplates,
-    useMe,
-    useMutationManager,
-    useQueryManager
-} from 'src/util/hooks'
+import {useAuth, useFormAcl, useMutationManager, useQueryManager, useRegistry} from 'src/util/hooks'
+import {useMDIContext} from '../../components/mdi-tabs/hooks'
 
 interface Props {
-    navTab: INavTab
-    closeNavTab: () => void
-    onItemCreate: (item: Item, initialData?: ItemData | null, cb?: Callback, observerKey?: string) => void
-    onItemView: (item: Item, id: string, extra?: Record<string, any>, cb?: Callback, observerKey?: string) => void
-    onItemDelete: (itemName: string, id: string) => void
-    onUpdate: (data: ItemData) => void
-    onLogout: () => void
+    data: ItemDataWrapper
 }
 
 const {info} = Modal
 
-function ViewNavTab({navTab, closeNavTab, onItemView, onItemCreate, onItemDelete, onUpdate, onLogout}: Props) {
-    const me = useMe()
-    const coreConfig = useCoreConfig()
-    const itemTemplates = useItemTemplates()
-    const itemMap = useItems()
-    const {item, data} = navTab
+function ViewNavTab({data: dataWrapper}: Props) {
+    const {me, logout} = useAuth()
+    const {coreConfig, items: itemMap, itemTemplates, reset: resetRegistry} = useRegistry()
+    const ctx = useMDIContext<ItemDataWrapper>()
+    const {item, data} = dataWrapper
     const isNew = !data?.id
     const isSystemItem = item.name === ITEM_TEMPLATE_ITEM_NAME || item.name === ITEM_ITEM_NAME
     const {t} = useTranslation()
@@ -84,17 +68,11 @@ function ViewNavTab({navTab, closeNavTab, onItemView, onItemCreate, onItemDelete
     }), [buffer, data, handleBufferChange, item])
 
     const customComponentContext: CustomComponentRenderContext = useMemo(() => ({
-        uniqueKey: navTab.key,
-        item,
-        buffer,
-        data,
-        extra: navTab.extra,
+        data: dataWrapper,
         form,
+        buffer,
         onBufferChange: handleBufferChange,
-        onItemCreate,
-        onItemView,
-        onItemDelete
-    }), [navTab.key, navTab.extra, item, buffer, data, form, handleBufferChange, onItemCreate, onItemView, onItemDelete])
+    }), [dataWrapper, form, buffer, handleBufferChange])
 
     useEffect(() => {
         if (DEBUG)
@@ -135,15 +113,20 @@ function ViewNavTab({navTab, closeNavTab, onItemView, onItemCreate, onItemDelete
         }
     }, [item.name, pluginContext])
 
+    const handleLogout = useCallback(async () => {
+        await logout()
+        resetRegistry()
+    }, [logout, resetRegistry])
+
     const logoutIfNeed = useCallback(() => {
         if (!isSystemItem)
             return
 
         info({
             title: `${t('You must sign in again to apply the changes')}`,
-            onOk: onLogout
+            onOk: handleLogout
         })
-    }, [isSystemItem, onLogout, t])
+    }, [isSystemItem, handleLogout, t])
 
     async function handleFormFinish(values: any) {
         if (DEBUG) {
@@ -205,7 +188,7 @@ function ViewNavTab({navTab, closeNavTab, onItemView, onItemCreate, onItemDelete
             } else {
                 created = await doCreate()
             }
-            await onUpdate(created)
+            ctx.updateActiveTab({...dataWrapper, data: created})
             setLockedByMe(false)
             setViewState(ViewState.VIEW)
             logoutIfNeed()
@@ -240,7 +223,7 @@ function ViewNavTab({navTab, closeNavTab, onItemView, onItemCreate, onItemDelete
             } else {
                 createdVersion = await doCreateVersion()
             }
-            await onUpdate(createdVersion)
+            ctx.updateActiveTab({...dataWrapper, data: createdVersion})
             setLockedByMe(false)
             setViewState(ViewState.VIEW)
         } catch (e: any) {
@@ -274,7 +257,7 @@ function ViewNavTab({navTab, closeNavTab, onItemView, onItemCreate, onItemDelete
             } else {
                 createdLocalization = await doCreateLocalization()
             }
-            await onUpdate(createdLocalization)
+            ctx.updateActiveTab({...dataWrapper, data: createdLocalization})
             setLockedByMe(false)
             setViewState(ViewState.VIEW)
         } catch (e: any) {
@@ -305,7 +288,7 @@ function ViewNavTab({navTab, closeNavTab, onItemView, onItemCreate, onItemDelete
             } else {
                 updated = await doUpdate()
             }
-            await onUpdate(updated)
+            ctx.updateActiveTab({...dataWrapper, data: updated})
             setLockedByMe(false)
             setViewState(ViewState.VIEW)
             logoutIfNeed()
@@ -338,19 +321,14 @@ function ViewNavTab({navTab, closeNavTab, onItemView, onItemCreate, onItemDelete
                     return (
                         <Col span={span} key={attrName}>
                             <AttributeFieldWrapper
-                                uniqueKey={navTab.key}
+                                data={dataWrapper}
                                 form={form}
-                                item={item}
-                                data={data}
                                 attrName={attrName}
                                 attribute={attr}
                                 value={data ? data[attrName] : null}
                                 canAdmin={acl.canAdmin}
                                 setLoading={setLoading}
                                 onChange={(value: any) => handleFieldChange(attrName, value)}
-                                onItemCreate={onItemCreate}
-                                onItemView={onItemView}
-                                onItemDelete={onItemDelete}
                             />
                         </Col>
                     )
@@ -379,7 +357,7 @@ function ViewNavTab({navTab, closeNavTab, onItemView, onItemCreate, onItemDelete
                     if (viewState === ViewState.UPDATE)
                         setViewState(ViewState.CREATE_LOCALIZATION)
 
-                    onUpdate(existingLocalization)
+                    ctx.updateActiveTab({...dataWrapper, data: existingLocalization})
                 } else {
                     setViewState(ViewState.CREATE_LOCALIZATION)
                 }
@@ -483,14 +461,9 @@ function ViewNavTab({navTab, closeNavTab, onItemView, onItemCreate, onItemDelete
                     label: TargetIcon ? <span><TargetIcon/>{title}</span> : title,
                     children: (
                         <RelationsDataGridWrapper
-                            uniqueKey={navTab.key}
-                            item={item}
-                            itemData={data}
+                            data={dataWrapper}
                             relAttrName={key}
                             relAttribute={attribute}
-                            onItemCreate={onItemCreate}
-                            onItemView={onItemView}
-                            onItemDelete={onItemDelete}
                         />
                     )
                 }
@@ -504,7 +477,7 @@ function ViewNavTab({navTab, closeNavTab, onItemView, onItemCreate, onItemDelete
             tabs.push(...getComponentTabs(`${item.name}.tabs.end`))
 
         return tabs
-    }, [getComponentTabs, item, isNew, itemMap, t, navTab.key, data, onItemCreate, onItemView, onItemDelete])
+    }, [getComponentTabs, item, isNew, itemMap, t, dataWrapper])
 
     const renderTabs = useCallback(() => {
         const hasTabsContentPlugins = hasPlugins('tabs.content', `${item.name}.tabs.content`)
@@ -548,7 +521,7 @@ function ViewNavTab({navTab, closeNavTab, onItemView, onItemCreate, onItemDelete
 
             {(!hasComponents('view.header', `${item.name}.view.header`) && !hasHeaderPlugins) && (
                 <ViewNavTabHeader
-                    navTab={navTab}
+                    data={dataWrapper}
                     form={form}
                     buffer={buffer}
                     canCreate={acl.canCreate}
@@ -559,10 +532,6 @@ function ViewNavTab({navTab, closeNavTab, onItemView, onItemCreate, onItemDelete
                     isLockedByMe={isLockedByMe}
                     setLockedByMe={setLockedByMe}
                     setLoading={setLoading}
-                    closePage={closeNavTab}
-                    onItemView={onItemView}
-                    onItemDelete={onItemDelete}
-                    onUpdate={onUpdate}
                     onHtmlExport={handleHtmlExport}
                     logoutIfNeed={logoutIfNeed}
                 />

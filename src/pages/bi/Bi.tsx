@@ -1,75 +1,80 @@
 import _ from 'lodash'
-import React, {useCallback, useEffect, useState} from 'react'
+import React, {ReactNode, useCallback, useEffect, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Navigate} from 'react-router-dom'
-import {Tab} from 'rc-tabs/lib/interface'
-import {Layout, Menu, Spin, Tabs} from 'antd'
-import {ExclamationCircleOutlined, FolderOutlined, FundOutlined, LogoutOutlined, UserOutlined} from '@ant-design/icons'
-import {useAppDispatch, useAppSelector} from 'src/util/hooks'
-import {logout, selectIsExpired, selectMe} from 'src/features/auth/authSlice'
-import {
-    initializeIfNeeded,
-    reset as resetRegistry,
-    selectIsInitialized,
-    selectItems,
-    selectItemTemplates,
-    selectPermissions
-} from 'src/features/registry/registrySlice'
-import {reset as resetNavTabs} from 'src/features/nav-tabs/navTabsSlice'
-import * as DashboardService from 'src/services/dashboard'
-import {Dashboard, DashboardCategory, DashboardExtra} from 'src/types'
-import './Bi.css'
-import logo from 'src/logo.svg'
-import biConfig from 'src/config/bi'
-import DashboardSpecReadOnlyWrapper from 'src/bi/DashboardSpecReadOnlyWrapper'
-import {objectToHash} from 'src/util'
-import * as DashboardCategoryService from 'src/services/dashboard-category'
+import {Layout, Menu, Spin} from 'antd'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
+import {FolderOutlined, FundOutlined, LogoutOutlined, UserOutlined} from '@ant-design/icons'
+import {useAppDispatch, useAuth, useRegistry} from 'src/util/hooks'
+import {initializeIfNeeded} from 'src/features/registry/registrySlice'
+import * as DashboardService from 'src/services/dashboard'
+import {Dashboard, DashboardCategory, DashboardExtra, ItemDataWrapper, ViewType} from 'src/types'
+import biConfig from 'src/config/bi'
+import * as DashboardCategoryService from 'src/services/dashboard-category'
 import {allIcons} from 'src/util/icons'
-
-interface BiPage {
-    dashboard: Dashboard,
-    extra?: DashboardExtra
-}
+import {DASHBOARD_ITEM_NAME} from 'src/config/constants'
+import {useNewMDIContext} from 'src/components/mdi-tabs/hooks'
+import MDITabs from 'src/components/mdi-tabs/MDITabs'
+import {MDITab} from 'src/components/mdi-tabs'
+import {generateKey, generateLabel} from 'src/util/mdi'
+import DashboardSpec from 'src/bi/DashboardSpec'
+import logo from 'src/logo.svg'
+import './Bi.css'
 
 const {Content, Sider} = Layout
 
 const isNavbarCollapsed = () => localStorage.getItem('biNavbarCollapsed') === '1'
 const setNavbarCollapsed = (collapsed: boolean) => localStorage.setItem('biNavbarCollapsed', collapsed ? '1' : '0')
 
+const renderDashboard = (data: ItemDataWrapper): ReactNode => (
+    <div className="Bi-page-content">
+        <DashboardSpec
+            data={data}
+            readOnly
+            buffer={{}}
+            onBufferChange={() => {}}
+        />
+    </div>
+)
+
+const createDashboardMDITab = (data: ItemDataWrapper,): MDITab<ItemDataWrapper> => ({
+    key: generateKey,
+    label: generateLabel,
+    data,
+    render: renderDashboard,
+    onUpdate: [],
+    onClose: []
+})
+
 function Bi() {
-    const {t} = useTranslation()
     const dispatch = useAppDispatch()
-    const me = useAppSelector(selectMe)
-    const isExpired = useAppSelector(selectIsExpired)
-    const isInitialized = useAppSelector(selectIsInitialized)
-    const itemTemplates = useAppSelector(selectItemTemplates)
-    const items = useAppSelector(selectItems)
-    const permissions = useAppSelector(selectPermissions)
+    const {t} = useTranslation()
+    const {me, isExpired, logout} = useAuth()
+    const {isInitialized, items: itemMap, reset: resetRegistry} = useRegistry()
+    const mdiContext = useNewMDIContext<ItemDataWrapper>([])
     const [collapsed, setCollapsed] = useState(isNavbarCollapsed())
     const [dashboardMap, setDashboardMap] = useState<Record<string, Dashboard>>({})
     const [dashboardCategoryMap, setDashboardCategoryMap] = useState<Record<string, DashboardCategory>>({})
     const [loading, setLoading] = useState<boolean>(false)
-    const [tabPages, setTabPages] = useState<Record<string, BiPage>>({})
-    const [activeKey, setActiveKey] = useState<string | undefined>()
+    const dashboardItem = itemMap[DASHBOARD_ITEM_NAME]
 
     useEffect(() => {
         document.title = t('SciCMS BI')
     }, [t])
 
-    const openDashboard = useCallback((dashboard: Dashboard, extra?: DashboardExtra) => {
-        const suffix = extra == null ? undefined : objectToHash(extra).toString()
-        const key = suffix == null ? dashboard.id : `${dashboard.id}#${suffix}`
-        if (!tabPages.hasOwnProperty(key)) {
-            const newTabPages = _.clone(tabPages)
-            newTabPages[key] = {dashboard, extra}
-            setTabPages(newTabPages)
+    useEffect(() => {
+        if (me) {
+            dispatch(initializeIfNeeded(me))
         }
+    }, [dispatch, me])
 
-        setActiveKey(key)
-    }, [tabPages])
+    useEffect(() => {
+        if (isInitialized) {
+            initializePage()
+        }
+    }, [isInitialized])
 
-    const initialize = useCallback(() => {
+    function initializePage() {
         setLoading(true)
         Promise.all([
             DashboardCategoryService.fetchDashboardCategories(),
@@ -93,19 +98,16 @@ function Bi() {
             .finally(() => {
                 setLoading(false)
             })
-    }, [openDashboard])
+    }
 
-    useEffect(() => {
-        if (me) {
-            dispatch(initializeIfNeeded(me))
-                .then(() => {
-                    initialize()
-                })
-        }
-    }, [dispatch, initialize, me])
-
-    const openDashboardById = useCallback((id: string, extra?: DashboardExtra) =>
-        openDashboard(dashboardMap[id], extra), [dashboardMap, openDashboard])
+    function openDashboard(dashboard: Dashboard, extra?: DashboardExtra) {
+        mdiContext.openTab(createDashboardMDITab({
+            item: dashboardItem,
+            viewType: ViewType.view,
+            data: dashboard,
+            extra
+        }))
+    }
 
     const handleToggle = useCallback(() => {
         setNavbarCollapsed(!collapsed)
@@ -113,33 +115,9 @@ function Bi() {
     }, [collapsed])
 
     const handleLogout = useCallback(async () => {
-        await dispatch(logout())
-        await dispatch(resetNavTabs())
-        await dispatch(resetRegistry())
-    }, [dispatch])
-
-    const handleTabsChange = useCallback((key: string) => {
-        setActiveKey(key)
-    }, [])
-
-    const closeTab = useCallback((key: string) => {
-        const newTabPages = _.clone(tabPages)
-        delete newTabPages[key]
-        setTabPages(newTabPages)
-
-        const keys = Object.keys(newTabPages)
-        if (keys.length === 0) {
-            setActiveKey(undefined)
-        } else {
-            if (key === activeKey)
-                setActiveKey(keys[keys.length - 1])
-        }
-    }, [activeKey, tabPages])
-
-    const handleTabsEdit = useCallback((e: React.MouseEvent | React.KeyboardEvent | string, action: 'add' | 'remove') => {
-        if (action === 'remove')
-            closeTab(e as string)
-    }, [closeTab])
+        await logout()
+        resetRegistry()
+    }, [logout, resetRegistry])
 
     function getDashboardMenuItems(): ItemType[] {
         const rootCategories =
@@ -171,45 +149,19 @@ function Bi() {
         ...dashboardList.map(dashboard => ({
             key: `${prefix}#${dashboard.id}`,
             label: dashboard.name,
-            onClick: () => openDashboard(dashboard)
+            onClick: () => mdiContext.openTab(createDashboardMDITab({
+                item: dashboardItem,
+                viewType: ViewType.view,
+                data: dashboard
+            }))
         }))
     ])
-
-    function getTabs(): Tab[] {
-        if (!me)
-            return []
-
-        return Object.keys(tabPages).map(key => {
-            const {dashboard, extra} = tabPages[key]
-            return {
-                key,
-                label: <span>{dashboard.name}{extra && <ExclamationCircleOutlined className="tab-label-suffix orange"/>}</span>,
-                style: {background: '#fff'},
-                children: (
-                    <div className="Bi-page-content">
-                        <DashboardSpecReadOnlyWrapper
-                            me={me}
-                            uniqueKey={key}
-                            itemTemplates={itemTemplates}
-                            items={items}
-                            permissions={permissions}
-                            dashboard={dashboard}
-                            extra={extra}
-                            onDashboardOpen={openDashboardById}
-                        />
-                    </div>
-                )
-            }
-        })
-    }
 
     if (!me || isExpired)
         return <Navigate to="/login?targetUrl=/bi"/>
 
     if (!isInitialized)
         return null
-
-    const tabs = getTabs()
 
     return (
         <Layout className="Bi">
@@ -245,17 +197,11 @@ function Bi() {
             <Layout>
                 <Content className="Bi-content-wrapper">
                     <div className="Bi-content">
-                        {(tabs.length > 0) && (
-                            <Tabs
-                                activeKey={activeKey}
-                                hideAdd
-                                type="editable-card"
-                                className="pages"
-                                items={getTabs()}
-                                onChange={handleTabsChange}
-                                onEdit={handleTabsEdit}
-                            />
-                        )}
+                        <MDITabs
+                            ctx={mdiContext}
+                            className="pages"
+                            type="editable-card"
+                        />
                     </div>
                 </Content>
             </Layout>

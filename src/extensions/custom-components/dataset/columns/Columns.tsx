@@ -10,7 +10,8 @@ import {Column, DatasetSpec, NamedColumn} from '../../../../types'
 import {getColumns} from './columns-datagrid'
 import {useAcl} from '../../../../util/hooks'
 
-export default function Columns({item, buffer, data, onBufferChange}: CustomComponentRenderContext) {
+export default function Columns({data: dataWrapper, buffer, onBufferChange}: CustomComponentRenderContext) {
+    const {item, data} = dataWrapper
     if (item.name !== DATASET_ITEM_NAME)
         throw new Error('Illegal argument')
 
