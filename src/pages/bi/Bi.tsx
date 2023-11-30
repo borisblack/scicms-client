@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import React, {ReactNode, useCallback, useEffect, useState} from 'react'
+import React, {useCallback, useEffect, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Navigate} from 'react-router-dom'
 import {Layout, Menu, Spin} from 'antd'
@@ -15,36 +15,14 @@ import {allIcons} from 'src/util/icons'
 import {DASHBOARD_ITEM_NAME} from 'src/config/constants'
 import {useNewMDIContext} from 'src/components/mdi-tabs/hooks'
 import MDITabs from 'src/components/mdi-tabs/MDITabs'
-import {MDITab} from 'src/components/mdi-tabs'
-import {generateKey, generateLabel} from 'src/util/mdi'
-import DashboardSpec from 'src/bi/DashboardSpec'
 import logo from 'src/logo.svg'
 import './Bi.css'
+import {createDashboardMDITab} from '../../util/mdi'
 
 const {Content, Sider} = Layout
 
 const isNavbarCollapsed = () => localStorage.getItem('biNavbarCollapsed') === '1'
 const setNavbarCollapsed = (collapsed: boolean) => localStorage.setItem('biNavbarCollapsed', collapsed ? '1' : '0')
-
-const renderDashboard = (data: ItemDataWrapper): ReactNode => (
-    <div className="Bi-page-content">
-        <DashboardSpec
-            data={data}
-            readOnly
-            buffer={{}}
-            onBufferChange={() => {}}
-        />
-    </div>
-)
-
-const createDashboardMDITab = (data: ItemDataWrapper,): MDITab<ItemDataWrapper> => ({
-    key: generateKey,
-    label: generateLabel,
-    data,
-    render: renderDashboard,
-    onUpdate: [],
-    onClose: []
-})
 
 function Bi() {
     const dispatch = useAppDispatch()

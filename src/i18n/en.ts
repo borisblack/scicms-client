@@ -77,6 +77,7 @@ const en = {
         'contains ignore case': 'contains ignore case',
         'Dash Options': 'Dash Options',
         'Dashboard': 'Dashboard',
+        'Dashboard not found. It may have been removed': 'Dashboard not found. It may have been removed',
         'Dashboards': 'Dashboards',
         'Dashboard Category': 'Dashboard Category',
         'Dashboard Categories': 'Dashboard Categories',

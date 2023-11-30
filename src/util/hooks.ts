@@ -4,7 +4,7 @@ import {useDispatch, useSelector} from 'react-redux'
 import type {AppDispatch, RootState} from 'src/store'
 import PermissionManager, {Acl} from 'src/services/permission'
 import {Item, ItemData, ItemDataWrapper, UserInfo, ViewType} from 'src/types'
-import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME} from 'src/config/constants'
+import {DASHBOARD_ITEM_NAME, ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME} from 'src/config/constants'
 import {logout as doLogout, selectIsExpired, selectMe} from 'src/features/auth/authSlice'
 import {
     RegistryState,
@@ -23,7 +23,7 @@ import MutationManager from 'src/services/mutation'
 import {useTranslation} from 'react-i18next'
 import {notification} from 'antd'
 import {useMDIContext} from '../components/mdi-tabs/hooks'
-import {createItemMDITab, generateKeyById} from './mdi'
+import {createDashboardMDITab, createItemMDITab, generateKeyById} from './mdi'
 
 export const useAppDispatch: () => AppDispatch = useDispatch
 
@@ -183,7 +183,7 @@ export function useItemOperations() {
         } else {
             notification.error({
                 message: t('Opening error'),
-                description: t('Item not found. It may have been removed.')
+                description: t('Item not found. It may have been removed')
             })
         }
     }, [ctx, queryManager, t])
@@ -194,4 +194,31 @@ export function useItemOperations() {
     }, [ctx])
 
     return {create, open, remove}
+}
+
+export function useDashboardOperations() {
+    const ctx = useMDIContext<ItemDataWrapper>()
+    const {items} = useRegistry()
+    const dashboard = items[DASHBOARD_ITEM_NAME]
+    const queryManager = useQueryManager()
+    const {t} = useTranslation()
+
+    const open = useCallback(async (id: string, extra?: Record<string, any>) => {
+        const actualData = await queryManager.findById(dashboard, id)
+        if (actualData.data) {
+            ctx.openTab(createDashboardMDITab({
+                item: dashboard,
+                viewType: ViewType.view,
+                data: actualData.data,
+                extra
+            }))
+        } else {
+            notification.error({
+                message: t('Opening error'),
+                description: t('Dashboard not found. It may have been removed')
+            })
+        }
+    }, [ctx, queryManager, t])
+
+    return {open}
 }

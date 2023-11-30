@@ -8,7 +8,7 @@ import 'react-resizable/css/styles.css'
 
 import {CustomComponentRenderContext} from '../extensions/custom-components'
 import {DASHBOARD_ITEM_NAME, DATASET_ITEM_NAME} from '../config/constants'
-import {Dashboard, DashboardExtra, Dataset, IDash, IDashboardSpec, Item, QueryFilter} from '../types'
+import {Dashboard, DashboardExtra, Dataset, IDash, IDashboardSpec, QueryFilter} from '../types'
 import DashForm, {DashValues} from './DashForm'
 import {generateQueryBlock, printSingleQueryFilter} from '../util/bi'
 import biConfig from '../config/bi'
@@ -18,7 +18,7 @@ import DashWrapper from './DashWrapper'
 import styles from './DashboardSpec.module.css'
 import './DashboardSpec.css'
 import * as DashboardService from '../services/dashboard'
-import {useAcl, useItemOperations, useRegistry} from '../util/hooks'
+import {useAcl, useDashboardOperations, useItemOperations, useRegistry} from '../util/hooks'
 import {generateKey} from '../util/mdi'
 
 interface DashboardSpecProps extends CustomComponentRenderContext {
@@ -40,6 +40,7 @@ export default function DashboardSpec({data: dataWrapper, buffer, readOnly, onBu
     const uniqueKey = generateKey(dataWrapper)
     const {items: itemMap} = useRegistry()
     const {open: openItem} = useItemOperations()
+    const {open: openDashboard} = useDashboardOperations()
     const {t} = useTranslation()
     const datasetItem = useMemo(() => itemMap[DATASET_ITEM_NAME], [itemMap])
     const dashboardItem = useMemo(() => itemMap[DASHBOARD_ITEM_NAME], [itemMap])
@@ -192,7 +193,11 @@ export default function DashboardSpec({data: dataWrapper, buffer, readOnly, onBu
     }
 
     async function handleRelatedDashboardOpen(dashboardId: string, queryFilter: QueryFilter) {
-        await openItem(dashboardItem, dashboardId, {queryFilter})
+        if (readOnly) {
+            await openDashboard(dashboardId, {queryFilter})
+        } else {
+            await openItem(dashboardItem, dashboardId, {queryFilter})
+        }
     }
 
     function renderDash(dash: IDash) {

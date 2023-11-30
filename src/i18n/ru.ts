@@ -77,6 +77,7 @@ const ru = {
         'contains ignore case': 'содержит (без учета регистра)',
         'Dash Options': 'Параметры даша',
         'Dashboard': 'Дашборд',
+        'Dashboard not found. It may have been removed': 'Дашборд не найден. Возможно, он был удален',
         'Dashboards': 'Дашборды',
         'Dashboard Category': 'Категория дашбордов',
         'Dashboard Categories': 'Категории дашбордов',
