@@ -6,7 +6,6 @@ import {Layout, Menu, Spin} from 'antd'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
 import {FolderOutlined, FundOutlined, LogoutOutlined, UserOutlined} from '@ant-design/icons'
 import {useAppDispatch, useAuth, useRegistry} from 'src/util/hooks'
-import {initializeIfNeeded} from 'src/features/registry/registrySlice'
 import * as DashboardService from 'src/services/dashboard'
 import {Dashboard, DashboardCategory, DashboardExtra, ItemDataWrapper, ViewType} from 'src/types'
 import biConfig from 'src/config/bi'
@@ -28,7 +27,7 @@ function Bi() {
     const dispatch = useAppDispatch()
     const {t} = useTranslation()
     const {me, isExpired, logout} = useAuth()
-    const {isInitialized, items: itemMap, reset: resetRegistry} = useRegistry()
+    const {isInitialized, items: itemMap, initializeIfNeeded, reset: resetRegistry} = useRegistry()
     const mdiContext = useNewMDIContext<ItemDataWrapper>([])
     const [collapsed, setCollapsed] = useState(isNavbarCollapsed())
     const [dashboardMap, setDashboardMap] = useState<Record<string, Dashboard>>({})
@@ -42,9 +41,9 @@ function Bi() {
 
     useEffect(() => {
         if (me) {
-            dispatch(initializeIfNeeded(me))
+            initializeIfNeeded(me)
         }
-    }, [dispatch, me])
+    }, [me, initializeIfNeeded])
 
     useEffect(() => {
         if (isInitialized) {

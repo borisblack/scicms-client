@@ -7,6 +7,7 @@ import {Item, ItemData, ItemDataWrapper, UserInfo, ViewType} from 'src/types'
 import {DASHBOARD_ITEM_NAME, ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME} from 'src/config/constants'
 import {logout as doLogout, selectIsExpired, selectMe} from 'src/features/auth/authSlice'
 import {
+    initializeIfNeeded as doInitializeIfNeeded,
     RegistryState,
     reset as resetRegistry,
     selectCoreConfig,
@@ -71,6 +72,7 @@ export function useAuth(): {me: UserInfo | null, isExpired: boolean, logout: () 
 }
 
 interface UseRegistry extends RegistryState {
+    initializeIfNeeded: (me: UserInfo) => void
     reset: () => void
 }
 
@@ -86,11 +88,15 @@ export function useRegistry(): UseRegistry {
     const lifecycles = useAppSelector(selectLifecycles)
     const locales = useAppSelector(selectLocales)
 
+    const initializeIfNeeded = useCallback(async (me: UserInfo) => {
+        await dispatch(doInitializeIfNeeded(me))
+    }, [dispatch])
+
     const reset = useCallback(async () => {
         dispatch(resetRegistry())
     }, [dispatch])
 
-    return {loading, isInitialized, coreConfig, items, itemTemplates, permissions, lifecycles, locales, reset}
+    return {loading, isInitialized, coreConfig, items, itemTemplates, permissions, lifecycles, locales, initializeIfNeeded, reset}
 }
 
 export function useAcl(item: Item, data?: ItemData | null): Acl {
@@ -218,7 +224,7 @@ export function useDashboardOperations() {
                 description: t('Dashboard not found. It may have been removed')
             })
         }
-    }, [ctx, queryManager, t])
+    }, [ctx, dashboard, queryManager, t])
 
     return {open}
 }

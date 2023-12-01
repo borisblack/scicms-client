@@ -27,14 +27,14 @@ export function useNewMDIContextReducer<T>(initialItems: MDITab<T>[]): MDIContex
             type: SET_ACTIVE_KEY,
             key
         })
-    }, [])
+    }, [dispatch])
 
     const openTab = useCallback((item: MDITab<T>) => {
         dispatch({
             type: OPEN_ACTION,
             item
         })
-    }, [])
+    }, [dispatch])
 
     const updateTab = useCallback((key: string, data: T) => {
         dispatch({
@@ -42,14 +42,14 @@ export function useNewMDIContextReducer<T>(initialItems: MDITab<T>[]): MDIContex
             key,
             data
         })
-    }, [])
+    }, [dispatch])
 
     const updateActiveTab = useCallback((data: T) => {
         dispatch({
             type: UPDATE_ACTIVE_ACTION,
             data
         })
-    }, [])
+    }, [dispatch])
 
     const closeTab = useCallback((key: string, remove?: boolean) => {
         dispatch({
@@ -57,14 +57,14 @@ export function useNewMDIContextReducer<T>(initialItems: MDITab<T>[]): MDIContex
             key,
             remove
         })
-    }, [])
+    }, [dispatch])
 
     const closeActiveTab = useCallback((remove?: boolean) => {
         dispatch({
             type: CLOSE_ACTIVE_ACTION,
             remove
         })
-    }, [])
+    }, [dispatch])
 
     return {items, activeKey, setActiveKey, openTab, updateTab, updateActiveTab, closeTab, closeActiveTab}
 }

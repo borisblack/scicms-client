@@ -1,27 +1,25 @@
 import React, {useEffect} from 'react'
 import {Navigate} from 'react-router-dom'
 import {Layout} from 'antd'
-import {useAppDispatch, useAuth, useRegistry} from 'src/util/hooks'
-import {initializeIfNeeded} from 'src/features/registry/registrySlice'
+import {useAuth, useRegistry} from 'src/util/hooks'
 import Navbar from 'src/features/registry/Navbar'
 import {ItemDataWrapper} from 'src/types'
-import {useNewMDIContext} from 'src/components/mdi-tabs/hooks'
 import MDITabs from 'src/components/mdi-tabs/MDITabs'
+import {useNewMDIContext} from 'src/components/mdi-tabs/hooks'
 import './App.css'
 
 const {Content} = Layout
 
 function App() {
-    const dispatch = useAppDispatch()
     const {me, isExpired} = useAuth()
-    const {isInitialized} = useRegistry()
+    const {isInitialized, initializeIfNeeded} = useRegistry()
     const mdiContext = useNewMDIContext<ItemDataWrapper>([])
 
     useEffect(() => {
         if (me) {
-            dispatch(initializeIfNeeded(me))
+            initializeIfNeeded(me)
         }
-    }, [me, dispatch])
+    }, [me, initializeIfNeeded])
 
     if (!me || isExpired)
         return <Navigate to="/login"/>
