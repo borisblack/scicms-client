@@ -38,7 +38,7 @@ import {
 import {useAuth, useItemOperations, useMutationManager, useRegistry} from 'src/util/hooks'
 import {useMDIContext} from '../../components/mdi-tabs/hooks'
 import {getTitle} from 'src/util/mdi'
-import styles from './NavTabs.module.css'
+import styles from './NavTab.module.css'
 
 interface Props {
     data: ItemDataWrapper

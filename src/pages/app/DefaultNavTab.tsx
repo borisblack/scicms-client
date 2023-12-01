@@ -9,7 +9,6 @@ import {IBuffer, ItemData, ItemDataWrapper} from '../../types'
 import DataGrid, {RequestParams} from '../../components/datagrid/DataGrid'
 import {CustomPluginRenderContext, hasPlugins, renderPlugins} from '../../extensions/plugins'
 import {CustomComponentRenderContext, hasComponents, renderComponents} from '../../extensions/custom-components'
-import * as icons from '@ant-design/icons'
 import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design/icons'
 import * as ACL from '../../util/acl'
 import {findAll, getColumns, getHiddenColumns, getInitialData} from '../../util/datagrid'
@@ -20,8 +19,9 @@ import {ApiMiddlewareContext, ApiOperation, handleApiMiddleware, hasApiMiddlewar
 import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME, MEDIA_ITEM_NAME} from 'src/config/constants'
 import {useAuth, useItemOperations, useMutationManager, useRegistry} from 'src/util/hooks'
 import {useMDIContext} from 'src/components/mdi-tabs/hooks'
-import {generateLabel} from 'src/util/mdi'
-import styles from './NavTabs.module.css'
+import {getTitle} from 'src/util/mdi'
+import styles from './NavTab.module.css'
+import Icon from '../../components/icon/Icon'
 
 interface Props {
     data: ItemDataWrapper
@@ -189,7 +189,6 @@ function DefaultNavTab({data: dataWrapper}: Props) {
     }, [createItem, item])
 
     const renderPageHeader = useCallback((): ReactNode => {
-        const Icon = item.icon ? (icons as any)[item.icon] : null
         const permissionId = item.permission.data?.id
         const permission = permissionId ? permissionMap[permissionId] : null
         const canCreate = !!permission && item.name !== MEDIA_ITEM_NAME && ACL.canCreate(me, permission)
@@ -197,7 +196,7 @@ function DefaultNavTab({data: dataWrapper}: Props) {
         return (
             <PageHeader
                 className={styles.pageHeader}
-                title={<span>{Icon ? <Icon/> : null}&nbsp;&nbsp;{generateLabel(dataWrapper)}</span>}
+                title={<span><Icon iconName={item.icon}/>&nbsp;&nbsp;{getTitle(dataWrapper)}</span>}
                 extra={canCreate && <Button type="primary" onClick={handleCreate}><PlusCircleOutlined /> {t('Create')}</Button>}
             />
         )
