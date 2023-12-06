@@ -139,9 +139,6 @@ export function useNewMDIContext<T>(initialItems: MDITab<T>[]): MDIContext<T> {
             setActiveKey(undefined)
 
         const closedItem = items[key]
-        if (closedItem == null)
-            throw new Error('Item not found.')
-
         const newItems = _.omit(items, key)
         setItems(newItems)
 
@@ -150,7 +147,7 @@ export function useNewMDIContext<T>(initialItems: MDITab<T>[]): MDIContext<T> {
         if (key === activeKey && keys.length > 0)
             setActiveKey(keys[keys.length - 1])
 
-        closedItem.onClose.forEach(closeCb => closeCb(closedItem.data, remove ?? false))
+        closedItem?.onClose.forEach(closeCb => closeCb(closedItem.data, remove ?? false))
     }, [activeKey, items])
 
     const closeActiveTab = useCallback((remove?: boolean) => {

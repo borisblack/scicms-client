@@ -114,9 +114,6 @@ export default function mdiTabsReducer<T>(state: MDITabsState<T>, action: MDITab
 
             const {items} = state
             const closedItem = items[key]
-            if (closedItem == null)
-                throw new Error('Item not found.')
-
             const newItems = _.omit(items, key)
             const keys = Object.keys(newItems)
             const newState: MDITabsState<T> = {
@@ -124,7 +121,7 @@ export default function mdiTabsReducer<T>(state: MDITabsState<T>, action: MDITab
                 activeKey: keys.length > 0 ? keys[keys.length - 1] : undefined
             }
 
-            closedItem.onClose.forEach(closeCb => closeCb(closedItem.data,remove ?? false))
+            closedItem?.onClose.forEach(closeCb => closeCb(closedItem.data,remove ?? false))
 
             return newState
         }

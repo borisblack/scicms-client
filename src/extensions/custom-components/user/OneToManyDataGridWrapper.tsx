@@ -1,6 +1,6 @@
 import {useCallback, useMemo, useState} from 'react'
 import {Row} from '@tanstack/react-table'
-import {Button, message, Space} from 'antd'
+import {Button, message, notification, Space} from 'antd'
 
 import appConfig from '../../../config'
 import DataGrid, {RequestParams} from '../../../components/datagrid/DataGrid'
@@ -74,15 +74,19 @@ export default function OneToManyDataGridWrapper({data: dataWrapper, itemName, t
                 await mutationManager.purge(targetItem, id, appConfig.mutation.deletingStrategy)
             else
                 await mutationManager.remove(targetItem, id, appConfig.mutation.deletingStrategy)
+
             removeItem(targetItem.name, id)
             refresh()
         } catch (e: any) {
             console.error(e.message)
-            message.error(e.message)
+            notification.error({
+                message: t('Deletion error'),
+                description: e.message
+            })
         } finally {
             setLoading(false)
         }
-    }, [mutationManager, targetItem, removeItem])
+    }, [t, mutationManager, targetItem, removeItem])
 
     const getRowContextMenu = useCallback((row: Row<ItemData>) => {
         const items: ItemType[] = [{
