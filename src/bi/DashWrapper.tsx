@@ -216,13 +216,16 @@ export default function DashWrapper(props: DashWrapperProps) {
                             icon={<ReloadOutlined/>}
                             title={t('Refresh')}
                             onClick={() => fetchDatasetData()}
+                            onMouseDown={e => e.stopPropagation()}
                         />,
                         <Dropdown key="settings" placement="bottomRight" trigger={['click']} menu={{items: getSettingsMenuItems()}}>
                             <Button
                                 type="text"
                                 className={styles.toolbarBtn}
                                 icon={<SettingOutlined/>}
-                                title={t('Settings')}/>
+                                title={t('Settings')}
+                                onMouseDown={e => e.stopPropagation()}
+                            />
                         </Dropdown>,
                         fullScreen ? (
                             <Button
@@ -232,6 +235,7 @@ export default function DashWrapper(props: DashWrapperProps) {
                                 icon={<FullscreenExitOutlined/>}
                                 title={t('Exit full screen')}
                                 onClick={() => handleFullScreenChange(false)}
+                                onMouseDown={e => e.stopPropagation()}
                             />
                         ) : (
                             <Button
@@ -241,6 +245,7 @@ export default function DashWrapper(props: DashWrapperProps) {
                                 icon={<FullscreenOutlined/>}
                                 title={t('Full screen')}
                                 onClick={() => handleFullScreenChange(true)}
+                                onMouseDown={e => e.stopPropagation()}
                             />
                         )
                     ]}
