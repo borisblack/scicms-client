@@ -11,9 +11,7 @@
 }
 
 .toolbarBtn {
-    font-size: 18px;
-    cursor: pointer;
-    margin: 8px 0;
+    margin: 0 -4px;
 }
 
 .centerChildContainer {

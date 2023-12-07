@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo, useState} from 'react'
-import {Dropdown, Empty, Form, Modal, notification, Space, Spin, Tooltip} from 'antd'
+import {Button, Dropdown, Empty, Form, Modal, notification, Space, Spin, Tooltip} from 'antd'
 import {PageHeader} from '@ant-design/pro-layout'
 import {useTranslation} from 'react-i18next'
 import {DashWrapperProps} from './index'
@@ -209,14 +209,39 @@ export default function DashWrapper(props: DashWrapperProps) {
                     // subTitle={renderSubTitle()}
                     footer={renderSubTitle()}
                     extra={[
-                        <ReloadOutlined key="refresh" className={styles.toolbarBtn} title={t('Refresh')} onClick={() => fetchDatasetData()}/>,
+                        <Button
+                            key="refresh"
+                            type="text"
+                            className={styles.toolbarBtn}
+                            icon={<ReloadOutlined/>}
+                            title={t('Refresh')}
+                            onClick={() => fetchDatasetData()}
+                        />,
                         <Dropdown key="settings" placement="bottomRight" trigger={['click']} menu={{items: getSettingsMenuItems()}}>
-                            <SettingOutlined className={styles.toolbarBtn} title={t('Settings')}/>
+                            <Button
+                                type="text"
+                                className={styles.toolbarBtn}
+                                icon={<SettingOutlined/>}
+                                title={t('Settings')}/>
                         </Dropdown>,
                         fullScreen ? (
-                            <FullscreenExitOutlined key="exitFullScreen" className={styles.toolbarBtn} title={t('Exit full screen')} onClick={() => handleFullScreenChange(false)}/>
+                            <Button
+                                key="exitFullScreen"
+                                type="text"
+                                className={styles.toolbarBtn}
+                                icon={<FullscreenExitOutlined/>}
+                                title={t('Exit full screen')}
+                                onClick={() => handleFullScreenChange(false)}
+                            />
                         ) : (
-                            <FullscreenOutlined key="fullScreen" className={styles.toolbarBtn} title={t('Full screen')} onClick={() => handleFullScreenChange(true)}/>
+                            <Button
+                                key="fullScreen"
+                                type="text"
+                                className={styles.toolbarBtn}
+                                icon={<FullscreenOutlined/>}
+                                title={t('Full screen')}
+                                onClick={() => handleFullScreenChange(true)}
+                            />
                         )
                     ]}
                 />
