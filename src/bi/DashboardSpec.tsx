@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import {useEffect, useMemo, useState} from 'react'
 import RGL, {Layout, WidthProvider} from 'react-grid-layout'
 import {Alert, Button, Form, Modal} from 'antd'
@@ -12,7 +13,6 @@ import {Dashboard, DashboardExtra, Dataset, IDash, IDashboardSpec, QueryFilter} 
 import DashForm, {DashValues} from './DashForm'
 import {generateQueryBlock, printSingleQueryFilter} from '../util/bi'
 import biConfig from '../config/bi'
-import _ from 'lodash'
 import * as DatasetService from '../services/dataset'
 import DashWrapper from './DashWrapper'
 import styles from './DashboardSpec.module.css'
@@ -201,8 +201,12 @@ export default function DashboardSpec({data: dataWrapper, buffer, readOnly, onBu
     }
 
     function renderDash(dash: IDash) {
-        if (datasets == null)
-            throw new Error('Illegal state')
+        if (dash.dataset == null)
+            throw new Error(`Dataset name for dash [${dash.name}] is null`)
+
+        const dataset = datasets[dash.dataset]
+        if (dataset == null)
+            throw new Error(`Dataset [${dash.dataset}] is null`)
 
         return (
             <div
@@ -212,7 +216,7 @@ export default function DashboardSpec({data: dataWrapper, buffer, readOnly, onBu
             >
                 <DashWrapper
                     pageKey={uniqueKey}
-                    dataset={datasets[dash.dataset ?? '']}
+                    dataset={dataset}
                     dashboard={currentDashboard}
                     extra={extra}
                     dash={dash}
@@ -254,7 +258,7 @@ export default function DashboardSpec({data: dataWrapper, buffer, readOnly, onBu
 
             {!readOnly && <Button type="dashed" style={{marginBottom: 12}} disabled={!isGridEditable} onClick={handleDashAdd}>{t('Add Dash')}</Button>}
 
-            {datasets && allDashes.length > 0 && (
+            {!_.isEmpty(datasets) && allDashes.length > 0 && (
                 <ReactGridLayout
                     className={styles.layout}
                     layout={layout}
@@ -265,7 +269,10 @@ export default function DashboardSpec({data: dataWrapper, buffer, readOnly, onBu
                     isResizable={isGridEditable}
                     onLayoutChange={handleLayoutChange}
                 >
-                    {allDashes.map(it => renderDash(it))}
+                    {allDashes
+                        .filter(dash => dash.dataset != null && datasets[dash.dataset] != null)
+                        .map(dash => renderDash(dash))
+                    }
                 </ReactGridLayout>
             )}
 

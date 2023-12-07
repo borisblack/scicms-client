@@ -3,7 +3,7 @@ import {FormInstance} from 'antd'
 
 export interface DashWrapperProps {
     pageKey: string
-    dataset?: Dataset
+    dataset: Dataset
     dashboard: Dashboard
     extra?: DashboardExtra
     dash: IDash

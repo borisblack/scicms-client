@@ -91,8 +91,10 @@ export default function DashWrapper(props: DashWrapperProps) {
     }, [dash.refreshIntervalSeconds])
 
     const fetchDatasetData = async () => {
-        if (!dataset)
+        if (!dataset) {
+            console.error(`No dataset [${dash.dataset}]`)
             return
+        }
 
         if (dash.isAggregate && !dash.aggregateType)
             throw new Error('aggregateType must be specified')
