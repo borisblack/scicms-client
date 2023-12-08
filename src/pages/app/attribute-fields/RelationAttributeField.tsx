@@ -8,6 +8,9 @@ import {DEFAULT_LIFECYCLE_ID} from 'src/services/lifecycle'
 import {BI_PERMISSION_ID, DEFAULT_PERMISSION_ID, SECURITY_PERMISSION_ID} from 'src/services/permission'
 import {ItemFiltersInput} from 'src/services/query'
 import {
+    DASHBOARD_CATEGORY_HIERARCHY_ITEM_NAME,
+    DASHBOARD_CATEGORY_ITEM_NAME,
+    DASHBOARD_CATEGORY_MAP_ITEM_NAME,
     DASHBOARD_ITEM_NAME,
     DATASET_ITEM_NAME,
     GROUP_ITEM_NAME,
@@ -41,7 +44,13 @@ const securityItemNames = new Set([
     ROLE_ITEM_NAME,
     USER_ITEM_NAME
 ])
-const biItemNames = new Set([DASHBOARD_ITEM_NAME, DATASET_ITEM_NAME])
+const biItemNames = new Set([
+    DASHBOARD_ITEM_NAME,
+    DASHBOARD_CATEGORY_ITEM_NAME,
+    DASHBOARD_CATEGORY_HIERARCHY_ITEM_NAME,
+    DASHBOARD_CATEGORY_MAP_ITEM_NAME,
+    DATASET_ITEM_NAME
+])
 
 const isSecurityItem = (itemName: string) => securityItemNames.has(itemName)
 
