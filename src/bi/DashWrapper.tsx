@@ -92,7 +92,7 @@ export default function DashWrapper(props: DashWrapperProps) {
 
     const fetchDatasetData = async () => {
         if (!dataset) {
-            console.error(`No dataset [${dash.dataset}]`)
+            console.debug(`No dataset [${dash.dataset}]`)
             return
         }
 

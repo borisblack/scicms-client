@@ -270,7 +270,7 @@ export default function DashboardSpec({data: dataWrapper, buffer, readOnly, onBu
                     onLayoutChange={handleLayoutChange}
                 >
                     {allDashes
-                        .filter(dash => dash.dataset != null && datasets[dash.dataset] != null)
+                        // .filter(dash => dash.dataset != null && datasets[dash.dataset] != null) // new dash doesn't have dataset yet
                         .map(dash => renderDash(dash))
                     }
                 </ReactGridLayout>
