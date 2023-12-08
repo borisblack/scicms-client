@@ -201,12 +201,7 @@ export default function DashboardSpec({data: dataWrapper, buffer, readOnly, onBu
     }
 
     function renderDash(dash: IDash) {
-        if (dash.dataset == null)
-            throw new Error(`Dataset name for dash [${dash.name}] is null`)
-
-        const dataset = datasets[dash.dataset]
-        if (dataset == null)
-            throw new Error(`Dataset [${dash.dataset}] is null`)
+        const dataset = datasets[dash.dataset ?? '']
 
         return (
             <div
