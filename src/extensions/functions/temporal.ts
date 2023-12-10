@@ -1,4 +1,3 @@
-import dayjs from 'dayjs'
 import {DateTime} from 'luxon'
 import {CustomFunction} from '.'
 import {UTC} from '../../config/constants'
@@ -45,7 +44,10 @@ export const hoursBeforeNow: CustomFunction = {
 export const daysBeforeNow: CustomFunction = {
     id: 'daysBeforeNow',
     category: TEMPORAL_CATEGORY,
-    exec: (days: number) => dayjs().subtract(days, 'days').toISOString(),
+    exec: (days: number) =>
+        DateTime.now().setZone(UTC, {keepLocalTime: true})
+            .minus({days})
+            .toISO(),
     description: 'Days before now'
 }
 
@@ -115,7 +117,10 @@ export const yearsBeforeNowTrunc: CustomFunction = {
 export const secondsAfterNow: CustomFunction = {
     id: 'secondsAfterNow',
     category: TEMPORAL_CATEGORY,
-    exec: (seconds: number) => dayjs().add(seconds, 'seconds').toISOString(),
+    exec: (seconds: number) =>
+        DateTime.now().setZone(UTC, {keepLocalTime: true})
+            .minus({seconds})
+            .toISO(),
     description: 'Seconds after now'
 }
 

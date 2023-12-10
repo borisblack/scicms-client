@@ -65,6 +65,7 @@ const mapItem = (item: Item): ItemModel => ({
         dataSource: item.datasource.data?.id ?? MAIN_DATASOURCE_NAME,
         tableName: item.tableName,
         query: item.query,
+        cacheTtl: item.cacheTtl,
         titleAttribute: item.titleAttribute,
         description: item.description,
         readonly: item.readOnly,

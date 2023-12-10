@@ -119,6 +119,7 @@ export interface Item extends ItemTemplate {
     datasource: {data: Datasource | null}
     tableName: string | null
     query: string | null
+    cacheTtl: number | null
     titleAttribute: string
     includeTemplates: string[]
     description: string | null
@@ -149,6 +150,7 @@ interface ItemMetadata extends ItemTemplateMetadata{
     dataSource: string,
     tableName: string | null
     query: string | null
+    cacheTtl: number | null
     titleAttribute: string
     description: string | null
     icon: string | null
@@ -302,10 +304,11 @@ export interface Locale extends DefaultItemTemplate {
 
 export interface Dataset extends DefaultItemTemplate {
     name: string
+    description: string | null
     datasource: {data: Datasource | null}
     tableName: string | null
     query: string | null
-    description: string | null
+    cacheTtl: number | null
     spec: DatasetSpec
     hash: string | null
 }
