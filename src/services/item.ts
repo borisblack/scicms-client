@@ -8,6 +8,7 @@ import {FILENAME_ATTR_NAME, ID_ATTR_NAME, MEDIA_ITEM_NAME} from '../config/const
 
 export type ItemMap = Record<string, Item>
 
+// TODO: Add cacheTtl field after scicms-core updating
 const FIND_ALL_QUERY = gql`
     query {
         items {
