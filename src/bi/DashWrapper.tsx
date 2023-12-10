@@ -279,7 +279,7 @@ export default function DashWrapper(props: DashWrapperProps) {
                             {t('Filters')}
                             <Tooltip
                                 placement="rightBottom"
-                                overlayInnerStyle={{width: 400}}
+                                overlayInnerStyle={{width: 600}}
                                 title={<>{getCustomFunctionsInfo().map((s, i) => <div key={i}>{s}</div>)}</>}
                             >
                                 <QuestionCircleOutlined className="blue"/>

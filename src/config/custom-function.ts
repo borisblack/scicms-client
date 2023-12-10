@@ -1,20 +1,26 @@
 import {CustomFunction} from '../extensions/functions'
 import {
+    secondsBeforeNow,
+    minutesBeforeNow,
     hoursBeforeNow,
     daysBeforeNow,
-    monthsBeforeNow,
     weeksBeforeNow,
+    weeksBeforeNowTrunc,
+    monthsBeforeNow,
+    monthsBeforeNowTrunc,
     yearsBeforeNow,
-    minutesBeforeNow,
+    yearsBeforeNowTrunc,
     now,
-    daysAfterNow,
-    hoursAfterNow,
-    minutesAfterNow,
-    monthsAfterNow,
     secondsAfterNow,
+    minutesAfterNow,
+    hoursAfterNow,
+    daysAfterNow,
     weeksAfterNow,
+    weeksAfterNowTrunc,
+    monthsAfterNow,
+    monthsAfterNowTrunc,
     yearsAfterNow,
-    secondsBeforeNow
+    yearsAfterNowTrunc
 } from '../extensions/functions/temporal'
 
 interface FunctionConfig {
@@ -30,15 +36,21 @@ const functionConfig: FunctionConfig = {
         hoursBeforeNow,
         daysBeforeNow,
         weeksBeforeNow,
+        weeksBeforeNowTrunc,
         monthsBeforeNow,
+        monthsBeforeNowTrunc,
         yearsBeforeNow,
+        yearsBeforeNowTrunc,
         secondsAfterNow,
         minutesAfterNow,
         hoursAfterNow,
         daysAfterNow,
         weeksAfterNow,
+        weeksAfterNowTrunc,
         monthsAfterNow,
-        yearsAfterNow
+        monthsAfterNowTrunc,
+        yearsAfterNow,
+        yearsAfterNowTrunc
     ]
 }
 

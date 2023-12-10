@@ -329,7 +329,7 @@ export default function DashForm({form, dash, canEdit, datasets, dashboards, onF
                             <Popover
                                 arrow={false}
                                 placement="right"
-                                overlayInnerStyle={{width: 400}}
+                                overlayInnerStyle={{width: 600}}
                                 title={<>{getCustomFunctionsInfo().map((s, i) => <div key={i} style={{fontWeight: 'normal'}}>{s}</div>)}</>}
                             >
                                 <QuestionCircleOutlined className="blue"/>
