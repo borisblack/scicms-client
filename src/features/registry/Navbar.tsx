@@ -12,7 +12,7 @@ import menuConfig, {MenuItem, SubMenu} from 'src/config/menu'
 import {useAuth, useRegistry} from 'src/util/hooks'
 import {Item, ItemDataWrapper, ViewType} from 'src/types'
 import {allIcons} from 'src/util/icons'
-import {createItemMDITab} from 'src/util/mdi'
+import {createMDITab} from 'src/util/mdi'
 import {MDIContext} from '../../components/mdi-tabs'
 
 type Props = {
@@ -43,7 +43,7 @@ const Navbar = ({ctx}: Props) => {
     }, [collapsed])
 
     const handleItemClick = useCallback((item: Item) => {
-        ctx.openTab(createItemMDITab({
+        ctx.openTab(createMDITab({
             item,
             viewType: ViewType.default
         }))

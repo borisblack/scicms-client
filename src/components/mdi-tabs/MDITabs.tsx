@@ -1,19 +1,20 @@
 import _ from 'lodash'
-import React from 'react'
+import React, {ReactNode} from 'react'
 import {Tabs} from 'antd'
 import {TabsType} from 'antd/es/tabs'
 import {Tab} from 'rc-tabs/lib/interface'
 import styles from './MDITabs.module.css'
-import {getTabLabel, MDIContext} from './index'
+import {getTabLabel, MDIContext, MDITab} from './index'
 import {ReactMDIContext} from './ReactMDIContext'
 
 interface MDITabsProps<T> {
     ctx: MDIContext<T>
     className?: string
-    type?: TabsType
+    type?: TabsType,
+    renderItem?: (data: T) => ReactNode
 }
 
-export default function MDITabs<T>({ctx, className, type}: MDITabsProps<T>) {
+export default function MDITabs<T>({ctx, className, type, renderItem}: MDITabsProps<T>) {
     const {items, activeKey, setActiveKey, closeTab} = ctx
 
     function handleTabsEdit(e: React.MouseEvent | React.KeyboardEvent | string, action: 'add' | 'remove') {
@@ -28,10 +29,24 @@ export default function MDITabs<T>({ctx, className, type}: MDITabsProps<T>) {
         style: {background: '#fff'},
         children: (
             <div className={styles.mdiTabContent}>
-                {item.render(item.data)}
+                {doRender(item)}
             </div>
         )
     }))
+
+    /**
+     * One if render functions must be specified.
+     */
+    function doRender(item: MDITab<T>): ReactNode {
+        if (item.render == null) {
+            if (renderItem == null)
+                throw new Error(`No render function for MDI tab [${getTabLabel(item)}].`)
+
+            return renderItem(item.data)
+        }
+
+        return item.render(item.data)
+    }
 
     return (
         <ReactMDIContext.Provider value={ctx}>

@@ -24,7 +24,7 @@ import MutationManager from 'src/services/mutation'
 import {useTranslation} from 'react-i18next'
 import {notification} from 'antd'
 import {useMDIContext} from '../components/mdi-tabs/hooks'
-import {createDashboardMDITab, createItemMDITab, generateKeyById} from './mdi'
+import {createMDITab, generateKeyById} from './mdi'
 
 export const useAppDispatch: () => AppDispatch = useDispatch
 
@@ -163,7 +163,7 @@ export function useItemOperations() {
         onUpdate?: (updatedData: ItemDataWrapper) => void,
         onClose?: (closedData: ItemDataWrapper, remove: boolean) => void
     ) => {
-        ctx.openTab(createItemMDITab({
+        ctx.openTab(createMDITab({
             item,
             viewType: ViewType.view,
             data: initialData,
@@ -180,7 +180,7 @@ export function useItemOperations() {
     ) => {
         const actualData = await queryManager.findById(item, id)
         if (actualData.data) {
-            ctx.openTab(createItemMDITab({
+            ctx.openTab(createMDITab({
                 item,
                 viewType: ViewType.view,
                 data: actualData.data,
@@ -200,31 +200,4 @@ export function useItemOperations() {
     }, [ctx])
 
     return {create, open, remove}
-}
-
-export function useDashboardOperations() {
-    const ctx = useMDIContext<ItemDataWrapper>()
-    const {items} = useRegistry()
-    const dashboard = items[DASHBOARD_ITEM_NAME]
-    const queryManager = useQueryManager()
-    const {t} = useTranslation()
-
-    const open = useCallback(async (id: string, extra?: Record<string, any>) => {
-        const actualData = await queryManager.findById(dashboard, id)
-        if (actualData.data) {
-            ctx.openTab(createDashboardMDITab({
-                item: dashboard,
-                viewType: ViewType.view,
-                data: actualData.data,
-                extra
-            }))
-        } else {
-            notification.error({
-                message: t('Opening error'),
-                description: t('Dashboard not found. It may have been removed')
-            })
-        }
-    }, [ctx, dashboard, queryManager, t])
-
-    return {open}
 }

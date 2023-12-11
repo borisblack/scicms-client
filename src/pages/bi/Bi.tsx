@@ -1,11 +1,11 @@
 import _ from 'lodash'
-import React, {useCallback, useEffect, useState} from 'react'
+import React, {ReactNode, useCallback, useEffect, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Navigate} from 'react-router-dom'
 import {Layout, Menu, Spin} from 'antd'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
 import {FolderOutlined, FundOutlined, LogoutOutlined, UserOutlined} from '@ant-design/icons'
-import {useAppDispatch, useAuth, useRegistry} from 'src/util/hooks'
+import {useAuth, useRegistry} from 'src/util/hooks'
 import * as DashboardService from 'src/services/dashboard'
 import {Dashboard, DashboardCategory, DashboardExtra, ItemDataWrapper, ViewType} from 'src/types'
 import biConfig from 'src/config/bi'
@@ -14,9 +14,10 @@ import {allIcons} from 'src/util/icons'
 import {DASHBOARD_ITEM_NAME} from 'src/config/constants'
 import {useNewMDIContext} from 'src/components/mdi-tabs/hooks'
 import MDITabs from 'src/components/mdi-tabs/MDITabs'
-import logo from 'src/logo.svg'
+import {createMDITab} from 'src/util/mdi'
+import DashboardSpec from 'src/bi/DashboardSpec'
 import './Bi.css'
-import {createDashboardMDITab} from '../../util/mdi'
+import logo from 'src/logo.svg'
 
 const {Content, Sider} = Layout
 
@@ -24,7 +25,6 @@ const isNavbarCollapsed = () => localStorage.getItem('biNavbarCollapsed') === '1
 const setNavbarCollapsed = (collapsed: boolean) => localStorage.setItem('biNavbarCollapsed', collapsed ? '1' : '0')
 
 function Bi() {
-    const dispatch = useAppDispatch()
     const {t} = useTranslation()
     const {me, isExpired, logout} = useAuth()
     const {isInitialized, items: itemMap, initializeIfNeeded, reset: resetRegistry} = useRegistry()
@@ -78,7 +78,7 @@ function Bi() {
     }
 
     function openDashboard(dashboard: Dashboard, extra?: DashboardExtra) {
-        mdiContext.openTab(createDashboardMDITab({
+        mdiContext.openTab(createMDITab({
             item: dashboardItem,
             viewType: ViewType.view,
             data: dashboard,
@@ -126,13 +126,24 @@ function Bi() {
         ...dashboardList.map(dashboard => ({
             key: `${prefix}#${dashboard.id}`,
             label: dashboard.name,
-            onClick: () => mdiContext.openTab(createDashboardMDITab({
+            onClick: () => mdiContext.openTab(createMDITab({
                 item: dashboardItem,
                 viewType: ViewType.view,
                 data: dashboard
             }))
         }))
     ])
+
+    const renderDashboard = (data: ItemDataWrapper): ReactNode => (
+        <div className="Bi-page-content">
+            <DashboardSpec
+                data={data}
+                readOnly
+                buffer={{}}
+                onBufferChange={() => {}}
+            />
+        </div>
+    )
 
     if (!me || isExpired)
         return <Navigate to="/login?targetUrl=/bi"/>
@@ -178,6 +189,7 @@ function Bi() {
                             ctx={mdiContext}
                             className="pages"
                             type="editable-card"
+                            renderItem={renderDashboard}
                         />
                     </div>
                 </Content>

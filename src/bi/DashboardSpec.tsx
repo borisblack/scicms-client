@@ -18,7 +18,7 @@ import DashWrapper from './DashWrapper'
 import styles from './DashboardSpec.module.css'
 import './DashboardSpec.css'
 import * as DashboardService from '../services/dashboard'
-import {useAcl, useDashboardOperations, useItemOperations, useRegistry} from '../util/hooks'
+import {useAcl, useItemOperations, useRegistry} from '../util/hooks'
 import {generateKey} from '../util/mdi'
 
 interface DashboardSpecProps extends CustomComponentRenderContext {
@@ -40,7 +40,6 @@ export default function DashboardSpec({data: dataWrapper, buffer, readOnly, onBu
     const uniqueKey = generateKey(dataWrapper)
     const {items: itemMap} = useRegistry()
     const {open: openItem} = useItemOperations()
-    const {open: openDashboard} = useDashboardOperations()
     const {t} = useTranslation()
     const datasetItem = useMemo(() => itemMap[DATASET_ITEM_NAME], [itemMap])
     const dashboardItem = useMemo(() => itemMap[DASHBOARD_ITEM_NAME], [itemMap])
@@ -193,11 +192,7 @@ export default function DashboardSpec({data: dataWrapper, buffer, readOnly, onBu
     }
 
     async function handleRelatedDashboardOpen(dashboardId: string, queryFilter: QueryFilter) {
-        if (readOnly) {
-            await openDashboard(dashboardId, {queryFilter})
-        } else {
-            await openItem(dashboardItem, dashboardId, {queryFilter})
-        }
+        await openItem(dashboardItem, dashboardId, {queryFilter})
     }
 
     function renderDash(dash: IDash) {

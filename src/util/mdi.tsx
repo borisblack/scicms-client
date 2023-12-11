@@ -5,10 +5,7 @@ import React, {ReactNode} from 'react'
 import {allIcons} from './icons'
 import {ID_ATTR_NAME} from '../config/constants'
 import i18n from '../i18n'
-import DefaultNavTab from '../pages/app/DefaultNavTab'
-import ViewNavTab from '../pages/app/ViewNavTab'
 import {MDITab} from '../components/mdi-tabs'
-import DashboardSpec from '../bi/DashboardSpec'
 
 const tempIds: Record<string, number> = {}
 
@@ -64,7 +61,7 @@ export function getTitle(data: ItemDataWrapper): string {
     }
 }
 
-export function createItemMDITab(
+export function createMDITab(
     data: ItemDataWrapper,
     onUpdate?: (updatedData: ItemDataWrapper) => void,
     onClose?: (closedData: ItemDataWrapper, remove: boolean) => void
@@ -73,35 +70,7 @@ export function createItemMDITab(
         key: generateKey,
         label: generateLabel,
         data,
-        render: renderItem,
         onUpdate: onUpdate == null ? [] : [onUpdate],
         onClose: onClose == null ? [] : [onClose]
     }
 }
-
-const renderItem = (data: ItemDataWrapper): ReactNode =>
-    data.viewType === ViewType.view ? (
-        <ViewNavTab data={data}/>
-    ) : (
-        <DefaultNavTab data={data}/>
-    )
-
-export const createDashboardMDITab = (data: ItemDataWrapper,): MDITab<ItemDataWrapper> => ({
-    key: generateKey,
-    label: generateLabel,
-    data,
-    render: renderDashboard,
-    onUpdate: [],
-    onClose: []
-})
-
-const renderDashboard = (data: ItemDataWrapper): ReactNode => (
-    <div className="Bi-page-content">
-        <DashboardSpec
-            data={data}
-            readOnly
-            buffer={{}}
-            onBufferChange={() => {}}
-        />
-    </div>
-)

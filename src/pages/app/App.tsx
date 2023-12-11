@@ -1,11 +1,13 @@
-import React, {useEffect} from 'react'
+import React, {ReactNode, useEffect} from 'react'
 import {Navigate} from 'react-router-dom'
 import {Layout} from 'antd'
 import {useAuth, useRegistry} from 'src/util/hooks'
 import Navbar from 'src/features/registry/Navbar'
-import {ItemDataWrapper} from 'src/types'
+import {ItemDataWrapper, ViewType} from 'src/types'
 import MDITabs from 'src/components/mdi-tabs/MDITabs'
 import {useNewMDIContext} from 'src/components/mdi-tabs/hooks'
+import ViewNavTab from './ViewNavTab'
+import DefaultNavTab from './DefaultNavTab'
 import './App.css'
 
 const {Content} = Layout
@@ -20,6 +22,13 @@ function App() {
             initializeIfNeeded(me)
         }
     }, [me, initializeIfNeeded])
+
+    const renderItem = (data: ItemDataWrapper): ReactNode =>
+        data.viewType === ViewType.view ? (
+            <ViewNavTab data={data}/>
+        ) : (
+            <DefaultNavTab data={data}/>
+        )
 
     if (!me || isExpired)
         return <Navigate to="/login"/>
@@ -37,6 +46,7 @@ function App() {
                             ctx={mdiContext}
                             className="pages"
                             type="editable-card"
+                            renderItem={renderItem}
                         />
                     </div>
                 </Content>
