@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import {ExclamationCircleOutlined, SearchOutlined} from '@ant-design/icons'
 import {ItemDataWrapper, ViewType} from '../types'
 import {objectToHash} from './index'
@@ -6,6 +7,7 @@ import {allIcons} from './icons'
 import {ID_ATTR_NAME} from '../config/constants'
 import i18n from '../i18n'
 import {MDITab} from '../components/mdi-tabs'
+import appConfig from '../config'
 
 const tempIds: Record<string, number> = {}
 
@@ -33,7 +35,7 @@ export function generateKeyById(itemName: string, viewType: ViewType, id?: strin
 export function generateLabel(data: ItemDataWrapper): ReactNode {
     const {item, viewType, extra} = data
     const Icon = (viewType === ViewType.default) ? SearchOutlined : (item.icon ? allIcons[item.icon] : null)
-    const title = getTitle(data)
+    const title = _.truncate(getTitle(data), {length: appConfig.ui.mdi.tabLabelMaxLength})
 
     return (
         <span>
