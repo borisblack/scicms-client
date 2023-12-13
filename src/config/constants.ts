@@ -1,7 +1,6 @@
 // import process from 'process'
 
 export const DEBUG: boolean = process.env.NODE_ENV !== 'production'
-export const EMPTY_ARRAY = []
 export const ANTD_GRID_COLS = 24
 export const UTC = 'UTC'
 export const LOWERCASE_NO_WHITESPACE_PATTERN = /^[a-z]\w*$/

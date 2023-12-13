@@ -57,7 +57,7 @@ interface AppConfig {
 
 const appConfig: AppConfig = {
     coreVersion: 'v1',
-    coreUrl: process.env.CORE_URL ?? DEFAULT_CORE_URL,
+    coreUrl: process.env.REACT_APP_CORE_URL ?? DEFAULT_CORE_URL,
     i18nLng: 'ru',
     antdLocale: ruRU,
     dateTime: {
