@@ -546,6 +546,7 @@ export enum ViewType {
 export interface ItemDataWrapper {
     item: Item
     viewType: ViewType
+    id?: string
     data?: ItemData
     extra?: Record<string, any>
 }

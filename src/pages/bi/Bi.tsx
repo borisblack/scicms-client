@@ -78,12 +78,14 @@ function Bi() {
     }
 
     function openDashboard(dashboard: Dashboard, extra?: DashboardExtra) {
-        mdiContext.openTab(createMDITab({
-            item: dashboardItem,
-            viewType: ViewType.view,
-            data: dashboard,
-            extra
-        }))
+        mdiContext.openTab(
+            createMDITab(
+                dashboardItem,
+                ViewType.view,
+                dashboard,
+                extra
+            )
+        )
     }
 
     const handleToggle = useCallback(() => {
@@ -126,11 +128,13 @@ function Bi() {
         ...dashboardList.map(dashboard => ({
             key: `${prefix}#${dashboard.id}`,
             label: dashboard.name,
-            onClick: () => mdiContext.openTab(createMDITab({
-                item: dashboardItem,
-                viewType: ViewType.view,
-                data: dashboard
-            }))
+            onClick: () => mdiContext.openTab(
+                createMDITab(
+                    dashboardItem,
+                    ViewType.view,
+                    dashboard
+                )
+            )
         }))
     ])
 

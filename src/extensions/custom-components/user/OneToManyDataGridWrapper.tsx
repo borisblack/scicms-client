@@ -25,14 +25,14 @@ export default function OneToManyDataGridWrapper({data: dataWrapper, itemName, t
     const {data: itemData} = dataWrapper
     const {me} = useAuth()
     const {items: itemMap, permissions: permissionMap} = useRegistry()
-    const {create: createItem, open: openItem, remove: removeItem} = useItemOperations()
+    const {create: createItem, open: openItem, close: closeItem} = useItemOperations()
     const {t} = useTranslation()
     const [loading, setLoading] = useState<boolean>(false)
     const [data, setData] = useState(getInitialData())
     const [version, setVersion] = useState<number>(0)
     const item = useMemo(() => itemMap[itemName], [itemMap, itemName])
     const targetItem = useMemo(() => itemMap[targetItemName], [itemMap, targetItemName])
-    const columns = useMemo(() => getColumns(itemMap, targetItem), [itemMap, targetItem])
+    const columns = useMemo(() => getColumns(itemMap, targetItem, openItem), [itemMap, targetItem])
     const mutationManager = useMemo(() => new MutationManager(itemMap), [itemMap])
     const acl = useAcl(item, itemData)
 
@@ -75,7 +75,7 @@ export default function OneToManyDataGridWrapper({data: dataWrapper, itemName, t
             else
                 await mutationManager.remove(targetItem, id, appConfig.mutation.deletingStrategy)
 
-            removeItem(targetItem.name, id)
+            closeItem(targetItem.name, id)
             refresh()
         } catch (e: any) {
             console.error(e.message)
@@ -86,7 +86,7 @@ export default function OneToManyDataGridWrapper({data: dataWrapper, itemName, t
         } finally {
             setLoading(false)
         }
-    }, [t, mutationManager, targetItem, removeItem])
+    }, [t, mutationManager, targetItem, closeItem])
 
     const getRowContextMenu = useCallback((row: Row<ItemData>) => {
         const items: ItemType[] = [{

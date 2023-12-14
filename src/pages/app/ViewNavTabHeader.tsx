@@ -68,7 +68,7 @@ export default function ViewNavTabHeader({
     const {me} = useAuth()
     const {items: itemMap} = useRegistry()
     const ctx = useMDIContext<ItemDataWrapper>()
-    const {open: openItem, remove: removeItem} = useItemOperations()
+    const {open: openItem} = useItemOperations()
     const isNew = !data?.id
     const Icon = item.icon ? (icons as any)[item.icon] : null
     const {t} = useTranslation()
@@ -172,7 +172,7 @@ export default function ViewNavTabHeader({
             }
             ctx.updateActiveTab({...dataWrapper, data: deleted.data})
             setLockedByMe(false)
-            removeItem(item.name, id, dataWrapper.extra)
+            ctx.closeActiveTab(true)
             logoutIfNeed()
         } catch (e: any) {
             console.error(e.message)
@@ -206,7 +206,7 @@ export default function ViewNavTabHeader({
             const deleted = purged.data.find(it => it.id === id) as ItemData
             ctx.updateActiveTab({...dataWrapper, data: deleted})
             setLockedByMe(false)
-            removeItem(item.name, data?.id as string, dataWrapper.extra)
+            ctx.closeActiveTab(true)
         } catch (e: any) {
             console.error(e.message)
             notification.error({

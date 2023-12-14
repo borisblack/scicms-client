@@ -165,6 +165,7 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, for
                                 style={{marginLeft: 4, width: SUFFIX_BUTTON_WIDTH}}
                                 icon={<FolderOpenOutlined/>}
                                 loading={loading}
+                                disabled={false}
                                 onClick={openRelation}
                             />
                         </Tooltip>,

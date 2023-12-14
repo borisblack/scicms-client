@@ -32,8 +32,7 @@ const {info} = Modal
 function DefaultNavTab({data: dataWrapper}: Props) {
     const {me, logout} = useAuth()
     const {items: itemMap, permissions: permissionMap, reset: resetRegistry} = useRegistry()
-    const ctx = useMDIContext<ItemDataWrapper>()
-    const {create: createItem, open: openItem, remove: removeItem} = useItemOperations()
+    const {create: createItem, open: openItem, close: closeItem} = useItemOperations()
     const mutationManager = useMutationManager()
     const {t} = useTranslation()
     const [loading, setLoading] = useState(false)
@@ -46,7 +45,7 @@ function DefaultNavTab({data: dataWrapper}: Props) {
     const [buffer, setBuffer] = useState<IBuffer>({})
     const {item} = dataWrapper
     const isSystemItem = item.name === ITEM_TEMPLATE_ITEM_NAME || item.name === ITEM_ITEM_NAME
-    const columnsMemoized = useMemo(() => getColumns(itemMap, item), [item, itemMap])
+    const columnsMemoized = useMemo(() => getColumns(itemMap, item, openItem), [item, itemMap])
     const hiddenColumnsMemoized = useMemo(() => getHiddenColumns(item), [item])
     const handleBufferChange = useCallback((bufferChanges: IBuffer) => setBuffer({...buffer, ...bufferChanges}), [buffer])
     const pluginContext: CustomPluginRenderContext = useMemo(() => ({
@@ -134,7 +133,7 @@ function DefaultNavTab({data: dataWrapper}: Props) {
                     await doDelete()
                 }
             }
-            removeItem(item.name, id)
+            closeItem(item.name, id)
             refresh()
             logoutIfNeed()
         } catch (e: any) {
@@ -142,7 +141,7 @@ function DefaultNavTab({data: dataWrapper}: Props) {
         } finally {
             setLoading(false)
         }
-    }, [removeItem, item, logoutIfNeed, mutationManager, me, itemMap, buffer])
+    }, [closeItem, item, logoutIfNeed, mutationManager, me, itemMap, buffer])
 
     const getRowContextMenu = useCallback((row: Row<ItemData>) => {
         const items: ItemType[] = [{

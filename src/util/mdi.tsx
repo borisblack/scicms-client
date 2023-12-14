@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import {ExclamationCircleOutlined, SearchOutlined} from '@ant-design/icons'
-import {ItemDataWrapper, ViewType} from '../types'
+import {Item, ItemData, ItemDataWrapper, ViewType} from '../types'
 import {objectToHash} from './index'
 import React, {ReactNode} from 'react'
 import {allIcons} from './icons'
@@ -11,11 +11,19 @@ import appConfig from '../config'
 
 const tempIds: Record<string, number> = {}
 
+function generateId(itemName: string) {
+    const tempId = (tempIds[itemName] ?? 0) + 1
+    tempIds[itemName] = tempId
+
+    return tempId.toString()
+}
+
+
 export function generateKey(data: ItemDataWrapper): string {
     const {item, viewType, data: itemData, extra} = data
     const itemName = item.name
 
-    return generateKeyById(itemName, viewType, itemData?.id, extra)
+    return generateKeyById(itemName, viewType, itemData?.id ?? data.id, extra)
 }
 
 export function generateKeyById(itemName: string, viewType: ViewType, id?: string, extra?: Record<string, any>): string {
@@ -23,9 +31,7 @@ export function generateKeyById(itemName: string, viewType: ViewType, id?: strin
     if (id != null) {
         key += `#${id}`
     } else if (viewType === ViewType.view) {
-        const tempId = (tempIds[itemName] ?? 0) + 1
-        tempIds[itemName] = tempId
-        key += `#${tempId}`
+        key += `#${generateId(itemName)}`
     }
 
     const suffix = extra == null ? undefined : objectToHash(extra).toString()
@@ -64,14 +70,23 @@ export function getTitle(data: ItemDataWrapper): string {
 }
 
 export function createMDITab(
-    data: ItemDataWrapper,
+    item: Item,
+    viewType: ViewType,
+    data?: ItemData,
+    extra?: Record<string, any>,
     onUpdate?: (updatedData: ItemDataWrapper) => void,
     onClose?: (closedData: ItemDataWrapper, remove: boolean) => void
 ): MDITab<ItemDataWrapper> {
     return {
         key: generateKey,
         label: generateLabel,
-        data,
+        data: {
+            item,
+            viewType,
+            id: (viewType === ViewType.view && data?.id == null) ? generateId(item.name) : undefined,
+            data,
+            extra
+        },
         onUpdate: onUpdate == null ? [] : [onUpdate],
         onClose: onClose == null ? [] : [onClose]
     }

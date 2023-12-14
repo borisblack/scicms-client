@@ -26,7 +26,7 @@ export const getInitialData = (): DataWithPagination<any> => ({
     }
 })
 
-export function getColumns(items: ItemMap, item: Item): ColumnDef<any, any>[] {
+export function getColumns(items: ItemMap, item: Item, onOpenItem: (item: Item, id: string) => void): ColumnDef<any, any>[] {
     const columns: ColumnDef<any, any>[] = []
     const {attributes} = item.spec
     for (const attrName in attributes) {
@@ -39,7 +39,7 @@ export function getColumns(items: ItemMap, item: Item): ColumnDef<any, any>[] {
 
         const column = columnHelper.accessor(attrName, {
             header: i18n.t(attr.displayName) as string,
-            cell: info => renderCell(items, item, info.row.original, attrName, attr, info.getValue()),
+            cell: info => renderCell(items, item, info.row.original, attrName, attr, info.getValue(), onOpenItem),
             size: attr.colWidth ?? appConfig.ui.dataGrid.colWidth,
             enableSorting: attr.type !== FieldType.text && attr.type !== FieldType.json && attr.type !== FieldType.array,
             enableColumnFilter: item.name !== ACCESS_ITEM_NAME || attrName !== MASK_ATTR_NAME
@@ -51,7 +51,15 @@ export function getColumns(items: ItemMap, item: Item): ColumnDef<any, any>[] {
     return columns
 }
 
-const renderCell = (items: ItemMap, item: Item, data: ItemData, attrName: string, attribute: Attribute, value: any): ReactElement | string | null => {
+const renderCell = (
+    items: ItemMap,
+    item: Item,
+    data: ItemData,
+    attrName: string,
+    attribute: Attribute,
+    value: any,
+    onOpenItem: (item: Item, id: string) => void
+): ReactElement | string | null => {
     switch (attribute.type) {
         case FieldType.string:
             if (item.name === MEDIA_ITEM_NAME && attrName === FILENAME_ATTR_NAME && value != null) {
@@ -116,7 +124,15 @@ const renderCell = (items: ItemMap, item: Item, data: ItemData, attrName: string
                 throw new Error('Illegal state')
 
             const subItem = items[attribute.target]
-            return (value && value.data) ? (value.data[subItem.titleAttribute] ?? value.data.id) : null
+            const title = (value && value.data) ? (value.data[subItem.titleAttribute] ?? value.data.id) : null
+            if (title == null)
+                return null
+
+            return (
+                <Button type="link" size="small" style={{margin: 0, padding: 0}} onClick={() => onOpenItem(subItem, value.data.id)}>
+                    {title}
+                </Button>
+            )
         default:
             throw new Error('Illegal attribute')
     }

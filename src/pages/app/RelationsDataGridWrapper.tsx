@@ -27,7 +27,7 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
     const {item, data: itemData} = dataWrapper
     const {me} = useAuth()
     const {items: itemMap, permissions: permissionMap} = useRegistry()
-    const {create: createItem, open: openItem, remove: removeItem} = useItemOperations()
+    const {create: createItem, open: openItem, close: closeItem} = useItemOperations()
 
     if (!relAttribute.target || (relAttribute.relType !== RelType.oneToMany && relAttribute.relType !== RelType.manyToMany))
         throw Error('Illegal attribute')
@@ -50,7 +50,7 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
         [itemMap, relAttribute.target, relAttribute.intermediate]
     )
     const [data, setData] = useState(getInitialData())
-    const columns = useMemo(() => getColumns(itemMap, target), [itemMap, target])
+    const columns = useMemo(() => getColumns(itemMap, target, openItem), [itemMap, target])
     const isOneToMany = useMemo(() => relAttribute.relType === RelType.oneToMany, [relAttribute.relType])
     const acl = useAcl(item, itemData)
 
@@ -190,7 +190,7 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
                 await mutationManager.purge(target, id, appConfig.mutation.deletingStrategy)
             else
                 await mutationManager.remove(target, id, appConfig.mutation.deletingStrategy)
-            removeItem(target.name, id)
+            closeItem(target.name, id)
             refresh()
         } catch (e: any) {
             console.error(e.message)
@@ -198,7 +198,7 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
         } finally {
             setLoading(false)
         }
-    }, [mutationManager, target, removeItem])
+    }, [mutationManager, target, closeItem])
 
     const deleteIntermediate = useCallback(async (targetId: string) => {
         if (intermediate == null) {

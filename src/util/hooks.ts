@@ -4,7 +4,7 @@ import {useDispatch, useSelector} from 'react-redux'
 import type {AppDispatch, RootState} from 'src/store'
 import PermissionManager, {Acl} from 'src/services/permission'
 import {Item, ItemData, ItemDataWrapper, UserInfo, ViewType} from 'src/types'
-import {DASHBOARD_ITEM_NAME, ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME} from 'src/config/constants'
+import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME} from 'src/config/constants'
 import {logout as doLogout, selectIsExpired, selectMe} from 'src/features/auth/authSlice'
 import {
     initializeIfNeeded as doInitializeIfNeeded,
@@ -163,12 +163,16 @@ export function useItemOperations() {
         onUpdate?: (updatedData: ItemDataWrapper) => void,
         onClose?: (closedData: ItemDataWrapper, remove: boolean) => void
     ) => {
-        ctx.openTab(createMDITab({
-            item,
-            viewType: ViewType.view,
-            data: initialData,
-            extra
-        }, onUpdate, onClose))
+        ctx.openTab(
+            createMDITab(
+                item,
+                ViewType.view,
+                initialData,
+                extra,
+                onUpdate,
+                onClose
+            )
+        )
     }, [ctx])
 
     const open = useCallback(async (
@@ -180,12 +184,16 @@ export function useItemOperations() {
     ) => {
         const actualData = await queryManager.findById(item, id)
         if (actualData.data) {
-            ctx.openTab(createMDITab({
-                item,
-                viewType: ViewType.view,
-                data: actualData.data,
-                extra
-            }, onUpdate, onClose))
+            ctx.openTab(
+                createMDITab(
+                    item,
+                    ViewType.view,
+                    actualData.data,
+                    extra,
+                    onUpdate,
+                    onClose
+                )
+            )
         } else {
             notification.error({
                 message: t('Opening error'),
@@ -194,10 +202,10 @@ export function useItemOperations() {
         }
     }, [ctx, queryManager, t])
 
-    const remove = useCallback((itemName: string, id: string, extra?: Record<string, any>) => {
+    const close = useCallback((itemName: string, id: string, extra?: Record<string, any>) => {
         const key = generateKeyById(itemName, ViewType.view, id, extra)
         ctx.closeTab(key, true)
     }, [ctx])
 
-    return {create, open, remove}
+    return {create, open, close}
 }

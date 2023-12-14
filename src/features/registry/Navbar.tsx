@@ -43,10 +43,12 @@ const Navbar = ({ctx}: Props) => {
     }, [collapsed])
 
     const handleItemClick = useCallback((item: Item) => {
-        ctx.openTab(createMDITab({
-            item,
-            viewType: ViewType.default
-        }))
+        ctx.openTab(
+            createMDITab(
+                item,
+                ViewType.default
+            )
+        )
     }, [ctx])
 
     const toAntdMenuItems = useCallback((menuItems: (SubMenu | MenuItem)[]): ItemType[] => menuItems

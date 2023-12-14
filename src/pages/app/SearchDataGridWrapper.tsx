@@ -9,7 +9,7 @@ import {Item, ItemData} from '../../types'
 import {ExtRequestParams, ItemFiltersInput} from '../../services/query'
 import {CheckboxChangeEvent} from 'antd/es/checkbox'
 import {useTranslation} from 'react-i18next'
-import {useRegistry} from 'src/util/hooks'
+import {useItemOperations, useRegistry} from 'src/util/hooks'
 
 interface Props {
     item: Item
@@ -23,6 +23,7 @@ interface Props {
 
 export default function SearchDataGridWrapper({item, notHiddenColumns = [], extraFiltersInput, majorRev, locale, state, onSelect}: Props) {
     const {items: itemMap} = useRegistry()
+    const {open: openItem} = useItemOperations()
     const {t} = useTranslation()
     const [loading, setLoading] = useState<boolean>(false)
     const [data, setData] = useState(getInitialData())
@@ -30,7 +31,7 @@ export default function SearchDataGridWrapper({item, notHiddenColumns = [], extr
     const showAllLocalesRef = useRef<boolean>(false)
 
     const notHiddenColumnSet = useMemo(() => new Set(notHiddenColumns), [notHiddenColumns])
-    const columnsMemoized = useMemo(() => getColumns(itemMap, item), [item, itemMap])
+    const columnsMemoized = useMemo(() => getColumns(itemMap, item, openItem), [item, itemMap])
     const hiddenColumnsMemoized = useMemo(() => getHiddenColumns(item).filter(it => !notHiddenColumnSet.has(it)), [item, notHiddenColumnSet])
 
     const handleRequest = useCallback(async (params: RequestParams) => {
