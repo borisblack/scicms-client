@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import {ReactElement} from 'react'
 import {ColumnDef, ColumnFiltersState, createColumnHelper, SortingState} from '@tanstack/react-table'
-import {Button, Checkbox, Tag} from 'antd'
+import {Checkbox, Tag, Typography} from 'antd'
 import {DateTime} from 'luxon'
 
 import {Attribute, FieldType, Item, ItemData, Media, RelType} from '../types'
@@ -14,6 +14,7 @@ import {getBit} from './index'
 import {download} from '../services/media'
 import {ItemMap} from '../services/item'
 
+const {Link} = Typography
 const {luxonDisplayDateFormatString, luxonDisplayTimeFormatString, luxonDisplayDateTimeFormatString} = appConfig.dateTime
 const columnHelper = createColumnHelper<any>()
 
@@ -64,9 +65,9 @@ const renderCell = (
         case FieldType.string:
             if (item.name === MEDIA_ITEM_NAME && attrName === FILENAME_ATTR_NAME && value != null) {
                 return (
-                    <Button type="link" size="small" style={{margin: 0, padding: 0}} onClick={() => download(data.id, value)}>
+                    <Link onClick={() => download(data.id, value)}>
                         {value}
-                    </Button>
+                    </Link>
                 )
             }
             return value
@@ -112,9 +113,9 @@ const renderCell = (
                 return null
 
             return (
-                <Button type="link" size="small" style={{margin: 0, padding: 0}} onClick={() => download(mediaData.id, mediaData.filename)}>
+                <Link onClick={() => download(mediaData.id, mediaData.filename)}>
                     {(mediaData as any)[media.titleAttribute] ?? mediaData.filename}
-                </Button>
+                </Link>
             )
         case FieldType.relation:
             if (attribute.relType === RelType.oneToMany || attribute.relType === RelType.manyToMany)
@@ -129,9 +130,9 @@ const renderCell = (
                 return null
 
             return (
-                <Button type="link" size="small" style={{margin: 0, padding: 0}} onClick={() => onOpenItem(subItem, value.data.id)}>
+                <Link onClick={() => onOpenItem(subItem, value.data.id)}>
                     {title}
-                </Button>
+                </Link>
             )
         default:
             throw new Error('Illegal attribute')
