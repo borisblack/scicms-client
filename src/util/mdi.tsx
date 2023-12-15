@@ -42,9 +42,9 @@ export function generateLabel(data: ItemDataWrapper): ReactNode {
     const title = getTitle(data)
 
     return (
-        <span>
+        <span className="mdi-tab-label" title={title}>
             {Icon && <Icon/>}
-            <span className="mdi-tab-title">{title}</span>
+            {title}
             {extra && <ExclamationCircleOutlined className="tab-label-suffix orange"/>}
         </span>
     )

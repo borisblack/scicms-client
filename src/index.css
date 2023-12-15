@@ -88,9 +88,13 @@ form.ant-form-horizontal .ant-form-item-label {
   margin: 0;
 }
 
-.mdi-tab-title {
+.ant-tabs-tab-btn:has(.mdi-tab-label) {
+  line-height: 0.9;
+}
+
+.mdi-tab-label {
   display: inline-block;
-  max-width: 200px;
+  max-width: 220px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
