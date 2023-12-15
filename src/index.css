@@ -87,3 +87,11 @@ form.ant-form-horizontal .ant-form-item-label {
 .pages.ant-tabs-top > .ant-tabs-nav {
   margin: 0;
 }
+
+.mdi-tab-title {
+  display: inline-block;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

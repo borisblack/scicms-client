@@ -40,9 +40,6 @@ interface AppConfig {
         deletingStrategy: DeletingStrategy
     }
     ui: {
-        mdi: {
-            tabLabelMaxLength: number
-        }
         dataGrid: {
             colWidth: number
         }
@@ -79,9 +76,6 @@ const appConfig: AppConfig = {
         deletingStrategy: DeletingStrategy.CASCADE
     },
     ui: {
-        mdi: {
-            tabLabelMaxLength: 30
-        },
         dataGrid: {
             colWidth: 140
         },
