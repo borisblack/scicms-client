@@ -356,9 +356,8 @@ export interface IDash {
     isAggregate: boolean
     aggregateType?: AggregateType
     aggregateField?: string
-    groupField?: string
-    sortField?: string
-    sortDirection?: string
+    groupField?: string | string[]
+    sortField?: string | string[]
     optValues: {[key: string]: any}
     defaultFilters: QueryBlock
     relatedDashboardId?: string

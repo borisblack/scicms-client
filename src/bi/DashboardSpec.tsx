@@ -95,7 +95,7 @@ export default function DashboardSpec({data: dataWrapper, buffer, readOnly, onBu
                 const curDash = allDashes[i]
                 const {
                     id, name, dataset, type, unit,
-                    isAggregate, aggregateType, aggregateField, groupField, sortField, sortDirection,
+                    isAggregate, aggregateType, aggregateField, groupField, sortField,
                     optValues, defaultFilters, relatedDashboardId, refreshIntervalSeconds
                 } = curDash
 
@@ -114,7 +114,6 @@ export default function DashboardSpec({data: dataWrapper, buffer, readOnly, onBu
                     aggregateField,
                     groupField,
                     sortField,
-                    sortDirection,
                     optValues,
                     defaultFilters,
                     relatedDashboardId,
@@ -171,7 +170,6 @@ export default function DashboardSpec({data: dataWrapper, buffer, readOnly, onBu
             aggregateField,
             groupField,
             sortField,
-            sortDirection,
             optValues,
             defaultFilters,
             relatedDashboardId,

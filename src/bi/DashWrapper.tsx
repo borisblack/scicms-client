@@ -81,7 +81,6 @@ export default function DashWrapper(props: DashWrapperProps) {
         dash.aggregateField,
         dash.groupField,
         dash.sortField,
-        dash.sortDirection,
         filters
     ])
 
@@ -116,11 +115,11 @@ export default function DashWrapper(props: DashWrapperProps) {
             datasetInput.aggregateField = dash.aggregateField
 
             if (dash.groupField)
-                datasetInput.groupFields = [dash.groupField]
+                datasetInput.groupFields = Array.isArray(dash.groupField) ? dash.groupField : [dash.groupField]
         }
 
         if (dash.sortField)
-            datasetInput.sort = [`${dash.sortField}:${dash.sortDirection ?? 'asc'}`]
+            datasetInput.sort = Array.isArray(dash.sortField) ? dash.sortField : [dash.sortField]
 
         let fetchedData: any[] | null = null
         setLoading(true)

@@ -1,7 +1,7 @@
 import {Select} from 'antd'
 import {BaseSelectRef} from 'rc-select'
 import {DefaultOptionType} from 'rc-select/lib/Select'
-import {KeyboardEvent, useRef, useState} from 'react'
+import {FocusEvent, KeyboardEvent, useRef, useState} from 'react'
 
 interface Props {
     value: any
@@ -34,6 +34,10 @@ export default function SelectableCell({value, options, onChange}: Props) {
         }
     }
 
+    function handleBlur(evt: FocusEvent<HTMLElement>) {
+        setEditing(false)
+    }
+
     return editing ? (
         <Select
             ref={selectInput}
@@ -42,6 +46,7 @@ export default function SelectableCell({value, options, onChange}: Props) {
             allowClear
             options={options}
             value={value}
+            onBlur={handleBlur}
             onSelect={handleSelect}
             onClear={handleClear}
             onKeyUp={handleKeyUp}

@@ -41,7 +41,11 @@ export default function DashFilters({form, namePrefix, dataset, initialBlock, sh
                     name={[fieldName, 'logicalOp']}
                     rules={[{required: true, message: t('Required field')}]}
                 >
-                    <Select style={{width: LOGICAL_OP_FIELD_WIDTH, height: TOOLBAR_HEIGHT, marginBottom: V_SPACE}} placeholder={t('Logical Operator')}>
+                    <Select
+                        bordered={false}
+                        style={{width: LOGICAL_OP_FIELD_WIDTH, height: TOOLBAR_HEIGHT, marginBottom: V_SPACE}}
+                        placeholder={t('Logical Operator')}
+                    >
                         {positiveLogicalOps.map(p => <SelectOption key={p} value={p}>{logicalOpTitles[p]}</SelectOption>)}
                     </Select>
                 </FormItem>
@@ -114,8 +118,10 @@ export default function DashFilters({form, namePrefix, dataset, initialBlock, sh
 
             {onRemove && (
                 <Button
+                    danger
                     style={{position: 'absolute', width: BTN_WIDTH, height: TOOLBAR_HEIGHT, top: 0, left: startBtnLeft + BTN_WIDTH*2 + H_SPACE*2}}
                     title={t('Remove Block')}
+                    type="text"
                     onClick={onRemove}
                 >
                     <DeleteOutlined/>

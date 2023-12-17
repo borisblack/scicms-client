@@ -22,7 +22,8 @@ import DashFilters from './dash-filters/DashFilters'
 import styles from './DashboardSpec.module.css'
 import {Dash, getDash, getDashIds} from '../extensions/dashes'
 import biConfig from '../config/bi'
-import {FolderOpenOutlined, QuestionCircleOutlined} from '@ant-design/icons'
+import {ArrowDownOutlined, ArrowUpOutlined, FolderOpenOutlined, QuestionCircleOutlined} from '@ant-design/icons'
+import {DefaultOptionType} from 'rc-select/lib/Select'
 
 interface Props {
     form: FormInstance
@@ -67,13 +68,18 @@ export default function DashForm({form, dash, canEdit, datasets, dashboards, onF
     const allColNames: string[] = useMemo(() => Object.keys(datasetColumns).sort(), [datasetColumns])
     const [isAggregate, setAggregate] = useState<boolean>(dash.isAggregate)
     const [aggregateField, setAggregateField] = useState<string | undefined>(dash.aggregateField)
-    const [groupField, setGroupField] = useState<string | undefined>(dash.groupField)
+    const [groupFields, setGroupFields] =
+        useState<string[] | undefined>(dash.groupField ? (Array.isArray(dash.groupField) ? dash.groupField : [dash.groupField]) : undefined)
+
     const availableColNames: string[] = useMemo(() => {
         if (!isAggregate || !aggregateField)
             return allColNames
 
-        return (groupField && groupField !== aggregateField) ? [aggregateField, groupField] : [aggregateField]
-    }, [aggregateField, allColNames, groupField, isAggregate])
+        return groupFields
+            ? [aggregateField, ...(groupFields.filter(groupField => groupField !== aggregateField))].sort()
+            : [aggregateField]
+    }, [aggregateField, allColNames, groupFields, isAggregate])
+
     const [dashType, setDashType] = useState<string>(dash.type)
     const dashHandler: Dash | undefined = useMemo(() => getDash(dashType), [dashType])
 
@@ -105,19 +111,19 @@ export default function DashForm({form, dash, canEdit, datasets, dashboards, onF
         resetSortAndOptValuesFormFields()
         setAggregate(evt.target.checked)
         setAggregateField(undefined)
-        setGroupField(undefined)
+        setGroupFields(undefined)
     }, [resetAggregateFormFields, resetSortAndOptValuesFormFields])
 
     const handleAggregateFieldChange = useCallback((newAggregateField: string | undefined) => {
         form.setFieldValue('groupField', undefined)
         resetSortAndOptValuesFormFields()
         setAggregateField(newAggregateField)
-        setGroupField(undefined)
+        setGroupFields(undefined)
     }, [form, resetSortAndOptValuesFormFields])
 
-    const handleGroupFieldChange = useCallback((newGroupField: string | undefined) => {
+    const handleGroupFieldsChange = useCallback((newGroupFields: string[] | undefined) => {
         resetSortAndOptValuesFormFields()
-        setGroupField(newGroupField)
+        setGroupFields(newGroupFields)
     }, [resetSortAndOptValuesFormFields])
 
     const handleDashTypeChange = useCallback((newDashType: string) => {
@@ -134,6 +140,22 @@ export default function DashForm({form, dash, canEdit, datasets, dashboards, onF
             values: dash.optValues ?? {}
         })
     )
+
+    const getSortFieldOptions = (): DefaultOptionType[] => {
+        return [{
+            label: t('Ascending'),
+            options: availableColNames.map(colName => ({
+                label: <span><ArrowUpOutlined/>&nbsp;{colName}</span>,
+                value: `${colName}:asc`
+            }))
+        }, {
+            label: t('Descending'),
+            options: availableColNames.map(colName => ({
+                label: <span><ArrowDownOutlined/>&nbsp;{colName}</span>,
+                value: `${colName}:desc`
+            }))
+        }]
+    }
 
     return (
         <Form
@@ -246,11 +268,17 @@ export default function DashForm({form, dash, canEdit, datasets, dashboards, onF
                                 <FormItem
                                     className={styles.formItem}
                                     name="groupField"
-                                    label={t('Group Field')}
+                                    label={t('Group Fields')}
                                     dependencies={['isAggregate']}
-                                    initialValue={dash.groupField}
+                                    initialValue={Array.isArray(dash.groupField) ? dash.groupField : [dash.groupField]}
                                 >
-                                    <Select allowClear disabled={!canEdit || !isAggregate} onSelect={handleGroupFieldChange} onClear={() => handleGroupFieldChange(undefined)}>
+                                    <Select
+                                        allowClear
+                                        disabled={!canEdit || !isAggregate}
+                                        mode="multiple"
+                                        onChange={handleGroupFieldsChange}
+                                        onClear={() => handleGroupFieldsChange(undefined)}
+                                    >
                                         {allColNames.filter(c => c !== aggregateField).map(c => <SelectOption key={c} value={c}>{c}</SelectOption>)}
                                     </Select>
                                 </FormItem>
@@ -260,26 +288,14 @@ export default function DashForm({form, dash, canEdit, datasets, dashboards, onF
                                 <FormItem
                                     className={styles.formItem}
                                     name="sortField"
-                                    label={t('Sort Field')}
-                                    initialValue={dash.sortField}
+                                    label={t('Sort Fields')}
+                                    initialValue={Array.isArray(dash.sortField) ? dash.sortField : [dash.sortField]}
                                 >
-                                    <Select allowClear>
-                                        {availableColNames.map(c => <SelectOption key={c} value={c}>{c}</SelectOption>)}
-                                    </Select>
-                                </FormItem>
-                            </Col>
-                            <Col span={6}>
-                                <FormItem
-                                    className={styles.formItem}
-                                    name="sortDirection"
-                                    label={t('Sort Direction')}
-                                    initialValue={dash.sortDirection ?? 'asc'}
-                                    rules={[{required: true, message: t('Required field')}]}
-                                >
-                                    <Select>
-                                        <SelectOption key="asc" value="asc">asc</SelectOption>
-                                        <SelectOption key="desc" value="desc">desc</SelectOption>
-                                    </Select>
+                                    <Select
+                                        allowClear
+                                        mode="multiple"
+                                        options={getSortFieldOptions()}
+                                    />
                                 </FormItem>
                             </Col>
                         </Row>
