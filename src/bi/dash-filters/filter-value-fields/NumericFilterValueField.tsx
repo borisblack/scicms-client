@@ -48,7 +48,7 @@ const NumericFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, c
                 regExpRule(/^(\d+(\.\d+)?)(\s*,\s*\d+(\.\d+)?)*$/, ''/*'String must contain only comma-separated values'*/)
             ]}
         >
-            <Input placeholder={t('Comma separated values')}/>
+            <Input bordered={false} placeholder={t('Comma separated values')}/>
         </FormItem>
     )
 

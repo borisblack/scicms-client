@@ -27,7 +27,7 @@ const StringFilterValueField: FC<FilterValueFieldProps> = ({namePrefix, column, 
             name={[fieldName, 'value']}
             rules={[{required: true, message: ''}]}
         >
-            <Input placeholder={t('Value')}/>
+            <Input bordered={false} placeholder={t('Value')}/>
         </FormItem>
     )
 }

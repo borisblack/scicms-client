@@ -1,5 +1,5 @@
 import {Input, InputRef} from 'antd'
-import {ChangeEvent, KeyboardEvent, useEffect, useRef, useState} from 'react'
+import {ChangeEvent, FocusEvent, KeyboardEvent, useEffect, useRef, useState} from 'react'
 
 interface Props {
     value: any
@@ -37,8 +37,19 @@ export default function EditableCell({value, onChange}: Props) {
         }
     }
 
+    function handleBlur(evt: FocusEvent<HTMLInputElement>) {
+        setEditing(false)
+    }
+
     return editing ? (
-        <Input ref={editInput} size="small" value={innerValue} onChange={handleChange} onKeyUp={handleKeyUp}/>
+        <Input
+            ref={editInput}
+            size="small"
+            value={innerValue}
+            onBlur={handleBlur}
+            onChange={handleChange}
+            onKeyUp={handleKeyUp}
+        />
     ) : (
         <div style={{minHeight: 22}} onDoubleClick={startEditing}>
             {innerValue}

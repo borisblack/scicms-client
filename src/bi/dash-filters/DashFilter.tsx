@@ -49,7 +49,11 @@ export default function DashFilter({style, btnStyle, form, namePrefix, dataset, 
                     name={[fieldName, 'columnName']}
                     rules={[{required: true, message: ''}]}
                 >
-                    <Select style={{width: 160}} placeholder={t('Column Name')} onSelect={handleColumnNameSelect}>
+                    <Select
+                        bordered={false}
+                        style={{width: 160}}
+                        placeholder={t('Column Name')} onSelect={handleColumnNameSelect}
+                    >
                         {colNames.map(cn => <SelectOption key={cn} value={cn}>{columns[cn].alias ?? cn}</SelectOption>)}
                     </Select>
                 </FormItem>
@@ -58,7 +62,11 @@ export default function DashFilter({style, btnStyle, form, namePrefix, dataset, 
                     name={[fieldName, 'op']}
                     rules={[{required: true, message: ''}]}
                 >
-                    <Select style={{width: 160}} placeholder={t('Operator')} onSelect={handleOpSelect}>
+                    <Select
+                        bordered={false}
+                        style={{width: 160}} placeholder={t('Operator')}
+                        onSelect={handleOpSelect}
+                    >
                         {availableOpList.map(o => <SelectOption key={o} value={o}>{queryOpTitles[o]}</SelectOption>)}
                     </Select>
                 </FormItem>
@@ -80,8 +88,10 @@ export default function DashFilter({style, btnStyle, form, namePrefix, dataset, 
                 </FormItem>
 
                 <Button
+                    danger
                     style={btnStyle}
                     title={t('Remove Filter')}
+                    type="text"
                     onClick={onRemove}
                 >
                     <DeleteOutlined/>
