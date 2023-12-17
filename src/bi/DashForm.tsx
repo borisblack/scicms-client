@@ -145,12 +145,14 @@ export default function DashForm({form, dash, canEdit, datasets, dashboards, onF
         return [{
             label: t('Ascending'),
             options: availableColNames.map(colName => ({
+                key:`${colName}:asc`,
                 label: <span><ArrowUpOutlined/>&nbsp;{colName}</span>,
                 value: `${colName}:asc`
             }))
         }, {
             label: t('Descending'),
             options: availableColNames.map(colName => ({
+                key: `${colName}:desc`,
                 label: <span><ArrowDownOutlined/>&nbsp;{colName}</span>,
                 value: `${colName}:desc`
             }))
@@ -270,7 +272,7 @@ export default function DashForm({form, dash, canEdit, datasets, dashboards, onF
                                     name="groupField"
                                     label={t('Group Fields')}
                                     dependencies={['isAggregate']}
-                                    initialValue={Array.isArray(dash.groupField) ? dash.groupField : [dash.groupField]}
+                                    initialValue={dash.groupField ? (Array.isArray(dash.groupField) ? dash.groupField : [dash.groupField]) : undefined}
                                 >
                                     <Select
                                         allowClear
@@ -289,7 +291,7 @@ export default function DashForm({form, dash, canEdit, datasets, dashboards, onF
                                     className={styles.formItem}
                                     name="sortField"
                                     label={t('Sort Fields')}
-                                    initialValue={Array.isArray(dash.sortField) ? dash.sortField : [dash.sortField]}
+                                    initialValue={dash.sortField ? (Array.isArray(dash.sortField) ? dash.sortField : [dash.sortField]) : undefined}
                                 >
                                     <Select
                                         allowClear
