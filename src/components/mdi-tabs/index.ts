@@ -2,7 +2,7 @@ import {ReactNode} from 'react'
 
 export interface MDITab<T> {
     key: string | ((data: T) => string)
-    label: ReactNode | ((data: T) => ReactNode)
+    label?: ReactNode | ((data: T) => ReactNode)
     data: T
     render?: (data: T) => ReactNode
     onUpdate: ((updatedData: T) => void)[]
@@ -22,6 +22,3 @@ export interface MDIContext<T> {
 
 export const getTabKey = <T,>(item: MDITab<T>, data?: T) =>
     (typeof item.key === 'function') ? item.key(data ?? item.data) : item.key
-
-export const getTabLabel = (item: MDITab<any>) =>
-    (typeof item.label === 'function') ? item.label(item.data) : item.label

@@ -14,7 +14,7 @@ import {allIcons} from 'src/util/icons'
 import {DASHBOARD_ITEM_NAME} from 'src/config/constants'
 import {useNewMDIContext} from 'src/components/mdi-tabs/hooks'
 import MDITabs from 'src/components/mdi-tabs/MDITabs'
-import {createMDITab} from 'src/util/mdi'
+import {createMDITab, generateLabel} from 'src/util/mdi'
 import DashboardSpec from 'src/bi/DashboardSpec'
 import './Bi.css'
 import logo from 'src/logo.svg'
@@ -193,6 +193,7 @@ function Bi() {
                             ctx={mdiContext}
                             className="pages"
                             type="editable-card"
+                            getItemLabel={generateLabel}
                             renderItem={renderDashboard}
                         />
                     </div>

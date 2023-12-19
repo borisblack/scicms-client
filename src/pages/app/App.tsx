@@ -9,6 +9,7 @@ import {useNewMDIContext} from 'src/components/mdi-tabs/hooks'
 import ViewNavTab from './ViewNavTab'
 import DefaultNavTab from './DefaultNavTab'
 import './App.css'
+import {generateLabel} from '../../util/mdi'
 
 const {Content} = Layout
 
@@ -46,6 +47,7 @@ function App() {
                             ctx={mdiContext}
                             className="pages"
                             type="editable-card"
+                            getItemLabel={generateLabel}
                             renderItem={renderItem}
                         />
                     </div>

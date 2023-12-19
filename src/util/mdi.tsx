@@ -79,7 +79,6 @@ export function createMDITab(
 ): MDITab<ItemDataWrapper> {
     return {
         key: generateKey,
-        label: generateLabel,
         data: {
             item,
             viewType,

@@ -4,17 +4,18 @@ import {Tabs} from 'antd'
 import {TabsType} from 'antd/es/tabs'
 import {Tab} from 'rc-tabs/lib/interface'
 import styles from './MDITabs.module.css'
-import {getTabLabel, MDIContext, MDITab} from './index'
+import {MDIContext, MDITab} from './index'
 import {ReactMDIContext} from './ReactMDIContext'
 
 interface MDITabsProps<T> {
     ctx: MDIContext<T>
     className?: string
     type?: TabsType,
+    getItemLabel?: (data: T) => ReactNode
     renderItem?: (data: T) => ReactNode
 }
 
-export default function MDITabs<T>({ctx, className, type, renderItem}: MDITabsProps<T>) {
+export default function MDITabs<T>({ctx, className, type, getItemLabel, renderItem}: MDITabsProps<T>) {
     const {items, activeKey, setActiveKey, closeTab} = ctx
 
     function handleTabsEdit(e: React.MouseEvent | React.KeyboardEvent | string, action: 'add' | 'remove') {
@@ -23,13 +24,24 @@ export default function MDITabs<T>({ctx, className, type, renderItem}: MDITabsPr
         }
     }
 
+    function doGetItemLabel(item: MDITab<T>): ReactNode {
+        if (item.label == null) {
+            if (getItemLabel == null)
+                throw new Error('No label for MDI tab.')
+
+            return getItemLabel(item.data)
+        }
+
+        return (typeof item.label === 'function') ? item.label(item.data) : item.label
+    }
+
     const getTabs = (): Tab[] => _.map(items, (item, key) => ({
         key,
-        label: getTabLabel(item),
+        label: doGetItemLabel(item),
         style: {background: '#fff'},
         children: (
             <div className={styles.mdiTabContent}>
-                {doRender(item)}
+                {doRenderItem(item)}
             </div>
         )
     }))
@@ -37,10 +49,10 @@ export default function MDITabs<T>({ctx, className, type, renderItem}: MDITabsPr
     /**
      * One if render functions must be specified.
      */
-    function doRender(item: MDITab<T>): ReactNode {
+    function doRenderItem(item: MDITab<T>): ReactNode {
         if (item.render == null) {
             if (renderItem == null)
-                throw new Error(`No render function for MDI tab [${getTabLabel(item)}].`)
+                throw new Error('No render function for MDI tab.')
 
             return renderItem(item.data)
         }
