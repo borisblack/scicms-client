@@ -1,14 +1,14 @@
 import _ from 'lodash'
-import {useCallback, useEffect, useMemo, useRef} from 'react'
+import {memo, useCallback, useEffect, useMemo, useRef} from 'react'
 import {Alert} from 'antd'
+import {v4 as uuidv4} from 'uuid'
 import L, {LatLngExpression} from 'leaflet'
 import {DashRenderContext} from '../index'
-import * as RulesService from '../../../services/rules'
-import {defaultDashColor, defaultDashColors} from '../../../util/bi'
-import biConfig from '../../../config/bi'
+import * as RulesService from 'src/services/rules'
+import {defaultDashColor, defaultDashColors} from 'src/util/bi'
+import biConfig from 'src/config/bi'
 import {MAX_LAT, MAX_LNG, MIN_LAT, MIN_LNG} from '.'
-import {QueryFilter, QueryOp} from '../../../types'
-import {v4 as uuidv4} from 'uuid'
+import {QueryFilter, QueryOp} from 'src/types'
 import 'leaflet/dist/leaflet.css'
 
 interface BubbleMapDashOptions {
@@ -26,7 +26,7 @@ interface BubbleMapDashOptions {
 const mapConfig = biConfig.dash.map
 const defaultColor = defaultDashColor()
 
-export default function BubbleMapDash({pageKey, fullScreen, dataset, dash, height, data, onRelatedDashboardOpen}: DashRenderContext) {
+function BubbleMapDash({pageKey, fullScreen, dataset, dash, height, data, onRelatedDashboardOpen}: DashRenderContext) {
     const {columns} = dataset.spec
     const {relatedDashboardId} = dash
     const {
@@ -149,3 +149,5 @@ export default function BubbleMapDash({pageKey, fullScreen, dataset, dash, heigh
         />
     )
 }
+
+export default memo(BubbleMapDash)

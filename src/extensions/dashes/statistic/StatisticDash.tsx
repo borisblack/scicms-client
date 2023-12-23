@@ -1,15 +1,15 @@
-import {DashRenderContext} from '../index'
+import {memo, useMemo} from 'react'
 import {Alert, Statistic} from 'antd'
-import biConfig from '../../../config/bi'
-import {useMemo} from 'react'
-import * as RulesService from '../../../services/rules'
+import {DashRenderContext} from '../index'
+import biConfig from 'src/config/bi'
+import * as RulesService from 'src/services/rules'
 
 interface StatisticDashOptions {
     statisticField?: string
     rules?: string
 }
 
-export default function StatisticDash({dataset, dash, data}: DashRenderContext) {
+function StatisticDash({dataset, dash, data}: DashRenderContext) {
     const {statisticField, rules} = dash.optValues as StatisticDashOptions
     const fieldRules = useMemo(() => RulesService.parseRules(rules), [rules])
     const fieldStyle = statisticField ? RulesService.getFieldStyle(fieldRules, statisticField, data[0]) : {}
@@ -30,3 +30,5 @@ export default function StatisticDash({dataset, dash, data}: DashRenderContext) 
         </div>
     )
 }
+
+export default memo(StatisticDash)

@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import React, {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {Col, Collapse, Form, Modal, notification, Row, Spin, Tabs} from 'antd'
 import {Tab} from 'rc-tabs/lib/interface'
 import {Attribute, FieldType, IBuffer, ItemData, ItemDataWrapper, RelType, ViewState} from 'src/types'
@@ -577,4 +577,4 @@ function ViewNavTab({data: dataWrapper}: Props) {
     )
 }
 
-export default ViewNavTab
+export default memo(ViewNavTab)

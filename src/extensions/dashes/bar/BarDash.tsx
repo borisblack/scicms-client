@@ -1,12 +1,12 @@
 import _ from 'lodash'
+import {lazy, memo, Suspense, useMemo} from 'react'
 import {Alert} from 'antd'
 import {BarConfig} from '@ant-design/charts'
-import {defaultDashColor, defaultDashColors, formatValue, handleDashClick, isTemporal} from '../../../util/bi'
+import {defaultDashColor, defaultDashColors, formatValue, handleDashClick, isTemporal} from 'src/util/bi'
 import {DashEventHandler, DashRenderContext} from '../index'
 import {LegendPosition} from '../util'
-import biConfig from '../../../config/bi'
-import {lazy, Suspense, useMemo} from 'react'
-import * as RulesService from '../../../services/rules'
+import biConfig from 'src/config/bi'
+import * as RulesService from 'src/services/rules'
 
 const Bar = lazy(() => import('./Bar'))
 
@@ -26,7 +26,7 @@ const {dash: dashConfig, locale} = biConfig
 const axisLabelStyle = dashConfig?.all?.axisLabelStyle
 const legendConfig = dashConfig?.all?.legend
 
-export default function BarDash({dataset, dash, data, onRelatedDashboardOpen}: DashRenderContext) {
+function BarDash({dataset, dash, data, onRelatedDashboardOpen}: DashRenderContext) {
     const {optValues, relatedDashboardId} = dash
     const {
         xField,
@@ -112,3 +112,5 @@ export default function BarDash({dataset, dash, data, onRelatedDashboardOpen}: D
         </Suspense>
     )
 }
+
+export default memo(BarDash)

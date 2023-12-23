@@ -1,5 +1,14 @@
 import {ReactNode} from 'react'
 
+export interface MDITabSerializable<T> {
+    key: string | ((data: T) => string)
+    label?: ReactNode | ((data: T) => ReactNode)
+    data: T
+    render?: (data: T) => ReactNode
+    onUpdate: ((updatedData: T) => void)[]
+    onClose: ((closedData: T, remove: boolean) => void)[]
+}
+
 export interface MDITab<T> {
     key: string | ((data: T) => string)
     label?: ReactNode | ((data: T) => ReactNode)

@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react'
+import React, {memo, useEffect, useMemo, useState} from 'react'
 import {Button, Dropdown, Empty, Form, Modal, notification, Space, Spin, Tooltip} from 'antd'
 import {PageHeader} from '@ant-design/pro-layout'
 import {useTranslation} from 'react-i18next'
@@ -38,7 +38,7 @@ const PAGE_HEADER_HEIGHT = 80
 
 const extractSessionData = () => JSON.parse(localStorage.getItem('sessionData') ?? '{}')
 
-export default function DashWrapper(props: DashWrapperProps) {
+function DashWrapper(props: DashWrapperProps) {
     const {
         dataset,
         dashboard,
@@ -48,9 +48,10 @@ export default function DashWrapper(props: DashWrapperProps) {
         canEdit,
         onFullScreenChange,
         onEdit,
-        onDelete
+        onDelete,
     } = props
     const dashHandler: Dash | undefined = useMemo(() => getDash(dash.type), [dash.type])
+
     if (dashHandler == null)
         throw new Error('Illegal argument')
 
@@ -301,3 +302,5 @@ export default function DashWrapper(props: DashWrapperProps) {
         </>
     )
 }
+
+export default memo(DashWrapper)

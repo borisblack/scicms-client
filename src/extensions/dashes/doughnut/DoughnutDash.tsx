@@ -1,13 +1,15 @@
-import {DashEventHandler, DashRenderContext} from '../index'
-import {Alert} from 'antd'
-import {Pie, PieConfig} from '@ant-design/charts'
-import {defaultDashColors, formatValue, handleDashClick} from '../../../util/bi'
-import {LegendPosition} from '../util'
-import biConfig from '../../../config/bi'
-import * as RulesService from '../../../services/rules'
-import {useMemo} from 'react'
 import _ from 'lodash'
-import {FieldType} from '../../../types'
+import {lazy, memo, Suspense, useMemo} from 'react'
+import {Alert} from 'antd'
+import {PieConfig} from '@ant-design/charts'
+import {DashEventHandler, DashRenderContext} from '../index'
+import {defaultDashColors, formatValue, handleDashClick} from 'src/util/bi'
+import {LegendPosition} from '../util'
+import biConfig from 'src/config/bi'
+import * as RulesService from 'src/services/rules'
+import {FieldType} from 'src/types'
+
+const Pie = lazy(() => import('./Pie'))
 
 export interface DoughnutDashOptions {
     angleField?: string
@@ -23,7 +25,7 @@ const {locale, fractionDigits, percentFractionDigits, dash: dashConfig} = biConf
 const legendConfig = dashConfig?.all?.legend
 const statisticConfig = dashConfig?.doughnut?.statistic
 
-export default function DoughnutDash({dataset, dash, data, onRelatedDashboardOpen}: DashRenderContext) {
+function DoughnutDash({dataset, dash, data, onRelatedDashboardOpen}: DashRenderContext) {
     const {optValues, relatedDashboardId} = dash
     const {
         angleField,
@@ -100,5 +102,11 @@ export default function DoughnutDash({dataset, dash, data, onRelatedDashboardOpe
         onEvent: handleEvent
     }
 
-    return <Pie {...config} key={relatedDashboardId}/>
+    return (
+        <Suspense fallback={null}>
+            <Pie {...config} key={relatedDashboardId}/>
+        </Suspense>
+    )
 }
+
+export default memo(DoughnutDash)

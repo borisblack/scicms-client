@@ -1,12 +1,14 @@
-import {DashEventHandler, DashRenderContext} from '../index'
-import {Alert} from 'antd'
-import {Pie, PieConfig} from '@ant-design/charts'
-import {defaultDashColors, formatValue, handleDashClick} from '../../../util/bi'
-import {LegendPosition} from '../util'
-import biConfig from '../../../config/bi'
-import * as RulesService from '../../../services/rules'
-import {useMemo} from 'react'
 import _ from 'lodash'
+import {lazy, memo, Suspense, useMemo} from 'react'
+import {Alert} from 'antd'
+import {PieConfig} from '@ant-design/charts'
+import {DashEventHandler, DashRenderContext} from '../index'
+import {defaultDashColors, formatValue, handleDashClick} from 'src/util/bi'
+import {LegendPosition} from '../util'
+import biConfig from 'src/config/bi'
+import * as RulesService from 'src/services/rules'
+
+const Pie = lazy(() => import('./Pie'))
 
 interface PieDashOptions {
     angleField?: string
@@ -20,7 +22,7 @@ interface PieDashOptions {
 const {locale, percentFractionDigits, dash: dashConfig} = biConfig
 const legendConfig = dashConfig?.all?.legend
 
-export default function PieDash({dataset, dash, data, onRelatedDashboardOpen}: DashRenderContext) {
+function PieDash({dataset, dash, data, onRelatedDashboardOpen}: DashRenderContext) {
     const {optValues, relatedDashboardId} = dash
     const {
         angleField,
@@ -93,5 +95,11 @@ export default function PieDash({dataset, dash, data, onRelatedDashboardOpen}: D
         onEvent: handleEvent
     }
 
-    return <Pie {...config} key={relatedDashboardId}/>
+    return (
+        <Suspense fallback={null}>
+            <Pie {...config} key={relatedDashboardId}/>
+        </Suspense>
+    )
 }
+
+export default memo(PieDash)

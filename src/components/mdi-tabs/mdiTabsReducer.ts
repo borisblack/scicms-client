@@ -1,12 +1,14 @@
 import _ from 'lodash'
+import {produce} from 'immer'
 import {getTabKey, MDITab} from '.'
+import {Draft} from '@reduxjs/toolkit'
 
-interface MDITabsState<T> {
+export interface MDITabsState<T> {
     items: Record<string, MDITab<T>>
     activeKey?: string
 }
 
-interface MDITabsAction<T> {
+export interface MDITabsAction<T> {
     type: string
     key?: string
     item?: MDITab<T>
@@ -25,126 +27,108 @@ export const mapInitialState = <T,>(items: MDITab<T>[]): MDITabsState<T> => ({
     items: _.mapKeys(items, item => getTabKey(item))
 })
 
-/**
- * @deprecated
- */
-export default function mdiTabsReducer<T>(state: MDITabsState<T>, action: MDITabsAction<T>): MDITabsState<T> {
+export default function mdiTabsReducer<T>(draft: Draft<MDITabsState<T>>, action: MDITabsAction<T>) {
     switch (action.type) {
         case SET_ACTIVE_KEY: {
             const {key} = action
             if (key == null)
                 throw new Error('Action key is null.')
 
-            const {items} = state
-            if (!items.hasOwnProperty(key))
+            if (!draft.items.hasOwnProperty(key))
                 throw new Error('Key not found.')
 
-            return {
-                items: {...items},
-                activeKey: key
-            }
+            draft.activeKey = key
+            break
         }
         case OPEN_ACTION: {
             const {item} = action
             if (item == null)
                 throw new Error('Action item is null.')
 
-            const {items} = state
+            const {items} = draft
             const key = getTabKey(item)
             const existingItem = items[key]
-            let newItems: Record<string, MDITab<T>>
-            if (existingItem == null) {
-                newItems = {...items, [key]: {...item}}
-            } else {
-                const updatedItem: MDITab<T> = {...existingItem, onUpdate: [...existingItem.onUpdate, ...item.onUpdate]}
-                newItems = {...items, [key]: updatedItem}
-            }
-
-            const newState: MDITabsState<T> = {
-                items: newItems,
-                activeKey: key
-            }
-
-            return newState
+            items[key] = (existingItem == null ? {...item} : {...existingItem, onUpdate: [...existingItem.onUpdate, ...item.onUpdate]}) as any
+            draft.activeKey = key
+            break
         }
         case UPDATE_ACTION: {
             const {key, data} = action
             if (key == null)
                 throw new Error('Action key is null.')
 
-            const {items} = state
-            const item = state.items[key]
+            const {items} = draft
+            const item = items[key] as MDITab<T>
             if (item == null)
                 throw new Error('Item not found.')
 
             const newKey = getTabKey(item, data)
-            const newState: MDITabsState<T> = {
-                items: {..._.omit(items, key), [newKey]: {...item, data: {...data}}},
-                activeKey: newKey
-            }
+            if (newKey !== key)
+                delete items[key]
+
+            items[newKey] = {...item, data: {...data} as any}
+            draft.activeKey = newKey
 
             item.onUpdate.forEach(updCb => updCb(item.data))
 
-            return newState
+            break
         }
         case UPDATE_ACTIVE_ACTION: {
             const {data} = action
-            const {activeKey, items} = state
+            const {activeKey, items} = draft
             if (activeKey == null)
-                return {...state}
+                break
 
-            const item = items[activeKey]
+            const item = items[activeKey] as MDITab<T>
             if (item == null)
                 throw new Error('Item not found.')
 
             const newKey = getTabKey(item, data)
-            const newState: MDITabsState<T> = {
-                items: {..._.omit(items, activeKey), [newKey]: {...item, data: {...data}}},
-                activeKey: newKey
-            }
+            if (newKey !== activeKey)
+                delete items[activeKey]
 
-            item.onUpdate.forEach(updCb => updCb(item.data))
+            items[newKey] = {...item, data: {...data} as any}
+            draft.activeKey = newKey
 
-            return newState
+            item.onUpdate.forEach(updCb => updCb(item.data as T))
+
+            break
         }
         case CLOSE_ACTION: {
             const {key, remove} = action
             if (key == null)
                 throw new Error('Action key is null.')
 
-            const {items} = state
+            const {items} = draft
             const closedItem = items[key]
-            const newItems = _.omit(items, key)
-            const keys = Object.keys(newItems)
-            const newState: MDITabsState<T> = {
-                items: newItems,
-                activeKey: keys.length > 0 ? keys[keys.length - 1] : undefined
-            }
+            if (closedItem == null)
+                break
 
-            closedItem?.onClose.forEach(closeCb => closeCb(closedItem.data,remove ?? false))
+            delete items[key]
+            const keys = Object.keys(items)
+            draft.activeKey = keys.length > 0 ? keys[keys.length - 1] : undefined
 
-            return newState
+            closedItem?.onClose.forEach(closeCb => closeCb(closedItem.data as T,remove ?? false))
+
+            break
         }
         case CLOSE_ACTIVE_ACTION: {
             const {remove} = action
-            const {activeKey, items} = state
+            const {activeKey, items} = draft
             if (activeKey == null)
-                return {...state}
+                break
 
             const closedItem = items[activeKey]
             if (closedItem == null)
                 throw new Error('Item not found.')
 
-            const newItems = _.omit(items, activeKey)
-            const keys = Object.keys(newItems)
-            const newState: MDITabsState<T> = {
-                items: newItems,
-                activeKey: keys.length > 0 ? keys[keys.length - 1] : undefined
-            }
+            delete items[activeKey]
+            const keys = Object.keys(items)
+            draft.activeKey = keys.length > 0 ? keys[keys.length - 1] : undefined
 
-            closedItem.onClose.forEach(closeCb => closeCb(closedItem.data, remove ?? false))
+            closedItem.onClose.forEach(closeCb => closeCb(closedItem.data as T, remove ?? false))
 
-            return newState
+            break
         }
         default: {
             throw new Error(`Unknown action: ${action.type}.`)

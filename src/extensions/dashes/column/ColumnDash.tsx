@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import {lazy, Suspense, useMemo} from 'react'
+import {lazy, memo, Suspense, useMemo} from 'react'
 import {Alert} from 'antd'
 import {ColumnConfig} from '@ant-design/charts'
 import {DashEventHandler, DashRenderContext} from 'src/extensions/dashes'
@@ -26,7 +26,7 @@ const {dash: dashConfig, locale} = biConfig
 const axisLabelStyle = dashConfig?.all?.axisLabelStyle
 const legendConfig = dashConfig?.all?.legend
 
-export default function ColumnDash({dataset, dash, data, onRelatedDashboardOpen}: DashRenderContext) {
+function ColumnDash({dataset, dash, data, onRelatedDashboardOpen}: DashRenderContext) {
     const {optValues, relatedDashboardId} = dash
     const {
         xField,
@@ -112,3 +112,5 @@ export default function ColumnDash({dataset, dash, data, onRelatedDashboardOpen}
         </Suspense>
     )
 }
+
+export default memo(ColumnDash)

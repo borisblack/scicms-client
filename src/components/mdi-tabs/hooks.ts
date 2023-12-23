@@ -1,69 +1,49 @@
 import _ from 'lodash'
+import {useImmerReducer} from 'use-immer'
 import {getTabKey, MDIContext, MDITab} from '.'
-import {useCallback, useContext, useReducer, useState} from 'react'
+import {useCallback, useContext, useState} from 'react'
 import mdiTabsReducer, {
+    MDITabsAction,
+    MDITabsState,
     CLOSE_ACTION,
     CLOSE_ACTIVE_ACTION,
-    mapInitialState,
     OPEN_ACTION,
     SET_ACTIVE_KEY,
     UPDATE_ACTION,
-    UPDATE_ACTIVE_ACTION
+    UPDATE_ACTIVE_ACTION,
+    mapInitialState
 } from './mdiTabsReducer'
 import {ReactMDIContext} from './ReactMDIContext'
 
 const mapItems = <T,>(items: MDITab<T>[]): Record<string, MDITab<T>> =>
     _.mapKeys(items, item => getTabKey(item))
 
-/**
- * @deprecated
- */
 export function useNewMDIContextReducer<T>(initialItems: MDITab<T>[]): MDIContext<T> {
-    const [state, dispatch] = useReducer(mdiTabsReducer<T>, mapInitialState<T>(initialItems))
+    const [state, dispatch] = useImmerReducer<MDITabsState<T>, MDITabsAction<T>>(mdiTabsReducer, mapInitialState<T>(initialItems))
     const {activeKey, items} = state
 
     const setActiveKey = useCallback((key: string) => {
-        dispatch({
-            type: SET_ACTIVE_KEY,
-            key
-        })
+        dispatch({type: SET_ACTIVE_KEY, key})
     }, [dispatch])
 
     const openTab = useCallback((item: MDITab<T>) => {
-        dispatch({
-            type: OPEN_ACTION,
-            item
-        })
+        dispatch({type: OPEN_ACTION, item})
     }, [dispatch])
 
     const updateTab = useCallback((key: string, data: T) => {
-        dispatch({
-            type: UPDATE_ACTION,
-            key,
-            data
-        })
+        dispatch({type: UPDATE_ACTION, key, data})
     }, [dispatch])
 
     const updateActiveTab = useCallback((data: T) => {
-        dispatch({
-            type: UPDATE_ACTIVE_ACTION,
-            data
-        })
+        dispatch({type: UPDATE_ACTIVE_ACTION, data})
     }, [dispatch])
 
     const closeTab = useCallback((key: string, remove?: boolean) => {
-        dispatch({
-            type: CLOSE_ACTION,
-            key,
-            remove
-        })
+        dispatch({type: CLOSE_ACTION, key, remove})
     }, [dispatch])
 
     const closeActiveTab = useCallback((remove?: boolean) => {
-        dispatch({
-            type: CLOSE_ACTIVE_ACTION,
-            remove
-        })
+        dispatch({type: CLOSE_ACTIVE_ACTION, remove})
     }, [dispatch])
 
     return {items, activeKey, setActiveKey, openTab, updateTab, updateActiveTab, closeTab, closeActiveTab}

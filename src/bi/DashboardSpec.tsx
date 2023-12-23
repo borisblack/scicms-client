@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import {useEffect, useMemo, useState} from 'react'
+import {memo, useEffect, useMemo, useState} from 'react'
 import RGL, {Layout, WidthProvider} from 'react-grid-layout'
 import {Alert, Button, Form, Modal} from 'antd'
 import {useTranslation} from 'react-i18next'
@@ -32,7 +32,7 @@ const initialSpec: IDashboardSpec = {
 }
 let seqNum = 0
 
-export default function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: DashboardSpecProps) {
+function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: DashboardSpecProps) {
     const {item, data, extra} = dataWrapper
     if (item.name !== DASHBOARD_ITEM_NAME)
         throw new Error('Illegal argument')
@@ -290,3 +290,5 @@ export default function DashboardSpec({data: dataWrapper, buffer, readOnly, onBu
         </>
     )
 }
+
+export default memo(DashboardSpec)

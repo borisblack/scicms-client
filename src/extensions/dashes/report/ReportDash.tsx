@@ -1,10 +1,10 @@
-import {ReactNode, useMemo} from 'react'
+import {ReactNode, memo, useMemo} from 'react'
 import {Alert, Table} from 'antd'
 import {v4 as uuidv4} from 'uuid'
 import {ColumnsType} from 'antd/es/table'
 import {DashRenderContext} from '..'
-import {columnType, formatValue} from '../../../util/bi'
-import * as RulesService from '../../../services/rules'
+import {columnType, formatValue} from 'src/util/bi'
+import * as RulesService from 'src/services/rules'
 
 interface ReportDashOpts {
     displayedColNames: string[]
@@ -14,7 +14,7 @@ interface ReportDashOpts {
 
 const TABLE_HEADER_HEIGHT = 40
 
-export default function ReportDash({dataset, dash, height, fullScreen, data}: DashRenderContext) {
+function ReportDash({dataset, dash, height, fullScreen, data}: DashRenderContext) {
     const {displayedColNames, rules, keyColName} = dash.optValues as ReportDashOpts
     const cellRules = useMemo(() => RulesService.parseRules(rules), [rules])
     const datasetColumns = dataset.spec.columns ?? {}
@@ -53,3 +53,5 @@ export default function ReportDash({dataset, dash, height, fullScreen, data}: Da
         />
     )
 }
+
+export default memo(ReportDash)

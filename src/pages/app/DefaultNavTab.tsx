@@ -1,27 +1,26 @@
-import {ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {memo, ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Row} from '@tanstack/react-table'
 import {Button, Checkbox, message, Modal} from 'antd'
+import {CheckboxChangeEvent} from 'antd/es/checkbox'
+import {ItemType} from 'antd/es/menu/hooks/useItems'
+import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design/icons'
 import {PageHeader} from '@ant-design/pro-layout'
 
-import appConfig from '../../config'
-import {IBuffer, ItemData, ItemDataWrapper} from '../../types'
+import appConfig from 'src/config'
+import {IBuffer, ItemData, ItemDataWrapper} from 'src/types'
 import DataGrid, {RequestParams} from '../../components/datagrid/DataGrid'
-import {CustomPluginRenderContext, hasPlugins, renderPlugins} from '../../extensions/plugins'
-import {CustomComponentRenderContext, hasComponents, renderComponents} from '../../extensions/custom-components'
-import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design/icons'
-import * as ACL from '../../util/acl'
-import {findAll, getColumns, getHiddenColumns, getInitialData} from '../../util/datagrid'
-import {CheckboxChangeEvent} from 'antd/es/checkbox'
+import {CustomPluginRenderContext, hasPlugins, renderPlugins} from 'src/extensions/plugins'
+import {CustomComponentRenderContext, hasComponents, renderComponents} from 'src/extensions/custom-components'
+import * as ACL from 'src/util/acl'
+import {findAll, getColumns, getHiddenColumns, getInitialData} from 'src/util/datagrid'
 import {ExtRequestParams} from 'src/services/query'
-import {ItemType} from 'antd/es/menu/hooks/useItems'
 import {ApiMiddlewareContext, ApiOperation, handleApiMiddleware, hasApiMiddleware} from 'src/extensions/api-middleware'
 import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME, MEDIA_ITEM_NAME} from 'src/config/constants'
 import {useAuth, useItemOperations, useMutationManager, useRegistry} from 'src/util/hooks'
-import {useMDIContext} from 'src/components/mdi-tabs/hooks'
 import {getTitle} from 'src/util/mdi'
+import Icon from 'src/components/icon/Icon'
 import styles from './NavTab.module.css'
-import Icon from '../../components/icon/Icon'
 
 interface Props {
     data: ItemDataWrapper
@@ -246,4 +245,4 @@ function DefaultNavTab({data: dataWrapper}: Props) {
     )
 }
 
-export default DefaultNavTab
+export default memo(DefaultNavTab)
