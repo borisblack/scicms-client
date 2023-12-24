@@ -30,7 +30,8 @@ import {ApiMiddlewareContext, ApiOperation, handleApiMiddleware, hasApiMiddlewar
 import {allIcons} from 'src/util/icons'
 import {exportWinFeatures, exportWinStyle, renderValue} from 'src/util/export'
 import {useAuth, useFormAcl, useMutationManager, useQueryManager, useRegistry} from 'src/util/hooks'
-import {useMDIContext} from '../../components/mdi-tabs/hooks'
+import {useMDIContext} from 'src/components/mdi-tabs/hooks'
+import {generateKey} from 'src/util/mdi'
 
 interface Props {
     data: ItemDataWrapper
@@ -188,7 +189,8 @@ function ViewNavTab({data: dataWrapper}: Props) {
             } else {
                 created = await doCreate()
             }
-            ctx.updateActiveTab({...dataWrapper, data: created})
+            const createdDataWrapper: ItemDataWrapper = {...dataWrapper, data: created}
+            ctx.updateActiveTab(createdDataWrapper, generateKey(createdDataWrapper))
             setLockedByMe(false)
             setViewState(ViewState.VIEW)
             logoutIfNeed()
@@ -223,7 +225,8 @@ function ViewNavTab({data: dataWrapper}: Props) {
             } else {
                 createdVersion = await doCreateVersion()
             }
-            ctx.updateActiveTab({...dataWrapper, data: createdVersion})
+            const createdVersionDataWrapper: ItemDataWrapper = {...dataWrapper, data: createdVersion}
+            ctx.updateActiveTab(createdVersionDataWrapper, generateKey(createdVersionDataWrapper))
             setLockedByMe(false)
             setViewState(ViewState.VIEW)
         } catch (e: any) {
@@ -257,7 +260,8 @@ function ViewNavTab({data: dataWrapper}: Props) {
             } else {
                 createdLocalization = await doCreateLocalization()
             }
-            ctx.updateActiveTab({...dataWrapper, data: createdLocalization})
+            const createdLocalizationDataWrapper: ItemDataWrapper = {...dataWrapper, data: createdLocalization}
+            ctx.updateActiveTab(createdLocalizationDataWrapper, generateKey(createdLocalizationDataWrapper))
             setLockedByMe(false)
             setViewState(ViewState.VIEW)
         } catch (e: any) {

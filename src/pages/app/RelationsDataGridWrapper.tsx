@@ -190,6 +190,7 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
                 await mutationManager.purge(target, id, appConfig.mutation.deletingStrategy)
             else
                 await mutationManager.remove(target, id, appConfig.mutation.deletingStrategy)
+
             closeItem(target.name, id)
             refresh()
         } catch (e: any) {
@@ -209,10 +210,13 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
         setLoading(true)
         try {
             const intermediatesToDelete =
-                await queryManager.findAllBy(intermediate, {[targetAttrName]: {id: {eq: targetId}}} as unknown as ItemFiltersInput<ItemData>) // must be only one
+                await queryManager.findAllBy(intermediate, {[targetAttrName]: {id: {eq: targetId}}} as unknown as ItemFiltersInput<ItemData>) // must be only one!
+
             for (const intermediateToDelete of intermediatesToDelete) {
                 await mutationManager.remove(intermediate, intermediateToDelete.id, appConfig.mutation.deletingStrategy)
+                closeItem(intermediate.name, intermediateToDelete.id)
             }
+
             createdIds.current.delete(targetId)
             refresh()
         } catch (e: any) {
@@ -221,7 +225,7 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
         } finally {
             setLoading(false)
         }
-    }, [intermediate, mutationManager, queryManager, targetAttrName])
+    }, [closeItem, intermediate, mutationManager, queryManager, targetAttrName])
 
     const getRowContextMenu = useCallback((row: Row<ItemData>) => {
         const items: ItemType[] = [{

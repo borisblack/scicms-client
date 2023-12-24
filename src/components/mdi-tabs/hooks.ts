@@ -1,7 +1,6 @@
-import _ from 'lodash'
-import {useImmerReducer} from 'use-immer'
-import {getTabKey, MDIContext, MDITab} from '.'
 import {useCallback, useContext, useState} from 'react'
+import {useImmerReducer} from 'use-immer'
+import {MDIContext, MDITabObservable} from '.'
 import mdiTabsReducer, {
     MDITabsAction,
     MDITabsState,
@@ -10,32 +9,28 @@ import mdiTabsReducer, {
     OPEN_ACTION,
     SET_ACTIVE_KEY,
     UPDATE_ACTION,
-    UPDATE_ACTIVE_ACTION,
-    mapInitialState
+    UPDATE_ACTIVE_ACTION
 } from './mdiTabsReducer'
 import {ReactMDIContext} from './ReactMDIContext'
 
-const mapItems = <T,>(items: MDITab<T>[]): Record<string, MDITab<T>> =>
-    _.mapKeys(items, item => getTabKey(item))
-
-export function useNewMDIContextReducer<T>(initialItems: MDITab<T>[]): MDIContext<T> {
-    const [state, dispatch] = useImmerReducer<MDITabsState<T>, MDITabsAction<T>>(mdiTabsReducer, mapInitialState<T>(initialItems))
+export function useNewMDIContextReducer<T>(initialItems: MDITabObservable<T>[]): MDIContext<T> {
+    const [state, dispatch] = useImmerReducer<MDITabsState<T>, MDITabsAction<T>>(mdiTabsReducer, {items: initialItems})
     const {activeKey, items} = state
 
     const setActiveKey = useCallback((key: string) => {
         dispatch({type: SET_ACTIVE_KEY, key})
     }, [dispatch])
 
-    const openTab = useCallback((item: MDITab<T>) => {
+    const openTab = useCallback((item: MDITabObservable<T>) => {
         dispatch({type: OPEN_ACTION, item})
     }, [dispatch])
 
-    const updateTab = useCallback((key: string, data: T) => {
-        dispatch({type: UPDATE_ACTION, key, data})
+    const updateTab = useCallback((key: string, data: T, newKey?: string) => {
+        dispatch({type: UPDATE_ACTION, key, newKey, data})
     }, [dispatch])
 
-    const updateActiveTab = useCallback((data: T) => {
-        dispatch({type: UPDATE_ACTIVE_ACTION, data})
+    const updateActiveTab = useCallback((data: T, newKey?: string) => {
+        dispatch({type: UPDATE_ACTIVE_ACTION, newKey, data})
     }, [dispatch])
 
     const closeTab = useCallback((key: string, remove?: boolean) => {
@@ -49,18 +44,22 @@ export function useNewMDIContextReducer<T>(initialItems: MDITab<T>[]): MDIContex
     return {items, activeKey, setActiveKey, openTab, updateTab, updateActiveTab, closeTab, closeActiveTab}
 }
 
-export function useNewMDIContext<T>(initialItems: MDITab<T>[]): MDIContext<T> {
-    const [items, setItems] = useState<Record<string, MDITab<T>>>(mapItems(initialItems))
+export function useNewMDIContext<T>(initialItems: MDITabObservable<T>[]): MDIContext<T> {
+    const [items, setItems] = useState<MDITabObservable<T>[]>(initialItems)
     const [activeKey, setActiveKey] = useState<string>()
 
-    const openTab = useCallback((item: MDITab<T>) => {
-        const key = getTabKey(item)
-        const existingItem = items[key]
+    const openTab = useCallback((item: MDITabObservable<T>) => {
+        const {key} = item
+        const existingItem = items.find(curItem => curItem.key === key)
         if (existingItem == null) {
-            setItems(prevItems => ({...prevItems, [key]: {...item}}))
+            setItems(prevItems => [...prevItems, item])
         } else {
-            const updatedItem: MDITab<T> = {...existingItem, onUpdate: [...existingItem.onUpdate, ...item.onUpdate]}
-            setItems(prevItems => ({...prevItems, [key]: updatedItem}))
+            const updatedItem: MDITabObservable<T> = {
+                ...existingItem,
+                onUpdate: [...existingItem.onUpdate, ...item.onUpdate],
+                onClose: [...existingItem.onClose, ...item.onClose]
+            }
+            setItems(prevItems => prevItems.map(prevItem => prevItem.key === key ? updatedItem : prevItem))
         }
 
         // Update active key
@@ -68,49 +67,45 @@ export function useNewMDIContext<T>(initialItems: MDITab<T>[]): MDIContext<T> {
             setActiveKey(key)
     }, [activeKey, items])
 
-    const updateTab = useCallback((key: string, data: T) => {
-        const item = items[key]
-        if (item == null)
+    const updateTab = useCallback((key: string, data: T, newKey?: string) => {
+        const existingItem = items.find(curItem => curItem.key === key)
+        if (existingItem == null)
             throw new Error('Item not found.')
 
-        const newKey = getTabKey(item, data)
-
         // Reset active key
-        if (key === activeKey && newKey !== key)
+        if (key === activeKey && newKey != null && newKey !== key)
             setActiveKey(undefined)
 
-        const newItems = {..._.omit(items, key), [newKey]: {...item, data: {...data}}}
-        setItems(newItems)
+        const updatedItem = {...existingItem, key: (newKey == null ? key : newKey), data: {...data}}
+        setItems(prevItems => prevItems.map(prevItem => prevItem.key === key ? updatedItem : prevItem))
 
         // Update active key
-        if (key === activeKey && newKey !== key)
+        if (key === activeKey && newKey != null && newKey !== key)
             setActiveKey(newKey)
 
-        item.onUpdate.forEach(updCb => updCb(item.data))
+        updatedItem.onUpdate.forEach(updCb => updCb(updatedItem.data))
     }, [activeKey, items])
 
-    const updateActiveTab = useCallback((data: T) => {
+    const updateActiveTab = useCallback((data: T, newKey?: string) => {
         if (activeKey == null)
             return
 
-        const item = items[activeKey]
-        if (item == null)
+        const existingItem = items.find(curItem => curItem.key === activeKey)
+        if (existingItem == null)
             throw new Error('Item not found.')
 
-        const newKey = getTabKey(item, data)
-
         // Reset active key
-        if (newKey !== activeKey)
+        if (newKey != null && newKey !== activeKey)
             setActiveKey(undefined)
 
-        const newItems = {..._.omit(items, activeKey), [newKey]: {...item, data: {...data}}}
-        setItems(newItems)
+        const updatedItem = {...existingItem, key: (newKey == null ? activeKey : newKey), data: {...data}}
+        setItems(prevItems => prevItems.map(prevItem => prevItem.key === activeKey ? updatedItem : prevItem))
 
         // Update active key
-        if (newKey !== activeKey)
+        if (newKey != null && newKey !== activeKey)
             setActiveKey(newKey)
 
-        item.onUpdate.forEach(updCb => updCb(item.data))
+        existingItem.onUpdate.forEach(updCb => updCb(existingItem.data))
     }, [activeKey, items])
 
     const closeTab = useCallback((key: string, remove?: boolean) => {
@@ -118,14 +113,13 @@ export function useNewMDIContext<T>(initialItems: MDITab<T>[]): MDIContext<T> {
         if (key === activeKey)
             setActiveKey(undefined)
 
-        const closedItem = items[key]
-        const newItems = _.omit(items, key)
+        const closedItem = items.find(item => item.key === key)
+        const newItems = items.filter(item => item.key !== key)
         setItems(newItems)
 
         // Set new active key
-        const keys = Object.keys(newItems)
-        if (key === activeKey && keys.length > 0)
-            setActiveKey(keys[keys.length - 1])
+        if (key === activeKey && newItems.length > 0)
+            setActiveKey(newItems[newItems.length - 1].key)
 
         closedItem?.onClose.forEach(closeCb => closeCb(closedItem.data, remove ?? false))
     }, [activeKey, items])
@@ -137,17 +131,16 @@ export function useNewMDIContext<T>(initialItems: MDITab<T>[]): MDIContext<T> {
         // Reset active key
         setActiveKey(undefined)
 
-        const closedItem = items[activeKey]
+        const closedItem = items.find(item => item.key === activeKey)
         if (closedItem == null)
             throw new Error('Item not found.')
 
-        const newItems = _.omit(items, activeKey)
+        const newItems = items.filter(item => item.key !== activeKey)
         setItems(newItems)
 
         // Set new active key
-        const keys = Object.keys(newItems)
-        if (keys.length > 0)
-            setActiveKey(keys[keys.length - 1])
+        if (newItems.length > 0)
+            setActiveKey(newItems[newItems.length - 1].key)
 
         closedItem.onClose.forEach(closeCb => closeCb(closedItem.data, remove ?? false))
     }, [activeKey, items])

@@ -1,33 +1,22 @@
-import {ReactNode} from 'react'
-
-export interface MDITabSerializable<T> {
-    key: string | ((data: T) => string)
-    label?: ReactNode | ((data: T) => ReactNode)
-    data: T
-    render?: (data: T) => ReactNode
-    onUpdate: ((updatedData: T) => void)[]
-    onClose: ((closedData: T, remove: boolean) => void)[]
-}
-
 export interface MDITab<T> {
-    key: string | ((data: T) => string)
-    label?: ReactNode | ((data: T) => ReactNode)
+    key: string
     data: T
-    render?: (data: T) => ReactNode
+}
+
+export interface MDIObservable<T> {
     onUpdate: ((updatedData: T) => void)[]
     onClose: ((closedData: T, remove: boolean) => void)[]
 }
+
+export interface MDITabObservable<T> extends MDITab<T>, MDIObservable<T> {}
 
 export interface MDIContext<T> {
-    items: Record<string, MDITab<T>>
+    items: MDITab<T>[]
     activeKey?: string
     setActiveKey: (activeKey: string) => void
-    openTab: (item: MDITab<T>) => void
-    updateTab: (key: string, data: T) => void
-    updateActiveTab: (data: T) => void
+    openTab: (item: MDITabObservable<T>) => void
+    updateTab: (key: string, data: T, newKey?: string) => void
+    updateActiveTab: (data: T, newKey?: string) => void
     closeTab: (key: string, remove?: boolean) => void
     closeActiveTab: (remove?: boolean) => void
 }
-
-export const getTabKey = <T,>(item: MDITab<T>, data?: T) =>
-    (typeof item.key === 'function') ? item.key(data ?? item.data) : item.key

@@ -5,18 +5,18 @@ import {useAuth, useRegistry} from 'src/util/hooks'
 import Navbar from 'src/features/registry/Navbar'
 import {ItemDataWrapper, ViewType} from 'src/types'
 import MDITabs from 'src/components/mdi-tabs/MDITabs'
-import {useNewMDIContext} from 'src/components/mdi-tabs/hooks'
 import ViewNavTab from './ViewNavTab'
 import DefaultNavTab from './DefaultNavTab'
+import {generateLabel} from 'src/util/mdi'
+import {useNewMDIContextRedux} from 'src/features/mdi/hooks'
 import './App.css'
-import {generateLabel} from '../../util/mdi'
 
 const {Content} = Layout
 
 function App() {
     const {me, isExpired} = useAuth()
     const {isInitialized, initializeIfNeeded} = useRegistry()
-    const mdiContext = useNewMDIContext<ItemDataWrapper>([])
+    const mdiContext = useNewMDIContextRedux<ItemDataWrapper>([])
 
     useEffect(() => {
         if (me) {

@@ -1,31 +1,40 @@
-import {MDITabObservable} from '.'
-import {Draft} from '@reduxjs/toolkit'
+import {createSlice, Draft, PayloadAction} from '@reduxjs/toolkit'
 
-export interface MDITabsState<T> {
-    items: MDITabObservable<T>[]
+import {MDITab} from 'src/components/mdi-tabs'
+import {RootState} from '../../store'
+
+export interface MDIState<T> {
+    items: MDITab<T>[]
     activeKey?: string
 }
 
-export interface MDITabsAction<T> {
-    type: string
+export interface MDIAction<T> {
+    initialItems?: MDITab<T>[]
     key?: string
     newKey?: string
-    item?: MDITabObservable<T>
+    item?: MDITab<T>
     data?: T
-    remove?: boolean
 }
 
-export const SET_ACTIVE_KEY = 'setActiveKey'
-export const OPEN_ACTION = 'open'
-export const UPDATE_ACTION = 'update'
-export const UPDATE_ACTIVE_ACTION = 'updateActive'
-export const CLOSE_ACTION = 'close'
-export const CLOSE_ACTIVE_ACTION = 'closeActive'
+const initialState: MDIState<any> = {
+    items: [],
+    activeKey: undefined
+}
 
-export default function mdiTabsReducer<T>(draft: Draft<MDITabsState<T>>, action: MDITabsAction<T>) {
-    switch (action.type) {
-        case SET_ACTIVE_KEY: {
-            const {key} = action
+const mdiSlice = createSlice({
+    name: 'mdi',
+    initialState,
+    reducers: {
+        initItems(draft: Draft<MDIState<any>>, action: PayloadAction<MDIAction<any>>) {
+            const {initialItems} = action.payload
+            if (initialItems == null || initialItems.length === 0)
+                return
+
+            draft.items = [...initialItems]
+        },
+
+        setActiveKey(draft: Draft<MDIState<any>>, action: PayloadAction<MDIAction<any>>) {
+            const {key} = action.payload
             if (key == null)
                 throw new Error('Action key is null.')
 
@@ -33,10 +42,10 @@ export default function mdiTabsReducer<T>(draft: Draft<MDITabsState<T>>, action:
                 throw new Error('Key not found.')
 
             draft.activeKey = key
-            break
-        }
-        case OPEN_ACTION: {
-            const {item} = action
+        },
+
+        open(draft: Draft<MDIState<any>>, action: PayloadAction<MDIAction<any>>) {
+            const {item} = action.payload
             if (item == null)
                 throw new Error('Action item is null.')
 
@@ -46,22 +55,14 @@ export default function mdiTabsReducer<T>(draft: Draft<MDITabsState<T>>, action:
 
             const {items} = draft
             const existingIndex = items.findIndex(existingItem => existingItem.key === key)
-            if (existingIndex === -1) {
-                items.push({...item} as any)
-            } else {
-                const existingItem = items[existingIndex]
-                items[existingIndex] = {
-                    ...existingItem,
-                    onUpdate: [...existingItem.onUpdate, ...item.onUpdate],
-                    onClose: [...existingItem.onClose, ...item.onClose]
-                }
-            }
+            if (existingIndex === -1)
+                items.push({...item})
 
             draft.activeKey = key
-            break
-        }
-        case UPDATE_ACTION: {
-            const {key, newKey, data} = action
+        },
+
+        update(draft: Draft<MDIState<any>>, action: PayloadAction<MDIAction<any>>) {
+            const {key, newKey, data} = action.payload
             if (key == null)
                 throw new Error('Action key is null.')
 
@@ -79,16 +80,13 @@ export default function mdiTabsReducer<T>(draft: Draft<MDITabsState<T>>, action:
 
             if (newKey != null)
                 draft.activeKey = newKey
+        },
 
-            updatedItem.onUpdate.forEach(updCb => updCb(updatedItem.data))
-
-            break
-        }
-        case UPDATE_ACTIVE_ACTION: {
+        updateActive(draft: Draft<MDIState<any>>, action: PayloadAction<MDIAction<any>>) {
             const {activeKey, items} = draft
-            const {newKey, data} = action
+            const {newKey, data} = action.payload
             if (activeKey == null)
-                break
+                return
 
             if (data == null)
                 throw new Error('Action data is null.')
@@ -103,51 +101,51 @@ export default function mdiTabsReducer<T>(draft: Draft<MDITabsState<T>>, action:
 
             if (newKey != null)
                 draft.activeKey = newKey
+        },
 
-            updatedItem.onUpdate.forEach(updCb => updCb(updatedItem.data))
-
-            break
-        }
-        case CLOSE_ACTION: {
-            const {key, remove} = action
+        close(draft: Draft<MDIState<any>>, action: PayloadAction<MDIAction<any>>) {
+            const {key} = action.payload
             if (key == null)
                 throw new Error('Action key is null.')
 
             const {items, activeKey} = draft
             const closedIndex = items.findIndex(existingItem => existingItem.key === key)
             if (closedIndex === -1)
-                break
+                return
 
-            const closedItem = items[closedIndex]
             items.splice(closedIndex, 1)
 
             if (key === activeKey)
                 draft.activeKey = items.length > 0 ? items[items.length - 1].key : undefined
+        },
 
-            closedItem?.onClose.forEach(closeCb => closeCb(closedItem.data as T,remove ?? false))
-
-            break
-        }
-        case CLOSE_ACTIVE_ACTION: {
-            const {remove} = action
+        closeActive(draft: Draft<MDIState<any>>, action: PayloadAction<MDIAction<any>>) {
             const {activeKey, items} = draft
             if (activeKey == null)
-                break
+                return
 
             const closedIndex = items.findIndex(existingItem => existingItem.key === activeKey)
             if (closedIndex === -1)
-                break
+                return
 
-            const closedItem = items[closedIndex]
             items.splice(closedIndex, 1)
             draft.activeKey = items.length > 0 ? items[items.length - 1].key : undefined
-
-            closedItem.onClose.forEach(closeCb => closeCb(closedItem.data as T, remove ?? false))
-
-            break
-        }
-        default: {
-            throw new Error(`Unknown action: ${action.type}.`)
         }
     }
-}
+})
+
+export const selectItems = (state: RootState) => state.mdi.items
+
+export const selectActiveKey = (state: RootState) => state.mdi.activeKey
+
+export const {
+    initItems,
+    setActiveKey,
+    open,
+    update,
+    updateActive,
+    close,
+    closeActive
+} = mdiSlice.actions
+
+export default mdiSlice.reducer

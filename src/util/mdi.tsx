@@ -5,7 +5,7 @@ import React, {ReactNode} from 'react'
 import {allIcons} from './icons'
 import {ID_ATTR_NAME} from '../config/constants'
 import i18n from '../i18n'
-import {MDITab} from '../components/mdi-tabs'
+import {MDITabObservable} from '../components/mdi-tabs'
 
 const tempIds: Record<string, number> = {}
 
@@ -76,16 +76,18 @@ export function createMDITab(
     extra?: Record<string, any>,
     onUpdate?: (updatedData: ItemDataWrapper) => void,
     onClose?: (closedData: ItemDataWrapper, remove: boolean) => void
-): MDITab<ItemDataWrapper> {
+): MDITabObservable<ItemDataWrapper> {
+    const itemDataWrapper = {
+        item,
+        viewType,
+        id: (viewType === ViewType.view && data?.id == null) ? generateId(item.name) : undefined,
+        data,
+        extra
+    }
+
     return {
-        key: generateKey,
-        data: {
-            item,
-            viewType,
-            id: (viewType === ViewType.view && data?.id == null) ? generateId(item.name) : undefined,
-            data,
-            extra
-        },
+        key: generateKey(itemDataWrapper),
+        data: itemDataWrapper,
         onUpdate: onUpdate == null ? [] : [onUpdate],
         onClose: onClose == null ? [] : [onClose]
     }
