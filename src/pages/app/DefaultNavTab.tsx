@@ -102,7 +102,16 @@ function DefaultNavTab({data: dataWrapper}: Props) {
 
     const handleView = useCallback(async (id: string) => {
         setLoading(true)
-        await openItem(item, id, undefined, refresh, refresh)
+        await openItem(
+            item,
+            id,
+            undefined,
+            refresh,
+            (closedData, remove) => {
+                if (remove)
+                    refresh()
+            }
+        )
         setLoading(false)
     }, [item, openItem])
 
