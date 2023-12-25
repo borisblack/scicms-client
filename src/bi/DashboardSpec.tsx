@@ -67,21 +67,23 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
     }, [])
 
     function handleDashAdd() {
+        const newDash = {
+            id: uuidv4(),
+            name: (++seqNum).toString(),
+            x: 0,
+            y: 0,
+            w: biConfig.cols / 2,
+            h: biConfig.defaultDashHeight,
+            type: biConfig.defaultDashType,
+            optValues: {},
+            defaultFilters: generateQueryBlock(),
+            isAggregate: false,
+            refreshIntervalSeconds: biConfig.defaultRefreshIntervalSeconds
+        }
+
         const newSpec: IDashboardSpec = {
             dashes: [
-                {
-                    id: uuidv4(),
-                    name: (++seqNum).toString(),
-                    x: 0,
-                    y: 0,
-                    w: biConfig.cols / 2,
-                    h: biConfig.defaultDashHeight,
-                    type: biConfig.defaultDashType,
-                    optValues: {},
-                    defaultFilters: generateQueryBlock(),
-                    isAggregate: false,
-                    refreshIntervalSeconds: biConfig.defaultRefreshIntervalSeconds
-                },
+                newDash,
                 ...allDashes
             ]
         }
@@ -132,7 +134,9 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
     async function openDash(dash: IDash) {
         setActiveDash(dash)
         setDashModalVisible(true)
-        dashForm.resetFields()
+
+        if (activeDash != null)
+            dashForm.resetFields()
     }
 
     function removeDash(id: string) {
