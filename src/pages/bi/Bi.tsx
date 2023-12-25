@@ -11,7 +11,7 @@ import {Dashboard, DashboardCategory, DashboardExtra, ItemDataWrapper, ViewType}
 import biConfig from 'src/config/bi'
 import * as DashboardCategoryService from 'src/services/dashboard-category'
 import {allIcons} from 'src/util/icons'
-import {DASHBOARD_ITEM_NAME} from 'src/config/constants'
+import {DASHBOARD_ITEM_NAME, EMPTY_ARRAY} from 'src/config/constants'
 import MDITabs from 'src/components/mdi-tabs/MDITabs'
 import {createMDITab, generateLabel} from 'src/util/mdi'
 import DashboardSpec from 'src/bi/DashboardSpec'
@@ -28,7 +28,7 @@ function Bi() {
     const {t} = useTranslation()
     const {me, isExpired, logout} = useAuth()
     const {isInitialized, items: itemMap, initializeIfNeeded, reset: resetRegistry} = useRegistry()
-    const mdiContext = useNewMDIContextRedux<ItemDataWrapper>([])
+    const mdiContext = useNewMDIContextRedux<ItemDataWrapper>(EMPTY_ARRAY)
     const [collapsed, setCollapsed] = useState(isNavbarCollapsed())
     const [dashboardMap, setDashboardMap] = useState<Record<string, Dashboard>>({})
     const [dashboardCategoryMap, setDashboardCategoryMap] = useState<Record<string, DashboardCategory>>({})

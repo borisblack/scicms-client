@@ -9,6 +9,7 @@ import ViewNavTab from './ViewNavTab'
 import DefaultNavTab from './DefaultNavTab'
 import {generateLabel} from 'src/util/mdi'
 import {useNewMDIContextRedux} from 'src/features/mdi/hooks'
+import {EMPTY_ARRAY} from "src/config/constants"
 import './App.css'
 
 const {Content} = Layout
@@ -16,7 +17,7 @@ const {Content} = Layout
 function App() {
     const {me, isExpired} = useAuth()
     const {isInitialized, initializeIfNeeded} = useRegistry()
-    const mdiContext = useNewMDIContextRedux<ItemDataWrapper>([])
+    const mdiContext = useNewMDIContextRedux<ItemDataWrapper>(EMPTY_ARRAY)
 
     useEffect(() => {
         if (me) {
