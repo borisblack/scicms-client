@@ -7,6 +7,7 @@ import {defaultDashColors, formatValue, handleDashClick} from 'src/util/bi'
 import {LegendPosition} from '../util'
 import biConfig from 'src/config/bi'
 import * as RulesService from 'src/services/rules'
+import {useBI} from '../../../bi/hooks'
 
 const Pie = lazy(() => import('./Pie'))
 
@@ -22,7 +23,8 @@ interface PieDashOptions {
 const {locale, percentFractionDigits, dash: dashConfig} = biConfig
 const legendConfig = dashConfig?.all?.legend
 
-function PieDash({dataset, dash, data, onRelatedDashboardOpen}: DashRenderContext) {
+function PieDash({dataset, dash, data}: DashRenderContext) {
+    const {openDashboard} = useBI()
     const {optValues, relatedDashboardId} = dash
     const {
         angleField,
@@ -50,7 +52,7 @@ function PieDash({dataset, dash, data, onRelatedDashboardOpen}: DashRenderContex
 
     const handleEvent: DashEventHandler | undefined =
         relatedDashboardId ?
-            (chart, event) => handleDashClick(chart, event, colorField, queryFilter => onRelatedDashboardOpen(relatedDashboardId, queryFilter)) :
+            (chart, event) => handleDashClick(chart, event, colorField, queryFilter => openDashboard(relatedDashboardId, queryFilter)) :
             undefined
 
     const config: PieConfig = {

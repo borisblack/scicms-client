@@ -42,6 +42,7 @@ export default function MDITabs<T>({ctx, className, type, getItemLabel, renderIt
                 className={className}
                 hideAdd
                 type={type}
+                size="small"
                 onChange={setActiveKey}
                 onEdit={handleTabsEdit}
             />

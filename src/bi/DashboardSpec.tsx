@@ -1,16 +1,15 @@
 import _ from 'lodash'
 import {memo, useEffect, useMemo, useState} from 'react'
 import RGL, {Layout, WidthProvider} from 'react-grid-layout'
-import {Alert, Button, Form, Modal} from 'antd'
+import {Alert, Button} from 'antd'
 import {useTranslation} from 'react-i18next'
 import {v4 as uuidv4} from 'uuid'
 import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
 
 import {CustomComponentRenderContext} from '../extensions/custom-components'
-import {DASHBOARD_ITEM_NAME, DATASET_ITEM_NAME} from '../config/constants'
+import {DASHBOARD_ITEM_NAME} from '../config/constants'
 import {Dashboard, DashboardExtra, Dataset, IDash, IDashboardSpec, QueryFilter} from '../types'
-import DashForm, {DashValues} from './DashForm'
 import {generateQueryBlock, printSingleQueryFilter} from '../util/bi'
 import biConfig from '../config/bi'
 import * as DatasetService from '../services/dataset'
@@ -18,7 +17,7 @@ import DashWrapper from './DashWrapper'
 import styles from './DashboardSpec.module.css'
 import './DashboardSpec.css'
 import * as DashboardService from '../services/dashboard'
-import {useAcl, useItemOperations, useRegistry} from '../util/hooks'
+import {useAcl} from '../util/hooks'
 import {generateKey} from '../util/mdi'
 
 interface DashboardSpecProps extends CustomComponentRenderContext {
@@ -38,21 +37,15 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
         throw new Error('Illegal argument')
 
     const uniqueKey = generateKey(dataWrapper)
-    const {items: itemMap} = useRegistry()
-    const {open: openItem} = useItemOperations()
     const {t} = useTranslation()
-    const datasetItem = useMemo(() => itemMap[DATASET_ITEM_NAME], [itemMap])
-    const dashboardItem = useMemo(() => itemMap[DASHBOARD_ITEM_NAME], [itemMap])
     const acl = useAcl(item, data)
     const spec: IDashboardSpec = buffer.spec ?? data?.spec ?? initialSpec
-    const [datasets, setDatasets] = useState<{[name: string]: Dataset}>({})
+    const [datasets, setDatasets] = useState<Record<string, Dataset>>({})
     const [dashboards, setDashboards] = useState<Dashboard[]>([])
     const currentDashboard = {...data, spec} as Dashboard
-    const allDashes = spec.dashes ?? []
+    const allDashes = spec.dashes?.map(dash => ({...dash, id: dash.id ?? uuidv4()})) ?? []
     const [activeDash, setActiveDash] = useState<IDash | null>(null)
     const [isFullScreen, setFullScreen] = useState<boolean>(false)
-    const [isDashModalVisible, setDashModalVisible] = useState(false)
-    const [dashForm] = Form.useForm()
 
     useEffect(() => {
         DatasetService.fetchDatasets()
@@ -95,31 +88,26 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
         const newSpec: IDashboardSpec = {
             dashes: layouts.map((layout, i) => {
                 const curDash = allDashes[i]
-                const {
-                    id, name, dataset, type, unit,
-                    isAggregate, aggregateType, aggregateField, groupField, sortField,
-                    optValues, defaultFilters, relatedDashboardId, refreshIntervalSeconds
-                } = curDash
 
                 return {
-                    id: id ?? uuidv4(),
+                    id: curDash.id,
                     x: layout.x,
                     y: layout.y,
                     w: layout.w,
                     h: layout.h,
-                    name,
-                    dataset,
-                    type,
-                    unit,
-                    isAggregate,
-                    aggregateType,
-                    aggregateField,
-                    groupField,
-                    sortField,
-                    optValues,
-                    defaultFilters,
-                    relatedDashboardId,
-                    refreshIntervalSeconds
+                    name: curDash.name,
+                    dataset: curDash.dataset,
+                    type: curDash.type,
+                    unit: curDash.unit,
+                    isAggregate: curDash.isAggregate,
+                    aggregateType: curDash.aggregateType,
+                    aggregateField: curDash.aggregateField,
+                    groupField: curDash.groupField,
+                    sortField: curDash.sortField,
+                    optValues: curDash.optValues,
+                    defaultFilters: curDash.defaultFilters,
+                    relatedDashboardId: curDash.relatedDashboardId,
+                    refreshIntervalSeconds: curDash.refreshIntervalSeconds
                 }
             })
         }
@@ -131,17 +119,8 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
         setActiveDash(dash)
     }
 
-    async function openDash(dash: IDash) {
-        setActiveDash(dash)
-        setDashModalVisible(true)
-
-        if (activeDash != null)
-            dashForm.resetFields()
-    }
-
     function removeDash(id: string) {
         if (id === activeDash?.id) {
-            setDashModalVisible(false)
             setActiveDash(null)
         }
 
@@ -152,49 +131,15 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
         onBufferChange({spec: newSpec})
     }
 
-    function handleActiveDashChange(newActiveDash: DashValues) {
-        if (!acl.canWrite || !activeDash)
+    function handleDashChange(updatedDash: IDash) {
+        if (!acl.canWrite)
             return
 
-        const {
-            name, dataset, type, unit,
-            isAggregate, aggregateType, aggregateField, groupField, sortField, sortDirection,
-            optValues, defaultFilters, relatedDashboardId, refreshIntervalSeconds
-        } = newActiveDash
-
-        const dashToUpdate: IDash = {
-            ...activeDash,
-            id: activeDash.id ?? uuidv4(),
-            name,
-            dataset,
-            type,
-            unit,
-            isAggregate,
-            aggregateType,
-            aggregateField,
-            groupField,
-            sortField,
-            optValues,
-            defaultFilters,
-            relatedDashboardId,
-            refreshIntervalSeconds
-        }
-
         const newSpec = {
-            dashes: allDashes.map(it => it.name === activeDash.name ? dashToUpdate : it)
+            dashes: allDashes.map(dash => dash.id === updatedDash.id ? updatedDash : dash)
         }
 
         onBufferChange({spec: newSpec})
-        setActiveDash(dashToUpdate)
-    }
-
-    function handleDashFormFinish(newDash: DashValues) {
-        handleActiveDashChange(newDash)
-        setDashModalVisible(false)
-    }
-
-    async function handleRelatedDashboardOpen(dashboardId: string, queryFilter: QueryFilter) {
-        await openItem(dashboardItem, dashboardId, {queryFilter})
     }
 
     function renderDash(dash: IDash) {
@@ -208,6 +153,8 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
             >
                 <DashWrapper
                     pageKey={uniqueKey}
+                    datasetMap={datasets}
+                    dashboards={dashboards}
                     dataset={dataset}
                     dashboard={currentDashboard}
                     extra={extra}
@@ -215,17 +162,11 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
                     readOnly={readOnly ?? false}
                     canEdit={acl.canWrite}
                     onFullScreenChange={setFullScreen}
-                    onRelatedDashboardOpen={handleRelatedDashboardOpen}
-                    onEdit={() => openDash(dash)}
+                    onChange={handleDashChange}
                     onDelete={() => removeDash(dash.id)}
                 />
             </div>
         )
-    }
-
-    async function handleDatasetView(id: string) {
-        await openItem(datasetItem, id)
-        setDashModalVisible(false)
     }
 
     const layout: Layout[] = allDashes.map(it => {
@@ -256,6 +197,7 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
                     layout={layout}
                     cols={biConfig.cols}
                     rowHeight={biConfig.rowHeight}
+                    draggableCancel=".no-drag"
                     isDraggable={isGridEditable}
                     isDroppable={isGridEditable}
                     isResizable={isGridEditable}
@@ -267,30 +209,6 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
                     }
                 </ReactGridLayout>
             )}
-
-            <Modal
-                style={{top: 20}}
-                title={activeDash?.name}
-                open={isDashModalVisible}
-                destroyOnClose
-                width={1280}
-                onOk={() => dashForm.submit()}
-                onCancel={() => setDashModalVisible(false)}
-            >
-                {activeDash && (
-                    <>
-                        <DashForm
-                            form={dashForm}
-                            dash={activeDash}
-                            canEdit={acl.canWrite}
-                            datasets={datasets}
-                            dashboards={dashboards}
-                            onFormFinish={handleDashFormFinish}
-                            onDatasetView={handleDatasetView}
-                        />
-                    </>
-                )}
-            </Modal>
         </>
     )
 }

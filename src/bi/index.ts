@@ -3,6 +3,8 @@ import {FormInstance} from 'antd'
 
 export interface DashWrapperProps {
     pageKey: string
+    datasetMap: Record<string, Dataset>
+    dashboards: Dashboard[]
     dataset?: Dataset
     dashboard: Dashboard
     extra?: DashboardExtra
@@ -10,8 +12,7 @@ export interface DashWrapperProps {
     readOnly: boolean
     canEdit: boolean
     onFullScreenChange: (fullScreen: boolean) => void
-    onRelatedDashboardOpen: (dashboardId: string, queryFilter: QueryFilter) => void
-    onEdit: () => void
+    onChange: (updatedDash: IDash) => void
     onDelete: () => void
 }
 

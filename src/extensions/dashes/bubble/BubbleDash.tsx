@@ -7,6 +7,7 @@ import {DashEventHandler, DashRenderContext} from '../index'
 import biConfig from 'src/config/bi'
 import {LegendPosition} from '../util'
 import * as RulesService from 'src/services/rules'
+import {useBI} from '../../../bi/hooks'
 
 const Scatter = lazy(() => import('./Scatter'))
 
@@ -25,7 +26,8 @@ const {dash: dashConfig, locale} = biConfig
 const axisLabelStyle = dashConfig?.all?.axisLabelStyle
 const legendConfig = dashConfig?.all?.legend
 
-function BubbleDash({dataset, dash, data, onRelatedDashboardOpen}: DashRenderContext) {
+function BubbleDash({dataset, dash, data}: DashRenderContext) {
+    const {openDashboard} = useBI()
     const {optValues, relatedDashboardId} = dash
     const {
         xField,
@@ -60,7 +62,7 @@ function BubbleDash({dataset, dash, data, onRelatedDashboardOpen}: DashRenderCon
 
     const handleEvent: DashEventHandler | undefined =
         relatedDashboardId ?
-            (chart, event) => handleDashClick(chart, event, colorField ?? xField, queryFilter => onRelatedDashboardOpen(relatedDashboardId, queryFilter)) :
+            (chart, event) => handleDashClick(chart, event, colorField ?? xField, queryFilter => openDashboard(relatedDashboardId, queryFilter)) :
             undefined
 
     const config: ScatterConfig = {

@@ -8,6 +8,7 @@ import {LegendPosition} from '../util'
 import biConfig from 'src/config/bi'
 import * as RulesService from 'src/services/rules'
 import {FieldType} from 'src/types'
+import {useBI} from '../../../bi/hooks'
 
 const Pie = lazy(() => import('./Pie'))
 
@@ -25,7 +26,8 @@ const {locale, fractionDigits, percentFractionDigits, dash: dashConfig} = biConf
 const legendConfig = dashConfig?.all?.legend
 const statisticConfig = dashConfig?.doughnut?.statistic
 
-function DoughnutDash({dataset, dash, data, onRelatedDashboardOpen}: DashRenderContext) {
+function DoughnutDash({dataset, dash, data}: DashRenderContext) {
+    const {openDashboard} = useBI()
     const {optValues, relatedDashboardId} = dash
     const {
         angleField,
@@ -55,7 +57,7 @@ function DoughnutDash({dataset, dash, data, onRelatedDashboardOpen}: DashRenderC
     const statistic = statisticConfig?.title == null ? {} : {title: statisticConfig.title}
     const handleEvent: DashEventHandler | undefined =
         relatedDashboardId ?
-            (chart, event) => handleDashClick(chart, event, colorField, queryFilter => onRelatedDashboardOpen(relatedDashboardId, queryFilter)) :
+            (chart, event) => handleDashClick(chart, event, colorField, queryFilter => openDashboard(relatedDashboardId, queryFilter)) :
             undefined
 
     const config: PieConfig = {

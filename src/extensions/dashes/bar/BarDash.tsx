@@ -7,6 +7,7 @@ import {DashEventHandler, DashRenderContext} from '../index'
 import {LegendPosition} from '../util'
 import biConfig from 'src/config/bi'
 import * as RulesService from 'src/services/rules'
+import {useBI} from '../../../bi/hooks'
 
 const Bar = lazy(() => import('./Bar'))
 
@@ -26,7 +27,8 @@ const {dash: dashConfig, locale} = biConfig
 const axisLabelStyle = dashConfig?.all?.axisLabelStyle
 const legendConfig = dashConfig?.all?.legend
 
-function BarDash({dataset, dash, data, onRelatedDashboardOpen}: DashRenderContext) {
+function BarDash({dataset, dash, data}: DashRenderContext) {
+    const {openDashboard} = useBI()
     const {optValues, relatedDashboardId} = dash
     const {
         xField,
@@ -58,7 +60,7 @@ function BarDash({dataset, dash, data, onRelatedDashboardOpen}: DashRenderContex
 
     const handleEvent: DashEventHandler | undefined =
         relatedDashboardId ?
-            (chart, event) => handleDashClick(chart, event, yField, queryFilter => onRelatedDashboardOpen(relatedDashboardId, queryFilter)) :
+            (chart, event) => handleDashClick(chart, event, yField, queryFilter => openDashboard(relatedDashboardId, queryFilter)) :
             undefined
 
     const config: BarConfig = {

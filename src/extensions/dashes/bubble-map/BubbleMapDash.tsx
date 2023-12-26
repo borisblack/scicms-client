@@ -10,6 +10,7 @@ import biConfig from 'src/config/bi'
 import {MAX_LAT, MAX_LNG, MIN_LAT, MIN_LNG} from '.'
 import {QueryFilter, QueryOp} from 'src/types'
 import 'leaflet/dist/leaflet.css'
+import {useBI} from '../../../bi/hooks'
 
 interface BubbleMapDashOptions {
     latitudeField?: string
@@ -26,7 +27,8 @@ interface BubbleMapDashOptions {
 const mapConfig = biConfig.dash.map
 const defaultColor = defaultDashColor()
 
-function BubbleMapDash({pageKey, fullScreen, dataset, dash, height, data, onRelatedDashboardOpen}: DashRenderContext) {
+function BubbleMapDash({pageKey, fullScreen, dataset, dash, height, data}: DashRenderContext) {
+    const {openDashboard} = useBI()
     const {columns} = dataset.spec
     const {relatedDashboardId} = dash
     const {
@@ -102,7 +104,7 @@ function BubbleMapDash({pageKey, fullScreen, dataset, dash, height, data, onRela
 
                 if (relatedDashboardId && size != null) {
                     bubble.on('click', evt => {
-                        handleBubbleClick(evt, sizeField, size, queryFilter => onRelatedDashboardOpen(relatedDashboardId, queryFilter))
+                        handleBubbleClick(evt, sizeField, size, queryFilter => openDashboard(relatedDashboardId, queryFilter))
                     })
                 }
 
@@ -115,7 +117,7 @@ function BubbleMapDash({pageKey, fullScreen, dataset, dash, height, data, onRela
                 bubble.remove()
             })
         }
-    }, [data, latitudeField, longitudeField, colorField, sizeField, labelField, seriesColors, relatedDashboardId, onRelatedDashboardOpen, renderTitle])
+    }, [data, latitudeField, longitudeField, colorField, sizeField, labelField, seriesColors, relatedDashboardId, openDashboard, renderTitle])
 
     function handleBubbleClick(evt: L.LeafletMouseEvent, fieldName: string, value: any, cb: (queryFilter: QueryFilter) => void) {
         if (evt.type !== 'click' || value == null)

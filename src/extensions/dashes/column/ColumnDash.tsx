@@ -7,6 +7,7 @@ import {defaultDashColor, defaultDashColors, formatValue, handleDashClick} from 
 import {LegendPosition} from '../util'
 import biConfig from 'src/config/bi'
 import * as RulesService from 'src/services/rules'
+import {useBI} from '../../../bi/hooks'
 
 const Column = lazy(() => import('./Column'))
 
@@ -26,7 +27,8 @@ const {dash: dashConfig, locale} = biConfig
 const axisLabelStyle = dashConfig?.all?.axisLabelStyle
 const legendConfig = dashConfig?.all?.legend
 
-function ColumnDash({dataset, dash, data, onRelatedDashboardOpen}: DashRenderContext) {
+function ColumnDash({dataset, dash, data}: DashRenderContext) {
+    const {openDashboard} = useBI()
     const {optValues, relatedDashboardId} = dash
     const {
         xField,
@@ -58,7 +60,7 @@ function ColumnDash({dataset, dash, data, onRelatedDashboardOpen}: DashRenderCon
 
     const handleEvent: DashEventHandler | undefined =
         relatedDashboardId ?
-            (chart, event) => handleDashClick(chart, event, xField, queryFilter => onRelatedDashboardOpen(relatedDashboardId, queryFilter)) :
+            (chart, event) => handleDashClick(chart, event, xField, queryFilter => openDashboard(relatedDashboardId, queryFilter)) :
             undefined
 
     const config: ColumnConfig = {

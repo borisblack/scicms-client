@@ -11,7 +11,8 @@ import {
     Row,
     Select,
     Space,
-    Tooltip
+    Tooltip,
+    Typography
 } from 'antd'
 import {AggregateType, Column, Dashboard, Dataset, IDash, QueryBlock} from '../types'
 import {useTranslation} from 'react-i18next'
@@ -24,6 +25,7 @@ import {Dash, getDash, getDashIds} from '../extensions/dashes'
 import biConfig from '../config/bi'
 import {ArrowDownOutlined, ArrowUpOutlined, FolderOpenOutlined, QuestionCircleOutlined} from '@ant-design/icons'
 import {DefaultOptionType} from 'rc-select/lib/Select'
+import {useBI} from './hooks'
 
 interface Props {
     form: FormInstance
@@ -31,21 +33,20 @@ interface Props {
     canEdit: boolean
     datasets: Record<string, Dataset>
     dashboards: Dashboard[]
-    onFormFinish: (dash: DashValues) => void
-    onDatasetView: (id: string) => void
+    onFormFinish: (dash: IDash) => void
 }
 
-export interface DashValues {
+export interface DashFormValues {
+    id: string
     name: string
     dataset: string
     type: string
     unit?: string
     isAggregate: boolean
     aggregateType?: AggregateType
-    sortField?: string
-    sortDirection?: string
+    sortField?: string | string[]
     aggregateField?: string
-    groupField?: string
+    groupField?: string | string[]
     optValues: any
     defaultFilters: QueryBlock
     relatedDashboardId?: string
@@ -54,15 +55,29 @@ export interface DashValues {
 
 const {Item: FormItem} = Form
 const {Option: SelectOption} = Select
+const {Link} = Typography
 const dashTypes = getDashIds()
 
-const prepareDashValues = (dashValues: DashValues, dataset?: Dataset): DashValues => ({
-    ...dashValues,
-    defaultFilters: dataset == null ? generateQueryBlock() : fromFormQueryBlock(dataset, dashValues.defaultFilters)
+const mapDashValues = (dash: IDash, values: DashFormValues, dataset?: Dataset): IDash => ({
+    ...dash,
+    name: values.name,
+    dataset: values.dataset,
+    type: values.type,
+    unit: values.unit,
+    isAggregate: values.isAggregate,
+    aggregateType: values.aggregateType,
+    aggregateField: values.aggregateField,
+    groupField: values.groupField,
+    sortField: values.sortField,
+    optValues: values.optValues,
+    relatedDashboardId: values.relatedDashboardId,
+    refreshIntervalSeconds: values.refreshIntervalSeconds,
+    defaultFilters: dataset == null ? generateQueryBlock() : fromFormQueryBlock(dataset, values.defaultFilters)
 })
 
-export default function DashForm({form, dash, canEdit, datasets, dashboards, onFormFinish, onDatasetView}: Props) {
+export default function DashForm({form, dash, canEdit, datasets, dashboards, onFormFinish}: Props) {
     const {t} = useTranslation()
+    const {openDataset} = useBI()
     const [dataset, setDataset] = useState<Dataset | undefined>()
     const datasetColumns: {[name: string]: Column} = useMemo(() => dataset?.spec?.columns ?? {}, [dataset?.spec?.columns])
     const allColNames: string[] = useMemo(() => Object.keys(datasetColumns).sort(), [datasetColumns])
@@ -95,7 +110,6 @@ export default function DashForm({form, dash, canEdit, datasets, dashboards, onF
 
     const resetSortAndOptValuesFormFields = useCallback(() => {
         form.setFieldValue('sortField', undefined)
-        form.setFieldValue('sortDirection', 'asc')
         form.setFieldValue('optValues', {})
     }, [form])
 
@@ -165,9 +179,13 @@ export default function DashForm({form, dash, canEdit, datasets, dashboards, onF
             size="small"
             layout="vertical"
             disabled={!canEdit}
-            onFinish={dashValues => onFormFinish(prepareDashValues(dashValues, dataset))}
+            onFinish={dashFormValues => onFormFinish(mapDashValues(dash, dashFormValues, dataset))}
         >
             <Row gutter={10} style={{marginBottom: 10}}>
+                <FormItem name="id" hidden initialValue={dash.id}>
+                    <Input/>
+                </FormItem>
+
                 <Col span={12}>
                     <FormItem
                         className={styles.formItem}
@@ -188,11 +206,9 @@ export default function DashForm({form, dash, canEdit, datasets, dashboards, onF
                                 {t('Dataset')}
                                 {dataset && (
                                     <Tooltip key="open" title={t('Open')}>
-                                        <Button
-                                            type="link"
-                                            icon={<FolderOpenOutlined/>}
-                                            onClick={() => onDatasetView(datasets[dataset.name].id)}
-                                        />
+                                        <Link onClick={() => openDataset(datasets[dataset.name].id)}>
+                                            <FolderOpenOutlined/>
+                                        </Link>
                                     </Tooltip>
                                 )}
                             </Space>

@@ -7,6 +7,7 @@ import {defaultDashColor, defaultDashColors, formatValue, handleDashClick, isTem
 import {LegendPosition} from '../util'
 import biConfig from 'src/config/bi'
 import * as RulesService from 'src/services/rules'
+import {useBI} from '../../../bi/hooks'
 
 const Scatter = lazy(() => import('./Scatter'))
 
@@ -24,7 +25,8 @@ const {dash: dashConfig, locale} = biConfig
 const axisLabelStyle = dashConfig?.all?.axisLabelStyle
 const legendConfig = dashConfig?.all?.legend
 
-function ScatterDash({dataset, dash, data, onRelatedDashboardOpen}: DashRenderContext) {
+function ScatterDash({dataset, dash, data}: DashRenderContext) {
+    const {openDashboard} = useBI()
     const {optValues, relatedDashboardId} = dash
     const {
         xField,
@@ -54,7 +56,7 @@ function ScatterDash({dataset, dash, data, onRelatedDashboardOpen}: DashRenderCo
 
     const handleEvent: DashEventHandler | undefined =
         relatedDashboardId ?
-            (chart, event) => handleDashClick(chart, event, colorField ?? xField, queryFilter => onRelatedDashboardOpen(relatedDashboardId, queryFilter)) :
+            (chart, event) => handleDashClick(chart, event, colorField ?? xField, queryFilter => openDashboard(relatedDashboardId, queryFilter)) :
             undefined
 
     const config: ScatterConfig = {
