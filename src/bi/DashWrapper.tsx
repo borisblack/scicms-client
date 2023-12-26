@@ -308,7 +308,7 @@ function DashWrapper(props: DashWrapperProps) {
                         </Space>
                     )}
                     open={isFiltersModalVisible}
-                    width="80%"
+                    width="60%"
                     // onOk={() => filtersForm.submit()}
                     onClose={() => setFiltersModalVisible(false)}
                     extra={
@@ -332,7 +332,7 @@ function DashWrapper(props: DashWrapperProps) {
                 title={dash.name}
                 open={isDashModalVisible}
                 destroyOnClose
-                width="80%"
+                width="60%"
                 // onOk={() => dashForm.submit()}
                 onClose={() => setDashModalVisible(false)}
                 extra={
