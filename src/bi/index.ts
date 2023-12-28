@@ -1,4 +1,4 @@
-import {Dashboard, DashboardExtra, Dataset, IDash, QueryFilter} from '../types'
+import {Dashboard, DashboardExtra, Dataset, IDash} from '../types/bi'
 import {FormInstance} from 'antd'
 
 export interface DashWrapperProps {

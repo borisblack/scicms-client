@@ -4,8 +4,8 @@ import {useTranslation} from 'react-i18next'
 import {Form, Input, InputNumber, Space} from 'antd'
 import styles from '../DashFilters.module.css'
 import {isNumeric} from 'src/util/bi'
-import {QueryOp} from '../../../types'
-import {regExpRule} from '../../../util/form'
+import {QueryOp} from 'src/types/bi'
+import {regExpRule} from 'src/util/form'
 
 const {Item: FormItem} = Form
 

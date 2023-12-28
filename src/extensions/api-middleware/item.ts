@@ -1,11 +1,11 @@
 import axios from 'axios'
 
 import {ApiMiddleware, ApiMiddlewareContext, ApiOperation} from './index'
-import {ITEM_ITEM_NAME, ITEM_MODEL_KIND, MAIN_DATASOURCE_NAME} from '../../config/constants'
-import QueryManager from '../../services/query'
-import {extractAxiosErrorMessage} from '../../services'
-import {FlaggedResponse, Item, ItemData, ItemModel} from '../../types'
-import appConfig from '../../config'
+import {ITEM_ITEM_NAME, ITEM_MODEL_KIND, MAIN_DATASOURCE_NAME} from 'src/config/constants'
+import QueryManager from 'src/services/query'
+import {extractAxiosErrorMessage} from 'src/services'
+import {FlaggedResponse, Item, ItemData, ItemModel} from 'src/types/schema'
+import appConfig from 'src/config'
 
 export const itemMiddleware: ApiMiddleware = {
     id: 'itemMiddleware',

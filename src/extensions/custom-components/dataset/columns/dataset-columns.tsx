@@ -7,7 +7,7 @@ export const datasetColumns: CustomComponent = {
     id: COMPONENT_ID,
     mountPoint: 'dataset.tabs.begin',
     priority: 10,
-    title: 'Columns',
+    title: 'Fields',
     icon: 'BarsOutlined',
     render: ({context}) => <Columns key={COMPONENT_ID} {...context}/>
 }

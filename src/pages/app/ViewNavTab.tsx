@@ -1,7 +1,8 @@
 import React, {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {Col, Collapse, Form, Modal, notification, Row, Spin, Tabs} from 'antd'
 import {Tab} from 'rc-tabs/lib/interface'
-import {Attribute, FieldType, IBuffer, ItemData, ItemDataWrapper, RelType, ViewState} from 'src/types'
+import {FieldType, IBuffer, ViewState} from 'src/types'
+import {Attribute, ItemData, ItemDataWrapper, RelType} from 'src/types/schema'
 import {useTranslation} from 'react-i18next'
 import {CustomPluginRenderContext, hasPlugins, renderPlugins} from 'src/extensions/plugins'
 import {

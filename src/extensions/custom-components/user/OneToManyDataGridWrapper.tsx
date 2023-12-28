@@ -2,16 +2,16 @@ import {useCallback, useMemo, useState} from 'react'
 import {Row} from '@tanstack/react-table'
 import {Button, message, notification, Space} from 'antd'
 
-import appConfig from '../../../config'
-import DataGrid, {RequestParams} from '../../../components/datagrid/DataGrid'
-import {findAll, getColumns, getHiddenColumns, getInitialData} from '../../../util/datagrid'
-import {ItemData, ItemDataWrapper} from '../../../types'
+import appConfig from 'src/config'
+import DataGrid, {RequestParams} from 'src/components/datagrid/DataGrid'
+import {findAll, getColumns, getHiddenColumns, getInitialData} from 'src/util/datagrid'
+import {ItemData, ItemDataWrapper} from 'src/types/schema'
 import {useTranslation} from 'react-i18next'
 import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design/icons'
-import MutationManager from '../../../services/mutation'
+import MutationManager from 'src/services/mutation'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
-import * as ACL from '../../../util/acl'
-import {useAcl, useAuth, useItemOperations, useRegistry} from '../../../util/hooks'
+import * as ACL from 'src/util/acl'
+import {useAcl, useAuth, useItemOperations, useRegistry} from 'src/util/hooks'
 
 interface Props {
     data: ItemDataWrapper

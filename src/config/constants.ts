@@ -67,3 +67,7 @@ export const STATE_ATTR_NAME = 'state'
 export const SOURCE_ATTR_NAME = 'source'
 export const TARGET_ATTR_NAME = 'target'
 export const USERNAME_ATTR_NAME = 'username'
+
+export enum DndItemType {
+    SOURCE_TABLE = 'SOURCE_TABLE'
+}

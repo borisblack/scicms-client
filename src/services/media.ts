@@ -3,7 +3,8 @@ import {gql} from '@apollo/client'
 
 import i18n from '../i18n'
 import {apolloClient, extractAxiosErrorMessage, extractGraphQLErrorMessages} from '.'
-import {DeletingStrategy, Media, MediaInfo} from '../types'
+import {DeletingStrategy, MediaInfo} from '../types'
+import {Media} from '../types/schema'
 
 export interface UploadInput {
     file: File,

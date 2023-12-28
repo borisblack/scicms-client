@@ -8,7 +8,8 @@ import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design
 import {PageHeader} from '@ant-design/pro-layout'
 
 import appConfig from 'src/config'
-import {IBuffer, ItemData, ItemDataWrapper} from 'src/types'
+import {IBuffer} from 'src/types'
+import {ItemData, ItemDataWrapper} from 'src/types/schema'
 import DataGrid, {RequestParams} from '../../components/datagrid/DataGrid'
 import {CustomPluginRenderContext, hasPlugins, renderPlugins} from 'src/extensions/plugins'
 import {CustomComponentRenderContext, hasComponents, renderComponents} from 'src/extensions/custom-components'

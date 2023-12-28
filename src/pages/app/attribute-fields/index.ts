@@ -1,6 +1,6 @@
 import {FC} from 'react'
 import {FormInstance} from 'antd'
-import {Attribute, ItemDataWrapper} from 'src/types'
+import {Attribute, ItemDataWrapper} from 'src/types/schema'
 
 export interface AttributeFieldProps {
     data: ItemDataWrapper

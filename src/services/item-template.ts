@@ -3,7 +3,7 @@ import {gql} from '@apollo/client'
 
 import i18n from '../i18n'
 import {apolloClient, extractGraphQLErrorMessages} from '.'
-import {ItemTemplate} from '../types'
+import {ItemTemplate} from '../types/schema'
 
 export type ItemTemplateMap = Record<string, ItemTemplate>
 

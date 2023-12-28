@@ -1,11 +1,13 @@
 import _ from 'lodash'
+import {DateTime} from 'luxon'
 import {gql} from '@apollo/client'
 import {ColumnFiltersState, SortingState} from '@tanstack/react-table'
 
 import i18n from '../i18n'
 import {apolloClient, extractGraphQLErrorMessages} from './index'
-import {Attribute, FieldType, Item, ItemData, RelType, Response, ResponseCollection} from '../types'
-import {DateTime} from 'luxon'
+import {FieldType} from '../types'
+import {Attribute, Item, ItemData, RelType, Response, ResponseCollection} from '../types/schema'
+
 import {
     LUXON_DATE_FORMAT_STRING,
     LUXON_DATE_HOURS_FORMAT_STRING,

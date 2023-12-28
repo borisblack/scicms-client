@@ -12,8 +12,9 @@ import {
     temporalUnitTitles,
     timeTemporalUnits
 } from 'src/util/bi'
-import {FieldType, QueryOp, TemporalPeriod, TemporalType} from '../../../types'
-import appConfig from '../../../config'
+import {FieldType} from 'src/types'
+import {QueryOp, TemporalPeriod, TemporalType} from 'src/types/bi'
+import appConfig from 'src/config'
 import styles from '../DashFilters.module.css'
 
 const INPUT_WIDTH = 180

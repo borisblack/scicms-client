@@ -7,7 +7,7 @@ import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined, SelectOutlined} f
 import appConfig from 'src/config'
 import DataGrid, {RequestParams} from 'src/components/datagrid/DataGrid'
 import {findAllRelated, getColumns, getHiddenColumns, getInitialData} from 'src/util/datagrid'
-import {Attribute, ItemData, ItemDataWrapper, RelType} from 'src/types'
+import {Attribute, ItemData, ItemDataWrapper, RelType} from 'src/types/schema'
 import {ID_ATTR_NAME, SOURCE_ATTR_NAME, TARGET_ATTR_NAME} from 'src/config/constants'
 import MutationManager from 'src/services/mutation'
 import QueryManager, {ItemFiltersInput} from 'src/services/query'

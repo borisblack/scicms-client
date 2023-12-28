@@ -4,7 +4,8 @@ import {ColumnDef, ColumnFiltersState, createColumnHelper, SortingState} from '@
 import {Checkbox, Tag, Typography} from 'antd'
 import {DateTime} from 'luxon'
 
-import {Attribute, FieldType, Item, ItemData, Media, RelType} from '../types'
+import {FieldType} from '../types'
+import {Attribute, Item, ItemData, Media, RelType} from '../types/schema'
 import appConfig from '../config'
 import {DataWithPagination, RequestParams} from '../components/datagrid/DataGrid'
 import QueryManager, {ExtRequestParams, ItemFiltersInput} from '../services/query'

@@ -14,7 +14,7 @@ import {
     Tooltip,
     Typography
 } from 'antd'
-import {AggregateType, Column, Dashboard, Dataset, IDash, QueryBlock} from '../types'
+import {AggregateType, Column, Dashboard, Dataset, IDash, QueryBlock} from '../types/bi'
 import {useTranslation} from 'react-i18next'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {fromFormQueryBlock, generateQueryBlock, getCustomFunctionsInfo, toFormQueryBlock} from '../util/bi'

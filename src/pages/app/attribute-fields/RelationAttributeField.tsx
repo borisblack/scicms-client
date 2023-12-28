@@ -1,8 +1,9 @@
-import {Button, Form, Input, Modal, Tooltip} from 'antd'
 import {FC, useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
+import {Button, Form, Input, Modal, Tooltip} from 'antd'
 import {CloseCircleOutlined, FolderOpenOutlined} from '@ant-design/icons'
-import {FieldType, ItemData, Lifecycle, Permission, RelType} from 'src/types'
+import {FieldType} from 'src/types'
+import {AllowedLifecycle, AllowedPermission, ItemData, Lifecycle, Permission, RelType} from 'src/types/schema'
 import {AttributeFieldProps} from '.'
 import {DEFAULT_LIFECYCLE_ID} from 'src/services/lifecycle'
 import {BI_PERMISSION_ID, DEFAULT_PERMISSION_ID, SECURITY_PERMISSION_ID} from 'src/services/permission'
@@ -96,7 +97,9 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, for
 
     const extraFiltersInput: ItemFiltersInput<ItemData> = useMemo(() => {
         if (attrName === LIFECYCLE_ATTR_NAME) {
-            const allowedLifecycleIds = [...item.allowedLifecycles.data.map(al => al.target.data.id), DEFAULT_LIFECYCLE_ID]
+            const allowedLifecycleIds =
+                [...item.allowedLifecycles.data.map((al: AllowedLifecycle) => al.target.data.id), DEFAULT_LIFECYCLE_ID]
+
             return {
                 id: {
                     in: allowedLifecycleIds
@@ -105,7 +108,9 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, for
         }
 
         if (attrName === PERMISSION_ATTR_NAME) {
-            const allowedPermissionIds = [...item.allowedPermissions.data.map(ap => ap.target.data.id), getDefaultPermission(item.name)]
+            const allowedPermissionIds =
+                [...item.allowedPermissions.data.map((ap: AllowedPermission) => ap.target.data.id), getDefaultPermission(item.name)]
+
             return {
                 id: {
                     in: allowedPermissionIds
@@ -174,6 +179,7 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, for
                                 type="link"
                                 style={{width: SUFFIX_BUTTON_WIDTH}}
                                 icon={<CloseCircleOutlined/>}
+                                danger
                                 onClick={handleClear}
                             />
                         </Tooltip>

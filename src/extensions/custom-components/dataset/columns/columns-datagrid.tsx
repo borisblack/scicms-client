@@ -1,11 +1,12 @@
 import {ColumnDef, createColumnHelper} from '@tanstack/react-table'
-import i18n from '../../../../i18n'
-import appConfig from '../../../../config'
 import {Tag} from 'antd'
-import {FieldType, NamedColumn} from '../../../../types'
-import EditableCell from '../../../../components/datagrid/EditableCell'
-import SelectableCell from '../../../../components/datagrid/SelectableCell'
-import EditableNumberCell from '../../../../components/datagrid/EditableNumberCell'
+import i18n from 'src/i18n'
+import appConfig from 'src/config'
+import {FieldType} from 'src/types'
+import {NamedColumn} from './types'
+import EditableCell from 'src/components/datagrid/EditableCell'
+import SelectableCell from 'src/components/datagrid/SelectableCell'
+import EditableNumberCell from 'src/components/datagrid/EditableNumberCell'
 
 const numberFormatOptions = [
     {label: 'int', value: 'int'},

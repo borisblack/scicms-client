@@ -1,7 +1,7 @@
 import {useCallback, useMemo} from 'react'
 import {useItemOperations, useRegistry} from '../util/hooks'
 import {DASHBOARD_ITEM_NAME, DATASET_ITEM_NAME} from '../config/constants'
-import {QueryFilter} from '../types'
+import {QueryFilter} from '../types/bi'
 
 export function useBI() {
     const {items: itemMap} = useRegistry()

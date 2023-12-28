@@ -1,6 +1,7 @@
 import _ from 'lodash'
 
-import {IBuffer, Item, ItemData} from 'src/types'
+import {IBuffer} from 'src/types'
+import {Item, ItemData} from 'src/types/schema'
 import pluginConfig from 'src/config/plugin'
 
 /* Plugin points:

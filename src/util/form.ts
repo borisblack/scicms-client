@@ -2,7 +2,8 @@ import _ from 'lodash'
 import {Dayjs} from 'dayjs'
 import {DateTime} from 'luxon'
 
-import {Attribute, FieldType, Item, ItemData} from '../types'
+import {FieldType} from '../types'
+import {Attribute, Item, ItemData} from '../types/schema'
 import * as MediaService from '../services/media'
 import {
     LOWERCASE_NO_WHITESPACE_MESSAGE,

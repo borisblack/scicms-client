@@ -2,7 +2,8 @@ import {ColumnDef, createColumnHelper} from '@tanstack/react-table'
 import {Checkbox, Tag} from 'antd'
 import i18n from 'src/i18n'
 import appConfig from 'src/config'
-import {FieldType, RelType} from 'src/types'
+import {FieldType} from 'src/types'
+import {RelType} from 'src/types/schema'
 import {NamedAttribute} from './types'
 
 const columnHelper = createColumnHelper<NamedAttribute>()

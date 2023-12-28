@@ -1,9 +1,10 @@
 import _ from 'lodash'
 import {ReactElement, ReactNode} from 'react'
-
-import {IBuffer, ItemDataWrapper} from '../../types'
-import customComponentConfig from '../../config/custom-component'
 import {FormInstance} from 'antd'
+
+import {IBuffer} from 'src/types'
+import {ItemDataWrapper} from 'src/types/schema'
+import customComponentConfig from 'src/config/custom-component'
 
 /* Mount points:
 default.header

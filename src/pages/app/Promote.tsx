@@ -1,9 +1,9 @@
-import {Lifecycle} from '../../types'
 import {useCallback, useEffect, useState} from 'react'
-import {findLifecycleById} from '../../services/lifecycle'
 import {Button, List, message, Spin} from 'antd'
 import {RightCircleOutlined} from '@ant-design/icons'
-import {parseLifecycleSpec} from '../../util/bpmn'
+import {findLifecycleById} from 'src/services/lifecycle'
+import {Lifecycle} from 'src/types/schema'
+import {parseLifecycleSpec} from 'src/util/bpmn'
 
 interface Props {
     lifecycleId: string

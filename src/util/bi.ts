@@ -1,29 +1,28 @@
+import _ from 'lodash'
+import {v4 as uuidv4} from 'uuid'
+import dayjs, {Dayjs} from 'dayjs'
+import {DateTime} from 'luxon'
+import {notification} from 'antd'
+import {PlotEvent} from '@ant-design/plots'
+import {Plot} from '@antv/g2plot'
+import {evaluate, getInfo} from '../extensions/functions'
+import {FieldType, PrimitiveFilterInput} from '../types'
 import {
     Column,
     Dataset,
     DatasetFiltersInput,
-    FieldType,
     LogicalOp,
     PositiveLogicalOp,
-    PrimitiveFilterInput,
     QueryBlock,
     QueryFilter,
     QueryOp,
     TemporalPeriod,
     TemporalType,
     TemporalUnit
-} from '../types'
+} from '../types/bi'
 import i18n from '../i18n'
 import appConfig from '../config'
 import biConfig from '../config/bi'
-import {v4 as uuidv4} from 'uuid'
-import dayjs, {Dayjs} from 'dayjs'
-import {DateTime} from 'luxon'
-import _ from 'lodash'
-import {evaluate, getInfo} from '../extensions/functions'
-import {notification} from 'antd'
-import {PlotEvent} from '@ant-design/plots'
-import {Plot} from '@antv/g2plot'
 
 const {dash: dashConfig, dateTime: dateTimeConfig} = biConfig
 const dateTimeRegExp = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.000)?(Z|([-+]00:00))?$/

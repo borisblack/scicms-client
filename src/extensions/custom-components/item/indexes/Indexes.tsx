@@ -6,7 +6,7 @@ import {useTranslation} from 'react-i18next'
 
 import {CustomComponentRenderContext} from 'src/extensions/custom-components/.'
 import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME} from 'src/config/constants'
-import {Index, ItemSpec} from 'src/types'
+import {Index, ItemSpec} from 'src/types/schema'
 import DataGrid, {DataWithPagination, RequestParams} from 'src/components/datagrid/DataGrid'
 import appConfig from 'src/config'
 import {getInitialData, processLocal} from 'src/util/datagrid'

@@ -1,5 +1,6 @@
 import {ExclamationCircleOutlined, SearchOutlined} from '@ant-design/icons'
-import {Item, ItemData, ItemDataWrapper, ViewType} from '../types'
+import {ViewType} from '../types'
+import {Item, ItemData, ItemDataWrapper} from '../types/schema'
 import {objectToHash} from './index'
 import React, {ReactNode} from 'react'
 import {allIcons} from './icons'

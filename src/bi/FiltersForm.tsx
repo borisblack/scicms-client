@@ -2,7 +2,7 @@ import {Form, FormInstance} from 'antd'
 import {toFormQueryBlock} from '../util/bi'
 import DashFilters from './dash-filters/DashFilters'
 import React from 'react'
-import {Dataset, QueryBlock} from '../types'
+import {Dataset, QueryBlock} from '../types/bi'
 
 interface Props {
     form: FormInstance

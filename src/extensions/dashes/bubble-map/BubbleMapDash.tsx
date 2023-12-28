@@ -8,7 +8,7 @@ import * as RulesService from 'src/services/rules'
 import {defaultDashColor, defaultDashColors} from 'src/util/bi'
 import biConfig from 'src/config/bi'
 import {MAX_LAT, MAX_LNG, MIN_LAT, MIN_LNG} from '.'
-import {QueryFilter, QueryOp} from 'src/types'
+import {QueryFilter, QueryOp} from 'src/types/bi'
 import 'leaflet/dist/leaflet.css'
 import {useBI} from '../../../bi/hooks'
 

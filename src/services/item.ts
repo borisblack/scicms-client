@@ -3,7 +3,8 @@ import {gql} from '@apollo/client'
 
 import i18n from '../i18n'
 import {apolloClient, extractGraphQLErrorMessages} from '.'
-import {FieldType, Item, RelType} from '../types'
+import {FieldType} from '../types'
+import {Item, RelType} from '../types/schema'
 import {FILENAME_ATTR_NAME, ID_ATTR_NAME, MEDIA_ITEM_NAME} from '../config/constants'
 
 export type ItemMap = Record<string, Item>

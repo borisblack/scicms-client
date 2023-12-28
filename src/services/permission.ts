@@ -3,7 +3,8 @@ import {gql} from '@apollo/client'
 
 import i18n from '../i18n'
 import {apolloClient, extractGraphQLErrorMessages} from '.'
-import {Item, ItemData, Permission, UserInfo} from '../types'
+import {UserInfo} from '../types'
+import {Item, ItemData, Permission} from '../types/schema'
 import * as ACL from '../util/acl'
 
 export type PermissionMap = Record<string, Permission>

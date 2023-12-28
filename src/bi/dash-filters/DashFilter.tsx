@@ -1,11 +1,11 @@
-import {Dataset, QueryOp} from '../../types'
-import {Button, Form, FormInstance, Select, Space, Switch} from 'antd'
 import React, {CSSProperties} from 'react'
 import {useTranslation} from 'react-i18next'
-import {queryOpList, queryOpTitles} from '../../util/bi'
-import styles from './DashFilters.module.css'
-import FilterValueFieldWrapper from './FilterValueFieldWrapper'
+import {Button, Form, FormInstance, Select, Space, Switch} from 'antd'
 import {DeleteOutlined, EyeOutlined} from '@ant-design/icons'
+import {Dataset, QueryOp} from 'src/types/bi'
+import {queryOpList, queryOpTitles} from 'src/util/bi'
+import FilterValueFieldWrapper from './FilterValueFieldWrapper'
+import styles from './DashFilters.module.css'
 
 interface Props {
     style?: CSSProperties
@@ -64,7 +64,8 @@ export default function DashFilter({style, btnStyle, form, namePrefix, dataset, 
                 >
                     <Select
                         bordered={false}
-                        style={{width: 160}} placeholder={t('Operator')}
+                        style={{width: 160}}
+                        placeholder={t('Operator')}
                         onSelect={handleOpSelect}
                     >
                         {availableOpList.map(o => <SelectOption key={o} value={o}>{queryOpTitles[o]}</SelectOption>)}

@@ -9,8 +9,8 @@ import './DataGrid.css'
 import ColumnFilter from './ColumnFilter'
 import Toolbar from './Toolbar'
 import {useTranslation} from 'react-i18next'
-import {exportWinFeatures, exportWinStyle, renderValue} from '../../util/export'
-import {ItemData} from '../../types'
+import {exportWinFeatures, exportWinStyle, renderValue} from 'src/util/export'
+import {ItemData} from 'src/types/schema'
 
 interface Props {
     loading?: boolean

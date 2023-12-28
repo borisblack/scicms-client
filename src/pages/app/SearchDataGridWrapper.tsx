@@ -1,14 +1,14 @@
 import {useCallback, useMemo, useRef, useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import {Row} from '@tanstack/react-table'
 import {Checkbox, message} from 'antd'
 
-import appConfig from '../../config'
-import DataGrid, {RequestParams} from '../../components/datagrid/DataGrid'
-import {findAll, getColumns, getHiddenColumns, getInitialData} from '../../util/datagrid'
-import {Item, ItemData} from '../../types'
-import {ExtRequestParams, ItemFiltersInput} from '../../services/query'
+import appConfig from 'src/config'
+import DataGrid, {RequestParams} from 'src/components/datagrid/DataGrid'
+import {findAll, getColumns, getHiddenColumns, getInitialData} from 'src/util/datagrid'
+import {Item, ItemData} from 'src/types/schema'
+import {ExtRequestParams, ItemFiltersInput} from 'src/services/query'
 import {CheckboxChangeEvent} from 'antd/es/checkbox'
-import {useTranslation} from 'react-i18next'
 import {useItemOperations, useRegistry} from 'src/util/hooks'
 
 interface Props {

@@ -1,4 +1,4 @@
-import {DefaultItemTemplate} from '../../../../types'
+import {DefaultItemTemplate} from 'src/types/schema'
 
 export interface Project extends DefaultItemTemplate {
     name: string

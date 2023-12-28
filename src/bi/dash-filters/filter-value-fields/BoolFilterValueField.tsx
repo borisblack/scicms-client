@@ -3,7 +3,7 @@ import {FilterValueFieldProps} from './index'
 import {useTranslation} from 'react-i18next'
 import {Checkbox, Form} from 'antd'
 import {isBool} from 'src/util/bi'
-import {QueryOp} from '../../../types'
+import {QueryOp} from 'src/types/bi'
 import styles from '../DashFilters.module.css'
 
 const {Item: FormItem} = Form

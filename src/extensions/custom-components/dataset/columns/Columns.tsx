@@ -1,14 +1,15 @@
 import {useEffect, useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 
-import {CustomComponentRenderContext} from '../../index'
-import {DATASET_ITEM_NAME} from '../../../../config/constants'
-import DataGrid, {DataWithPagination, RequestParams} from '../../../../components/datagrid/DataGrid'
-import appConfig from '../../../../config'
-import {getInitialData, processLocal} from '../../../../util/datagrid'
-import {Column, DatasetSpec, NamedColumn} from '../../../../types'
+import {CustomComponentRenderContext} from 'src/extensions/custom-components'
+import {DATASET_ITEM_NAME} from 'src/config/constants'
+import DataGrid, {DataWithPagination, RequestParams} from 'src/components/datagrid/DataGrid'
+import appConfig from 'src/config'
+import {getInitialData, processLocal} from 'src/util/datagrid'
+import {Column, DatasetSpec} from 'src/types/bi'
+import {NamedColumn} from './types'
 import {getColumns} from './columns-datagrid'
-import {useAcl} from '../../../../util/hooks'
+import {useAcl} from 'src/util/hooks'
 
 export default function Columns({data: dataWrapper, buffer, onBufferChange}: CustomComponentRenderContext) {
     const {item, data} = dataWrapper
@@ -17,7 +18,7 @@ export default function Columns({data: dataWrapper, buffer, onBufferChange}: Cus
 
     const {t} = useTranslation()
     const acl = useAcl(item, data)
-    const spec: DatasetSpec = useMemo(() => data?.spec ?? buffer.spec ?? {}, [buffer.spec, data?.spec])
+    const spec: DatasetSpec = useMemo(() => buffer.spec ?? data?.spec ?? {}, [buffer, data])
     const [namedColumns, setNamedColumns] = useState(getCurrentNamedColumns())
     const [filteredData, setFilteredData] = useState<DataWithPagination<NamedColumn>>(getInitialData())
     const [version, setVersion] = useState<number>(0)

@@ -7,6 +7,8 @@ import {createRoot} from 'react-dom/client'
 import {Provider} from 'react-redux'
 import {createBrowserRouter, RouterProvider} from 'react-router-dom'
 import {I18nextProvider} from 'react-i18next'
+import {HTML5Backend} from 'react-dnd-html5-backend'
+import {DndProvider} from 'react-dnd'
 import {ConfigProvider} from 'antd'
 import {ApolloProvider} from '@apollo/client/react'
 import {store} from './store'
@@ -25,9 +27,11 @@ root.render(
     <Provider store={store}>
         <ApolloProvider client={apolloClient}>
             <I18nextProvider i18n={i18n}>
-                <ConfigProvider locale={config.antdLocale}>
-                    <RouterProvider router={router}/>
-                </ConfigProvider>
+                <DndProvider backend={HTML5Backend}>
+                    <ConfigProvider locale={config.antdLocale}>
+                        <RouterProvider router={router}/>
+                    </ConfigProvider>
+                </DndProvider>
             </I18nextProvider>
         </ApolloProvider>
     </Provider>

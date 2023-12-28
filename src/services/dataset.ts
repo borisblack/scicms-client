@@ -3,7 +3,8 @@ import qs from 'qs'
 import {gql} from '@apollo/client'
 import i18n from '../i18n'
 import {apolloClient, extractAxiosErrorMessage, extractGraphQLErrorMessages} from '.'
-import {AggregateType, Dataset, DatasetFiltersInput, Pagination, PaginationInput} from '../types'
+import {Pagination, PaginationInput} from '../types'
+import {AggregateType, Dataset, DatasetFiltersInput} from '../types/bi'
 
 export interface DatasetInput<T> {
     filters?: DatasetFiltersInput<T>

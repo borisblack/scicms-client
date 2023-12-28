@@ -1,5 +1,6 @@
 import dayjs from 'dayjs'
-import {Permission, UserInfo} from '../types'
+import {UserInfo} from '../types'
+import {Permission} from '../types/schema'
 import {getBit} from '.'
 
 function hasAccess(user: UserInfo | null, permission: Permission, bit: number): boolean {

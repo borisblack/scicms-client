@@ -1,7 +1,7 @@
 import {FC, ReactElement, ReactNode} from 'react'
 import customAttributeFieldConfig from 'src/config/custom-attribute-field'
 import {AttributeFieldProps} from 'src/pages/app/attribute-fields'
-import {Attribute} from 'src/types'
+import {Attribute} from 'src/types/schema'
 
 export interface CustomAttributeField {
     id: string

@@ -16,7 +16,8 @@ import {
     UnlockOutlined
 } from '@ant-design/icons'
 
-import {FlaggedResponse, IBuffer, ItemData, ItemDataWrapper, ResponseCollection, ViewState} from 'src/types'
+import {IBuffer, ViewState} from 'src/types'
+import {FlaggedResponse, ItemData, ItemDataWrapper, ResponseCollection} from 'src/types/schema'
 import appConfig from 'src/config'
 import {useTranslation} from 'react-i18next'
 import SearchDataGridWrapper from './SearchDataGridWrapper'

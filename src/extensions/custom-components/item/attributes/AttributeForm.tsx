@@ -3,14 +3,15 @@ import {useCallback, useEffect, useMemo, useState} from 'react'
 import {AutoComplete, Checkbox, Col, Form, FormInstance, Input, InputNumber, message, Row, Select} from 'antd'
 
 import {useTranslation} from 'react-i18next'
-import {FieldType, RelType} from 'src/types'
+import {FieldType} from 'src/types/'
+import {RelType} from 'src/types/schema'
 import styles from './Attributes.module.css'
 import appConfig from 'src/config'
 import {regExpRule} from 'src/util/form'
 import {LOWERCASE_NO_WHITESPACE_PATTERN} from 'src/config/constants'
 import * as SequenceService from 'src/services/sequence'
 import {NamedAttribute} from './types'
-import {useRegistry} from '../../../../util/hooks'
+import {useRegistry} from 'src/util/hooks'
 
 interface Props {
     form: FormInstance

@@ -2,7 +2,7 @@ import {gql} from '@apollo/client'
 
 import i18n from '../i18n'
 import {apolloClient, extractGraphQLErrorMessages} from '.'
-import {Locale} from '../types'
+import {Locale} from '../types/schema'
 
 const FIND_ALL_QUERY = gql`
     query {

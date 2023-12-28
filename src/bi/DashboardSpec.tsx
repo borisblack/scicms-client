@@ -9,7 +9,7 @@ import 'react-resizable/css/styles.css'
 
 import {CustomComponentRenderContext} from '../extensions/custom-components'
 import {DASHBOARD_ITEM_NAME} from '../config/constants'
-import {Dashboard, DashboardExtra, Dataset, IDash, IDashboardSpec, QueryFilter} from '../types'
+import {Dashboard, DashboardExtra, Dataset, IDash, IDashboardSpec} from '../types/bi'
 import {generateQueryBlock, printSingleQueryFilter} from '../util/bi'
 import biConfig from '../config/bi'
 import * as DatasetService from '../services/dataset'

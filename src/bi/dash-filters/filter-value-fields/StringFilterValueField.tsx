@@ -4,7 +4,7 @@ import {useTranslation} from 'react-i18next'
 import {Form, Input} from 'antd'
 import styles from '../DashFilters.module.css'
 import {isString} from 'src/util/bi'
-import {QueryOp} from '../../../types'
+import {QueryOp} from 'src/types/bi'
 
 const {Item: FormItem} = Form
 

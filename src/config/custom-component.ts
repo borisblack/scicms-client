@@ -5,6 +5,7 @@ import {itemIndexes} from '../extensions/custom-components/item/indexes/item-ind
 import {itemTemplateIndexes} from '../extensions/custom-components/item/indexes/item-template-indexes'
 import {userRoles} from '../extensions/custom-components/user/user-roles/user-roles'
 import {lifecycleSpec} from '../extensions/custom-components/lifecycle/spec/lifecycle-spec'
+import {datasetSources} from '../extensions/custom-components/dataset/sources/dataset-sources'
 import {datasetColumns} from '../extensions/custom-components/dataset/columns/dataset-columns'
 import {dashboardSpec} from '../extensions/custom-components/dashboard/spec/dashboard-spec'
 import {userGroups} from '../extensions/custom-components/user/user-groups/user-groups'
@@ -23,6 +24,7 @@ const customComponentConfig: CustomComponentConfig = {
         itemTemplateIndexes,
         userRoles,
         lifecycleSpec,
+        datasetSources,
         datasetColumns,
         dashboardSpec,
         userGroups, // owner is a group
