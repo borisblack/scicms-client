@@ -9,6 +9,7 @@ import {Pagination as IPagination} from 'src/types'
 import {Dataset, DatasetSources, DatasetSpec, Table} from 'src/types/bi'
 import {loadDatasourceTables} from 'src/services/datasource'
 import appConfig from 'src/config'
+import {useAcl} from 'src/util/hooks'
 import TableItem from './TableItem'
 import SourcesConstructor from './SourcesConstructor'
 import styles from './Sources.module.css'
@@ -30,6 +31,7 @@ export default function Sources({data: dataWrapper, buffer, onBufferChange}: Cus
         throw new Error('Illegal argument')
 
     const {t} = useTranslation()
+    const acl = useAcl(item, data)
     const {datasource} = (data ?? {}) as Partial<Dataset>
     const spec: DatasetSpec = useMemo(() => buffer.spec ?? data?.spec ?? {}, [buffer, data])
     const sources: DatasetSources = useMemo(() => spec.sources ?? initialSources, [spec])
@@ -37,6 +39,12 @@ export default function Sources({data: dataWrapper, buffer, onBufferChange}: Cus
     const [tables, setTables] = useState<Table[]>([])
     const [q, setQ] = useState<string>()
     const [pagination, setPagination] = useState<IPagination>(defaultPagination)
+
+    useEffect(() => {
+        onBufferChange({
+            spec: data?.spec ?? {}
+        })
+    }, [data])
 
     useEffect(() => {
         if (!datasource?.data?.name)
@@ -93,6 +101,7 @@ export default function Sources({data: dataWrapper, buffer, onBufferChange}: Cus
                             key={table.name}
                             table={table}
                             strong={table.name === sources.mainTable?.name || sources.joinedTables.findIndex(t => t.name === table.name) >= 0}
+                            canEdit={acl.canWrite}
                         />
                     ))}
 
@@ -113,7 +122,7 @@ export default function Sources({data: dataWrapper, buffer, onBufferChange}: Cus
                     </div>
                 </div>
 
-                <SourcesConstructor sources={sources} onChange={handleSourcesChange}/>
+                <SourcesConstructor sources={sources} canEdit={acl.canWrite} onChange={handleSourcesChange}/>
             </Split>
         </Spin>
     )

@@ -1,5 +1,5 @@
 import {useDrag} from 'react-dnd'
-import {Space, Typography} from 'antd'
+import {Typography} from 'antd'
 import {TableOutlined} from '@ant-design/icons'
 
 import {DndItemType} from 'src/config/constants'
@@ -8,21 +8,23 @@ import styles from './Sources.module.css'
 
 interface TableItemProps {
     table: Table
-    strong: boolean
+    strong: boolean,
+    canEdit: boolean
 }
 
 const {Text} = Typography
 
-export default function TableItem({table, strong}: TableItemProps) {
+export default function TableItem({table, strong, canEdit}: TableItemProps) {
     const [{isDragging}, drag] = useDrag(
         () => ({
             type: DndItemType.SOURCE_TABLE,
             item: table,
+            // canDrag: canEdit,
             collect: (monitor) => ({
                 isDragging: monitor.isDragging()
             })
         }),
-        []
+        [canEdit]
     )
 
     return (
@@ -31,10 +33,11 @@ export default function TableItem({table, strong}: TableItemProps) {
             ref={drag}
             style={{opacity: isDragging ? 0.5 : 1}}
         >
-            <Space>
+            <span className="text-ellipsis" title={table.name}>
                 <TableOutlined className="green"/>
-                <Text strong={strong}>{table.name}</Text>
-            </Space>
+                &nbsp;&nbsp;
+                <Text strong={strong} ellipsis>{table.name}</Text>
+            </span>
         </div>
     )
 }

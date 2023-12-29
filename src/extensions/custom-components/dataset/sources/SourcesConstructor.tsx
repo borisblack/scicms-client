@@ -7,10 +7,11 @@ import TableWidget from './TableWidget'
 import LineHorizontal from './LineHorizontal'
 import {useEffect, useState} from 'react'
 import LineVertical from './LineVertical'
-import JoinedTableModal from './JoinedTableModal'
+import JoinedTableFormModal from './JoinedTableFormModal'
 
 interface SourcesConstructorProps {
     sources: DatasetSources
+    canEdit: boolean
     onChange: (newSources: DatasetSources) => void
 }
 
@@ -20,7 +21,7 @@ const TABLE_WIDGET_WIDTH = 300
 const TABLE_WIDGET_HEIGHT = 32
 const VERTICAL_SPACE = 12
 
-export default function SourcesConstructor({sources, onChange}: SourcesConstructorProps) {
+export default function SourcesConstructor({sources, canEdit, onChange}: SourcesConstructorProps) {
     const [isValid, setValid] = useState<boolean>(true)
     const [currentJoinedTable, setCurrentJoinedTable] = useState<JoinedTable>()
     const [openModal, setOpenModal] = useState(false)
@@ -34,7 +35,7 @@ export default function SourcesConstructor({sources, onChange}: SourcesConstruct
                 canDrop: monitor.canDrop()
             })
         }),
-        [sources]
+        [sources, canEdit]
     )
 
     useEffect(() => {
@@ -49,6 +50,9 @@ export default function SourcesConstructor({sources, onChange}: SourcesConstruct
     }, [sources])
 
     function handleCanDrop(table: Table): boolean {
+        if (!canEdit)
+            return false
+
         if (table.name === sources.mainTable?.name)
             return false
 
@@ -102,6 +106,7 @@ export default function SourcesConstructor({sources, onChange}: SourcesConstruct
                     key={table.name}
                     style={{width: TABLE_WIDGET_WIDTH, height: TABLE_WIDGET_HEIGHT, top}}
                     table={table}
+                    canEdit={canEdit}
                     onRemove={() => removeJoinedTable(table.name)}
                 />
             )
@@ -121,36 +126,34 @@ export default function SourcesConstructor({sources, onChange}: SourcesConstruct
     function renderLines() {
         let top = TABLE_WIDGET_HEIGHT / 2
 
-        return sources.joinedTables.map((table, i) => {
+        return sources.joinedTables.map((joinedTable, i) => {
             const vStep = (i === 0 ? (TABLE_WIDGET_HEIGHT / 2) : (i === 1 ? (TABLE_WIDGET_HEIGHT/2 + VERTICAL_SPACE) : (TABLE_WIDGET_HEIGHT + VERTICAL_SPACE)))
-            const isJoinedTableValid = validateJoinedTable(table)
+            const isJoinedTableValid = validateJoinedTable(joinedTable)
             const res = (i === 0) ? (
                 <LineHorizontal
-                    key={`${table.name}-horizontal`}
+                    key={joinedTable.name}
                     className={isJoinedTableValid ? styles.valid : styles.invalid}
                     y={top}
                     x1={TABLE_WIDGET_WIDTH}
                     x2={LEFT_PANE_WIDTH}
-                    onClick={() => handleLineClick(table)}
+                    onClick={() => handleLineClick(joinedTable)}
                 />
             ) : (
-                <>
+                <div key={joinedTable.name}>
                     <LineVertical
-                        key={`${table.name}-vertical`}
                         className={isJoinedTableValid ? styles.valid : styles.invalid}
                         x={TABLE_WIDGET_WIDTH / 2}
                         y1={top}
                         y2={top + vStep}
                     />
                     <LineHorizontal
-                        key={`${table.name}-horizontal`}
                         className={isJoinedTableValid ? styles.valid : styles.invalid}
                         y={top + vStep}
                         x1={TABLE_WIDGET_WIDTH / 2}
                         x2={LEFT_PANE_WIDTH}
-                        onClick={() => handleLineClick(table)}
+                        onClick={() => handleLineClick(joinedTable)}
                     />
-                </>
+                </div>
             )
 
             top += vStep
@@ -184,6 +187,7 @@ export default function SourcesConstructor({sources, onChange}: SourcesConstruct
                             <TableWidget
                                 style={{width: TABLE_WIDGET_WIDTH, height: TABLE_WIDGET_HEIGHT}}
                                 table={sources.mainTable}
+                                canEdit={canEdit}
                                 onRemove={clearSources}
                             />
                         )}
@@ -199,10 +203,11 @@ export default function SourcesConstructor({sources, onChange}: SourcesConstruct
             </div>
 
             {sources.mainTable && currentJoinedTable && (
-                <JoinedTableModal
+                <JoinedTableFormModal
                     mainTable={sources.mainTable}
                     joinedTable={currentJoinedTable}
                     open={openModal}
+                    canEdit={canEdit}
                     onChange={handleJoinedTableChange}
                     onClose={() => setOpenModal(false)}
                 />

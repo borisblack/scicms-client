@@ -1,5 +1,6 @@
+import {useEffect} from 'react'
 import {useTranslation} from 'react-i18next'
-import {Button, Col, Form, Modal, Row, Select, Space, Typography} from 'antd'
+import {Button, Col, Form, Modal, Row, Select, Typography} from 'antd'
 import {DeleteOutlined, PlusCircleOutlined, TableOutlined} from '@ant-design/icons'
 
 import {JoinedTable, JoinType, QueryOp, Table} from 'src/types/bi'
@@ -9,6 +10,7 @@ interface JoinedTableModalProps {
     mainTable: Table
     joinedTable: JoinedTable
     open: boolean
+    canEdit: boolean
     onChange: (joinedTable: Required<JoinedTable>) => void
     onClose: () => void
 }
@@ -17,9 +19,13 @@ interface JoinsFormValues extends Required<JoinedTable>{}
 
 const {Text} = Typography
 
-export default function JoinedTableModal({mainTable, joinedTable, open, onChange, onClose}: JoinedTableModalProps) {
+export default function JoinedTableFormModal({mainTable, joinedTable, open, canEdit, onChange, onClose}: JoinedTableModalProps) {
     const {t} = useTranslation()
     const [form] = Form.useForm()
+
+    useEffect(() => {
+        form.resetFields()
+    }, [mainTable, joinedTable])
 
     function handleFormFinish(values: JoinsFormValues) {
         onChange({...joinedTable, ...values})
@@ -27,44 +33,48 @@ export default function JoinedTableModal({mainTable, joinedTable, open, onChange
     }
 
     return (
-        <Modal
-            title={t('Join')}
-            open={open}
-            destroyOnClose
-            width={720}
-            onOk={() => form.submit()}
-            onCancel={onClose}
+        <Form
+            form={form}
+            layout="vertical"
+            size="small"
+            disabled={!canEdit}
+            initialValues={joinedTable}
+            onFinish={handleFormFinish}
         >
-            <Form
-                form={form}
-                layout="vertical"
-                size="small"
-                initialValues={joinedTable}
-                onFinish={handleFormFinish}
+            <Modal
+                title={t('Join')}
+                open={open}
+                // destroyOnClose
+                width={800}
+                onOk={() => form.submit()}
+                onCancel={onClose}
             >
                 <Row gutter={10}>
                     <Col span={9}>
-                        <Space className={styles.tableHeader}>
+                        <span className={styles.tableHeader} title={mainTable.name}>
                             <TableOutlined className="green"/>
-                            <Text strong>{mainTable.name}</Text>
-                        </Space>
+                            &nbsp;&nbsp;
+                            <Text strong ellipsis>{mainTable.name}</Text>
+                        </span>
                     </Col>
                     <Col span={4}>
                         <Form.Item
                             name={['joinType']}
+                            className={styles.joinTypeFormItem}
                             rules={[{required: true, message: t('Required field')}]}
                         >
                             <Select
                                 placeholder={t('Join type')}
-                                options={Object.values(JoinType).map(jt => ({key: jt, value: jt, label: jt}))}
+                                options={Object.values(JoinType).map(jt => ({value: jt, label: jt}))}
                             />
                         </Form.Item>
                     </Col>
                     <Col span={9} style={{textAlign: 'right'}}>
-                        <Space className={styles.tableHeader}>
+                        <span className={styles.tableHeader} title={joinedTable.name}>
                             <TableOutlined className="green"/>
-                            <Text strong>{joinedTable.name}</Text>
-                        </Space>
+                            &nbsp;&nbsp;
+                            <Text strong ellipsis>{joinedTable.name}</Text>
+                        </span>
                     </Col>
                 </Row>
 
@@ -98,7 +108,7 @@ export default function JoinedTableModal({mainTable, joinedTable, open, onChange
                                             >
                                                 <Select
                                                     placeholder={t('Main table field')}
-                                                    options={Object.keys(mainTable.columns).map(col => ({key: col, value: col, label: col}))}
+                                                    options={Object.keys(mainTable.columns).map(col => ({value: col, label: col}))}
                                                 />
                                             </Form.Item>
                                         </Col>
@@ -111,7 +121,7 @@ export default function JoinedTableModal({mainTable, joinedTable, open, onChange
                                                 <Select
                                                     disabled
                                                     placeholder={t('Operator')}
-                                                    options={[{key: QueryOp.$eq, value: QueryOp.$eq, label: '='}]}
+                                                    options={[{value: QueryOp.$eq, label: '='}]}
                                                 />
                                             </Form.Item>
                                         </Col>
@@ -139,7 +149,7 @@ export default function JoinedTableModal({mainTable, joinedTable, open, onChange
                                             >
                                                 <Select
                                                     placeholder={t('Joined table field')}
-                                                    options={Object.keys(joinedTable.columns).map(col => ({key: col, value: col, label: col}))}
+                                                    options={Object.keys(joinedTable.columns).map(col => ({value: col, label: col}))}
                                                 />
                                             </Form.Item>
                                         </Col>
@@ -169,7 +179,7 @@ export default function JoinedTableModal({mainTable, joinedTable, open, onChange
                         </>
                     )}
                 </Form.List>
-            </Form>
-        </Modal>
+            </Modal>
+        </Form>
     )
 }

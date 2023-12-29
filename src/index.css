@@ -99,3 +99,9 @@ form.ant-form-horizontal .ant-form-item-label {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.text-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

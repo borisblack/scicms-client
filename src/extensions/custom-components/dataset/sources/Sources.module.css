@@ -21,13 +21,19 @@
     border: 1px solid #cccccc;
     border-radius: 4px;
     background: #ededed;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .tableHeader {
-    padding: 0 12px;
+    padding: 0 12px 3px 12px;
     border: 1px solid #cccccc;
     border-radius: 4px;
     background: #ededed;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .tableWidget_deleteBtn {
@@ -81,4 +87,8 @@
 
 .lineVertical.valid {
     border-left: 2px solid #28a745;
+}
+
+.joinTypeFormItem {
+    margin-top: -4px;
 }

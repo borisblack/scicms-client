@@ -26,9 +26,9 @@ export default function Columns({data: dataWrapper, buffer, onBufferChange}: Cus
     useEffect(() => {
         setNamedColumns(getCurrentNamedColumns())
         onBufferChange({
-            spec
+            spec: data?.spec ?? {}
         })
-    }, [spec])
+    }, [data])
 
     useEffect(() => {
         setVersion(prevVersion => prevVersion + 1)
