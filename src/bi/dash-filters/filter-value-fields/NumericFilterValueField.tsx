@@ -26,7 +26,7 @@ const NumericFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, c
                 name={[fieldName, 'extra', 'left']}
                 rules={[{required: true, message: ''}]}
             >
-                <InputNumber placeholder={t('Left value')}/>
+                <InputNumber bordered={false} placeholder={t('Left value')}/>
             </FormItem>
 
             <FormItem
@@ -34,7 +34,7 @@ const NumericFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, c
                 name={[fieldName, 'extra', 'right']}
                 rules={[{required: true, message: ''}]}
             >
-                <InputNumber placeholder={t('Right value')}/>
+                <InputNumber bordered={false} placeholder={t('Right value')}/>
             </FormItem>
         </Space>
     )
@@ -58,7 +58,7 @@ const NumericFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, c
             name={[fieldName, 'value']}
             rules={[{required: true, message: ''}]}
         >
-            <InputNumber placeholder={t('Value')}/>
+            <InputNumber bordered={false} placeholder={t('Value')}/>
         </FormItem>
     )
 
