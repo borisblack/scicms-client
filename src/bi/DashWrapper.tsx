@@ -33,7 +33,6 @@ import {DatasetFiltersInput, IDash, QueryBlock} from '../types/bi'
 import styles from './DashWrapper.module.css'
 import './DashWrapper.css'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
-import DashForm from './DashForm'
 
 const PAGE_HEADER_HEIGHT = 80
 
@@ -41,8 +40,6 @@ const extractSessionData = () => JSON.parse(localStorage.getItem('sessionData') 
 
 function DashWrapper(props: DashWrapperProps) {
     const {
-        datasetMap,
-        dashboards,
         dataset,
         dashboard,
         extra,
@@ -50,7 +47,7 @@ function DashWrapper(props: DashWrapperProps) {
         readOnly,
         canEdit,
         onFullScreenChange,
-        onChange,
+        onDashFormModalOpen,
         onDelete,
     } = props
     const dashHandler: Dash | undefined = useMemo(() => getDash(dash.type), [dash.type])
@@ -66,8 +63,6 @@ function DashWrapper(props: DashWrapperProps) {
     const [fullScreen, setFullScreen] = useState<boolean>(false)
     const [loading, setLoading] = useState<boolean>(false)
     const [fetchError, setFetchError] = useState<string | null>(null)
-    const [isDashModalVisible, setDashModalVisible] = useState(false)
-    const [dashForm] = Form.useForm()
     const [isFiltersModalVisible, setFiltersModalVisible] = useState(false)
     const sessionFilters = useMemo(() => extract(extractSessionData(), ['dashboards', dashboard.id, 'dashes', dash.id, 'filters']), [dash.id, dashboard.id])
     const [filters, setFilters] = useState<QueryBlock>(sessionFilters ?? dash.defaultFilters ?? generateQueryBlock())
@@ -170,7 +165,7 @@ function DashWrapper(props: DashWrapperProps) {
                 key: 'edit',
                 label: <Space><EditOutlined/>{t('Edit')}</Space>,
                 // disabled: !canEdit,
-                onClick: () => setDashModalVisible(true)
+                onClick: onDashFormModalOpen
             })
             menuItems.push({
                 key: 'delete',
@@ -198,19 +193,9 @@ function DashWrapper(props: DashWrapperProps) {
         setFiltersModalVisible(false)
     }
 
-    function handleDashFormFinish(updatedDash: IDash) {
-        onChange(dash)
-        setDashModalVisible(false)
-    }
-
     function cancelFiltersEdit() {
         filtersForm.resetFields()
         setFiltersModalVisible(false)
-    }
-
-    function cancelDashEdit() {
-        dashForm.resetFields()
-        setDashModalVisible(false)
     }
 
     const title = renderTitle()
@@ -326,31 +311,6 @@ function DashWrapper(props: DashWrapperProps) {
                     />
                 </Drawer>
             )}
-
-            <Drawer
-                className="no-drag"
-                title={dash.name}
-                open={isDashModalVisible}
-                destroyOnClose
-                width="60%"
-                // onOk={() => dashForm.submit()}
-                onClose={() => setDashModalVisible(false)}
-                extra={
-                    <Space>
-                        <Button onClick={cancelDashEdit}>{t('Cancel')}</Button>
-                        <Button disabled={!canEdit} onClick={() => dashForm.submit()} type="primary">OK</Button>
-                    </Space>
-                }
-            >
-                <DashForm
-                    form={dashForm}
-                    dash={dash}
-                    canEdit={canEdit}
-                    datasets={datasetMap}
-                    dashboards={dashboards}
-                    onFormFinish={handleDashFormFinish}
-                />
-            </Drawer>
         </>
     )
 }

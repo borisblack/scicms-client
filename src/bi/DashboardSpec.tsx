@@ -9,16 +9,16 @@ import 'react-resizable/css/styles.css'
 
 import {CustomComponentRenderContext} from '../extensions/custom-components'
 import {DASHBOARD_ITEM_NAME} from '../config/constants'
-import {Dashboard, DashboardExtra, Dataset, IDash, IDashboardSpec} from '../types/bi'
+import {Dashboard, DashboardExtra, IDash, IDashboardSpec} from '../types/bi'
 import {generateQueryBlock, printSingleQueryFilter} from '../util/bi'
 import biConfig from '../config/bi'
-import * as DatasetService from '../services/dataset'
 import DashWrapper from './DashWrapper'
 import styles from './DashboardSpec.module.css'
 import './DashboardSpec.css'
-import * as DashboardService from '../services/dashboard'
 import {useAcl} from '../util/hooks'
 import {generateKey} from '../util/mdi'
+import DashModal from './DashModal'
+import {useBI} from './hooks'
 
 interface DashboardSpecProps extends CustomComponentRenderContext {
     extra?: DashboardExtra
@@ -39,25 +39,20 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
     const uniqueKey = generateKey(dataWrapper)
     const {t} = useTranslation()
     const acl = useAcl(item, data)
+    const {datasets} = useBI({withDatasets: true})
+    const datasetMap = useMemo(() => _.mapKeys(datasets, ds => ds.name), [datasets])
     const spec: IDashboardSpec = buffer.spec ?? data?.spec ?? initialSpec
-    const [datasets, setDatasets] = useState<Record<string, Dataset>>({})
-    const [dashboards, setDashboards] = useState<Dashboard[]>([])
     const currentDashboard = {...data, spec} as Dashboard
     const allDashes = spec.dashes?.map(dash => ({...dash, id: dash.id ?? uuidv4()})) ?? []
     const [activeDash, setActiveDash] = useState<IDash | null>(null)
     const [isFullScreen, setFullScreen] = useState<boolean>(false)
+    const [openDashModal, setOpenDashModal] = useState(false)
 
     useEffect(() => {
-        DatasetService.fetchDatasets()
-            .then(datasetList => {
-                setDatasets(_.mapKeys(datasetList, ds => ds.name))
-            })
-
-        DashboardService.fetchDashboards()
-            .then(dashboards => {
-                setDashboards(_.sortBy(dashboards, db => db.name))
-            })
-    }, [])
+        onBufferChange({
+            spec: data?.spec ?? {}
+        })
+    }, [data])
 
     function handleDashAdd() {
         const newDash = {
@@ -138,12 +133,12 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
         const newSpec = {
             dashes: allDashes.map(dash => dash.id === updatedDash.id ? updatedDash : dash)
         }
-
         onBufferChange({spec: newSpec})
+        setActiveDash(updatedDash)
     }
 
     function renderDash(dash: IDash) {
-        const dataset = datasets[dash.dataset ?? '']
+        const dataset = datasetMap[dash.dataset ?? '']
 
         return (
             <div
@@ -153,8 +148,6 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
             >
                 <DashWrapper
                     pageKey={uniqueKey}
-                    datasetMap={datasets}
-                    dashboards={dashboards}
                     dataset={dataset}
                     dashboard={currentDashboard}
                     extra={extra}
@@ -162,7 +155,7 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
                     readOnly={readOnly ?? false}
                     canEdit={acl.canWrite}
                     onFullScreenChange={setFullScreen}
-                    onChange={handleDashChange}
+                    onDashFormModalOpen={() => setOpenDashModal(true)}
                     onDelete={() => removeDash(dash.id)}
                 />
             </div>
@@ -208,6 +201,17 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
                         .map(dash => renderDash(dash))
                     }
                 </ReactGridLayout>
+            )}
+
+            {activeDash && (
+                <DashModal
+                    dash={activeDash}
+                    datasetMap={datasetMap}
+                    open={openDashModal}
+                    canEdit={acl.canWrite}
+                    onChange={handleDashChange}
+                    onClose={() => setOpenDashModal(false)}
+                />
             )}
         </>
     )

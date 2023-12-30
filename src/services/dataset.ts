@@ -62,7 +62,7 @@ export async function loadData<T>(datasetName: string, input: DatasetInput<T>): 
     const query = qs.stringify(input)
 
     try {
-        const res = await axios.get(`/api/dataset/${datasetName}?${query}`)
+        const res = await axios.get(`/api/dataset/${datasetName}${query ? `?${query}` : ''}`)
         return res.data
     } catch (e: any) {
         throw new Error(extractAxiosErrorMessage(e))

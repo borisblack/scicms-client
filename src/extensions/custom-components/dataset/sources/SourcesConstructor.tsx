@@ -7,7 +7,7 @@ import TableWidget from './TableWidget'
 import LineHorizontal from './LineHorizontal'
 import {useEffect, useState} from 'react'
 import LineVertical from './LineVertical'
-import JoinedTableFormModal from './JoinedTableFormModal'
+import JoinedTableModal from './JoinedTableModal'
 
 interface SourcesConstructorProps {
     sources: DatasetSources
@@ -203,7 +203,7 @@ export default function SourcesConstructor({sources, canEdit, onChange}: Sources
             </div>
 
             {sources.mainTable && currentJoinedTable && (
-                <JoinedTableFormModal
+                <JoinedTableModal
                     mainTable={sources.mainTable}
                     joinedTable={currentJoinedTable}
                     open={openModal}

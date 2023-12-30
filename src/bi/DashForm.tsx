@@ -1,5 +1,6 @@
+import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import {
-    Button,
     Checkbox,
     Col,
     Collapse,
@@ -14,26 +15,22 @@ import {
     Tooltip,
     Typography
 } from 'antd'
-import {AggregateType, Column, Dashboard, Dataset, IDash, QueryBlock} from '../types/bi'
-import {useTranslation} from 'react-i18next'
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
-import {fromFormQueryBlock, generateQueryBlock, getCustomFunctionsInfo, toFormQueryBlock} from '../util/bi'
 import {CheckboxChangeEvent} from 'antd/es/checkbox'
-import DashFilters from './dash-filters/DashFilters'
-import styles from './DashboardSpec.module.css'
-import {Dash, getDash, getDashIds} from '../extensions/dashes'
-import biConfig from '../config/bi'
 import {ArrowDownOutlined, ArrowUpOutlined, FolderOpenOutlined, QuestionCircleOutlined} from '@ant-design/icons'
 import {DefaultOptionType} from 'rc-select/lib/Select'
-import {useBI} from './hooks'
 
-interface Props {
-    form: FormInstance
+import {AggregateType, Column, Dataset, IDash, QueryBlock} from '../types/bi'
+import {generateQueryBlock, getCustomFunctionsInfo, toFormQueryBlock} from '../util/bi'
+import DashFilters from './dash-filters/DashFilters'
+import {Dash, getDash, getDashIds} from '../extensions/dashes'
+import biConfig from '../config/bi'
+import {useBI} from './hooks'
+import styles from './DashboardSpec.module.css'
+
+interface DashFormProps {
     dash: IDash
     canEdit: boolean
-    datasets: Record<string, Dataset>
-    dashboards: Dashboard[]
-    onFormFinish: (dash: IDash) => void
+    datasetMap: Record<string, Dataset>
 }
 
 export interface DashFormValues {
@@ -58,26 +55,10 @@ const {Option: SelectOption} = Select
 const {Link} = Typography
 const dashTypes = getDashIds()
 
-const mapDashValues = (dash: IDash, values: DashFormValues, dataset?: Dataset): IDash => ({
-    ...dash,
-    name: values.name,
-    dataset: values.dataset,
-    type: values.type,
-    unit: values.unit,
-    isAggregate: values.isAggregate,
-    aggregateType: values.aggregateType,
-    aggregateField: values.aggregateField,
-    groupField: values.groupField,
-    sortField: values.sortField,
-    optValues: values.optValues,
-    relatedDashboardId: values.relatedDashboardId,
-    refreshIntervalSeconds: values.refreshIntervalSeconds,
-    defaultFilters: dataset == null ? generateQueryBlock() : fromFormQueryBlock(dataset, values.defaultFilters)
-})
-
-export default function DashForm({form, dash, canEdit, datasets, dashboards, onFormFinish}: Props) {
+export default function DashForm({dash, canEdit, datasetMap}: DashFormProps) {
+    const form = Form.useFormInstance()
     const {t} = useTranslation()
-    const {openDataset} = useBI()
+    const {dashboards, openDataset} = useBI({withDashboards: true})
     const [dataset, setDataset] = useState<Dataset | undefined>()
     const datasetColumns: {[name: string]: Column} = useMemo(() => dataset?.spec?.columns ?? {}, [dataset?.spec?.columns])
     const allColNames: string[] = useMemo(() => Object.keys(datasetColumns).sort(), [datasetColumns])
@@ -99,8 +80,12 @@ export default function DashForm({form, dash, canEdit, datasets, dashboards, onF
     const dashHandler: Dash | undefined = useMemo(() => getDash(dashType), [dashType])
 
     useEffect(() => {
-        setDataset(dash.dataset ? datasets[dash.dataset] : undefined)
-    }, [dash.dataset, datasets])
+        form.resetFields()
+    }, [dash])
+
+    useEffect(() => {
+        setDataset(dash.dataset ? datasetMap[dash.dataset] : undefined)
+    }, [dash.dataset, datasetMap])
 
     const resetAggregateFormFields = useCallback(() => {
         form.setFieldValue('aggregateType', undefined)
@@ -117,8 +102,8 @@ export default function DashForm({form, dash, canEdit, datasets, dashboards, onF
         resetAggregateFormFields()
         resetSortAndOptValuesFormFields()
         form.setFieldValue('defaultFilters', generateQueryBlock())
-        setDataset(datasets[newDataset])
-    }, [datasets, form, resetAggregateFormFields, resetSortAndOptValuesFormFields])
+        setDataset(datasetMap[newDataset])
+    }, [datasetMap, form, resetAggregateFormFields, resetSortAndOptValuesFormFields])
 
     const handleAggregateChange = useCallback((evt: CheckboxChangeEvent) => {
         resetAggregateFormFields()
@@ -174,13 +159,7 @@ export default function DashForm({form, dash, canEdit, datasets, dashboards, onF
     }
 
     return (
-        <Form
-            form={form}
-            size="small"
-            layout="vertical"
-            disabled={!canEdit}
-            onFinish={dashFormValues => onFormFinish(mapDashValues(dash, dashFormValues, dataset))}
-        >
+        <>
             <Row gutter={10} style={{marginBottom: 10}}>
                 <FormItem name="id" hidden initialValue={dash.id}>
                     <Input/>
@@ -206,7 +185,7 @@ export default function DashForm({form, dash, canEdit, datasets, dashboards, onF
                                 {t('Dataset')}
                                 {dataset && (
                                     <Tooltip key="open" title={t('Open')}>
-                                        <Link onClick={() => openDataset(datasets[dataset.name].id)}>
+                                        <Link onClick={() => openDataset(datasetMap[dataset.name].id)}>
                                             <FolderOpenOutlined/>
                                         </Link>
                                     </Tooltip>
@@ -217,7 +196,7 @@ export default function DashForm({form, dash, canEdit, datasets, dashboards, onF
                         rules={[{required: true, message: t('Required field')}]}
                     >
                         <Select onSelect={handleDatasetChange}>
-                            {Object.keys(datasets).sort().map(d => <SelectOption key={d} value={d}>{d}</SelectOption>)}
+                            {Object.keys(datasetMap).sort().map(d => <SelectOption key={d} value={d}>{d}</SelectOption>)}
                         </Select>
                     </FormItem>
                 </Col>
@@ -250,7 +229,9 @@ export default function DashForm({form, dash, canEdit, datasets, dashboards, onF
                                     <Checkbox
                                         checked={isAggregate}
                                         onChange={handleAggregateChange}
-                                        style={{marginTop: 24}}>{t('Aggregate')}
+                                        style={{marginTop: 24}}
+                                    >
+                                        {t('Aggregate')}
                                     </Checkbox>
                                 </FormItem>
                             </Col>
@@ -397,6 +378,6 @@ export default function DashForm({form, dash, canEdit, datasets, dashboards, onF
                     </FormItem>
                 </Col>
             </Row>
-        </Form>
+        </>
     )
 }
