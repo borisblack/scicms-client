@@ -22,6 +22,7 @@ export default function Columns({data: dataWrapper, buffer, onBufferChange}: Cus
     const [namedColumns, setNamedColumns] = useState(getCurrentNamedColumns())
     const [filteredData, setFilteredData] = useState<DataWithPagination<NamedColumn>>(getInitialData())
     const [version, setVersion] = useState<number>(0)
+    const isNew = !data?.id
 
     useEffect(() => {
         setNamedColumns(getCurrentNamedColumns())
@@ -33,6 +34,9 @@ export default function Columns({data: dataWrapper, buffer, onBufferChange}: Cus
     useEffect(() => {
         setVersion(prevVersion => prevVersion + 1)
     }, [namedColumns])
+
+    if (isNew)
+        return null
 
     function getCurrentNamedColumns(): NamedColumn[] {
         const columns = spec.columns ?? {}

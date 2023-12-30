@@ -39,6 +39,7 @@ export default function Sources({data: dataWrapper, buffer, onBufferChange}: Cus
     const [tables, setTables] = useState<Table[]>([])
     const [q, setQ] = useState<string>()
     const [pagination, setPagination] = useState<IPagination>(defaultPagination)
+    const isNew = !data?.id
 
     useEffect(() => {
         onBufferChange({
@@ -60,6 +61,9 @@ export default function Sources({data: dataWrapper, buffer, onBufferChange}: Cus
             })
             .finally(() => setLoading(false))
     }, [datasource?.data?.name, q, pagination.page, pagination.pageSize, pagination.total])
+
+    if (isNew)
+        return null
 
     const handleFilter = _.debounce(async (e: ChangeEvent<HTMLInputElement>) => {
         setQ(e.target.value)

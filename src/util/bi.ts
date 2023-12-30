@@ -11,6 +11,7 @@ import {
     Column,
     Dataset,
     DatasetFiltersInput,
+    IDash,
     LogicalOp,
     PositiveLogicalOp,
     QueryBlock,
@@ -23,6 +24,7 @@ import {
 import i18n from '../i18n'
 import appConfig from '../config'
 import biConfig from '../config/bi'
+import {assign, extract, extractSessionData} from '.'
 
 const {dash: dashConfig, dateTime: dateTimeConfig} = biConfig
 const dateTimeRegExp = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.000)?(Z|([-+]00:00))?$/
@@ -555,4 +557,20 @@ function guessType(value: string | number | boolean): FieldType {
     }
 
     return FieldType.string
+}
+
+export function extractSessionFilters(dashboardId: string, dashId: string) {
+    const sessionData = extractSessionData()
+    return extract(sessionData, ['dashboards', dashboardId, 'dashes', dashId, 'filters'])
+}
+
+export function saveSessionFilters(dashboardId: string, dashId: string, filters: QueryBlock) {
+    const newSessionData = extractSessionData()
+    assign(newSessionData, ['dashboards', dashboardId, 'dashes', dashId, 'filters'], filters)
+    localStorage.setItem('sessionData', JSON.stringify(newSessionData))
+}
+
+export function getActualFilters(dashboardId: string, dash: IDash) {
+    const sessionFilters = extractSessionFilters(dashboardId, dash.id)
+    return sessionFilters ?? dash.defaultFilters ?? generateQueryBlock()
 }

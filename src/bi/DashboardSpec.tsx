@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import {memo, useEffect, useMemo, useState} from 'react'
+import {memo, useEffect, useMemo, useRef, useState} from 'react'
 import RGL, {Layout, WidthProvider} from 'react-grid-layout'
 import {Alert, Button} from 'antd'
 import {useTranslation} from 'react-i18next'
@@ -39,20 +39,23 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
     const uniqueKey = generateKey(dataWrapper)
     const {t} = useTranslation()
     const acl = useAcl(item, data)
-    const {datasets} = useBI({withDatasets: true})
+    const {datasets, dashboards} = useBI({withDatasets: true, withDashboards: true})
     const datasetMap = useMemo(() => _.mapKeys(datasets, ds => ds.name), [datasets])
     const spec: IDashboardSpec = buffer.spec ?? data?.spec ?? initialSpec
-    const currentDashboard = {...data, spec} as Dashboard
+    const selfDashboard = {...data, spec} as Dashboard
     const allDashes = spec.dashes?.map(dash => ({...dash, id: dash.id ?? uuidv4()})) ?? []
-    const [activeDash, setActiveDash] = useState<IDash | null>(null)
+    const activeDash = useRef<IDash>()
     const [isFullScreen, setFullScreen] = useState<boolean>(false)
-    const [openDashModal, setOpenDashModal] = useState(false)
+    const isNew = !selfDashboard.id
 
     useEffect(() => {
         onBufferChange({
             spec: data?.spec ?? {}
         })
     }, [data])
+
+    if (isNew)
+        return null
 
     function handleDashAdd() {
         const newDash = {
@@ -111,13 +114,13 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
     }
 
     function selectDash(dash: IDash) {
-        setActiveDash(dash)
+        if (dash.id !== activeDash.current?.id)
+            activeDash.current = dash
     }
 
     function removeDash(id: string) {
-        if (id === activeDash?.id) {
-            setActiveDash(null)
-        }
+        if (id === activeDash.current?.id)
+            activeDash.current =undefined
 
         const newSpec = {
             dashes: allDashes.filter(it => it.id !== id)
@@ -130,11 +133,11 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
         if (!acl.canWrite)
             return
 
+        activeDash.current = updatedDash
         const newSpec = {
             dashes: allDashes.map(dash => dash.id === updatedDash.id ? updatedDash : dash)
         }
         onBufferChange({spec: newSpec})
-        setActiveDash(updatedDash)
     }
 
     function renderDash(dash: IDash) {
@@ -143,19 +146,21 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
         return (
             <div
                 key={dash.name}
-                className={`${styles.dashWrapper} ${activeDash?.name === dash.name ? styles.activeDash : ''} ${acl.canWrite ? styles.editable : ''}`}
+                className={`${styles.dashWrapper} ${activeDash.current?.name === dash.name ? styles.activeDash : ''} ${acl.canWrite ? styles.editable : ''}`}
                 onClick={() => selectDash(dash)}
             >
                 <DashWrapper
                     pageKey={uniqueKey}
+                    datasetMap={datasetMap}
+                    dashboards={dashboards}
                     dataset={dataset}
-                    dashboard={currentDashboard}
-                    extra={extra}
+                    dashboard={selfDashboard}
                     dash={dash}
+                    extra={extra}
                     readOnly={readOnly ?? false}
                     canEdit={acl.canWrite}
                     onFullScreenChange={setFullScreen}
-                    onDashModalOpen={() => setOpenDashModal(true)}
+                    onDashChange={handleDashChange}
                     onDelete={() => removeDash(dash.id)}
                 />
             </div>
@@ -163,7 +168,7 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
     }
 
     const layout: Layout[] = allDashes.map(it => {
-        const isItemEditable = activeDash && it.id === activeDash.id && isFullScreen
+        const isItemEditable = activeDash.current && it.id === activeDash.current?.id && isFullScreen
         return {
             i: it.name,
             x: it.x,
@@ -171,7 +176,7 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
             w: it.w,
             h: it.h,
             isDraggable: isItemEditable ? false : undefined,
-            isResizable: isItemEditable ? false : undefined,
+            isResizable: isItemEditable ? false : undefined
         }
     })
 
@@ -184,7 +189,7 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
 
             {!readOnly && <Button type="dashed" style={{marginBottom: 12}} disabled={!isGridEditable} onClick={handleDashAdd}>{t('Add Dash')}</Button>}
 
-            {!_.isEmpty(datasets) && allDashes.length > 0 && (
+            {datasets.length >= 0 && allDashes.length > 0 && (
                 <ReactGridLayout
                     className={styles.layout}
                     layout={layout}
@@ -201,17 +206,6 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
                         .map(dash => renderDash(dash))
                     }
                 </ReactGridLayout>
-            )}
-
-            {activeDash && (
-                <DashModal
-                    dash={activeDash}
-                    datasetMap={datasetMap}
-                    open={openDashModal}
-                    canEdit={acl.canWrite}
-                    onChange={handleDashChange}
-                    onClose={() => setOpenDashModal(false)}
-                />
             )}
         </>
     )

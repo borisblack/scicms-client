@@ -5,6 +5,7 @@ import {DeleteOutlined, PlusCircleOutlined, TableOutlined} from '@ant-design/ico
 
 import {JoinedTable, JoinType, QueryOp, Table} from 'src/types/bi'
 import styles from './Sources.module.css'
+import {usePrevious} from '../../../../util/hooks'
 
 interface JoinedTableFormProps {
     mainTable: Table
@@ -13,12 +14,16 @@ interface JoinedTableFormProps {
 
 const {Text} = Typography
 
-export default function JoinedTableForm({mainTable, joinedTable}: JoinedTableFormProps) {
+export default function JoinedTableForm(props: JoinedTableFormProps) {
+    const {mainTable, joinedTable} = props
     const form = Form.useFormInstance()
     const {t} = useTranslation()
+    const prevProps = usePrevious(props)
 
     useEffect(() => {
-        form.resetFields()
+        const {mainTable: prevMainTable, joinedTable: prevJoinTable} = prevProps ?? {}
+        if (mainTable.name !== prevMainTable?.name || joinedTable.name !== prevJoinTable?.name)
+            form.resetFields()
     }, [mainTable, joinedTable])
 
     return (

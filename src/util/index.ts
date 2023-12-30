@@ -75,3 +75,5 @@ export function stringToHash(str: string): number {
 
     return hash
 }
+
+export const extractSessionData = () => JSON.parse(localStorage.getItem('sessionData') ?? '{}')

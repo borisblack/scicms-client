@@ -5,7 +5,6 @@ import {
     Col,
     Collapse,
     Form,
-    FormInstance,
     Input,
     InputNumber,
     Popover,
@@ -19,16 +18,18 @@ import {CheckboxChangeEvent} from 'antd/es/checkbox'
 import {ArrowDownOutlined, ArrowUpOutlined, FolderOpenOutlined, QuestionCircleOutlined} from '@ant-design/icons'
 import {DefaultOptionType} from 'rc-select/lib/Select'
 
-import {AggregateType, Column, Dataset, IDash, QueryBlock} from '../types/bi'
+import {AggregateType, Column, Dashboard, Dataset, IDash, QueryBlock} from '../types/bi'
 import {generateQueryBlock, getCustomFunctionsInfo, toFormQueryBlock} from '../util/bi'
 import DashFilters from './dash-filters/DashFilters'
 import {Dash, getDash, getDashIds} from '../extensions/dashes'
 import biConfig from '../config/bi'
 import {useBI} from './hooks'
 import styles from './DashboardSpec.module.css'
+import {usePrevious} from '../util/hooks'
 
 interface DashFormProps {
     dash: IDash
+    dashboards: Dashboard[]
     canEdit: boolean
     datasetMap: Record<string, Dataset>
 }
@@ -55,10 +56,11 @@ const {Option: SelectOption} = Select
 const {Link} = Typography
 const dashTypes = getDashIds()
 
-export default function DashForm({dash, canEdit, datasetMap}: DashFormProps) {
+export default function DashForm({dash, dashboards, canEdit, datasetMap}: DashFormProps) {
     const form = Form.useFormInstance()
     const {t} = useTranslation()
-    const {dashboards, openDataset} = useBI({withDashboards: true})
+    // const prevDash = usePrevious(dash)
+    const {openDataset} = useBI({withDashboards: true})
     const [dataset, setDataset] = useState<Dataset | undefined>()
     const datasetColumns: {[name: string]: Column} = useMemo(() => dataset?.spec?.columns ?? {}, [dataset?.spec?.columns])
     const allColNames: string[] = useMemo(() => Object.keys(datasetColumns).sort(), [datasetColumns])
@@ -79,9 +81,11 @@ export default function DashForm({dash, canEdit, datasetMap}: DashFormProps) {
     const [dashType, setDashType] = useState<string>(dash.type)
     const dashHandler: Dash | undefined = useMemo(() => getDash(dashType), [dashType])
 
-    useEffect(() => {
-        form.resetFields()
-    }, [dash])
+    // Uncomment when using one form for multiple items
+    // useEffect(() => {
+    //     if (prevDash?.id !== dash.id)
+    //         form.resetFields()
+    // }, [dash])
 
     useEffect(() => {
         setDataset(dash.dataset ? datasetMap[dash.dataset] : undefined)
@@ -353,7 +357,6 @@ export default function DashForm({dash, canEdit, datasetMap}: DashFormProps) {
                     ),
                     children: (dataset && (
                         <DashFilters
-                            form={form}
                             namePrefix={['defaultFilters']}
                             dataset={dataset}
                             initialBlock={toFormQueryBlock(dataset, dash.defaultFilters)}

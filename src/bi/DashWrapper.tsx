@@ -1,5 +1,6 @@
+import _, {isEqual} from 'lodash'
 import React, {memo, useEffect, useMemo, useState} from 'react'
-import {Button, Drawer, Dropdown, Empty, Form, notification, Space, Spin, Tooltip} from 'antd'
+import {Button, Dropdown, Empty, notification, Space, Spin} from 'antd'
 import {PageHeader} from '@ant-design/pro-layout'
 import {useTranslation} from 'react-i18next'
 import {DashWrapperProps} from './index'
@@ -10,7 +11,6 @@ import {
     FilterOutlined,
     FullscreenExitOutlined,
     FullscreenOutlined,
-    QuestionCircleOutlined,
     ReloadOutlined,
     SettingOutlined,
     SyncOutlined
@@ -18,36 +18,35 @@ import {
 import FullScreen from '../components/fullscreen/FullScreen'
 import * as DatasetService from '../services/dataset'
 import {
-    fromFormQueryBlock,
-    generateQueryBlock,
-    getCustomFunctionsInfo,
+    getActualFilters,
     printQueryBlock,
     toDatasetFiltersInput,
     toSingleDatasetFiltersInput
 } from '../util/bi'
 import {Dash, getDash} from '../extensions/dashes'
 import biConfig from '../config/bi'
-import FiltersFom, {FiltersFormValues} from './FiltersForm'
-import {assign, extract} from '../util'
-import {DatasetFiltersInput, IDash, QueryBlock} from '../types/bi'
+import {DatasetFiltersInput, QueryBlock} from '../types/bi'
+import {ItemType} from 'antd/es/menu/hooks/useItems'
+import FiltersModal from './FiltersModal'
 import styles from './DashWrapper.module.css'
 import './DashWrapper.css'
-import {ItemType} from 'antd/es/menu/hooks/useItems'
+import DashModal from './DashModal'
+import {usePrevious} from '../util/hooks'
 
 const PAGE_HEADER_HEIGHT = 80
-
-const extractSessionData = () => JSON.parse(localStorage.getItem('sessionData') ?? '{}')
 
 function DashWrapper(props: DashWrapperProps) {
     const {
         dataset,
+        datasetMap,
+        dashboards,
         dashboard,
         extra,
         dash,
         readOnly,
         canEdit,
         onFullScreenChange,
-        onDashModalOpen,
+        onDashChange,
         onDelete,
     } = props
     const dashHandler: Dash | undefined = useMemo(() => getDash(dash.type), [dash.type])
@@ -63,15 +62,16 @@ function DashWrapper(props: DashWrapperProps) {
     const [fullScreen, setFullScreen] = useState<boolean>(false)
     const [loading, setLoading] = useState<boolean>(false)
     const [fetchError, setFetchError] = useState<string | null>(null)
-    const [isFiltersModalVisible, setFiltersModalVisible] = useState(false)
-    const sessionFilters = useMemo(() => extract(extractSessionData(), ['dashboards', dashboard.id, 'dashes', dash.id, 'filters']), [dash.id, dashboard.id])
-    const [filters, setFilters] = useState<QueryBlock>(sessionFilters ?? dash.defaultFilters ?? generateQueryBlock())
-    const [filtersForm] = Form.useForm()
+    const [openDashModal, setOpenDashModal] = useState(false)
+    const [openFiltersModal, setOpenFiltersModal] = useState(false)
+    const [filters, setFilters] = useState<QueryBlock>(getActualFilters(dashboard.id, dash))
+    const prevDefaultFilters = usePrevious(dash.defaultFilters)
     const dashHeight = biConfig.rowHeight * dash.h - PAGE_HEADER_HEIGHT
 
     useEffect(() => {
-        setFilters(sessionFilters ?? dash.defaultFilters ?? generateQueryBlock())
-    }, [dash.defaultFilters, sessionFilters])
+        if (!_.isEqual(dash.defaultFilters, prevDefaultFilters))
+            setFilters(getActualFilters(dashboard.id, dash))
+    }, [dash.defaultFilters])
 
     useEffect(() => {
         fetchDatasetData()
@@ -153,11 +153,15 @@ function DashWrapper(props: DashWrapperProps) {
     }
 
     const getSettingsMenuItems = (): ItemType[] => {
-        const menuItems: ItemType[] = [{
-            key: 'filters',
-            label: <Space><FilterOutlined/>{t('Filters')}</Space>,
-            onClick: () => setFiltersModalVisible(true)
-        }]
+        const menuItems: ItemType[] = []
+
+        if (dataset) {
+            menuItems.push({
+                key: 'filters',
+                label: <Space><FilterOutlined/>{t('Filters')}</Space>,
+                onClick: () => setOpenFiltersModal(true)
+            })
+        }
 
         if (!readOnly) {
             menuItems.push({type: 'divider'})
@@ -165,7 +169,7 @@ function DashWrapper(props: DashWrapperProps) {
                 key: 'edit',
                 label: <Space><EditOutlined/>{t('Edit')}</Space>,
                 // disabled: !canEdit,
-                onClick: onDashModalOpen
+                onClick: () => setOpenDashModal(true)
             })
             menuItems.push({
                 key: 'delete',
@@ -178,24 +182,8 @@ function DashWrapper(props: DashWrapperProps) {
         return menuItems
     }
 
-    async function handleFiltersFormFinish(values: FiltersFormValues) {
-        if (!dataset)
-            return
-
-        const newFilters = fromFormQueryBlock(dataset, values.filters)
-
-        // Set session data
-        const newSessionData = extractSessionData()
-        assign(newSessionData, ['dashboards', dashboard.id, 'dashes', dash.id, 'filters'], newFilters)
-        localStorage.setItem('sessionData', JSON.stringify(newSessionData))
-
-        setFilters(newFilters) // if we use server session data, it should be update in useEffect()
-        setFiltersModalVisible(false)
-    }
-
-    function cancelFiltersEdit() {
-        filtersForm.resetFields()
-        setFiltersModalVisible(false)
+    async function handleFiltersChange(newFilters: QueryBlock) {
+        setFilters(newFilters)
     }
 
     const title = renderTitle()
@@ -278,39 +266,26 @@ function DashWrapper(props: DashWrapperProps) {
             </FullScreen>
 
             {dataset && (
-                <Drawer
-                    className="no-drag"
-                    title={(
-                        <Space style={{fontSize: 16}}>
-                            {t('Filters')}
-                            <Tooltip
-                                placement="rightBottom"
-                                overlayInnerStyle={{width: 600}}
-                                title={<>{getCustomFunctionsInfo().map((s, i) => <div key={i}>{s}</div>)}</>}
-                            >
-                                <QuestionCircleOutlined className="blue"/>
-                            </Tooltip>
-                        </Space>
-                    )}
-                    open={isFiltersModalVisible}
-                    width="60%"
-                    // onOk={() => filtersForm.submit()}
-                    onClose={() => setFiltersModalVisible(false)}
-                    extra={
-                        <Space>
-                            <Button onClick={cancelFiltersEdit}>{t('Cancel')}</Button>
-                            <Button onClick={() => filtersForm.submit()} type="primary">OK</Button>
-                        </Space>
-                    }
-                >
-                    <FiltersFom
-                        form={filtersForm}
-                        dataset={dataset}
-                        defaultFilters={filters}
-                        onFormFinish={handleFiltersFormFinish}
-                    />
-                </Drawer>
+                <FiltersModal
+                    dash={dash}
+                    dataset={dataset}
+                    dashboardId={dashboard.id}
+                    filters={filters}
+                    open={openFiltersModal}
+                    onChange={handleFiltersChange}
+                    onClose={() => setOpenFiltersModal(false)}
+                />
             )}
+
+            <DashModal
+                dash={dash}
+                datasetMap={datasetMap}
+                dashboards={dashboards}
+                open={openDashModal}
+                canEdit={canEdit}
+                onChange={onDashChange}
+                onClose={() => setOpenDashModal(false)}
+            />
         </>
     )
 }

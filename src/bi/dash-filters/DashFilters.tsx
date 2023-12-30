@@ -1,4 +1,4 @@
-import {Button, Form, FormInstance, Select} from 'antd'
+import {Button, Form, Select} from 'antd'
 import {DeleteOutlined} from '@ant-design/icons'
 import {v4 as uuidv4} from 'uuid'
 import {Dataset, QueryBlock} from 'src/types/bi'
@@ -8,8 +8,7 @@ import {generateQueryBlock, logicalOpTitles, positiveLogicalOps} from '../../uti
 import DashFilter from './DashFilter'
 import styles from './DashFilters.module.css'
 
-interface Props {
-    form: FormInstance
+interface DashFiltersProps {
     namePrefix: (string|number)[]
     dataset: Dataset
     initialBlock?: QueryBlock
@@ -25,10 +24,11 @@ const BTN_WIDTH = 40
 const H_SPACE = 4, V_SPACE = 6
 const INDENT = 12
 
-export default function DashFilters({form, namePrefix, dataset, initialBlock, showLogicalOp, onRemove}: Props) {
+export default function DashFilters({namePrefix, dataset, initialBlock, showLogicalOp, onRemove}: DashFiltersProps) {
     if (namePrefix.length === 0)
         throw new Error('Illegal argument')
 
+    const form = Form.useFormInstance()
     const fieldName = namePrefix[namePrefix.length - 1]
     const startBtnLeft = showLogicalOp ? (LOGICAL_OP_FIELD_WIDTH + H_SPACE) : 0
     const {t} = useTranslation()
@@ -103,7 +103,6 @@ export default function DashFilters({form, namePrefix, dataset, initialBlock, sh
                                 return (
                                     <DashFilters
                                         key={key}
-                                        form={form}
                                         namePrefix={[...namePrefix, 'blocks', blockFieldNumber]}
                                         dataset={dataset}
                                         showLogicalOp

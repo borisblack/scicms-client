@@ -31,12 +31,12 @@ export const useAppDispatch: () => AppDispatch = useDispatch
 
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector
 
-export function usePrevious<T>(value: T): T {
+export function usePrevious<T>(value: T): T | undefined {
     const ref = useRef<T>()
     useEffect(() => {
         ref.current = value
     })
-    return ref.current as T
+    return ref.current as T | undefined
 }
 
 export function useCache<T>(cb: () => Promise<T>) {

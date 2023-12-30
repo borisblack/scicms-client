@@ -3,12 +3,13 @@ import {Button, Drawer, Form, Space} from 'antd'
 
 import {fromFormQueryBlock, generateQueryBlock} from '../util/bi'
 import DashForm, {DashFormValues} from './DashForm'
-import {Dataset, IDash} from '../types/bi'
+import {Dashboard, Dataset, IDash} from '../types/bi'
 import {useTranslation} from 'react-i18next'
 
 interface DashFormModalProps {
     dash: IDash
     datasetMap: Record<string, Dataset>
+    dashboards: Dashboard[]
     open: boolean
     canEdit: boolean
     onChange: (dash: IDash) => void
@@ -32,12 +33,15 @@ const mapDashValues = (dash: IDash, values: DashFormValues, dataset?: Dataset): 
     defaultFilters: dataset == null ? generateQueryBlock() : fromFormQueryBlock(dataset, values.defaultFilters)
 })
 
-export default function DashModal({dash, datasetMap, canEdit, open, onChange, onClose}: DashFormModalProps) {
+export default function DashModal({dash, datasetMap, dashboards, canEdit, open, onChange, onClose}: DashFormModalProps) {
     const {t} = useTranslation()
     const [form] = Form.useForm()
 
     function handleFormFinish(values: DashFormValues) {
-        const dataset = datasetMap[dash.dataset ?? '']
+        const dataset = values.dataset ? datasetMap[values.dataset] : null
+        if (dataset == null)
+            return
+
         onChange(mapDashValues(dash, values, dataset))
         onClose()
     }
@@ -59,7 +63,7 @@ export default function DashModal({dash, datasetMap, canEdit, open, onChange, on
                 extra={
                     <Space>
                         <Button onClick={cancelEdit}>{t('Cancel')}</Button>
-                        <Button disabled={!canEdit} onClick={() => form.submit()} type="primary">OK</Button>
+                        <Button disabled={!canEdit} type="primary" onClick={() => form.submit()}>OK</Button>
                     </Space>
                 }
             >
@@ -73,6 +77,7 @@ export default function DashModal({dash, datasetMap, canEdit, open, onChange, on
                     <DashForm
                         dash={dash}
                         datasetMap={datasetMap}
+                        dashboards={dashboards}
                         canEdit={canEdit}
                     />
                 </Form>
