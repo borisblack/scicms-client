@@ -47,7 +47,7 @@ function DashWrapper(props: DashWrapperProps) {
         readOnly,
         canEdit,
         onFullScreenChange,
-        onDashFormModalOpen,
+        onDashModalOpen,
         onDelete,
     } = props
     const dashHandler: Dash | undefined = useMemo(() => getDash(dash.type), [dash.type])
@@ -165,7 +165,7 @@ function DashWrapper(props: DashWrapperProps) {
                 key: 'edit',
                 label: <Space><EditOutlined/>{t('Edit')}</Space>,
                 // disabled: !canEdit,
-                onClick: onDashFormModalOpen
+                onClick: onDashModalOpen
             })
             menuItems.push({
                 key: 'delete',

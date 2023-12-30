@@ -10,7 +10,7 @@ export interface DashWrapperProps {
     readOnly: boolean
     canEdit: boolean
     onFullScreenChange: (fullScreen: boolean) => void
-    onDashFormModalOpen: () => void
+    onDashModalOpen: () => void
     onDelete: () => void
 }
 

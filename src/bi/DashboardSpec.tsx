@@ -155,7 +155,7 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
                     readOnly={readOnly ?? false}
                     canEdit={acl.canWrite}
                     onFullScreenChange={setFullScreen}
-                    onDashFormModalOpen={() => setOpenDashModal(true)}
+                    onDashModalOpen={() => setOpenDashModal(true)}
                     onDelete={() => removeDash(dash.id)}
                 />
             </div>
