@@ -13,12 +13,11 @@ import {Dashboard, DashboardExtra, IDash, IDashboardSpec} from '../types/bi'
 import {generateQueryBlock, printSingleQueryFilter} from '../util/bi'
 import biConfig from '../config/bi'
 import DashWrapper from './DashWrapper'
-import styles from './DashboardSpec.module.css'
-import './DashboardSpec.css'
 import {useAcl} from '../util/hooks'
 import {generateKey} from '../util/mdi'
-import DashModal from './DashModal'
 import {useBI} from './hooks'
+import styles from './DashboardSpec.module.css'
+import './DashboardSpec.css'
 
 interface DashboardSpecProps extends CustomComponentRenderContext {
     extra?: DashboardExtra
