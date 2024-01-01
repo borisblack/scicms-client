@@ -8,12 +8,18 @@ import {AggregateType, Dataset, DatasetFiltersInput} from '../types/bi'
 
 export interface DatasetInput<T> {
     filters?: DatasetFiltersInput<T>
-    fields?: string[]
+    fields?: DatasetFieldInput[]
     pagination?: PaginationInput
     sort?: string[]
     aggregate?: AggregateType
     aggregateField?: string
     groupFields?: string[]
+}
+
+interface DatasetFieldInput {
+    name: string
+    source?: string
+    aggregate?: AggregateType
 }
 
 interface DatasetResponse<T> {

@@ -19,8 +19,11 @@ export interface DatasetSpec {
 
 export interface Column {
     type: FieldType
-    format?: FieldType.int | FieldType.float | FieldType.date | FieldType.time | FieldType.datetime
+    source?: string
+    isVisible: boolean
+    aggregate?: AggregateType
     alias?: string
+    format?: FieldType.int | FieldType.float | FieldType.date | FieldType.time | FieldType.datetime
     colWidth?: string | number | null
 }
 
