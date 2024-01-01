@@ -1,6 +1,6 @@
-# Getting Started
+# SciCMS Client
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Client web application for [SciCMS Core](https://github.com/borisblack/scicms-core).
 
 ## Available Scripts
 
