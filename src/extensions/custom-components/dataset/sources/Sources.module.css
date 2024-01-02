@@ -7,12 +7,12 @@
 }
 
 .tableItem {
-    padding: 8px 4px;
+    padding: 2px 4px;
     cursor: move;
 }
 
 .tableItem:hover {
-    background: #fefbd7;
+    /*background: #fefbd7;*/
 }
 
 .tableWidget {

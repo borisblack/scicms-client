@@ -20,7 +20,7 @@ export interface DatasetSpec {
 export interface Column {
     type: FieldType
     source?: string
-    isVisible: boolean
+    visible: boolean
     aggregate?: AggregateType
     alias?: string
     format?: FieldType.int | FieldType.float | FieldType.date | FieldType.time | FieldType.datetime

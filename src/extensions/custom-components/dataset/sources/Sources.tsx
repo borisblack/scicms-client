@@ -1,10 +1,11 @@
 import _ from 'lodash'
-import {ChangeEvent, useCallback, useEffect, useMemo, useState} from 'react'
+import {ChangeEvent, useEffect, useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
-import {Input, Pagination, Spin} from 'antd'
+import {Input, Pagination, Space, Spin, Tree, Typography} from 'antd'
+import type {DataNode} from 'antd/es/tree'
 import {Split} from 'src/components/split/Split'
 import {CustomComponentRenderContext} from 'src/extensions/custom-components'
-import {DATASET_ITEM_NAME} from 'src/config/constants'
+import {DATASET_ITEM_NAME, MAIN_DATASOURCE_NAME} from 'src/config/constants'
 import {Pagination as IPagination} from 'src/types'
 import {Dataset, DatasetSources, DatasetSpec, Table} from 'src/types/bi'
 import {loadDatasourceTables} from 'src/services/datasource'
@@ -13,8 +14,12 @@ import {useAcl} from 'src/util/hooks'
 import TableItem from './TableItem'
 import SourcesConstructor from './SourcesConstructor'
 import styles from './Sources.module.css'
+import {FieldTypeIcon} from 'src/util/icons'
 
 const DEBOUNCE_WAIT_INTERVAL = 500
+
+const {Search} = Input
+const {Text} = Typography
 
 const defaultPagination: IPagination = {
     pageSize: appConfig.query.defaultPageSize,
@@ -48,11 +53,8 @@ export default function Sources({data: dataWrapper, buffer, onBufferChange}: Cus
     }, [data])
 
     useEffect(() => {
-        if (!datasource?.data?.name)
-            return
-
         setLoading(true)
-        loadDatasourceTables(datasource.data.name, {q, pagination})
+        loadDatasourceTables(datasource?.data?.name ?? MAIN_DATASOURCE_NAME, {q, pagination})
             .then(res => {
                 setTables(res.data)
 
@@ -82,6 +84,26 @@ export default function Sources({data: dataWrapper, buffer, onBufferChange}: Cus
         })
     }
 
+    const treeData: DataNode[] = tables.map(table => ({
+        key: table.name,
+        title: (
+            <TableItem
+                table={table}
+                strong={table.name === sources.mainTable?.name || sources.joinedTables.findIndex(t => t.name === table.name) >= 0}
+                canEdit={acl.canWrite}
+            />
+        ),
+        children: Object.keys(table.columns).map(key => ({
+            key: `${table.name}_${key}`,
+            title: (
+                <Space>
+                    <FieldTypeIcon fieldType={table.columns[key].type}/>
+                    <Text>{key}</Text>
+                </Space>
+            )
+        }))
+    }))
+
     return (
         <Spin spinning={loading}>
             <Split
@@ -93,21 +115,17 @@ export default function Sources({data: dataWrapper, buffer, onBufferChange}: Cus
             >
                 <div className={styles.tablesPane}>
                     <div className={styles.filterInput}>
-                        <Input
+                        <Search
                             allowClear
                             placeholder={t('Source name')} size="small"
                             onChange={handleFilter}
                         />
                     </div>
 
-                    {tables.map(table => (
-                        <TableItem
-                            key={table.name}
-                            table={table}
-                            strong={table.name === sources.mainTable?.name || sources.joinedTables.findIndex(t => t.name === table.name) >= 0}
-                            canEdit={acl.canWrite}
-                        />
-                    ))}
+                    <Tree
+                        // switcherIcon={<DownOutlined/>}
+                        treeData={treeData}
+                    />
 
                     <div className={styles.pagination}>
                         <Pagination
