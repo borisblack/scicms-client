@@ -1,12 +1,17 @@
-import * as antdIcons from '@ant-design/icons/lib/icons'
-import {FieldBinaryOutlined} from '@ant-design/icons'
+import {CSSProperties} from 'react'
 import * as _faIcons from 'react-icons/fa'
 import * as _faIcons6 from 'react-icons/fa6'
-import {FieldType} from '../types'
 import {BiCalendar, BiHash, BiText} from 'react-icons/bi'
+import * as antdIcons from '@ant-design/icons/lib/icons'
+import {FieldBinaryOutlined} from '@ant-design/icons'
+import {FieldType} from '../types'
 
 interface FieldTypeIconProps {
     fieldType: FieldType
+}
+
+const biIconStyle: CSSProperties = {
+    marginTop: 4
 }
 
 export const faIcons = {..._faIcons}
@@ -26,17 +31,17 @@ export function FieldTypeIcon({fieldType}: FieldTypeIconProps) {
         case FieldType.float:
         case FieldType.double:
         case FieldType.decimal:
-            return <BiHash title={fieldType}/>
+            return <BiHash style={biIconStyle} title={fieldType}/>
         case FieldType.string:
         case FieldType.text:
-            return <BiText title={fieldType} />
+            return <BiText style={biIconStyle} title={fieldType} />
         case FieldType.bool:
             return <FieldBinaryOutlined title={fieldType} />
         case FieldType.date:
         case FieldType.time:
         case FieldType.datetime:
         case FieldType.timestamp:
-            return <BiCalendar title={fieldType}/>
+            return <BiCalendar style={biIconStyle} title={fieldType}/>
         default:
             return null
     }
