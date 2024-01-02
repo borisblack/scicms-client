@@ -1,0 +1,14 @@
+.lineHorizontal {
+    position: absolute;
+    border-top: 2px solid #cccccc;
+    height: 2px;
+    cursor: pointer;
+}
+
+.lineHorizontal.invalid {
+    border-top: 2px dashed #dc3545;
+}
+
+.lineHorizontal.valid {
+    border-top: 2px solid #28a745;
+}

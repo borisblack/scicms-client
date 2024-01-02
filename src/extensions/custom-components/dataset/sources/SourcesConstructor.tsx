@@ -2,12 +2,12 @@ import {useDrop} from 'react-dnd'
 
 import {DndItemType} from 'src/config/constants'
 import {DatasetSources, JoinedTable, JoinType, Table} from 'src/types/bi'
-import styles from './Sources.module.css'
 import TableWidget from './TableWidget'
 import LineHorizontal from './LineHorizontal'
 import {useEffect, useState} from 'react'
 import LineVertical from './LineVertical'
 import JoinedTableModal from './JoinedTableModal'
+import styles from './SourcesConstructor.module.css'
 
 interface SourcesConstructorProps {
     sources: DatasetSources
@@ -132,25 +132,25 @@ export default function SourcesConstructor({sources, canEdit, onChange}: Sources
             const res = (i === 0) ? (
                 <LineHorizontal
                     key={joinedTable.name}
-                    className={isJoinedTableValid ? styles.valid : styles.invalid}
                     y={top}
                     x1={TABLE_WIDGET_WIDTH}
                     x2={LEFT_PANE_WIDTH}
+                    valid={isJoinedTableValid}
                     onClick={() => handleLineClick(joinedTable)}
                 />
             ) : (
                 <div key={joinedTable.name}>
                     <LineVertical
-                        className={isJoinedTableValid ? styles.valid : styles.invalid}
                         x={TABLE_WIDGET_WIDTH / 2}
                         y1={top}
                         y2={top + vStep}
+                        valid={isJoinedTableValid}
                     />
                     <LineHorizontal
-                        className={isJoinedTableValid ? styles.valid : styles.invalid}
                         y={top + vStep}
                         x1={TABLE_WIDGET_WIDTH / 2}
                         x2={LEFT_PANE_WIDTH}
+                        valid={isJoinedTableValid}
                         onClick={() => handleLineClick(joinedTable)}
                     />
                 </div>

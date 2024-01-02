@@ -4,7 +4,7 @@ import {TableOutlined} from '@ant-design/icons'
 
 import {DndItemType} from 'src/config/constants'
 import {Table} from 'src/types/bi'
-import styles from './Sources.module.css'
+import styles from './TableItem.module.css'
 
 interface TableItemProps {
     table: Table

@@ -1,0 +1,8 @@
+.tableItem {
+    padding: 2px 4px;
+    cursor: move;
+}
+
+.tableItem:hover {
+    /*background: #fefbd7;*/
+}

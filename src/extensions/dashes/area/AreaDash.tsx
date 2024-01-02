@@ -7,7 +7,7 @@ import {defaultDashColor, defaultDashColors, formatValue, handleDashClick, isTem
 import {LegendPosition} from '../util'
 import biConfig from 'src/config/bi'
 import * as RulesService from 'src/services/rules'
-import {useBI} from '../../../bi/hooks'
+import {useBI} from 'src/bi/hooks'
 
 const Area = lazy(() => import('./Area'))
 

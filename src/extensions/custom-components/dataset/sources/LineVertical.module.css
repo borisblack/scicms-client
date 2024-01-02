@@ -1,0 +1,14 @@
+.lineVertical {
+    position: absolute;
+    border-left: 2px solid #cccccc;
+    width: 2px;
+    cursor: pointer;
+}
+
+.lineVertical.invalid {
+    border-left: 2px dashed #dc3545;
+}
+
+.lineVertical.valid {
+    border-left: 2px solid #28a745;
+}

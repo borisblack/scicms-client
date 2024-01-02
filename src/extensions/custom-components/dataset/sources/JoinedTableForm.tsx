@@ -4,9 +4,9 @@ import {Button, Col, Form, Row, Select, Space, Typography} from 'antd'
 import {DeleteOutlined, PlusCircleOutlined, TableOutlined} from '@ant-design/icons'
 
 import {JoinedTable, JoinType, QueryOp, Table} from 'src/types/bi'
-import styles from './Sources.module.css'
-import {usePrevious} from '../../../../util/hooks'
-import {FieldTypeIcon} from '../../../../util/icons'
+import {usePrevious} from 'src/util/hooks'
+import {FieldTypeIcon} from 'src/util/icons'
+import styles from './JoinedTableForm.module.css'
 
 interface JoinedTableFormProps {
     mainTable: Table

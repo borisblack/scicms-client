@@ -1,10 +1,10 @@
 import {CSSProperties} from 'react'
+import {useTranslation} from 'react-i18next'
+import {Button} from 'antd'
 import {CloseOutlined, TableOutlined} from '@ant-design/icons'
 
 import {Table} from 'src/types/bi'
-import styles from './Sources.module.css'
-import {Button} from 'antd'
-import {useTranslation} from 'react-i18next'
+import styles from './TableWidget.module.css'
 
 interface TableWidgetProps {
     style?: CSSProperties
@@ -24,7 +24,7 @@ export default function TableWidget({style, table, canEdit, onRemove}: TableWidg
                 {table.name}
                 {canEdit && (
                     <Button
-                        style={{position: 'absolute', bottom: 3, right: 3}}
+                        className={styles.tableWidget_removeBtn}
                         type="text"
                         size="small"
                         title={t('Remove')}

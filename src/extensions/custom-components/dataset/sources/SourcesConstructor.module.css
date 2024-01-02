@@ -1,0 +1,12 @@
+.sourcesConstructor {
+    margin: 4px 8px;
+    min-height: 400px;
+}
+
+.sourcesConstructor_content {
+    position: absolute;
+}
+
+.sourcesConstructor_content_pane {
+    position: absolute;
+}

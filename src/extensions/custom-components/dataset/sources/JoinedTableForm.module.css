@@ -1,0 +1,13 @@
+.tableHeader {
+    padding: 0 12px 3px 12px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    background: #ededed;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.joinTypeFormItem {
+    /*margin-top: -4px;*/
+}

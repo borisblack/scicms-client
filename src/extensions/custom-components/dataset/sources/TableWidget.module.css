@@ -1,0 +1,16 @@
+.tableWidget {
+    position: absolute;
+    padding: 3px 3px 0 10px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    background: #ededed;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tableWidget_removeBtn {
+    position: absolute;
+    bottom: 3px;
+    right: 3px;
+}

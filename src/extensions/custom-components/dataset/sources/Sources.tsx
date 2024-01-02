@@ -100,7 +100,8 @@ export default function Sources({data: dataWrapper, buffer, onBufferChange}: Cus
                     <FieldTypeIcon fieldType={table.columns[key].type}/>
                     <Text>{key}</Text>
                 </Space>
-            )
+            ),
+            style: {height: 24}
         }))
     }))
 
@@ -123,6 +124,7 @@ export default function Sources({data: dataWrapper, buffer, onBufferChange}: Cus
                     </div>
 
                     <Tree
+                        selectable={false}
                         // switcherIcon={<DownOutlined/>}
                         treeData={treeData}
                     />
