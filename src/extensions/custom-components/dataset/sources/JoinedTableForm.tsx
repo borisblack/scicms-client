@@ -1,11 +1,12 @@
 import {useEffect} from 'react'
 import {useTranslation} from 'react-i18next'
-import {Button, Col, Form, Row, Select, Typography} from 'antd'
+import {Button, Col, Form, Row, Select, Space, Typography} from 'antd'
 import {DeleteOutlined, PlusCircleOutlined, TableOutlined} from '@ant-design/icons'
 
 import {JoinedTable, JoinType, QueryOp, Table} from 'src/types/bi'
 import styles from './Sources.module.css'
 import {usePrevious} from '../../../../util/hooks'
+import {FieldTypeIcon} from '../../../../util/icons'
 
 interface JoinedTableFormProps {
     mainTable: Table
@@ -87,7 +88,15 @@ export default function JoinedTableForm(props: JoinedTableFormProps) {
                                         >
                                             <Select
                                                 placeholder={t('Main table field')}
-                                                options={Object.keys(mainTable.columns).map(col => ({value: col, label: col}))}
+                                                options={Object.keys(mainTable.columns).map(col => ({
+                                                    value: col,
+                                                    label: (
+                                                        <Space>
+                                                            <FieldTypeIcon fieldType={mainTable.columns[col].type}/>
+                                                            {col}
+                                                        </Space>
+                                                    )
+                                                }))}
                                             />
                                         </Form.Item>
                                     </Col>
@@ -128,7 +137,15 @@ export default function JoinedTableForm(props: JoinedTableFormProps) {
                                         >
                                             <Select
                                                 placeholder={t('Joined table field')}
-                                                options={Object.keys(joinedTable.columns).map(col => ({value: col, label: col}))}
+                                                options={Object.keys(joinedTable.columns).map(col => ({
+                                                    value: col,
+                                                    label: (
+                                                        <Space>
+                                                            <FieldTypeIcon fieldType={joinedTable.columns[col].type}/>
+                                                            {col}
+                                                        </Space>
+                                                    )
+                                                }))}
                                             />
                                         </Form.Item>
                                     </Col>
