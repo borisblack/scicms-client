@@ -108,6 +108,7 @@ export default function JoinedTableForm(props: JoinedTableFormProps) {
                                         >
                                             <Select
                                                 disabled
+                                                suffixIcon={null}
                                                 placeholder={t('Operator')}
                                                 options={[{value: QueryOp.$eq, label: '='}]}
                                             />

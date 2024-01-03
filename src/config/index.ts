@@ -49,6 +49,14 @@ interface AppConfig {
         }
         notificationDuration: number,
         notificationPlacement?: 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight'
+        split: {
+            defaultSplitterColors: {
+                color: string
+                hover: string
+                drag: string
+            }
+            splitterSize: string
+        }
     }
 }
 
@@ -84,7 +92,15 @@ const appConfig: AppConfig = {
             textAreaRows: 4
         },
         notificationDuration: 10,
-        notificationPlacement: 'topRight'
+        notificationPlacement: 'topRight',
+        split: {
+            defaultSplitterColors: {
+                color: '#dddddd',
+                hover: '#cccccc',
+                drag: '#cccccc'
+            },
+            splitterSize: '2px'
+        }
     }
 }
 

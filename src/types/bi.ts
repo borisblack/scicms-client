@@ -15,6 +15,7 @@ export interface Dataset extends DefaultItemTemplate {
 export interface DatasetSpec {
     columns: Record<string, Column>
     sources?: DatasetSources
+    useDesigner?: boolean
 }
 
 export interface Column {

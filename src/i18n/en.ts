@@ -379,6 +379,7 @@ const en = {
         'Updated By': 'Updated By',
         'Update operation error': 'Update error',
         'Upload': 'Upload',
+        'Use designer': 'Use designer',
         'Username': 'Username',
         'User': 'User',
         'Users': 'Users',

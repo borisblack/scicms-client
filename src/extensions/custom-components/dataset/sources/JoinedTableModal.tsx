@@ -21,6 +21,9 @@ export default function JoinedTableModal({mainTable, joinedTable, open, canEdit,
     const [form] = Form.useForm()
 
     function handleFormFinish(values: JoinsFormValues) {
+        if (!canEdit)
+            return
+
         onChange({...joinedTable, ...values})
         onClose()
     }
@@ -31,6 +34,7 @@ export default function JoinedTableModal({mainTable, joinedTable, open, canEdit,
             open={open}
             destroyOnClose
             width={800}
+            okButtonProps={{disabled: !canEdit}}
             onOk={() => form.submit()}
             onCancel={onClose}
         >

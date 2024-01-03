@@ -11,6 +11,9 @@ import {NamedColumn} from './types'
 import {getColumns} from './columns-datagrid'
 import {useAcl} from 'src/util/hooks'
 
+const toNamedColumns = (columns: Record<string, Column>): NamedColumn[] =>
+    Object.keys(columns).map(colName => ({name: colName, ...columns[colName]}))
+
 export default function Columns({data: dataWrapper, buffer, onBufferChange}: CustomComponentRenderContext) {
     const {item, data} = dataWrapper
     if (item.name !== DATASET_ITEM_NAME)
@@ -18,16 +21,17 @@ export default function Columns({data: dataWrapper, buffer, onBufferChange}: Cus
 
     const {t} = useTranslation()
     const acl = useAcl(item, data)
-    const spec: DatasetSpec = useMemo(() => buffer.spec ?? data?.spec ?? {}, [buffer, data])
-    const [namedColumns, setNamedColumns] = useState(getCurrentNamedColumns())
+    const spec: DatasetSpec = useMemo(() => buffer.spec ?? {}, [buffer])
+    const [namedColumns, setNamedColumns] = useState(toNamedColumns(spec.columns ?? {}))
     const [filteredData, setFilteredData] = useState<DataWithPagination<NamedColumn>>(getInitialData())
     const [version, setVersion] = useState<number>(0)
     const isNew = !data?.id
 
     useEffect(() => {
-        setNamedColumns(getCurrentNamedColumns())
+        const newSpec = data?.spec ?? {}
+        setNamedColumns(toNamedColumns(newSpec.columns ?? {}))
         onBufferChange({
-            spec: data?.spec ?? {}
+            spec: newSpec
         })
     }, [data])
 
@@ -37,11 +41,6 @@ export default function Columns({data: dataWrapper, buffer, onBufferChange}: Cus
 
     if (isNew)
         return null
-
-    function getCurrentNamedColumns(): NamedColumn[] {
-        const columns = spec.columns ?? {}
-        return Object.keys(columns).map(colName => ({name: colName, ...columns[colName]}))
-    }
 
     function handleNamedColumnChange(namedCol: NamedColumn) {
         if (!acl.canWrite)

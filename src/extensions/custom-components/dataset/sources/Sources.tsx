@@ -1,8 +1,10 @@
 import _ from 'lodash'
-import {ChangeEvent, useEffect, useMemo, useState} from 'react'
+import {ChangeEvent, useEffect, useMemo, useState, lazy, Suspense, useRef} from 'react'
 import {useTranslation} from 'react-i18next'
-import {Input, Pagination, Space, Spin, Tree, Typography} from 'antd'
+import {Checkbox, Input, Pagination, Space, Spin, Tree, Typography} from 'antd'
 import type {DataNode} from 'antd/es/tree'
+import {CheckboxChangeEvent} from 'antd/es/checkbox'
+
 import {Split} from 'src/components/split/Split'
 import {CustomComponentRenderContext} from 'src/extensions/custom-components'
 import {DATASET_ITEM_NAME, MAIN_DATASOURCE_NAME} from 'src/config/constants'
@@ -12,15 +14,26 @@ import {loadDatasourceTables} from 'src/services/datasource'
 import appConfig from 'src/config'
 import {useAcl} from 'src/util/hooks'
 import TableItem from './TableItem'
-import SourcesConstructor from './SourcesConstructor'
-import styles from './Sources.module.css'
+import SourcesDesigner from './SourcesDesigner'
 import {FieldTypeIcon} from 'src/util/icons'
+import {SourcesQueryBuildResult} from './SourcesQueryBuilder'
+import styles from './Sources.module.css'
 
+const MIN_LEFT_PANE_SIZE = '300px'
+const INITIAL_LEFT_PANE_SIZE = '400px'
+const MIN_RIGHT_PANE_SIZE = '700px'
+const MIN_TOP_PANE_SIZE = '300px'
+const INITIAL_TOP_PANE_SIZE = '400px'
+const MIN_BOTTOM_PANE_SIZE = '300px'
+const INITIAL_BOTTOM_PANE_SIZE = '400px'
 const DEBOUNCE_WAIT_INTERVAL = 500
 
 const {Search} = Input
 const {Text} = Typography
 
+const SqlEditor = lazy(() => import('./SqlEditor'))
+
+const splitConfig = appConfig.ui.split
 const defaultPagination: IPagination = {
     pageSize: appConfig.query.defaultPageSize,
     total: 0
@@ -31,23 +44,28 @@ const initialSources: DatasetSources = {
 }
 
 export default function Sources({data: dataWrapper, buffer, onBufferChange}: CustomComponentRenderContext) {
-    const {item, data} = dataWrapper
+    const data = dataWrapper.data as Dataset | undefined
+    const {item} = dataWrapper
     if (item.name !== DATASET_ITEM_NAME)
         throw new Error('Illegal argument')
 
     const {t} = useTranslation()
     const acl = useAcl(item, data)
-    const {datasource} = (data ?? {}) as Partial<Dataset>
-    const spec: DatasetSpec = useMemo(() => buffer.spec ?? data?.spec ?? {}, [buffer, data])
+    const datasource = data?.datasource
+    const spec: DatasetSpec = useMemo(() => buffer.spec ?? {}, [buffer])
     const sources: DatasetSources = useMemo(() => spec.sources ?? initialSources, [spec])
     const [loading, setLoading] = useState<boolean>(false)
     const [tables, setTables] = useState<Table[]>([])
     const [q, setQ] = useState<string>()
     const [pagination, setPagination] = useState<IPagination>(defaultPagination)
+    const editorValue = useMemo(() => buffer.tableName ? `SELECT * FROM ${buffer.tableName}` : buffer.query, [buffer.query, buffer.tableName])
+    const useDesigner: boolean = useMemo(() => spec.useDesigner ?? !editorValue, [editorValue, spec.useDesigner])
     const isNew = !data?.id
 
     useEffect(() => {
         onBufferChange({
+            tableName: data?.tableName,
+            query: data?.query,
             spec: data?.spec ?? {}
         })
     }, [data])
@@ -74,13 +92,36 @@ export default function Sources({data: dataWrapper, buffer, onBufferChange}: Cus
     const handlePaginationChange =
         (page: number, pageSize: number) => setPagination(prevPagination => ({...prevPagination, page, pageSize}))
 
-    function handleSourcesChange(newSources: DatasetSources) {
+    function handleSourcesChange(newSources: DatasetSources, buildResult: SourcesQueryBuildResult) {
         onBufferChange({
             ...buffer,
+            tableName: buildResult.tableName,
+            query: buildResult.query,
             spec: {
                 ...spec,
                 sources: newSources
             }
+        })
+    }
+
+    const handleUseDesignerCheck = (e: CheckboxChangeEvent) =>
+        onBufferChange({
+            ...buffer,
+            spec: {
+                ...spec,
+                // sources: e.target.checked ? spec.sources : initialSources,
+                useDesigner: e.target.checked
+            }
+        })
+
+    function handleEditorValueChange(value: string) {
+        if (value === editorValue)
+            return
+
+        onBufferChange({
+            ...buffer,
+            tableName: undefined,
+            query: value
         })
     }
 
@@ -101,18 +142,19 @@ export default function Sources({data: dataWrapper, buffer, onBufferChange}: Cus
                     <Text>{key}</Text>
                 </Space>
             ),
-            style: {height: 24}
+            style: {height: 26}
         }))
     }))
 
     return (
         <Spin spinning={loading}>
             <Split
-                initialPrimarySize="400px"
-                minPrimarySize="300px"
-                defaultSplitterColors={{color: '#dddddd', hover: '#cccccc', drag: '#cccccc'}}
+                minPrimarySize={MIN_LEFT_PANE_SIZE}
+                initialPrimarySize={INITIAL_LEFT_PANE_SIZE}
+                minSecondarySize={MIN_RIGHT_PANE_SIZE}
+                defaultSplitterColors={splitConfig.defaultSplitterColors}
+                splitterSize={splitConfig.splitterSize}
                 resetOnDoubleClick
-                splitterSize="2px"
             >
                 <div className={styles.tablesPane}>
                     <div className={styles.filterInput}>
@@ -146,7 +188,42 @@ export default function Sources({data: dataWrapper, buffer, onBufferChange}: Cus
                     </div>
                 </div>
 
-                <SourcesConstructor sources={sources} canEdit={acl.canWrite} onChange={handleSourcesChange}/>
+                <div>
+                    <Checkbox
+                        className={styles.useDesignerCheckbox}
+                        disabled={!acl.canWrite}
+                        checked={useDesigner}
+                        onChange={handleUseDesignerCheck}
+                    >
+                        <Text strong>{t('Use designer')}</Text>
+                    </Checkbox>
+
+                    <Split
+                        horizontal
+                        minPrimarySize={MIN_TOP_PANE_SIZE}
+                        initialPrimarySize={INITIAL_TOP_PANE_SIZE}
+                        minSecondarySize={MIN_BOTTOM_PANE_SIZE}
+                        defaultSplitterColors={splitConfig.defaultSplitterColors}
+                        splitterSize={splitConfig.splitterSize}
+                        resetOnDoubleClick
+                    >
+                        <SourcesDesigner
+                            sources={sources}
+                            canEdit={acl.canWrite && useDesigner}
+                            onChange={handleSourcesChange}
+                        />
+                        <div>
+                            <Suspense fallback={null}>
+                                <SqlEditor
+                                    value={editorValue}
+                                    height={INITIAL_BOTTOM_PANE_SIZE}
+                                    canEdit={acl.canWrite && !useDesigner}
+                                    onChange={handleEditorValueChange}
+                                />
+                            </Suspense>
+                        </div>
+                    </Split>
+                </div>
             </Split>
         </Spin>
     )

@@ -7,12 +7,13 @@ import LineHorizontal from './LineHorizontal'
 import {useEffect, useState} from 'react'
 import LineVertical from './LineVertical'
 import JoinedTableModal from './JoinedTableModal'
-import styles from './SourcesConstructor.module.css'
+import SourcesQueryBuilder, {SourcesQueryBuildResult} from './SourcesQueryBuilder'
+import styles from './SourcesDesigner.module.css'
 
-interface SourcesConstructorProps {
+interface SourcesDesignerProps {
     sources: DatasetSources
     canEdit: boolean
-    onChange: (newSources: DatasetSources) => void
+    onChange: (sources: DatasetSources, buildResult: SourcesQueryBuildResult) => void
 }
 
 const LEFT_PANE_WIDTH = 400
@@ -21,7 +22,9 @@ const TABLE_WIDGET_WIDTH = 300
 const TABLE_WIDGET_HEIGHT = 32
 const VERTICAL_SPACE = 12
 
-export default function SourcesConstructor({sources, canEdit, onChange}: SourcesConstructorProps) {
+const queryBuilder = new SourcesQueryBuilder()
+
+export default function SourcesDesigner({sources, canEdit, onChange}: SourcesDesignerProps) {
     const [isValid, setValid] = useState<boolean>(true)
     const [currentJoinedTable, setCurrentJoinedTable] = useState<JoinedTable>()
     const [openModal, setOpenModal] = useState(false)
@@ -39,14 +42,7 @@ export default function SourcesConstructor({sources, canEdit, onChange}: Sources
     )
 
     useEffect(() => {
-        for (const joinedTable of sources.joinedTables) {
-            if (!validateJoinedTable(joinedTable)) {
-                setValid(false)
-                return
-            }
-        }
-
-        setValid(true)
+        setValid(queryBuilder.validate(sources))
     }, [sources])
 
     function handleCanDrop(table: Table): boolean {
@@ -61,39 +57,30 @@ export default function SourcesConstructor({sources, canEdit, onChange}: Sources
     }
 
     function handleDrop(table: Table) {
+        let newSources: DatasetSources
         if (sources.mainTable == null) {
-            onChange({
+            newSources = {
                 mainTable: table,
                 joinedTables: []
-            })
+            }
         } else {
-            onChange({
+            newSources = {
                 mainTable: sources.mainTable,
                 joinedTables: [
                     ...sources.joinedTables,
                     {...table, joinType: JoinType.inner, joins: []}
                 ]
-            })
+            }
         }
-    }
-
-    function validateJoinedTable(joinedTable: JoinedTable): boolean {
-        if (joinedTable.joins.length === 0)
-            return false
-
-        for (const join of joinedTable.joins) {
-            if (!join.field || !join.mainTableField)
-                return false
-        }
-
-        return true
+        onChange(newSources, queryBuilder.build(newSources))
     }
 
     function clearSources() {
-        onChange({
+        const newSources = {
             mainTable: undefined,
             joinedTables: []
-        })
+        }
+        onChange(newSources, queryBuilder.build(newSources))
     }
 
     function renderJoinedTables() {
@@ -117,10 +104,11 @@ export default function SourcesConstructor({sources, canEdit, onChange}: Sources
     }
 
     function removeJoinedTable(name: string) {
-        onChange({
+        const newSources = {
             mainTable: sources.mainTable,
             joinedTables: sources.joinedTables.filter(t => t.name !== name)
-        })
+        }
+        onChange(newSources, queryBuilder.build(newSources))
     }
 
     function renderLines() {
@@ -128,7 +116,7 @@ export default function SourcesConstructor({sources, canEdit, onChange}: Sources
 
         return sources.joinedTables.map((joinedTable, i) => {
             const vStep = (i === 0 ? (TABLE_WIDGET_HEIGHT / 2) : (i === 1 ? (TABLE_WIDGET_HEIGHT/2 + VERTICAL_SPACE) : (TABLE_WIDGET_HEIGHT + VERTICAL_SPACE)))
-            const isJoinedTableValid = validateJoinedTable(joinedTable)
+            const isJoinedTableValid = queryBuilder.validateJoinedTable(joinedTable)
             const res = (i === 0) ? (
                 <LineHorizontal
                     key={joinedTable.name}
@@ -168,19 +156,20 @@ export default function SourcesConstructor({sources, canEdit, onChange}: Sources
     }
 
     function handleJoinedTableChange(joinedTable: JoinedTable) {
-        const newSources = sources.joinedTables.map(jt => jt.name === joinedTable.name ? joinedTable : jt)
-        onChange({
+        const newJoinedTables = sources.joinedTables.map(jt => jt.name === joinedTable.name ? joinedTable : jt)
+        const newSources = {
             mainTable: sources.mainTable,
-            joinedTables: newSources
-        })
+            joinedTables: newJoinedTables
+        }
+        onChange(newSources, queryBuilder.build(newSources))
     }
 
     return (
         <>
-            <div className={styles.sourcesConstructor} ref={drop}>
-                <div className={styles.sourcesConstructor_content}>
+            <div className={styles.sourcesDesigner} ref={drop}>
+                <div className={styles.sourcesDesigner_content}>
                     <div
-                        className={styles.sourcesConstructor_content_pane}
+                        className={styles.sourcesDesigner_content_pane}
                         style={{width: LEFT_PANE_WIDTH}}
                     >
                         {sources.mainTable && (
@@ -193,7 +182,7 @@ export default function SourcesConstructor({sources, canEdit, onChange}: Sources
                         )}
                     </div>
                     <div
-                        className={styles.sourcesConstructor_content_pane}
+                        className={styles.sourcesDesigner_content_pane}
                         style={{width: RIGHT_PANE_WIDTH, left: LEFT_PANE_WIDTH}}
                     >
                         {renderJoinedTables()}
