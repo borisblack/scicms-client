@@ -40,7 +40,7 @@ export default function JoinedTableModal({mainTable, joinedTable, open, canEdit,
         >
             <Form
                 form={form}
-                layout="vertical"
+                layout="horizontal"
                 size="small"
                 disabled={!canEdit}
                 initialValues={joinedTable}

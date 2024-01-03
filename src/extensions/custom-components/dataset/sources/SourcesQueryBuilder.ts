@@ -29,13 +29,13 @@ export default class SourcesQueryBuilder {
         // SELECT
         let query: string = `SELECT ${Object.keys(mainTable.columns).map(key => `${mainTable.name}.${key}`).join(', ')}${joinedTables.length > 0 ? ',' : ''}\n`
         joinedTables.forEach((joinedTable, i) => {
-            query += `\t${Object.keys(joinedTable.columns).map(key => `${joinedTable.name}.${key} AS ${joinedTable.name}__${key}`).join(', ')}${i < joinedTables.length - 1 ? ',' : ''}\n`
+            query += `\t${Object.keys(joinedTable.columns).map(key => `${joinedTable.alias || joinedTable.name}.${key} AS ${joinedTable.alias || joinedTable.name}__${key}`).join(', ')}${i < joinedTables.length - 1 ? ',' : ''}\n`
         })
 
         // FROM
         query += `FROM ${mainTable.name}\n`
         joinedTables.forEach((joinedTable, i) => {
-            query += `\t${joinsMap[joinedTable.joinType ?? JoinType.inner]} ${joinedTable.name} ON ${joinedTable.joins.map(join => `${mainTable.name}.${join.mainTableField} ${opMap[join.op]} ${joinedTable.name}.${join.field}`).join(' AND ')}\n`
+            query += `\t${joinsMap[joinedTable.joinType ?? JoinType.inner]} ${joinedTable.name}${joinedTable.alias ? ` ${joinedTable.alias}` : ''} ON ${joinedTable.joins.map(join => `${mainTable.name}.${join.mainTableField} ${opMap[join.op]} ${joinedTable.alias || joinedTable.name}.${join.field}`).join(' AND ')}\n`
         })
 
         return {tableName: null, query}

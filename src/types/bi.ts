@@ -39,6 +39,7 @@ export interface DatasetSources {
 }
 
 export interface JoinedTable extends Table {
+    alias?: string
     joinType?: JoinType
     joins: Join[]
 }

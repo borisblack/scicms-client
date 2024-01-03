@@ -1,11 +1,12 @@
 import {useEffect} from 'react'
 import {useTranslation} from 'react-i18next'
-import {Button, Col, Form, Row, Select, Space, Typography} from 'antd'
+import {Button, Col, Form, Input, Row, Select, Space, Typography} from 'antd'
 import {DeleteOutlined, PlusCircleOutlined, TableOutlined} from '@ant-design/icons'
 
 import {JoinedTable, JoinType, QueryOp, Table} from 'src/types/bi'
 import {usePrevious} from 'src/util/hooks'
 import {FieldTypeIcon} from 'src/util/icons'
+import {regExpRule} from 'src/util/form'
 import styles from './JoinedTableForm.module.css'
 
 interface JoinedTableFormProps {
@@ -55,6 +56,17 @@ export default function JoinedTableForm(props: JoinedTableFormProps) {
                         &nbsp;&nbsp;
                         <Text strong ellipsis>{joinedTable.name}</Text>
                     </span>
+                </Col>
+            </Row>
+            <Row gutter={10}>
+                <Col offset={13} span={9}>
+                    <Form.Item
+                        name={['alias']}
+                        label={t('Alias')}
+                        rules={[regExpRule(/^\w+$/)]}
+                    >
+                        <Input placeholder={t('Alias')}/>
+                    </Form.Item>
                 </Col>
             </Row>
 
