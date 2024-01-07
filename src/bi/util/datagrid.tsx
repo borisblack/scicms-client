@@ -26,6 +26,13 @@ import {Column, Dataset, DatasetFiltersInput} from 'src/types/bi'
 import * as DatasetService from 'src/services/dataset'
 import {DatasetFieldInput, DatasetInput} from 'src/services/dataset'
 
+interface DatasetData<T> extends DataWithPagination<T> {
+    timeMs?: number
+    cacheHit?: boolean
+    query?: string
+    params?: Record<string, any>
+}
+
 const {luxonDisplayDateFormatString, luxonDisplayTimeFormatString, luxonDisplayDateTimeFormatString} = appConfig.dateTime
 const columnHelper = createColumnHelper<any>()
 
@@ -79,7 +86,7 @@ const renderCell = (field: Column, value: any): ReactNode => {
 
 export const getHiddenColumns = (actualColumns: Record<string, Column>): string[] => []
 
-export async function loadData(dataset: Dataset, actualFields: Record<string, Column>, {sorting, filters, pagination}: RequestParams): Promise<DataWithPagination<any>> {
+export async function loadData(dataset: Dataset, actualFields: Record<string, Column>, {sorting, filters, pagination}: RequestParams): Promise<DatasetData<any>> {
     const {page, pageSize} = pagination
     const datasetInput: DatasetInput<any> = {
         fields: buildFieldsInput(actualFields),
@@ -92,6 +99,10 @@ export async function loadData(dataset: Dataset, actualFields: Record<string, Co
     const responsePagination = datasetResponse.meta.pagination as Pagination
     return {
         data: datasetResponse.data,
+        timeMs: datasetResponse.timeMs,
+        cacheHit: datasetResponse.cacheHit,
+        query: datasetResponse.query,
+        params: datasetResponse.params,
         pagination: {
             page: responsePagination.page as number,
             pageSize: responsePagination.pageSize,

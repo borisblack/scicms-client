@@ -1,13 +1,15 @@
 import _ from 'lodash'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
-import {notification, Typography} from 'antd'
+import {Button, notification, Space, Typography} from 'antd'
 
-import DataGrid, {RequestParams} from 'src/components/datagrid/DataGrid'
+import DataGrid, {DataWithPagination, RequestParams} from 'src/components/datagrid/DataGrid'
 import {getColumns, getHiddenColumns, getInitialData, loadData} from 'src/bi/util/datagrid'
 import appConfig from 'src/config'
-import {Column, Dataset} from 'src/types/bi'
+import {Column, Dataset, ExecutionStatisticInfo} from 'src/types/bi'
 import {usePrevious} from '../../../../util/hooks'
+import {FieldTimeOutlined} from '@ant-design/icons'
+import ExecutionStatisticModal from '../../../../bi/ExecutionStatisticModal'
 
 interface DataPreviewProps {
     dataset: Dataset
@@ -24,8 +26,10 @@ export default function DataPreview(props: DataPreviewProps) {
     const columnsMemoized = useMemo(() => getColumns(allFields), [allFields])
     const hiddenColumnsMemoized = useMemo(() => getHiddenColumns(allFields), [allFields])
     const [loading, setLoading] = useState<boolean>(false)
-    const [data, setData] = useState(getInitialData())
+    const [data, setData] = useState<DataWithPagination<any>>(getInitialData())
     const [version, setVersion] = useState<number>(0)
+    const [statistic, setStatistic] = useState<ExecutionStatisticInfo>()
+    const [openStatisticModal, setOpenStatisticModal] = useState<boolean>(false)
 
     useEffect(() => {
         if (!prevProps)
@@ -40,8 +44,14 @@ export default function DataPreview(props: DataPreviewProps) {
     const handleRequest = useCallback(async (params: RequestParams) => {
         try {
             setLoading(true)
-            const dataWithPagination = await loadData(dataset, allFields, params)
-            setData(dataWithPagination)
+            const datasetData = await loadData(dataset, allFields, params)
+            setData(datasetData)
+            setStatistic({
+                timeMs: datasetData.timeMs,
+                cacheHit: datasetData.cacheHit,
+                query: datasetData.query,
+                params: datasetData.params
+            })
         } catch (e: any) {
             console.error(e.message)
             notification.error({
@@ -53,20 +63,53 @@ export default function DataPreview(props: DataPreviewProps) {
         }
     }, [dataset, allFields, t])
 
+    function showStatistic() {
+        if (!statistic)
+            return
+
+        setOpenStatisticModal(true)
+    }
+
+    const renderToolbar = () => (
+        <Space size={10}>
+            <Title level={5} style={{display: 'inline'}}>{t('Preview')}</Title>
+            <Button
+                size="small"
+                disabled={!statistic}
+                icon={<FieldTimeOutlined/>}
+                title={t('Execution statistic')}
+                onClick={showStatistic}
+            />
+        </Space>
+    )
+
     return (
-        <DataGrid
-            loading={loading}
-            columns={columnsMemoized}
-            data={data}
-            version={version}
-            initialState={{
-                hiddenColumns: hiddenColumnsMemoized,
-                pageSize: appConfig.query.defaultPageSize
-            }}
-            height={height}
-            toolbar={<Title level={5} style={{display: 'inline'}}>{t('Preview')}</Title>}
-            title={t('Preview')}
-            onRequest={handleRequest}
-        />
+        <>
+            <DataGrid
+                loading={loading}
+                columns={columnsMemoized}
+                data={data}
+                version={version}
+                initialState={{
+                    hiddenColumns: hiddenColumnsMemoized,
+                    pageSize: appConfig.query.defaultPageSize
+                }}
+                height={height}
+                toolbar={renderToolbar()}
+                title={t('Preview')}
+                onRequest={handleRequest}
+            />
+
+            {statistic && (
+                <ExecutionStatisticModal
+                    timeMs={statistic.timeMs}
+                    cacheHit={statistic.cacheHit}
+                    query={statistic.query}
+                    params={statistic.params}
+                    open={openStatisticModal}
+                    onClose={() => setOpenStatisticModal(false)}
+                />
+            )}
+        </>
     )
 }

@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import React, {lazy, Suspense, useEffect, useState} from 'react'
 import {useTranslation} from 'react-i18next'
-import {Checkbox, Form, Input, InputNumber, Select, Space, Tabs} from 'antd'
+import {Checkbox, Form, Input, InputNumber, Select, Tabs} from 'antd'
 import {FormInstance, RuleObject, RuleRender} from 'rc-field-form/es/interface'
 
 import {NamedColumn} from './types'
@@ -14,10 +14,11 @@ import {
     getFormatOptions
 } from 'src/bi/util'
 import {AggregateType, Column} from 'src/types/bi'
-import styles from './FieldForm.module.css'
 import {FieldType} from 'src/types'
 import FieldTypeIcon from 'src/components/app/FieldTypeIcon'
 import FieldName from 'src/components/app/FieldName'
+import {EditorMode} from 'src/components/CodeEditor'
+import styles from './FieldForm.module.css'
 
 interface ColumnFormProps {
     field: NamedColumn,
@@ -25,7 +26,7 @@ interface ColumnFormProps {
     canEdit: boolean
 }
 
-const SqlEditor = lazy(() => import('src/components/sql-editor/SqlEditor'))
+const CodeEditor = lazy(() => import('src/components/CodeEditor'))
 
 export default function FieldForm({field, allFields, canEdit}: ColumnFormProps) {
     const prevField = usePrevious(field)
@@ -176,8 +177,9 @@ export default function FieldForm({field, allFields, canEdit}: ColumnFormProps) 
 
                             <div className={styles.formulaEditor}>
                                 <Suspense fallback={null}>
-                                    <SqlEditor
+                                    <CodeEditor
                                         value={formula}
+                                        mode={EditorMode.SQL}
                                         height={150}
                                         canEdit={canEdit && field.custom}
                                         onChange={handleFormulaChange}

@@ -96,6 +96,13 @@ export interface IDash {
     refreshIntervalSeconds: number
 }
 
+export interface ExecutionStatisticInfo {
+    timeMs?: number
+    cacheHit?: boolean
+    query?: string
+    params?: Record<string, any>
+}
+
 export enum AggregateType {
     count = 'count',
     countd = 'countd',

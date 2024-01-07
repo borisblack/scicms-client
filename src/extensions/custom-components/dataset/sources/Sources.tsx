@@ -1,7 +1,7 @@
 import _ from 'lodash'
-import {ChangeEvent, useEffect, useMemo, useState, lazy, Suspense} from 'react'
+import {ChangeEvent, lazy, Suspense, useEffect, useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
-import {Checkbox, Input, Pagination, Space, Spin, Tree, Typography} from 'antd'
+import {Checkbox, Input, Pagination, Spin, Tree, Typography} from 'antd'
 import type {DataNode} from 'antd/es/tree'
 import {CheckboxChangeEvent} from 'antd/es/checkbox'
 
@@ -17,6 +17,7 @@ import TableItem from './TableItem'
 import SourcesDesigner from './SourcesDesigner'
 import FieldTypeIcon from 'src/components/app/FieldTypeIcon'
 import {SourcesQueryBuildResult} from './SourcesQueryBuilder'
+import {EditorMode} from 'src/components/CodeEditor'
 import styles from './Sources.module.css'
 
 const MIN_LEFT_PANE_SIZE = '600px'
@@ -28,7 +29,7 @@ const DEBOUNCE_WAIT_INTERVAL = 500
 const {Search} = Input
 const {Text} = Typography
 
-const SqlEditor = lazy(() => import('src/components/sql-editor/SqlEditor'))
+const CodeEditor = lazy(() => import('src/components/CodeEditor'))
 
 const splitConfig = appConfig.ui.split
 const defaultPagination: IPagination = {
@@ -216,8 +217,9 @@ export default function Sources({data: dataWrapper, buffer, onBufferChange}: Cus
                         />
                         <div>
                             <Suspense fallback={null}>
-                                <SqlEditor
+                                <CodeEditor
                                     value={editorValue}
+                                    mode={EditorMode.SQL}
                                     height={MIN_BOTTOM_PANE_SIZE}
                                     lineNumbers
                                     canEdit={acl.canWrite && !useDesigner}

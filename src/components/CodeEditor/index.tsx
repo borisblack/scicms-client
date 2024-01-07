@@ -1,20 +1,29 @@
 import {useEffect, useRef} from 'react'
 import {UnControlled as CodeMirror} from 'react-codemirror2'
+import {Editor} from 'codemirror'
 import 'codemirror/mode/sql/sql'
+import 'codemirror/mode/javascript/javascript'
+
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/eclipse.css'
-import {Editor} from 'codemirror'
+import './CodeEditor.css'
 
-interface SqlEditorProps {
+interface EditorProps {
     value?: string
+    mode: EditorMode
     height: number | string
     lineNumbers?: boolean
     lineWrapping?: boolean
     canEdit: boolean
-    onChange: (value: string) => void
+    onChange?: (value: string) => void
 }
 
-export default function SqlEditor({value, height, lineNumbers, lineWrapping, canEdit, onChange}: SqlEditorProps) {
+export enum EditorMode {
+    JAVASCRIPT = 'javascript',
+    SQL = 'sql'
+}
+
+export default function CodeEditor({value, mode, height, lineNumbers, lineWrapping, canEdit, onChange}: EditorProps) {
     const editorRef = useRef<Editor>()
 
     useEffect(() => {
@@ -23,7 +32,7 @@ export default function SqlEditor({value, height, lineNumbers, lineWrapping, can
     }, [height])
 
     function handleChange(newValue: string) {
-        if (canEdit && newValue !== value)
+        if (canEdit && newValue !== value && onChange)
             onChange(newValue)
     }
 
@@ -32,12 +41,12 @@ export default function SqlEditor({value, height, lineNumbers, lineWrapping, can
             value={value}
             options={{
                 mode: {
-                    name: 'sql'
+                    name: mode
                 },
                 theme: 'eclipse',
                 lineNumbers,
                 lineWrapping,
-                readOnly: !canEdit
+                readOnly: !canEdit,
             }}
             editorDidMount={editor => editorRef.current = editor}
             onChange={(editor, data, value) => handleChange(value)}
