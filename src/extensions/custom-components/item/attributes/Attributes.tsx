@@ -29,7 +29,7 @@ export default function Attributes({data: dataWrapper, buffer, onBufferChange}: 
     const {t} = useTranslation()
     const [version, setVersion] = useState<number>(0)
     const acl = useItemAcl(item, data)
-    const columns = useMemo(() => getAttributeColumns(), [])
+    const columns = useMemo(() => getAttributeColumns(data?.core ?? false), [data?.core])
     const hiddenColumns = useMemo(() => getHiddenAttributeColumns(), [])
     const spec: ItemSpec = useMemo(() => buffer.spec ?? data?.spec ?? {}, [buffer.spec, data?.spec])
 

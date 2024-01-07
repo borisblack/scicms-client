@@ -6,7 +6,7 @@ import {itemTemplateIndexes} from '../extensions/custom-components/item/indexes/
 import {userRoles} from '../extensions/custom-components/user/user-roles/user-roles'
 import {lifecycleSpec} from '../extensions/custom-components/lifecycle/spec/lifecycle-spec'
 import {datasetSources} from '../extensions/custom-components/dataset/sources/dataset-sources'
-import {datasetColumns} from '../extensions/custom-components/dataset/columns/dataset-columns'
+import {datasetFields} from '../extensions/custom-components/dataset/fields/dataset-fields'
 import {dashboardSpec} from '../extensions/custom-components/dashboard/spec/dashboard-spec'
 import {userGroups} from '../extensions/custom-components/user/user-groups/user-groups'
 import {projectGantt} from '../extensions/custom-components/project/gantt/project-gantt'
@@ -25,7 +25,7 @@ const customComponentConfig: CustomComponentConfig = {
         userRoles,
         lifecycleSpec,
         datasetSources,
-        datasetColumns,
+        datasetFields,
         dashboardSpec,
         userGroups, // owner is a group
 

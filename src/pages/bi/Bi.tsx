@@ -159,8 +159,14 @@ function Bi() {
 
     return (
         <Layout className="Bi">
-            <Sider collapsible collapsed={collapsed} width={275} onCollapse={handleToggle}>
-                <div className="Bi-logo-wrapper">
+            <Sider
+                collapsible
+                collapsed={collapsed}
+                trigger={null}
+                width={275}
+                onCollapse={handleToggle}
+            >
+                <div className="Bi-logo-wrapper" onClick={handleToggle}>
                     <img src={logo} className="Bi-logo" alt="logo"/>
                     {!collapsed && <span className="Bi-logo-text">{t('SciCMS BI')}</span>}
                 </div>

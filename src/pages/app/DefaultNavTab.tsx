@@ -1,7 +1,7 @@
 import {memo, ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Row} from '@tanstack/react-table'
-import {Button, Checkbox, message, Modal} from 'antd'
+import {Button, Checkbox, Modal, notification} from 'antd'
 import {CheckboxChangeEvent} from 'antd/es/checkbox'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
 import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design/icons'
@@ -95,7 +95,10 @@ function DefaultNavTab({data: dataWrapper}: Props) {
             const dataWithPagination = await findAll(itemMap, item, allParams)
             setData(dataWithPagination)
         } catch (e: any) {
-            message.error(e.message)
+            notification.error({
+                message: t('Request error'),
+                description: e.message
+            })
         } finally {
             setLoading(false)
         }
@@ -146,7 +149,10 @@ function DefaultNavTab({data: dataWrapper}: Props) {
             refresh()
             logoutIfNeed()
         } catch (e: any) {
-            message.error(e.message)
+            notification.error({
+                message: t('Deletion error'),
+                description: e.message
+            })
         } finally {
             setLoading(false)
         }

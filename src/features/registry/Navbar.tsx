@@ -6,8 +6,6 @@ import {LogoutOutlined, UserOutlined} from '@ant-design/icons'
 // import {gql, useQuery} from '@apollo/client'
 import {ItemType} from 'antd/lib/menu/hooks/useItems'
 
-import './Navbar.css'
-import logo from 'src/logo.svg'
 import menuConfig, {MenuItem, SubMenu} from 'src/config/menu'
 import {useAuth, useRegistry} from 'src/util/hooks'
 import {ViewType} from 'src/types'
@@ -15,6 +13,8 @@ import {Item, ItemDataWrapper} from 'src/types/schema'
 import {allIcons} from 'src/util/icons'
 import {createMDITab} from 'src/util/mdi'
 import {MDIContext} from '../../components/mdi-tabs'
+import logo from 'src/logo.svg'
+import styles from './Navbar.module.css'
 
 type Props = {
     ctx: MDIContext<ItemDataWrapper>
@@ -77,10 +77,17 @@ const Navbar = ({ctx}: Props) => {
         }), [me?.roles, items, t, handleItemClick])
 
     return (
-        <Sider className="Navbar" collapsible collapsed={collapsed} width={275} onCollapse={handleToggle}>
-            <div className="Navbar-logo-wrapper">
-                <img src={logo} className="Navbar-logo" alt="logo"/>
-                {!collapsed && <span className="Navbar-logo-text">{t('SciCMS Admin')}</span>}
+        <Sider
+            className={styles.navbarSider}
+            collapsible
+            collapsed={collapsed}
+            trigger={null}
+            width={275}
+            onCollapse={handleToggle}
+        >
+            <div className={styles.navbarLogoWrapper} onClick={handleToggle}>
+                <img src={logo} className={styles.navbarLogo} alt="logo"/>
+                {!collapsed && <span className={styles.navbarLogoText}>{t('SciCMS Admin')}</span>}
             </div>
             <Spin spinning={loading}>
                 <Menu

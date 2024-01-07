@@ -5,6 +5,7 @@
 .Bi-logo-wrapper {
   height: 32px;
   margin: 16px;
+  cursor: pointer;
 }
 
 .Bi-logo {

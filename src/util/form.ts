@@ -131,6 +131,11 @@ export function filterValues(values: FilteredItemData): ItemData {
     return filteredValues as ItemData
 }
 
+export const requiredFieldRule = (message?: string) => ({
+    required: true,
+    message: i18n.t(message ?? 'Required field')
+})
+
 export const regExpRule = (regExp: RegExp, message?: string): FormRule => () => ({
     validator(_, value) {
         if (value == null || value.match(regExp))

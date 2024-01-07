@@ -1,4 +1,4 @@
-import {Button, Form, Input, message, Modal, Tooltip} from 'antd'
+import {Button, Form, Input, message, Modal, notification, Tooltip} from 'antd'
 import {FC, useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {CloseCircleOutlined, FolderOpenOutlined} from '@ant-design/icons'
@@ -69,7 +69,10 @@ const StringRelationAttributeField: FC<Props> = ({data: dataWrapper, form, attrN
             await openItem(targetItem, found[0].id)
         } catch (e: any) {
             console.error(e.message)
-            message.error(e.message)
+            notification.error({
+                message: t('Opening error'),
+                description: e.message
+            })
         } finally {
             setLoading(false)
         }

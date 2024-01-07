@@ -5,11 +5,12 @@ import {FocusEvent, KeyboardEvent, useRef, useState} from 'react'
 
 interface Props {
     value: any
+    allowClear?: boolean,
     options: DefaultOptionType[]
     onChange: (value: any) => void
 }
 
-export default function SelectableCell({value, options, onChange}: Props) {
+export default function SelectableCell({value, allowClear = false, options, onChange}: Props) {
     const [editing, setEditing] = useState(false)
     const selectInput = useRef<BaseSelectRef>(null)
 
@@ -43,7 +44,7 @@ export default function SelectableCell({value, options, onChange}: Props) {
             ref={selectInput}
             style={{minWidth: 120}}
             size="small"
-            allowClear
+            allowClear={allowClear}
             options={options}
             value={value}
             onBlur={handleBlur}

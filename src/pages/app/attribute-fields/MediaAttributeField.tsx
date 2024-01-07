@@ -1,6 +1,6 @@
 import {FC, useMemo, useRef, useState} from 'react'
 import {useTranslation} from 'react-i18next'
-import {Button, Form, Input, message, Upload} from 'antd'
+import {Button, Form, Input, notification, Upload} from 'antd'
 import {UploadOutlined} from '@ant-design/icons'
 import {RcFile, UploadFile} from 'antd/es/upload/interface'
 import {FieldType, MediaInfo} from 'src/types'
@@ -78,7 +78,10 @@ const MediaAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, form, 
             } catch (e: any) {
                 file.status = 'error'
                 setFileList([file])
-                message.error(e.message)
+                notification.error({
+                    message: t('Downloading error'),
+                    description: e.message
+                })
                 return false
             } finally {
                 setLoading(false)

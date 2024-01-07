@@ -99,7 +99,7 @@ const appConfig: AppConfig = {
                 hover: '#cccccc',
                 drag: '#cccccc'
             },
-            splitterSize: '2px'
+            splitterSize: '4px'
         }
     }
 }

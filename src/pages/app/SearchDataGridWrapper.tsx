@@ -1,7 +1,7 @@
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Row} from '@tanstack/react-table'
-import {Checkbox, message} from 'antd'
+import {Checkbox, notification} from 'antd'
 
 import appConfig from 'src/config'
 import DataGrid, {RequestParams} from 'src/components/datagrid/DataGrid'
@@ -43,7 +43,10 @@ export default function SearchDataGridWrapper({item, notHiddenColumns = [], extr
             setData(dataWithPagination)
         } catch (e: any) {
             console.error(e.message)
-            message.error(e.message)
+            notification.error({
+                message: t('Request error'),
+                description: e.message
+            })
         } finally {
             setLoading(false)
         }

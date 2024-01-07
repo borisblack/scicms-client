@@ -19,13 +19,12 @@ import {ArrowDownOutlined, ArrowUpOutlined, FolderOpenOutlined, QuestionCircleOu
 import {DefaultOptionType} from 'rc-select/lib/Select'
 
 import {AggregateType, Column, Dashboard, Dataset, IDash, QueryBlock} from '../types/bi'
-import {generateQueryBlock, getCustomFunctionsInfo, toFormQueryBlock} from '../util/bi'
+import {generateQueryBlock, getCustomFunctionsInfo, toFormQueryBlock} from './util'
 import DashFilters from './dash-filters/DashFilters'
 import {Dash, getDash, getDashIds} from '../extensions/dashes'
 import biConfig from '../config/bi'
 import {useBI} from './hooks'
 import styles from './DashboardSpec.module.css'
-import {usePrevious} from '../util/hooks'
 
 interface DashFormProps {
     dash: IDash

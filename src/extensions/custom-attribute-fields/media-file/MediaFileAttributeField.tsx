@@ -1,5 +1,5 @@
 import {FC, useCallback} from 'react'
-import {Button, message} from 'antd'
+import {Button, notification} from 'antd'
 
 import {useTranslation} from 'react-i18next'
 import {FILENAME_ATTR_NAME, MEDIA_ITEM_NAME} from '../../../config/constants'
@@ -18,7 +18,10 @@ const MediaFileAttributeField: FC<CustomAttributeFieldRenderContext> = ({data: d
             await MediaService.download(data?.id as string, value)
         } catch (e: any) {
             console.error(e.message)
-            message.error(e.message)
+            notification.error({
+                message: t('Downloading error'),
+                description: e.message
+            })
         }
     }, [data?.id, value])
 

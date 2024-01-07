@@ -20,9 +20,11 @@ export interface DatasetSpec {
 
 export interface Column {
     type: FieldType
+    custom: boolean
     source?: string
-    visible: boolean
     aggregate?: AggregateType
+    formula?: string
+    hidden: boolean
     alias?: string
     format?: FieldType.int | FieldType.float | FieldType.date | FieldType.time | FieldType.datetime
     colWidth?: string | number | null
@@ -96,8 +98,26 @@ export interface IDash {
 
 export enum AggregateType {
     count = 'count',
+    countd = 'countd',
     sum = 'sum',
     avg = 'avg',
+    min = 'min',
+    max = 'max'
+}
+
+export enum StringAggregateType {
+    count = 'count',
+    countd = 'countd',
+}
+
+export enum BoolAggregateType {
+    count = 'count',
+    countd = 'countd',
+}
+
+export enum DateTimeAggregateType {
+    count = 'count',
+    countd = 'countd',
     min = 'min',
     max = 'max'
 }

@@ -1,0 +1,10 @@
+.clickableCell {
+    min-height: 24px;
+    cursor: pointer;
+}
+
+.clickableCell:hover {
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    /*background-color: #dddddd;*/
+}

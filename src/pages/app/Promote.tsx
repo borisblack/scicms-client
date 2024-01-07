@@ -1,5 +1,6 @@
 import {useCallback, useEffect, useState} from 'react'
-import {Button, List, message, Spin} from 'antd'
+import {useTranslation} from 'react-i18next'
+import {Button, List, notification, Spin} from 'antd'
 import {RightCircleOutlined} from '@ant-design/icons'
 import {findLifecycleById} from 'src/services/lifecycle'
 import {Lifecycle} from 'src/types/schema'
@@ -18,6 +19,7 @@ interface StateItem {
 const {Item: ListItem} = List
 
 export default function Promote({lifecycleId, currentState: currentStateName, onSelect}: Props) {
+    const {t} = useTranslation()
     const [loading, setLoading] = useState(false)
     const [lifecycle, setLifecycle] = useState<Lifecycle | null>(null)
 
@@ -28,7 +30,10 @@ export default function Promote({lifecycleId, currentState: currentStateName, on
                 setLifecycle(it)
             })
             .catch((e: any) => {
-                message.error(e.message)
+                notification.error({
+                    message: t('Request error'),
+                    description: e.message
+                })
             })
             .finally(() => {
                 setLoading(false)

@@ -2,7 +2,7 @@ import React, {FC} from 'react'
 import {FilterValueFieldProps} from './index'
 import {useTranslation} from 'react-i18next'
 import {Checkbox, Form} from 'antd'
-import {isBool} from 'src/util/bi'
+import {isBool} from 'src/bi/util'
 import {QueryOp} from 'src/types/bi'
 import styles from '../DashFilters.module.css'
 

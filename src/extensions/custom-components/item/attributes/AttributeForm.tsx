@@ -1,17 +1,17 @@
 import _ from 'lodash'
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import {AutoComplete, Checkbox, Col, Form, FormInstance, Input, InputNumber, message, Row, Select} from 'antd'
-
+import {AutoComplete, Checkbox, Col, Form, FormInstance, Input, InputNumber, notification, Row, Select} from 'antd'
 import {useTranslation} from 'react-i18next'
+
 import {FieldType} from 'src/types/'
 import {RelType} from 'src/types/schema'
-import styles from './Attributes.module.css'
 import appConfig from 'src/config'
 import {regExpRule} from 'src/util/form'
 import {LOWERCASE_NO_WHITESPACE_PATTERN} from 'src/config/constants'
 import * as SequenceService from 'src/services/sequence'
 import {NamedAttribute} from './types'
 import {useRegistry} from 'src/util/hooks'
+import styles from './Attributes.module.css'
 
 interface Props {
     form: FormInstance
@@ -59,7 +59,10 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
             const sequences = await SequenceService.fetchSequencesByName(value)
             setSeqNameOptions(sequences.map(it => ({label: it.name, value: it.name})))
         } catch (e: any) {
-            message.error(e.message)
+            notification.error({
+                message: t('Request error'),
+                description: e.message
+            })
         }
     }, DEBOUNCE_WAIT_INTERVAL)
 

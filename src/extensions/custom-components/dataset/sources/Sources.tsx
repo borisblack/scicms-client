@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import {ChangeEvent, useEffect, useMemo, useState, lazy, Suspense, useRef} from 'react'
+import {ChangeEvent, useEffect, useMemo, useState, lazy, Suspense} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Checkbox, Input, Pagination, Space, Spin, Tree, Typography} from 'antd'
 import type {DataNode} from 'antd/es/tree'
@@ -15,23 +15,20 @@ import appConfig from 'src/config'
 import {useAcl} from 'src/util/hooks'
 import TableItem from './TableItem'
 import SourcesDesigner from './SourcesDesigner'
-import {FieldTypeIcon} from 'src/util/icons'
+import FieldTypeIcon from 'src/components/app/FieldTypeIcon'
 import {SourcesQueryBuildResult} from './SourcesQueryBuilder'
 import styles from './Sources.module.css'
 
-const MIN_LEFT_PANE_SIZE = '300px'
-const INITIAL_LEFT_PANE_SIZE = '400px'
+const MIN_LEFT_PANE_SIZE = '600px'
 const MIN_RIGHT_PANE_SIZE = '700px'
 const MIN_TOP_PANE_SIZE = '300px'
-const INITIAL_TOP_PANE_SIZE = '400px'
 const MIN_BOTTOM_PANE_SIZE = '300px'
-const INITIAL_BOTTOM_PANE_SIZE = '400px'
 const DEBOUNCE_WAIT_INTERVAL = 500
 
 const {Search} = Input
 const {Text} = Typography
 
-const SqlEditor = lazy(() => import('./SqlEditor'))
+const SqlEditor = lazy(() => import('src/components/sql-editor/SqlEditor'))
 
 const splitConfig = appConfig.ui.split
 const defaultPagination: IPagination = {
@@ -134,23 +131,27 @@ export default function Sources({data: dataWrapper, buffer, onBufferChange}: Cus
                 canEdit={acl.canWrite}
             />
         ),
-        children: Object.keys(table.columns).map(key => ({
-            key: `${table.name}_${key}`,
-            title: (
-                <Space>
-                    <FieldTypeIcon fieldType={table.columns[key].type}/>
-                    <Text>{key}</Text>
-                </Space>
-            ),
-            style: {height: 26}
-        }))
+        children: Object.keys(table.columns).map(key => {
+            const column = table.columns[key]
+            return {
+                key: `${table.name}_${key}`,
+                title: (
+                    <span>
+                        <FieldTypeIcon fieldType={column.type}/>
+                        &nbsp;
+                        <Text>{key}</Text>
+                    </span>
+                ),
+                // style: {height: 26}
+            }
+        })
     }))
 
     return (
         <Spin spinning={loading}>
             <Split
                 minPrimarySize={MIN_LEFT_PANE_SIZE}
-                initialPrimarySize={INITIAL_LEFT_PANE_SIZE}
+                initialPrimarySize={MIN_LEFT_PANE_SIZE}
                 minSecondarySize={MIN_RIGHT_PANE_SIZE}
                 defaultSplitterColors={splitConfig.defaultSplitterColors}
                 splitterSize={splitConfig.splitterSize}
@@ -166,6 +167,7 @@ export default function Sources({data: dataWrapper, buffer, onBufferChange}: Cus
                     </div>
 
                     <Tree
+                        className={styles.tablesTree}
                         selectable={false}
                         // switcherIcon={<DownOutlined/>}
                         treeData={treeData}
@@ -201,7 +203,7 @@ export default function Sources({data: dataWrapper, buffer, onBufferChange}: Cus
                     <Split
                         horizontal
                         minPrimarySize={MIN_TOP_PANE_SIZE}
-                        initialPrimarySize={INITIAL_TOP_PANE_SIZE}
+                        initialPrimarySize={MIN_TOP_PANE_SIZE}
                         minSecondarySize={MIN_BOTTOM_PANE_SIZE}
                         defaultSplitterColors={splitConfig.defaultSplitterColors}
                         splitterSize={splitConfig.splitterSize}
@@ -216,7 +218,8 @@ export default function Sources({data: dataWrapper, buffer, onBufferChange}: Cus
                             <Suspense fallback={null}>
                                 <SqlEditor
                                     value={editorValue}
-                                    height={INITIAL_BOTTOM_PANE_SIZE}
+                                    height={MIN_BOTTOM_PANE_SIZE}
+                                    lineNumbers
                                     canEdit={acl.canWrite && !useDesigner}
                                     onChange={handleEditorValueChange}
                                 />

@@ -10,7 +10,7 @@ interface JoinedTableModalProps {
     joinedTable: JoinedTable
     open: boolean
     canEdit: boolean
-    onChange: (joinedTable: Required<JoinedTable>) => void
+    onChange: (values: JoinsFormValues) => void
     onClose: () => void
 }
 
@@ -34,7 +34,8 @@ export default function JoinedTableModal({mainTable, joinedTable, open, canEdit,
             open={open}
             destroyOnClose
             width={800}
-            okButtonProps={{disabled: !canEdit}}
+            okButtonProps={{disabled: !canEdit, size: 'small'}}
+            cancelButtonProps={{size: 'small'}}
             onOk={() => form.submit()}
             onCancel={onClose}
         >

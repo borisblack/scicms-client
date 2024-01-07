@@ -1,7 +1,7 @@
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Row} from '@tanstack/react-table'
-import {Button, message, Modal, Space} from 'antd'
+import {Button, Modal, notification, Space} from 'antd'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
 import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined, SelectOutlined} from '@ant-design/icons'
 import appConfig from 'src/config'
@@ -80,7 +80,10 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
             setData(dataWithPagination)
         } catch (e: any) {
             console.error(e.message)
-            message.error(e.message)
+            notification.error({
+                message: t('Request error'),
+                description: e.message
+            })
         } finally {
             setLoading(false)
         }
@@ -107,7 +110,10 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
                 refresh()
             } catch (e: any) {
                 console.error(e.message)
-                message.error(e.message)
+                notification.error({
+                    message: t('Relation processing error'),
+                    description: e.message
+                })
             } finally {
                 setLoading(false)
             }
@@ -133,7 +139,10 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
                 refresh()
             } catch (e: any) {
                 console.error(e.message)
-                message.error(e.message)
+                notification.error({
+                    message: t('Relation processing error'),
+                    description: e.message
+                })
             } finally {
                 setLoading(false)
             }
@@ -195,7 +204,10 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
             refresh()
         } catch (e: any) {
             console.error(e.message)
-            message.error(e.message)
+            notification.error({
+                message: t('Deletion error'),
+                description: e.message
+            })
         } finally {
             setLoading(false)
         }
@@ -221,7 +233,10 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
             refresh()
         } catch (e: any) {
             console.error(e.message)
-            message.error(e.message)
+            notification.error({
+                message: t('Deletion error'),
+                description: e.message
+            })
         } finally {
             setLoading(false)
         }

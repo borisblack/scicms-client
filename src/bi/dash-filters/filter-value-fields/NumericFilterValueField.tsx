@@ -3,7 +3,7 @@ import {FilterValueFieldProps} from './index'
 import {useTranslation} from 'react-i18next'
 import {Form, Input, InputNumber, Space} from 'antd'
 import styles from '../DashFilters.module.css'
-import {isNumeric} from 'src/util/bi'
+import {isNumeric} from 'src/bi/util'
 import {QueryOp} from 'src/types/bi'
 import {regExpRule} from 'src/util/form'
 

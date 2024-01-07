@@ -1,6 +1,6 @@
 import {useCallback, useMemo, useState} from 'react'
 import {Row} from '@tanstack/react-table'
-import {Button, message, notification, Space} from 'antd'
+import {Button, notification, Space} from 'antd'
 
 import appConfig from 'src/config'
 import DataGrid, {RequestParams} from 'src/components/datagrid/DataGrid'
@@ -48,7 +48,10 @@ export default function OneToManyDataGridWrapper({data: dataWrapper, itemName, t
             setData(dataWithPagination)
         } catch (e: any) {
             console.error(e.message)
-            message.error(e.message)
+            notification.error({
+                message: t('Request error'),
+                description: e.message
+            })
         } finally {
             setLoading(false)
         }

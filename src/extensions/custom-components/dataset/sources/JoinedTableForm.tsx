@@ -5,7 +5,7 @@ import {DeleteOutlined, PlusCircleOutlined, TableOutlined} from '@ant-design/ico
 
 import {JoinedTable, JoinType, QueryOp, Table} from 'src/types/bi'
 import {usePrevious} from 'src/util/hooks'
-import {FieldTypeIcon} from 'src/util/icons'
+import FieldTypeIcon from 'src/components/app/FieldTypeIcon'
 import {regExpRule} from 'src/util/form'
 import styles from './JoinedTableForm.module.css'
 

@@ -95,7 +95,7 @@ function buildDateFilter(filterValue: string): ItemFilterInput<ItemData, string>
         return {gte: dt.toISODate(), lte: endDt.toISODate()}
     }
 
-    throw new Error(i18n.t('Invalid filter format'))
+    throw new Error(i18n.t('Invalid filter format.'))
 }
 
 function buildTimeFilter(filterValue: string): ItemFilterInput<ItemData, string> {
@@ -111,7 +111,7 @@ function buildTimeFilter(filterValue: string): ItemFilterInput<ItemData, string>
         return {gte: dt.toISOTime(), lte: endDt.toISOTime()}
     }
 
-    throw new Error(i18n.t('Invalid filter format'))
+    throw new Error(i18n.t('Invalid filter format.'))
 }
 
 function buildDateTimeFilter(filterValue: string): ItemFilterInput<ItemData, string> {
@@ -169,7 +169,7 @@ function buildDateTimeFilter(filterValue: string): ItemFilterInput<ItemData, str
         return {gte: dt.toISO(), lte: endDt.toISO()}
     }
 
-    throw new Error(i18n.t('Invalid filter format'))
+    throw new Error(i18n.t('Invalid filter format.'))
 }
 
 function attributePathToGraphQl(attributePath: string): string {
@@ -201,7 +201,7 @@ export default class QueryManager {
         const res = await apolloClient.query({query, variables: {id}})
         if (res.errors) {
             console.error(extractGraphQLErrorMessages(res.errors))
-            throw new Error(i18n.t('An error occurred while executing the request'))
+            throw new Error(i18n.t('An error occurred while executing the request.'))
         }
 
         return res.data[item.name]
@@ -246,7 +246,7 @@ export default class QueryManager {
         const res = await apolloClient.query({query, variables})
         if (res.errors) {
             console.error(extractGraphQLErrorMessages(res.errors))
-            throw new Error(i18n.t('An error occurred while executing the request'))
+            throw new Error(i18n.t('An error occurred while executing the request.'))
         }
 
         const responseCollection = res.data[item.pluralName] as ResponseCollection<ItemData>
@@ -268,7 +268,7 @@ export default class QueryManager {
     private buildSortExpression = (item: Item, sorting: SortingState, overrideAttributes?: {[name: string]: string}) => sorting.map(it => {
         const matchRes = it.id.match(SORT_ATTR_PATTERN)
         if (matchRes == null)
-            throw new Error(`Illegal sort attribute [${it.id}]`)
+            throw new Error(`Illegal sort attribute [${it.id}].`)
 
         const attrName = matchRes[1]
         const nestedAttrName = matchRes[2]
@@ -342,7 +342,7 @@ export default class QueryManager {
         const res = await apolloClient.query({query, variables})
         if (res.errors) {
             console.error(extractGraphQLErrorMessages(res.errors))
-            throw new Error(i18n.t('An error occurred while executing the request'))
+            throw new Error(i18n.t('An error occurred while executing the request.'))
         }
 
         return res.data[itemName].data[relAttrName]
@@ -395,7 +395,7 @@ export default class QueryManager {
 
     buildAttributeFiltersInput(attr: Attribute, filterValue: any): ItemFiltersInput<ItemData> | ItemFilterInput<ItemData, any> {
         if (attr.private || (attr.type === FieldType.relation && (attr.relType === RelType.oneToMany || attr.relType === RelType.manyToMany)))
-            throw Error('Illegal attribute')
+            throw Error('Illegal attribute.')
 
         switch (attr.type) {
             case FieldType.string:
@@ -433,7 +433,7 @@ export default class QueryManager {
                 return {filename: {containsi: filterValue}}
             case FieldType.relation:
                 if (!attr.target)
-                    throw new Error('Illegal attribute')
+                    throw new Error('Illegal attribute.')
 
                 const subItem = this.items[attr.target]
                 const {titleAttribute} = subItem
@@ -441,10 +441,10 @@ export default class QueryManager {
                     [titleAttribute]: this.buildAttributeFiltersInput(subItem.spec.attributes[titleAttribute], filterValue)
                 }
             default:
-                throw Error('Illegal attribute')
+                throw Error('Illegal attribute.')
         }
 
-        throw new Error('Illegal attribute')
+        throw new Error('Illegal attribute.')
     }
 
     findAllBy = async (item: Item, filtersInput: ItemFiltersInput<ItemData>): Promise<ItemData[]> => {
@@ -452,7 +452,7 @@ export default class QueryManager {
         const res = await apolloClient.query({query, variables: {filters: filtersInput}})
         if (res.errors) {
             console.error(extractGraphQLErrorMessages(res.errors))
-            throw new Error(i18n.t('An error occurred while executing the request'))
+            throw new Error(i18n.t('An error occurred while executing the request.'))
         }
 
         return res.data[item.pluralName].data
@@ -475,11 +475,11 @@ export default class QueryManager {
         const res = await apolloClient.query({query, variables: {configId, majorRev, locale}})
         if (res.errors) {
             console.error(extractGraphQLErrorMessages(res.errors))
-            throw new Error(i18n.t('An error occurred while executing the request'))
+            throw new Error(i18n.t('An error occurred while executing the request.'))
         }
         const data = res.data[item.pluralName].data as ItemData[]
         if (data.length > 1) {
-            throw new Error('The localization request returned more than one record')
+            throw new Error('The localization request returned more than one record.')
         }
 
         return data.length === 1 ? data[0] : null

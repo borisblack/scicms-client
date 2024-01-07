@@ -3,7 +3,7 @@ import {useTranslation} from 'react-i18next'
 import {Button, Form, FormInstance, Select, Space, Switch} from 'antd'
 import {DeleteOutlined, EyeOutlined} from '@ant-design/icons'
 import {Dataset, QueryOp} from 'src/types/bi'
-import {queryOpList, queryOpTitles} from 'src/util/bi'
+import {queryOpList, queryOpTitles} from 'src/bi/util'
 import FilterValueFieldWrapper from './FilterValueFieldWrapper'
 import styles from './DashFilters.module.css'
 

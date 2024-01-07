@@ -11,7 +11,7 @@ import {
     temporalPeriodTitles,
     temporalUnitTitles,
     timeTemporalUnits
-} from 'src/util/bi'
+} from 'src/bi/util'
 import {FieldType} from 'src/types'
 import {QueryOp, TemporalPeriod, TemporalType} from 'src/types/bi'
 import appConfig from 'src/config'

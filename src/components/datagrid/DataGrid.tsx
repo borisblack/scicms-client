@@ -1,6 +1,14 @@
 import _ from 'lodash'
-import {MouseEvent, ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
-import {ColumnFiltersState, flexRender, getCoreRowModel, Row, SortingState, useReactTable} from '@tanstack/react-table'
+import {MouseEvent, ReactNode, useCallback, useEffect, useState} from 'react'
+import {
+    ColumnFiltersState,
+    ColumnResizeMode,
+    flexRender,
+    getCoreRowModel,
+    Row,
+    SortingState,
+    useReactTable
+} from '@tanstack/react-table'
 import {Col, Dropdown, MenuProps, Pagination, Row as AntdRow, Spin} from 'antd'
 import {CaretDownFilled, CaretUpFilled} from '@ant-design/icons'
 
@@ -12,7 +20,7 @@ import {useTranslation} from 'react-i18next'
 import {exportWinFeatures, exportWinStyle, renderValue} from 'src/util/export'
 import {ItemData} from 'src/types/schema'
 
-interface Props {
+interface DataGridProps<T> {
     loading?: boolean
     columns: any[]
     data: DataWithPagination<any>
@@ -24,6 +32,8 @@ interface Props {
     version?: number
     toolbar?: ReactNode
     title?: string
+    height?: number
+    getRowId?: (originalRow: T, index: number, parent?: Row<T>) => string
     getRowContextMenu?: (row: any) => MenuProps['items']
     onRequest: (params: RequestParams) => void
     onRowDoubleClick?: (row: Row<any>) => void
@@ -53,17 +63,32 @@ interface RequestPagination {
     pageSize?: number
 }
 
-function DataGrid({loading = false, columns, data, initialState, hasFilters = true, version = 0, toolbar = null, title = '', getRowContextMenu, onRequest, onRowDoubleClick = () => {}}: Props) {
-    const initialColumnVisibilityMemoized = useMemo((): ColumnVisibility => {
+const COLUMN_RESIZE_MODE: ColumnResizeMode = 'onChange'
+const HEADER_FOOTER_HEIGHT = 184
+
+function DataGrid<T>({
+    loading = false,
+    columns,
+    data,
+    initialState,
+    hasFilters = true,
+    version = 0,
+    toolbar = null,
+    title = '',
+    height,
+    getRowId,
+    getRowContextMenu,
+    onRequest,
+    onRowDoubleClick = () => {}
+}: DataGridProps<T>) {
+    const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>(() => {
         const initialColumnVisibility: ColumnVisibility = {}
         initialState.hiddenColumns.forEach(it => {
             initialColumnVisibility[it] = false
         })
 
         return initialColumnVisibility
-    }, [initialState.hiddenColumns])
-
-    const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>(initialColumnVisibilityMemoized)
+    })
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
     const [rowSelection, setRowSelection] = useState({})
@@ -78,8 +103,9 @@ function DataGrid({loading = false, columns, data, initialState, hasFilters = tr
             columnFilters,
             rowSelection
         },
-        columnResizeMode: 'onEnd',
+        columnResizeMode: COLUMN_RESIZE_MODE,
         sortDescFirst: false,
+        getRowId,
         getCoreRowModel: getCoreRowModel(),
         // getSortedRowModel: getSortedRowModel(),
         onColumnVisibilityChange: setColumnVisibility,
@@ -150,9 +176,9 @@ function DataGrid({loading = false, columns, data, initialState, hasFilters = tr
         }
     }, [table, rowSelection])
 
-    const renderHtmlTableRow = useCallback((row: ItemData): string =>
-            `<tr>${Object.keys(row).filter(key => columnVisibility[key] !== false).map(key => `<td>${renderValue(row[key])}</td>`).join('')}</tr>`,
-        [columnVisibility]
+    const renderHtmlTableRow = useCallback((visibleColumns: string[], row: ItemData): string => {
+            return `<tr>${visibleColumns.map(key => `<td>${renderValue(row[key])}</td>`).join('')}</tr>`
+        }, []
     )
 
     const handleHtmlExport = useCallback(() => {
@@ -174,7 +200,7 @@ function DataGrid({loading = false, columns, data, initialState, hasFilters = tr
                             </tr>
                         </thead>
                         <tbody>
-                            ${data.data.map(row => renderHtmlTableRow(row)).join('')}
+                            ${data.data.map(row => renderHtmlTableRow(visibleColumns.map(col => col.accessorKey), row)).join('')}
                         </tbody>
                     </table>
                 </body>
@@ -238,7 +264,7 @@ function DataGrid({loading = false, columns, data, initialState, hasFilters = tr
                                                 {hasFilters && header.column.getCanFilter() ? <ColumnFilter column={header.column} onSubmit={() => handleFilterSubmit(header.id)}/> : null}
                                                 <div
                                                     className={`${styles.resizer} ${header.column.getIsResizing() ? styles.isResizing : ''}`}
-                                                    style={{transform: header.column.getIsResizing() ? `translateX(${table.getState().columnSizingInfo.deltaOffset}px)` : '',}}
+                                                    style={{transform: COLUMN_RESIZE_MODE === 'onEnd' && header.column.getIsResizing() ? `translateX(${table.getState().columnSizingInfo.deltaOffset}px)` : ''}}
                                                     onMouseDown={header.getResizeHandler()}
                                                     onTouchStart={header.getResizeHandler()}
                                                 />
@@ -248,7 +274,7 @@ function DataGrid({loading = false, columns, data, initialState, hasFilters = tr
                                 ))}
                                 </thead>
 
-                                <tbody className={styles.tbody}>
+                                <tbody className={styles.tbody} style={{height: height ? (height - HEADER_FOOTER_HEIGHT) : undefined}}>
                                 {table.getRowModel().rows.map(row => {
                                     const rowContent = (
                                         <tr

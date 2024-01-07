@@ -1,0 +1,11 @@
+.fieldTypeIconWrapper {
+    display: inline;
+    border: 2px solid #cccccc;
+    border-radius: 4px;
+    padding: 0 2px;
+    font-size: 9px;
+}
+
+.fieldTypeIcon {
+    color: #999999;
+}

@@ -5,26 +5,30 @@ import {DateTime} from 'luxon'
 import {notification} from 'antd'
 import {PlotEvent} from '@ant-design/plots'
 import {Plot} from '@antv/g2plot'
-import {evaluate, getInfo} from '../extensions/functions'
-import {FieldType, PrimitiveFilterInput} from '../types'
+import {evaluate, getInfo} from '../../extensions/functions'
+import {FieldType, PrimitiveFilterInput} from '../../types'
 import {
+    AggregateType,
+    BoolAggregateType,
     Column,
     Dataset,
     DatasetFiltersInput,
+    DateTimeAggregateType,
     IDash,
     LogicalOp,
     PositiveLogicalOp,
     QueryBlock,
     QueryFilter,
     QueryOp,
+    StringAggregateType,
     TemporalPeriod,
     TemporalType,
     TemporalUnit
-} from '../types/bi'
-import i18n from '../i18n'
-import appConfig from '../config'
-import biConfig from '../config/bi'
-import {assign, extract, extractSessionData} from '.'
+} from 'src/types/bi'
+import i18n from 'src/i18n'
+import appConfig from 'src/config'
+import biConfig from 'src/config/bi'
+import {assign, extract, extractSessionData} from 'src/util'
 
 const {dash: dashConfig, dateTime: dateTimeConfig} = biConfig
 const dateTimeRegExp = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.000)?(Z|([-+]00:00))?$/
@@ -87,6 +91,24 @@ export const boolQueryOps = [
     QueryOp.$null,
     QueryOp.$notNull
 ]
+
+export const datasetFieldTypes = [
+    FieldType.bool,
+    FieldType.string,
+    FieldType.text,
+    FieldType.int,
+    FieldType.long,
+    FieldType.float,
+    FieldType.double,
+    FieldType.decimal,
+    FieldType.date,
+    FieldType.time,
+    FieldType.datetime,
+    FieldType.timestamp
+]
+
+export const datasetFieldTypeOptions =
+    datasetFieldTypes.map(dft => ({label: dft, value: dft}))
 
 export const queryOpTitles: {[key: string]: string} = {
     [QueryOp.$eq]: i18n.t('equals'),
@@ -573,4 +595,62 @@ export function saveSessionFilters(dashboardId: string, dashId: string, filters:
 export function getActualFilters(dashboardId: string, dash: IDash) {
     const sessionFilters = extractSessionFilters(dashboardId, dash.id)
     return sessionFilters ?? dash.defaultFilters ?? generateQueryBlock()
+}
+
+export function getAggregateTypes(type: FieldType): AggregateType[] {
+    switch (type) {
+        case FieldType.string:
+        case FieldType.text:
+            return Object.keys(StringAggregateType) as AggregateType[]
+        case FieldType.int:
+        case FieldType.long:
+        case FieldType.float:
+        case FieldType.double:
+        case FieldType.decimal:
+            return Object.keys(AggregateType) as AggregateType[]
+        case FieldType.bool:
+            return Object.keys(BoolAggregateType) as AggregateType[]
+        case FieldType.date:
+        case FieldType.time:
+        case FieldType.datetime:
+        case FieldType.timestamp:
+            return Object.keys(DateTimeAggregateType) as AggregateType[]
+        default:
+            throw new Error('Illegal argument')
+    }
+}
+
+export const getAggregateOptions = (type: FieldType) =>
+    getAggregateTypes(type).map(aggregateType => ({label: aggregateType, value: aggregateType}))
+
+export function getFormats(type: FieldType): FieldType[] {
+    switch (type) {
+        case FieldType.float:
+        case FieldType.double:
+        case FieldType.decimal:
+            return [FieldType.int, FieldType.float] as FieldType[]
+        case FieldType.datetime:
+        case FieldType.timestamp:
+            return [FieldType.date, FieldType.time, FieldType.datetime] as FieldType[]
+        default:
+            return []
+    }
+}
+
+export const getFormatOptions = (type: FieldType) =>
+    getFormats(type).map(f => ({label: f, value: f}))
+
+export function calculateAggregationResultType(type: FieldType, aggregation: AggregateType): FieldType {
+    switch (aggregation) {
+        case AggregateType.count:
+        case AggregateType.countd:
+            return FieldType.int
+        case AggregateType.sum:
+        case AggregateType.avg:
+        case AggregateType.min:
+        case AggregateType.max:
+            return type
+        default:
+            throw new Error('Illegal argument')
+    }
 }

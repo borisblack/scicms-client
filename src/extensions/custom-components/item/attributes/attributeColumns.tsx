@@ -1,17 +1,30 @@
 import {ColumnDef, createColumnHelper} from '@tanstack/react-table'
 import {Checkbox, Tag} from 'antd'
+
 import i18n from 'src/i18n'
 import appConfig from 'src/config'
 import {FieldType} from 'src/types'
 import {RelType} from 'src/types/schema'
 import {NamedAttribute} from './types'
+import {ReactNode} from 'react'
+import FieldTypeIcon from 'src/components/app/FieldTypeIcon'
+import FieldName from 'src/components/app/FieldName'
+
+const renderAttribute = (attribute: NamedAttribute, locked?: boolean): ReactNode => (
+    <span>
+        <FieldTypeIcon fieldType={attribute.type}/>
+        &nbsp;
+        <FieldName name={attribute.name} locked={locked}/>
+    </span>
+)
 
 const columnHelper = createColumnHelper<NamedAttribute>()
-export const getAttributeColumns = (): ColumnDef<NamedAttribute, any>[] =>
+
+export const getAttributeColumns = (core: boolean): ColumnDef<NamedAttribute, any>[] =>
     [
         columnHelper.accessor('name', {
             header: i18n.t('Name'),
-            cell: info => info.getValue(),
+            cell: info => renderAttribute(info.row.original, core),
             size: appConfig.ui.dataGrid.colWidth,
             enableSorting: true
         }) as ColumnDef<NamedAttribute, string>,

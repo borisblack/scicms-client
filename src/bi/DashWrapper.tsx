@@ -1,4 +1,4 @@
-import _, {isEqual} from 'lodash'
+import _ from 'lodash'
 import React, {memo, useEffect, useMemo, useState} from 'react'
 import {Button, Dropdown, Empty, notification, Space, Spin} from 'antd'
 import {PageHeader} from '@ant-design/pro-layout'
@@ -22,16 +22,16 @@ import {
     printQueryBlock,
     toDatasetFiltersInput,
     toSingleDatasetFiltersInput
-} from '../util/bi'
+} from './util'
 import {Dash, getDash} from '../extensions/dashes'
 import biConfig from '../config/bi'
 import {DatasetFiltersInput, QueryBlock} from '../types/bi'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
 import FiltersModal from './FiltersModal'
-import styles from './DashWrapper.module.css'
-import './DashWrapper.css'
 import DashModal from './DashModal'
 import {usePrevious} from '../util/hooks'
+import styles from './DashWrapper.module.css'
+import './DashWrapper.css'
 
 const PAGE_HEADER_HEIGHT = 80
 

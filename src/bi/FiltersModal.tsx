@@ -7,7 +7,7 @@ import {
     fromFormQueryBlock,
     getCustomFunctionsInfo, saveSessionFilters,
     toFormQueryBlock
-} from '../util/bi'
+} from './util'
 import DashFilters from './dash-filters/DashFilters'
 import {Dataset, IDash, QueryBlock} from '../types/bi'
 

@@ -10,8 +10,11 @@
 }
 
 .pagination {
-    margin: 12px 4px;
+    margin: 16px 4px;
+    padding-top: 12px;
     /*text-align: right;*/
+    border-top: 1px solid #dddddd;
+    /*max-width: 800px;*/
 }
 
 .tableWrapper {
@@ -54,7 +57,8 @@
 }
 
 .tableWrapper .thead>tr>th {
-    position: relative;
+    position: sticky;
+    top: 0;
     font-weight: 600;
     text-align: start;
     background: #fafafa;
@@ -126,6 +130,11 @@
     user-select: none;
 }
 
+.tbody {
+    display: block;
+    overflow: hidden auto;
+}
+
 .tbody .tr:hover {
     background: #fefbd7;
 }
@@ -140,7 +149,7 @@
 
 .resizer {
     position: absolute;
-    right: -2px;
+    right: 0;
     top: 0;
     height: 100%;
     width: 4px;

@@ -1,7 +1,7 @@
 import React from 'react'
 import {Button, Drawer, Form, Space} from 'antd'
 
-import {fromFormQueryBlock, generateQueryBlock} from '../util/bi'
+import {fromFormQueryBlock, generateQueryBlock} from './util'
 import DashForm, {DashFormValues} from './DashForm'
 import {Dashboard, Dataset, IDash} from '../types/bi'
 import {useTranslation} from 'react-i18next'

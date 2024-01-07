@@ -75,6 +75,8 @@ export interface Pagination {
     limit?: number
     total: number
     pageCount?: number
+    timeMs?: number
+    cacheHit?: boolean
 }
 
 export enum ViewState {

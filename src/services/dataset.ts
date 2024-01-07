@@ -7,23 +7,29 @@ import {Pagination, PaginationInput} from '../types'
 import {AggregateType, Dataset, DatasetFiltersInput} from '../types/bi'
 
 export interface DatasetInput<T> {
-    filters?: DatasetFiltersInput<T>
     fields?: DatasetFieldInput[]
-    pagination?: PaginationInput
+    filters?: DatasetFiltersInput<T>
     sort?: string[]
+    pagination?: PaginationInput
     aggregate?: AggregateType
     aggregateField?: string
     groupFields?: string[]
 }
 
-interface DatasetFieldInput {
+export interface DatasetFieldInput {
     name: string
+    custom: boolean
     source?: string
+    formula?: string
     aggregate?: AggregateType
 }
 
 interface DatasetResponse<T> {
     data: T[]
+    query?: string
+    params?: Record<string, any>
+    timeMs?: number
+    cacheHit?: boolean
     meta: DatasetResponseMeta
 }
 
