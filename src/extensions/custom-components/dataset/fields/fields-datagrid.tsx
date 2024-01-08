@@ -76,13 +76,13 @@ export function getColumns({ownColumns, canEdit, onChange, onClick}: GetColumnsP
             enableSorting: true
         }) as ColumnDef<NamedColumn, FieldType>,
         columnHelper.accessor('hidden', {
-            header: i18n.t('Hidden'),
+            header: i18n.t('Show'),
             cell: info => {
                 return (
                     <CheckboxCell
-                        value={info.getValue() ?? false}
+                        value={!info.getValue()}
                         disabled={!canEdit}
-                        onChange={hidden => onChange({...info.row.original, hidden}, info.row.original.name)}
+                        onChange={visible => onChange({...info.row.original, hidden: !visible}, info.row.original.name)}
                     />
                 )
             },

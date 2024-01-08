@@ -6,6 +6,8 @@ import {FieldType} from '../types'
 import {Attribute, Item, ItemData} from '../types/schema'
 import * as MediaService from '../services/media'
 import {
+    LETTER_NO_WHITESPACE_MESSAGE,
+    LETTER_NO_WHITESPACE_PATTERN,
     LOWERCASE_NO_WHITESPACE_MESSAGE,
     LOWERCASE_NO_WHITESPACE_PATTERN,
     MINOR_REV_ATTR_NAME,
@@ -25,6 +27,11 @@ interface FilteredItemData {
     majorRev?: string
     locale?: string | null
     state?: string | null
+}
+
+const regExpMessages: Record<string, string> = {
+    [LETTER_NO_WHITESPACE_PATTERN.toString()]: LETTER_NO_WHITESPACE_MESSAGE,
+    [LOWERCASE_NO_WHITESPACE_PATTERN.toString()]: LOWERCASE_NO_WHITESPACE_MESSAGE,
 }
 
 export async function parseValues(item: Item, data: ItemData | null | undefined, values: any): Promise<ItemData> {
@@ -141,6 +148,6 @@ export const regExpRule = (regExp: RegExp, message?: string): FormRule => () => 
         if (value == null || value.match(regExp))
             return Promise.resolve()
 
-        const msg = message == null ? (regExp.toString() === LOWERCASE_NO_WHITESPACE_PATTERN.toString() ? LOWERCASE_NO_WHITESPACE_MESSAGE : null) : message
+        const msg = message ?? regExpMessages[regExp.toString()]
         return Promise.reject(new Error(msg == null ? util.format(i18n.t('String does not match pattern %s'), regExp) : i18n.t(msg)))
     }})

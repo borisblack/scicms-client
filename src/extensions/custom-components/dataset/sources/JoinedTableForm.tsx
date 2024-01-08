@@ -1,7 +1,8 @@
 import {useEffect} from 'react'
 import {useTranslation} from 'react-i18next'
-import {Button, Col, Form, Input, Row, Select, Space, Typography} from 'antd'
+import {Button, Col, Form, Input, Row, Select, Typography} from 'antd'
 import {DeleteOutlined, PlusCircleOutlined, TableOutlined} from '@ant-design/icons'
+import {FormInstance, RuleObject, RuleRender} from 'rc-field-form/es/interface'
 
 import {JoinedTable, JoinType, QueryOp, Table} from 'src/types/bi'
 import {usePrevious} from 'src/util/hooks'
@@ -27,6 +28,36 @@ export default function JoinedTableForm(props: JoinedTableFormProps) {
         if (mainTable.name !== prevMainTable?.name || joinedTable.name !== prevJoinTable?.name)
             form.resetFields()
     }, [mainTable, joinedTable])
+
+    const mainTableFieldType = (joinFieldNumber: number): RuleRender => ({getFieldValue}: FormInstance): RuleObject => ({
+        validator(_, value) {
+            const joinedTableField = getFieldValue(['joins', joinFieldNumber, 'field'])
+            if (!value || !joinedTableField)
+                return Promise.resolve()
+
+            const mainTableFieldType = mainTable.columns[value].type
+            const joinedTableFieldType = joinedTable.columns[joinedTableField].type
+            if (mainTableFieldType === joinedTableFieldType)
+                return Promise.resolve()
+
+            return Promise.reject(new Error(t('Field types do not match')))
+        },
+    })
+
+    const joinedFieldTypeRule = (joinFieldNumber: number): RuleRender => ({getFieldValue}: FormInstance): RuleObject => ({
+        validator(_, value) {
+            const mainTableField = getFieldValue(['joins', joinFieldNumber, 'mainTableField'])
+            if (!value || !mainTableField)
+                return Promise.resolve()
+
+            const mainTableFieldType = mainTable.columns[mainTableField].type
+            const joinedTableFieldType = joinedTable.columns[value].type
+            if (mainTableFieldType === joinedTableFieldType)
+                return Promise.resolve()
+
+            return Promise.reject(new Error(t('Field types do not match')))
+        },
+    })
 
     return (
         <>
@@ -82,20 +113,7 @@ export default function JoinedTableForm(props: JoinedTableFormProps) {
                                             name={[joinFieldNumber, 'mainTableField']}
                                             rules={[
                                                 {required: true, message: t('Required field')},
-                                                ({ getFieldValue }) => ({
-                                                    validator(_, value) {
-                                                        const joinedTableField = getFieldValue(['joins', joinFieldNumber, 'field'])
-                                                        if (!value || !joinedTableField)
-                                                            return Promise.resolve()
-
-                                                        const mainTableFieldType = mainTable.columns[value].type
-                                                        const joinedTableFieldType = joinedTable.columns[joinedTableField].type
-                                                        if (mainTableFieldType === joinedTableFieldType)
-                                                            return Promise.resolve()
-
-                                                        return Promise.reject(new Error(t('Field types do not match')))
-                                                    },
-                                                })
+                                                mainTableFieldType(joinFieldNumber)
                                             ]}
                                         >
                                             <Select
@@ -103,10 +121,11 @@ export default function JoinedTableForm(props: JoinedTableFormProps) {
                                                 options={Object.keys(mainTable.columns).map(col => ({
                                                     value: col,
                                                     label: (
-                                                        <Space>
+                                                        <span>
                                                             <FieldTypeIcon fieldType={mainTable.columns[col].type}/>
+                                                            &nbsp;
                                                             {col}
-                                                        </Space>
+                                                        </span>
                                                     )
                                                 }))}
                                             />
@@ -132,20 +151,7 @@ export default function JoinedTableForm(props: JoinedTableFormProps) {
                                             name={[joinFieldNumber, 'field']}
                                             rules={[
                                                 {required: true, message: t('Required field')},
-                                                ({ getFieldValue }) => ({
-                                                    validator(_, value) {
-                                                        const mainTableField = getFieldValue(['joins', joinFieldNumber, 'mainTableField'])
-                                                        if (!value || !mainTableField)
-                                                            return Promise.resolve()
-
-                                                        const mainTableFieldType = mainTable.columns[mainTableField].type
-                                                        const joinedTableFieldType = joinedTable.columns[value].type
-                                                        if (mainTableFieldType === joinedTableFieldType)
-                                                            return Promise.resolve()
-
-                                                        return Promise.reject(new Error(t('Field types do not match')))
-                                                    },
-                                                })
+                                                joinedFieldTypeRule(joinFieldNumber)
                                             ]}
                                         >
                                             <Select
@@ -153,10 +159,11 @@ export default function JoinedTableForm(props: JoinedTableFormProps) {
                                                 options={Object.keys(joinedTable.columns).map(col => ({
                                                     value: col,
                                                     label: (
-                                                        <Space>
+                                                        <span>
                                                             <FieldTypeIcon fieldType={joinedTable.columns[col].type}/>
+                                                            &nbsp;
                                                             {col}
-                                                        </Space>
+                                                        </span>
                                                     )
                                                 }))}
                                             />

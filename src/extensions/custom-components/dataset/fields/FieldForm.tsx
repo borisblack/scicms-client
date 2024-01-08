@@ -17,8 +17,10 @@ import {AggregateType, Column} from 'src/types/bi'
 import {FieldType} from 'src/types'
 import FieldTypeIcon from 'src/components/app/FieldTypeIcon'
 import FieldName from 'src/components/app/FieldName'
-import {EditorMode} from 'src/components/CodeEditor'
+import {EditorMode} from 'src/components/CodeEditor/constants'
 import styles from './FieldForm.module.css'
+import {LETTER_NO_WHITESPACE_PATTERN} from 'src/config/constants'
+import {CheckboxChangeEvent} from 'antd/es/checkbox'
 
 interface ColumnFormProps {
     field: NamedColumn,
@@ -99,6 +101,10 @@ export default function FieldForm({field, allFields, canEdit}: ColumnFormProps) 
         }
     }
 
+    function handleVisibilityChange(e: CheckboxChangeEvent) {
+        form.setFieldValue('hidden', !e.target.checked)
+    }
+
     return (
         <>
             <Form.Item
@@ -106,7 +112,7 @@ export default function FieldForm({field, allFields, canEdit}: ColumnFormProps) 
                 label={t('Name')}
                 rules={[
                     requiredFieldRule(),
-                    regExpRule(/^\w+$/),
+                    regExpRule(LETTER_NO_WHITESPACE_PATTERN),
                     uniqueNameRule
                 ]}
             >
@@ -192,9 +198,15 @@ export default function FieldForm({field, allFields, canEdit}: ColumnFormProps) 
                 onChange={handleTabsChange}
             />
 
-            <Form.Item name="hidden" valuePropName="checked">
+            <Form.Item name="hidden" hidden valuePropName="checked">
                 <Checkbox>{t('Hide')}</Checkbox>
             </Form.Item>
+            <Checkbox
+                defaultChecked={!field.hidden}
+                onChange={handleVisibilityChange}
+            >
+                {t('Show')}
+            </Checkbox>
 
             <Form.Item name="alias" label={t('Alias')}>
                 <Input/>

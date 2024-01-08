@@ -366,6 +366,7 @@ const en = {
         'String does not match pattern %s': 'String does not match pattern %s',
         'String must contain only comma-separated values': 'String must contain only comma-separated values',
         'String must contain UUID': 'String must contain UUID',
+        'String must start with a letter and contain no whitespaces': 'String must start with a letter and contain no whitespaces',
         'String must start with a lowercase letter and contain no whitespaces': 'String must start with a lowercase letter and contain no whitespaces',
         'Suffix': 'Suffix',
         'Support for single upload only': 'Support for single upload only',

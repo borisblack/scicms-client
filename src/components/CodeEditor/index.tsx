@@ -4,6 +4,7 @@ import {Editor} from 'codemirror'
 import 'codemirror/mode/sql/sql'
 import 'codemirror/mode/javascript/javascript'
 
+import {EditorMode} from './constants'
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/eclipse.css'
 import './CodeEditor.css'
@@ -16,11 +17,6 @@ interface EditorProps {
     lineWrapping?: boolean
     canEdit: boolean
     onChange?: (value: string) => void
-}
-
-export enum EditorMode {
-    JAVASCRIPT = 'javascript',
-    SQL = 'sql'
 }
 
 export default function CodeEditor({value, mode, height, lineNumbers, lineWrapping, canEdit, onChange}: EditorProps) {

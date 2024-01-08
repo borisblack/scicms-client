@@ -17,7 +17,7 @@ import TableItem from './TableItem'
 import SourcesDesigner from './SourcesDesigner'
 import FieldTypeIcon from 'src/components/app/FieldTypeIcon'
 import {SourcesQueryBuildResult} from './SourcesQueryBuilder'
-import {EditorMode} from 'src/components/CodeEditor'
+import {EditorMode} from 'src/components/CodeEditor/constants'
 import styles from './Sources.module.css'
 
 const MIN_LEFT_PANE_SIZE = '600px'

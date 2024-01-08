@@ -49,14 +49,14 @@ export function assign(src: Record<string, any>, path: string[], value: any) {
 }
 
 export function copyToClipboard(text: string, notify: boolean = true) {
-    if (notify) {
-        navigator.clipboard.writeText(text).then(() => {
+    navigator.clipboard.writeText(text).then(() => {
+        if (notify) {
             notification.info({
                 message: i18n.t('Copied to clipboard') as string,
                 description: text
             })
-        })
-    }
+        }
+    })
 }
 
 export function objectToHash(obj: Record<string, any>): number {

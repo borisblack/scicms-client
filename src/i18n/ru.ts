@@ -367,6 +367,7 @@ const ru = {
         'String does not match pattern %s': 'Строка не соответствует шаблону %s',
         'String must contain only comma-separated values': 'Строка должна содержать только значения, разделенные запятыми',
         'String must contain UUID': 'Строка должна содержать UUID',
+        'String must start with a letter and contain no whitespaces': 'Строка должна начинаться с буквы и не содержать пробелов',
         'String must start with a lowercase letter and contain no whitespaces': 'Строка должна начинаться с буквы нижнего регистра и не содержать пробелов',
         'Suffix': 'Суффикс',
         'Support for single upload only': 'Только один файл может быть загружен',
