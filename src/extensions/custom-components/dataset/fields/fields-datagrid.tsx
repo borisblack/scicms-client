@@ -86,7 +86,7 @@ export function getColumns({ownColumns, canEdit, onChange, onClick}: GetColumnsP
                     />
                 )
             },
-            size: 100,
+            size: 120,
             enableSorting: true
         }) as ColumnDef<NamedColumn, boolean>,
         columnHelper.accessor('aggregate', {
