@@ -11,7 +11,7 @@ export interface DashWrapperProps {
     extra?: DashboardExtra
     readOnly: boolean
     canEdit: boolean
-    onFullScreenChange: (fullScreen: boolean) => void
+    onLockChange: (locked: boolean) => void
     onDashChange: (dash: IDash) => void
     onDelete: () => void
 }

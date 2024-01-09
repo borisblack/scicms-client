@@ -30,6 +30,10 @@ export interface Column {
     colWidth?: string | number | null
 }
 
+export interface NamedColumn extends Column {
+    name: string
+}
+
 export interface Table {
     name: string,
     columns: Record<string, Column>

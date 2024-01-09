@@ -4,7 +4,7 @@ import {useTranslation} from 'react-i18next'
 import {Checkbox, Form, Input, InputNumber, Select, Tabs} from 'antd'
 import {FormInstance, RuleObject, RuleRender} from 'rc-field-form/es/interface'
 
-import {NamedColumn} from './types'
+import {NamedColumn} from 'src/types/bi'
 import {usePrevious} from 'src/util/hooks'
 import {regExpRule, requiredFieldRule} from 'src/util/form'
 import {

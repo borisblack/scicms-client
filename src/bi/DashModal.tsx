@@ -52,36 +52,35 @@ export default function DashModal({dash, datasetMap, dashboards, canEdit, open, 
     }
 
     return (
-            <Drawer
-                className="no-drag"
-                title={dash.name}
-                open={open}
-                destroyOnClose
-                width="60%"
-                // onOk={() => dashForm.submit()}
-                onClose={onClose}
-                extra={
-                    <Space>
-                        <Button onClick={cancelEdit}>{t('Cancel')}</Button>
-                        <Button disabled={!canEdit} type="primary" onClick={() => form.submit()}>OK</Button>
-                    </Space>
-                }
+        <Drawer
+            className="no-drag"
+            title={dash.name}
+            open={open}
+            destroyOnClose
+            width="70%"
+            // onOk={() => dashForm.submit()}
+            extra={
+                <Space>
+                    <Button onClick={cancelEdit}>{t('Cancel')}</Button>
+                    <Button disabled={!canEdit} type="primary" onClick={() => form.submit()}>OK</Button>
+                </Space>
+            }
+            onClose={onClose}
+        >
+            <Form
+                form={form}
+                size="small"
+                layout="vertical"
+                disabled={!canEdit}
+                onFinish={handleFormFinish}
             >
-                <Form
-                    form={form}
-                    size="small"
-                    layout="vertical"
-                    disabled={!canEdit}
-                    onFinish={handleFormFinish}
-                >
-                    <DashForm
-                        dash={dash}
-                        datasetMap={datasetMap}
-                        dashboards={dashboards}
-                        canEdit={canEdit}
-                    />
-                </Form>
-            </Drawer>
-
+                <DashForm
+                    dash={dash}
+                    datasetMap={datasetMap}
+                    dashboards={dashboards}
+                    canEdit={canEdit}
+                />
+            </Form>
+        </Drawer>
     )
 }

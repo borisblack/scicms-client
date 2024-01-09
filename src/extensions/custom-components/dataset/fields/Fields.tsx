@@ -11,7 +11,7 @@ import DataGrid, {DataWithPagination, RequestParams} from 'src/components/datagr
 import appConfig from 'src/config'
 import {getInitialData, processLocal} from 'src/util/datagrid'
 import {Column, Dataset, DatasetSpec} from 'src/types/bi'
-import {NamedColumn} from './types'
+import {NamedColumn} from 'src/types/bi'
 import {getColumns} from './fields-datagrid'
 import {useAcl} from 'src/util/hooks'
 import DataPreview from './DataPreview'

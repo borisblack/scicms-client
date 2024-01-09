@@ -2,7 +2,7 @@ import React from 'react'
 import {useTranslation} from 'react-i18next'
 import {Form, Modal} from 'antd'
 
-import {NamedColumn} from './types'
+import {NamedColumn} from 'src/types/bi'
 import FieldForm from './FieldForm'
 import {Column} from 'src/types/bi'
 

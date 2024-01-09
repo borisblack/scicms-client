@@ -41,11 +41,11 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
     const {datasets, dashboards} = useBI({withDatasets: true, withDashboards: true})
     const datasetMap = useMemo(() => _.mapKeys(datasets, ds => ds.name), [datasets])
     const spec: IDashboardSpec = buffer.spec ?? data?.spec ?? initialSpec
-    const selfDashboard = {...data, spec} as Dashboard
+    const thisDashboard = {...data, spec} as Dashboard
     const allDashes = spec.dashes?.map(dash => ({...dash, id: dash.id ?? uuidv4()})) ?? []
     const activeDash = useRef<IDash>()
-    const [isFullScreen, setFullScreen] = useState<boolean>(false)
-    const isNew = !selfDashboard.id
+    const [isLocked, setLocked] = useState<boolean>(false)
+    const isNew = !thisDashboard.id
 
     useEffect(() => {
         onBufferChange({
@@ -82,6 +82,9 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
     }
 
     function handleLayoutChange(layouts: Layout[]) {
+        if (layouts.length !== _.size(allDashes))
+            return
+
         const newSpec: IDashboardSpec = {
             dashes: layouts.map((layout, i) => {
                 const curDash = allDashes[i]
@@ -109,7 +112,9 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
             })
         }
 
-        onBufferChange({spec: newSpec})
+        onBufferChange({
+            spec: newSpec
+        })
     }
 
     function selectDash(dash: IDash) {
@@ -125,7 +130,9 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
             dashes: allDashes.filter(it => it.id !== id)
         }
 
-        onBufferChange({spec: newSpec})
+        onBufferChange({
+            spec: newSpec
+        })
     }
 
     function handleDashChange(updatedDash: IDash) {
@@ -136,7 +143,9 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
         const newSpec = {
             dashes: allDashes.map(dash => dash.id === updatedDash.id ? updatedDash : dash)
         }
-        onBufferChange({spec: newSpec})
+        onBufferChange({
+            spec: newSpec
+        })
     }
 
     function renderDash(dash: IDash) {
@@ -153,12 +162,12 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
                     datasetMap={datasetMap}
                     dashboards={dashboards}
                     dataset={dataset}
-                    dashboard={selfDashboard}
+                    dashboard={thisDashboard}
                     dash={dash}
                     extra={extra}
                     readOnly={readOnly ?? false}
                     canEdit={acl.canWrite}
-                    onFullScreenChange={setFullScreen}
+                    onLockChange={setLocked}
                     onDashChange={handleDashChange}
                     onDelete={() => removeDash(dash.id)}
                 />
@@ -167,19 +176,16 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
     }
 
     const layout: Layout[] = allDashes.map(it => {
-        const isItemEditable = activeDash.current && it.id === activeDash.current?.id && isFullScreen
         return {
             i: it.name,
             x: it.x,
             y: it.y,
             w: it.w,
-            h: it.h,
-            isDraggable: isItemEditable ? false : undefined,
-            isResizable: isItemEditable ? false : undefined
+            h: it.h
         }
     })
 
-    const isGridEditable = !readOnly && acl.canWrite
+    const isGridEditable = !readOnly && acl.canWrite && !isLocked
     return (
         <>
             {extra && extra.queryFilter && (

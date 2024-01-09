@@ -45,7 +45,7 @@ function DashWrapper(props: DashWrapperProps) {
         dash,
         readOnly,
         canEdit,
-        onFullScreenChange,
+        onLockChange,
         onDashChange,
         onDelete,
     } = props
@@ -142,7 +142,21 @@ function DashWrapper(props: DashWrapperProps) {
 
     const handleFullScreenChange = (fullScreen: boolean) => {
         setFullScreen(fullScreen)
-        onFullScreenChange(fullScreen)
+        onLockChange(fullScreen)
+    }
+
+    function handleDashModalOpen() {
+        if (!fullScreen)
+            onLockChange(true)
+
+        setOpenDashModal(true)
+    }
+
+    function handleDashModalClose() {
+        if (!fullScreen)
+            onLockChange(false)
+
+        setOpenDashModal(false)
     }
 
     const renderTitle = () => dash.name + (dash.unit ? `, ${dash.unit}` : '')
@@ -169,7 +183,7 @@ function DashWrapper(props: DashWrapperProps) {
                 key: 'edit',
                 label: <Space><EditOutlined/>{t('Edit')}</Space>,
                 // disabled: !canEdit,
-                onClick: () => setOpenDashModal(true)
+                onClick: handleDashModalOpen
             })
             menuItems.push({
                 key: 'delete',
@@ -284,7 +298,7 @@ function DashWrapper(props: DashWrapperProps) {
                 open={openDashModal}
                 canEdit={canEdit}
                 onChange={onDashChange}
-                onClose={() => setOpenDashModal(false)}
+                onClose={handleDashModalClose}
             />
         </>
     )
