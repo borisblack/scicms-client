@@ -1,5 +1,5 @@
 import React, {useCallback} from 'react'
-import {Checkbox, Dropdown, Popover, Space, Tooltip} from 'antd'
+import {Button, Checkbox, Dropdown, Popover, Space, Tooltip} from 'antd'
 import {ClearOutlined, ExportOutlined, Html5Outlined, ReloadOutlined, SettingOutlined} from '@ant-design/icons'
 import {Table} from '@tanstack/react-table'
 import {useTranslation} from 'react-i18next'
@@ -31,12 +31,20 @@ function Toolbar({table, hasFilters, onRefresh, onClearFilters, onHtmlExport}: P
     return (
         <div className={styles.toolbar}>
             <Tooltip title={t('Refresh')}>
-                <ReloadOutlined className={styles.toolbarBtn} onClick={onRefresh}/>
+                <Button
+                    icon={<ReloadOutlined/>}
+                    type="text"
+                    onClick={onRefresh}
+                />
             </Tooltip>
 
             {hasFilters && (
                 <Tooltip title={t('Clear filters')}>
-                    <ClearOutlined className={styles.toolbarBtn} onClick={onClearFilters}/>
+                    <Button
+                        icon={<ClearOutlined/>}
+                        type="text"
+                        onClick={onClearFilters}
+                    />
                 </Tooltip>
             )}
 
@@ -57,13 +65,19 @@ function Toolbar({table, hasFilters, onRefresh, onClearFilters, onHtmlExport}: P
                     placement='leftTop'
                     trigger='click'
                 >
-                    <SettingOutlined className={styles.toolbarBtn}/>
+                    <Button
+                        icon={<SettingOutlined/>}
+                        type="text"
+                    />
                 </Popover>
             </Tooltip>
 
             <Tooltip title={t('Export')}>
                 <Dropdown placement="bottomLeft" trigger={['click']} menu={{items: getExportMenu()}}>
-                    <ExportOutlined className={styles.toolbarBtn} title={t('Export')}/>
+                    <Button
+                        icon={<ExportOutlined/>}
+                        type="text"
+                    />
                 </Dropdown>
             </Tooltip>
         </div>
