@@ -1,5 +1,5 @@
 import {Dash} from '../index'
-import LineDash from './LineDash'
+import LineDashSuspense from './LineDashSuspense'
 import LineDashOptionsForm from './LineDashOptionsForm'
 
 const DASH_ID = 'line'
@@ -7,5 +7,5 @@ const DASH_ID = 'line'
 export const line: Dash = {
     id: DASH_ID,
     renderOptionsForm: (props) => <LineDashOptionsForm {...props}/>,
-    render: ({context}) => <LineDash {...context}/>
+    render: ({context}) => <LineDashSuspense {...context}/>
 }

@@ -3,7 +3,7 @@ import {Col, Form, Input, Popover, Row, Select, Space} from 'antd'
 import React from 'react'
 import {useTranslation} from 'react-i18next'
 import styles from '../DashOptionForm.module.css'
-import TransferInput from '../../../components/transfer-input/TransferInput'
+import TransferInput from '../../../components/TransferInput'
 import {QuestionCircleOutlined} from '@ant-design/icons'
 import RulesHelp from '../../../bi/RulesHelp'
 

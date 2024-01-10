@@ -24,7 +24,7 @@ import QueryManager from 'src/services/query'
 import MutationManager from 'src/services/mutation'
 import {useTranslation} from 'react-i18next'
 import {notification} from 'antd'
-import {useMDIContext} from '../components/mdi-tabs/hooks'
+import {useMDIContext} from '../components/MDITabs/hooks'
 import {createMDITab, generateKeyById} from './mdi'
 
 export const useAppDispatch: () => AppDispatch = useDispatch

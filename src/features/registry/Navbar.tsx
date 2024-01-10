@@ -10,11 +10,11 @@ import menuConfig, {MenuItem, SubMenu} from 'src/config/menu'
 import {useAuth, useRegistry} from 'src/util/hooks'
 import {ViewType} from 'src/types'
 import {Item, ItemDataWrapper} from 'src/types/schema'
-import {allIcons} from 'src/util/icons'
 import {createMDITab} from 'src/util/mdi'
-import {MDIContext} from '../../components/mdi-tabs'
+import {MDIContext} from '../../components/MDITabs'
 import logo from 'src/logo.svg'
 import styles from './Navbar.module.css'
+import Icon from '../../components/icons/Icon'
 
 type Props = {
     ctx: MDIContext<ItemDataWrapper>
@@ -57,20 +57,18 @@ const Navbar = ({ctx}: Props) => {
         .filter(it => !('itemName' in it) || items[it.itemName])
         .map(it => {
             if ('children' in it) {
-                const Icon = it.icon ? allIcons[it.icon] : null
                 return {
                     key: it.key,
                     label: t(it.label),
-                    icon: Icon ? <Icon/> : null,
+                    icon: <span><Icon iconName={it.icon}/></span>,
                     children: toAntdMenuItems(it.children)
                 }
             } else {
                 const item = items[it.itemName]
-                const Icon = item.icon ? allIcons[item.icon] : null
                 return {
                     key: item.id,
                     label: t(item.displayPluralName),
-                    icon: Icon ? <Icon/> : null,
+                    icon: <span><Icon iconName={item.icon}/></span>,
                     onClick: () => handleItemClick(item)
                 }
             }

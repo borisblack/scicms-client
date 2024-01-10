@@ -3,10 +3,10 @@ import {ViewType} from '../types'
 import {Item, ItemData, ItemDataWrapper} from '../types/schema'
 import {objectToHash} from './index'
 import React, {ReactNode} from 'react'
-import {allIcons} from './icons'
 import {ID_ATTR_NAME} from '../config/constants'
 import i18n from '../i18n'
-import {MDITabObservable} from '../components/mdi-tabs'
+import {MDITabObservable} from '../components/MDITabs'
+import Icon from '../components/icons/Icon'
 
 const tempIds: Record<string, number> = {}
 
@@ -39,12 +39,11 @@ export function generateKeyById(itemName: string, viewType: ViewType, id?: strin
 
 export function generateLabel(data: ItemDataWrapper): ReactNode {
     const {item, viewType, extra} = data
-    const Icon = (viewType === ViewType.default) ? SearchOutlined : (item.icon ? allIcons[item.icon] : null)
     const title = getTitle(data)
 
     return (
         <span className="mdi-tab-label" title={title}>
-            {Icon && <Icon/>}
+            {(viewType === ViewType.default) ? <SearchOutlined/> : <Icon iconName={item.icon}/>}
             {title}
             {extra && <ExclamationCircleOutlined className="tab-label-suffix orange"/>}
         </span>

@@ -1,5 +1,5 @@
 import {useCallback, useEffect} from 'react'
-import {MDIContext, MDITabObservable} from 'src/components/mdi-tabs'
+import {MDIContext, MDITabObservable} from 'src/components/MDITabs'
 import {useAppDispatch, useAppSelector} from 'src/util/hooks'
 import {
     selectActiveKey,

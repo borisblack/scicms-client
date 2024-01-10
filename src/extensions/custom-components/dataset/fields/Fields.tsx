@@ -4,7 +4,7 @@ import {useTranslation} from 'react-i18next'
 import {Button, Space, Typography} from 'antd'
 import {PlusCircleOutlined} from '@ant-design/icons'
 
-import {Split} from 'src/components/split/Split'
+import {Split} from 'src/components/Split'
 import {CustomComponentRenderContext} from 'src/extensions/custom-components'
 import {DATASET_ITEM_NAME} from 'src/config/constants'
 import DataGrid, {DataWithPagination, RequestParams} from 'src/components/datagrid/DataGrid'

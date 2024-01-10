@@ -1,5 +1,5 @@
 import {Dash} from '../index'
-import PieDash from './PieDash'
+import PieDashSuspense from './PieDashSuspense'
 import PieDashOptionsForm from './PieDashOptionsForm'
 
 const DASH_ID = 'pie'
@@ -7,5 +7,5 @@ const DASH_ID = 'pie'
 export const pie: Dash = {
     id: DASH_ID,
     renderOptionsForm: (props) => <PieDashOptionsForm {...props}/>,
-    render: ({context}) => <PieDash {...context}/>
+    render: ({context}) => <PieDashSuspense {...context}/>
 }

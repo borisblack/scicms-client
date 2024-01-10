@@ -1,15 +1,14 @@
 import _ from 'lodash'
-import {lazy, memo, Suspense, useMemo} from 'react'
+import {useMemo} from 'react'
 import {Alert} from 'antd'
-import {RadarConfig} from '@ant-design/charts'
-import {DashEventHandler, DashRenderContext} from '../index'
+import {Radar, RadarConfig} from '@ant-design/charts'
+
+import {DashEventHandler, DashRenderContext} from '..'
 import {defaultDashColor, defaultDashColors, formatValue, handleDashClick, isTemporal} from 'src/bi/util'
 import {LegendPosition} from '../util'
 import biConfig from 'src/config/bi'
 import * as RulesService from 'src/services/rules'
 import {useBI} from '../../../bi/hooks'
-
-const Radar = lazy(() => import('./Radar'))
 
 interface RadarDashOptions {
     xField?: string
@@ -25,7 +24,7 @@ const {dash: dashConfig, locale} = biConfig
 const axisLabelStyle = dashConfig?.all?.axisLabelStyle
 const legendConfig = dashConfig?.all?.legend
 
-function RadarDash({dataset, dash, data}: DashRenderContext) {
+export default function RadarDash({dataset, dash, data}: DashRenderContext) {
     const {openDashboard} = useBI()
     const {optValues, relatedDashboardId} = dash
     const {
@@ -106,11 +105,5 @@ function RadarDash({dataset, dash, data}: DashRenderContext) {
         onEvent: handleEvent
     }
 
-    return (
-        <Suspense fallback={null}>
-            <Radar {...config} key={relatedDashboardId}/>
-        </Suspense>
-    )
+    return <Radar {...config} key={relatedDashboardId}/>
 }
-
-export default memo(RadarDash)

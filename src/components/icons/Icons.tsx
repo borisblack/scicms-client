@@ -1,7 +1,8 @@
 import {Col, Row, Tabs} from 'antd'
-import {allFaIcons, antdIcons} from '../../util/icons'
 import {FC} from 'react'
 import {copyToClipboard} from '../../util'
+import {useCache} from '../../util/hooks'
+import {loadAntdIcons, loadAllFaIcons} from './loaders'
 
 interface Props {
     height?: number | string
@@ -9,6 +10,12 @@ interface Props {
 }
 
 export default function Icons({height, onSelect = copyToClipboard}: Props) {
+    const {data: antdIcons} = useCache<Record<string, any>>(loadAntdIcons)
+    const {data: allFaIcons} = useCache<Record<string, any>>(loadAllFaIcons)
+
+    if (!antdIcons || !allFaIcons)
+        return null
+
     const renderIcons = (icons: Record<string, FC>) => (
         <div style={{height, overflowY: 'scroll'}}>
             <Row>

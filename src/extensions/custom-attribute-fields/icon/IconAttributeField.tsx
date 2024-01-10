@@ -6,7 +6,7 @@ import {FieldType} from 'src/types'
 import {ICON_ATTR_NAME} from 'src/config/constants'
 import {CustomAttributeFieldRenderContext} from '..'
 import styles from '../CustomAttributeField.module.css'
-import Icon from 'src/components/icon/Icon'
+import Icon from 'src/components/icons/Icon'
 import Icons from 'src/components/icons/Icons'
 import {generateKey} from 'src/util/mdi'
 

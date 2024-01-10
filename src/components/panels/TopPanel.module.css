@@ -1,0 +1,28 @@
+.topPanelSticker {
+    position: fixed;
+    top: 0;
+    left: 45%;
+    background-color: #fff;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    border-bottom-left-radius: 2px;
+    border-bottom-right-radius: 2px;
+    font-size: 0.9em;
+    font-weight: 600;
+    padding: 4px 8px;
+    cursor: pointer;
+    z-index: 11;
+}
+
+.topPanel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: #fff;
+    height: 0;
+    z-index: 11;
+    border-bottom: 1px solid #ccc;
+    overflow: auto;
+}

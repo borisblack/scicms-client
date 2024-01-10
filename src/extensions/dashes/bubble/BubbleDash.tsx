@@ -1,15 +1,14 @@
 import _ from 'lodash'
-import {lazy, memo, Suspense, useMemo} from 'react'
+import {useMemo} from 'react'
 import {Alert} from 'antd'
-import {ScatterConfig} from '@ant-design/charts'
+import {Scatter, ScatterConfig} from '@ant-design/charts'
+
 import {defaultDashColor, defaultDashColors, formatValue, handleDashClick, isTemporal} from 'src/bi/util'
-import {DashEventHandler, DashRenderContext} from '../index'
+import {DashEventHandler, DashRenderContext} from '..'
 import biConfig from 'src/config/bi'
 import {LegendPosition} from '../util'
 import * as RulesService from 'src/services/rules'
-import {useBI} from '../../../bi/hooks'
-
-const Scatter = lazy(() => import('./Scatter'))
+import {useBI} from 'src/bi/hooks'
 
 interface BubbleDashOptions {
     xField?: string
@@ -26,7 +25,7 @@ const {dash: dashConfig, locale} = biConfig
 const axisLabelStyle = dashConfig?.all?.axisLabelStyle
 const legendConfig = dashConfig?.all?.legend
 
-function BubbleDash({dataset, dash, data}: DashRenderContext) {
+export default function BubbleDash({dataset, dash, data}: DashRenderContext) {
     const {openDashboard} = useBI()
     const {optValues, relatedDashboardId} = dash
     const {
@@ -128,11 +127,5 @@ function BubbleDash({dataset, dash, data}: DashRenderContext) {
         onEvent: handleEvent
     }
 
-    return (
-        <Suspense fallback={null}>
-            <Scatter {...config} key={relatedDashboardId}/>
-        </Suspense>
-    )
+    return <Scatter {...config} key={relatedDashboardId}/>
 }
-
-export default memo(BubbleDash)

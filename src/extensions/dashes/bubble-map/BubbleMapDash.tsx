@@ -3,14 +3,15 @@ import {memo, useCallback, useEffect, useMemo, useRef} from 'react'
 import {Alert} from 'antd'
 import {v4 as uuidv4} from 'uuid'
 import L, {LatLngExpression} from 'leaflet'
+
 import {DashRenderContext} from '../index'
 import * as RulesService from 'src/services/rules'
 import {defaultDashColor, defaultDashColors} from 'src/bi/util'
 import biConfig from 'src/config/bi'
 import {MAX_LAT, MAX_LNG, MIN_LAT, MIN_LNG} from '.'
 import {QueryFilter, QueryOp} from 'src/types/bi'
+import {useBI} from 'src/bi/hooks'
 import 'leaflet/dist/leaflet.css'
-import {useBI} from '../../../bi/hooks'
 
 interface BubbleMapDashOptions {
     latitudeField?: string

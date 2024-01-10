@@ -12,14 +12,14 @@ import {ItemDataWrapper} from 'src/types/schema'
 import {Dashboard, DashboardCategory, DashboardExtra} from 'src/types/bi'
 import biConfig from 'src/config/bi'
 import * as DashboardCategoryService from 'src/services/dashboard-category'
-import {allIcons} from 'src/util/icons'
 import {DASHBOARD_ITEM_NAME, EMPTY_ARRAY} from 'src/config/constants'
-import MDITabs from 'src/components/mdi-tabs/MDITabs'
+import MDITabs from 'src/components/MDITabs'
 import {createMDITab, generateLabel} from 'src/util/mdi'
 import DashboardSpec from 'src/bi/DashboardSpec'
 import {useNewMDIContextRedux} from 'src/features/mdi/hooks'
 import './Bi.css'
 import logo from 'src/logo.svg'
+import Icon from '../../components/icons/Icon'
 
 const {Content, Sider} = Layout
 
@@ -117,7 +117,7 @@ function Bi() {
         ...dashboardCategoryList.map(category => ({
             key: `${prefix}#${category.id}`,
             label: category.name,
-            icon: category.icon ? allIcons[category.icon] : <FolderOutlined />,
+            icon: category.icon ? <Icon iconName={category.icon}/> : <FolderOutlined />,
             children: mapDashboardMenuItems(
                 `${prefix}#${category.id}`,
                 category.childCategories.data

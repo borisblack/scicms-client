@@ -1,4 +1,4 @@
-import {MDIObservable} from '../../components/mdi-tabs'
+import {MDIObservable} from '../../components/MDITabs'
 
 const defaultObservable: MDIObservable<any> = {
     onUpdate: [],

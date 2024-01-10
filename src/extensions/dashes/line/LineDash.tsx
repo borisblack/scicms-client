@@ -1,15 +1,14 @@
 import _ from 'lodash'
-import {lazy, memo, Suspense, useMemo} from 'react'
+import {useMemo} from 'react'
 import {Alert} from 'antd'
-import {LineConfig} from '@ant-design/charts'
-import {DashEventHandler, DashRenderContext} from '../index'
+import {Line, LineConfig} from '@ant-design/charts'
+
+import {DashEventHandler, DashRenderContext} from '..'
 import {defaultDashColor, defaultDashColors, formatValue, handleDashClick, isTemporal} from 'src/bi/util'
 import {LegendPosition} from '../util'
 import biConfig from 'src/config/bi'
 import * as RulesService from 'src/services/rules'
-import {useBI} from '../../../bi/hooks'
-
-const Line = lazy(() => import('./Line'))
+import {useBI} from 'src/bi/hooks'
 
 interface LineDashOptions {
     xField?: string
@@ -25,7 +24,7 @@ const {dash: dashConfig, locale} = biConfig
 const axisLabelStyle = dashConfig?.all?.axisLabelStyle
 const legendConfig = dashConfig?.all?.legend
 
-function LineDash({dataset, dash, data}: DashRenderContext) {
+export default function LineDash({dataset, dash, data}: DashRenderContext) {
     const {openDashboard} = useBI()
     const {optValues, relatedDashboardId} = dash
     const {
@@ -102,11 +101,5 @@ function LineDash({dataset, dash, data}: DashRenderContext) {
         onEvent: handleEvent
     }
 
-    return (
-        <Suspense fallback={null}>
-            <Line {...config} key={relatedDashboardId}/>
-        </Suspense>
-    )
+    return <Line {...config} key={relatedDashboardId}/>
 }
-
-export default memo(LineDash)

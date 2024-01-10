@@ -1,21 +1,6 @@
-import {
-    FaAsterisk,
-    FaCalendarDays,
-    FaCheck,
-    FaE,
-    FaEnvelope,
-    FaHashtag,
-    FaJ,
-    FaLink,
-    FaList,
-    FaPhotoFilm,
-    FaQuestion,
-    FaT,
-    FaU
-} from 'react-icons/fa6'
-import {FaCalendarTimes, FaSortNumericUp} from 'react-icons/fa'
 import {FieldType} from 'src/types'
 import styles from './FieldTypeIcon.module.css'
+import Icon from 'src/components/icons/Icon'
 
 interface FieldTypeIconProps {
     fieldType: FieldType
@@ -31,38 +16,38 @@ export default function FieldTypeIcon({fieldType}: FieldTypeIconProps) {
             case FieldType.float:
             case FieldType.double:
             case FieldType.decimal:
-                return <FaHashtag size={ICON_SIZE} className={styles.fieldTypeIcon}/>
+                return <Icon iconName="FaHashtag" size={ICON_SIZE} className={styles.fieldTypeIcon}/>
             case FieldType.string:
             case FieldType.text:
-                return <FaT size={ICON_SIZE} className={styles.fieldTypeIcon}/>
+                return <Icon iconName="FaT" size={ICON_SIZE} className={styles.fieldTypeIcon}/>
             case FieldType.bool:
-                return <FaCheck size={ICON_SIZE} className={styles.fieldTypeIcon}/>
+                return <Icon iconName="FaCheck" size={ICON_SIZE} className={styles.fieldTypeIcon}/>
             case FieldType.date:
             case FieldType.datetime:
             case FieldType.timestamp:
-                return <FaCalendarDays size={ICON_SIZE} className={styles.fieldTypeIcon}/>
+                return <Icon iconName="FaCalendarDays" size={ICON_SIZE} className={styles.fieldTypeIcon}/>
             case FieldType.time:
-                return <FaCalendarTimes size={ICON_SIZE} className={styles.fieldTypeIcon}/>
+                return <Icon iconName="FaCalendarTimes" size={ICON_SIZE} className={styles.fieldTypeIcon}/>
             case FieldType.uuid:
-                return <FaU size={ICON_SIZE} className={styles.fieldTypeIcon}/>
+                return <Icon iconName="FaU" size={ICON_SIZE} className={styles.fieldTypeIcon}/>
             case FieldType.sequence:
-                return <FaSortNumericUp size={ICON_SIZE} className={styles.fieldTypeIcon}/>
+                return <Icon iconName="FaSortNumericUp" size={ICON_SIZE} className={styles.fieldTypeIcon}/>
             case FieldType.email:
-                return <FaEnvelope size={ICON_SIZE} className={styles.fieldTypeIcon}/>
+                return <Icon iconName="FaEnvelope" size={ICON_SIZE} className={styles.fieldTypeIcon}/>
             case FieldType.enum:
-                return <FaE size={ICON_SIZE} className={styles.fieldTypeIcon}/>
+                return <Icon iconName="FaE" size={ICON_SIZE} className={styles.fieldTypeIcon}/>
             case FieldType.password:
-                return <FaAsterisk size={ICON_SIZE} className={styles.fieldTypeIcon}/>
+                return <Icon iconName="FaAsterisk" size={ICON_SIZE} className={styles.fieldTypeIcon}/>
             case FieldType.array:
-                return <FaList size={ICON_SIZE} className={styles.fieldTypeIcon}/>
+                return <Icon iconName="FaList" size={ICON_SIZE} className={styles.fieldTypeIcon}/>
             case FieldType.json:
-                return <FaJ size={ICON_SIZE} className={styles.fieldTypeIcon}/>
+                return <Icon iconName="FaJ" size={ICON_SIZE} className={styles.fieldTypeIcon}/>
             case FieldType.media:
-                return <FaPhotoFilm size={ICON_SIZE} className={styles.fieldTypeIcon}/>
+                return <Icon iconName="FaPhotoFilm" size={ICON_SIZE} className={styles.fieldTypeIcon}/>
             case FieldType.relation:
-                return <FaLink size={ICON_SIZE} className={styles.fieldTypeIcon}/>
+                return <Icon iconName="FaLink" size={ICON_SIZE} className={styles.fieldTypeIcon}/>
             default:
-                return <FaQuestion size={ICON_SIZE} className={styles.fieldTypeIcon}/>
+                return <Icon iconName="FaQuestion" size={ICON_SIZE} className={styles.fieldTypeIcon}/>
         }
     }
 

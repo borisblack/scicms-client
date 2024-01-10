@@ -15,7 +15,7 @@ import {
     SettingOutlined,
     SyncOutlined
 } from '@ant-design/icons'
-import FullScreen from '../components/fullscreen/FullScreen'
+import FullScreen from '../components/FullScreen'
 import * as DatasetService from '../services/dataset'
 import {
     getActualFilters,

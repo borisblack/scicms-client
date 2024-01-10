@@ -1,1 +1,0 @@
-export {Scatter as default} from '@ant-design/charts'

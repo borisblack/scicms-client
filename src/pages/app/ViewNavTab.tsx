@@ -28,11 +28,11 @@ import {
 } from 'src/config/constants'
 import RelationsDataGridWrapper from './RelationsDataGridWrapper'
 import {ApiMiddlewareContext, ApiOperation, handleApiMiddleware, hasApiMiddleware} from 'src/extensions/api-middleware'
-import {allIcons} from 'src/util/icons'
 import {exportWinFeatures, exportWinStyle, renderValue} from 'src/util/export'
 import {useAuth, useFormAcl, useMutationManager, useQueryManager, useRegistry} from 'src/util/hooks'
-import {useMDIContext} from 'src/components/mdi-tabs/hooks'
+import {useMDIContext} from 'src/components/MDITabs/hooks'
 import {generateKey} from 'src/util/mdi'
+import Icon from '../../components/icons/Icon'
 
 interface Props {
     data: ItemDataWrapper
@@ -434,11 +434,10 @@ function ViewNavTab({data: dataWrapper}: Props) {
 
     const getComponentTabs = useCallback((mountPoint: string): Tab[] =>
         getComponents(mountPoint).map(component => {
-            const Icon = component.icon ? allIcons[component.icon] : null
             const title = t(component.title ?? 'Untitled')
             return {
                 key: component.id,
-                label: Icon ? <span><Icon/>&nbsp;{title}</span> : title,
+                label: <span><Icon iconName={component.icon}/>&nbsp;{title}</span>,
                 children: component.render({context: customComponentContext})
             }
 
@@ -459,11 +458,10 @@ function ViewNavTab({data: dataWrapper}: Props) {
                     throw new Error('Illegal attribute target')
 
                 const target = itemMap[attribute.target]
-                const TargetIcon = target.icon && allIcons[target.icon]
                 const title = t(attribute.displayName)
                 return {
                     key: key,
-                    label: TargetIcon ? <span><TargetIcon/>{title}</span> : title,
+                    label: <span><Icon iconName={target.icon}/>{title}</span>,
                     children: (
                         <RelationsDataGridWrapper
                             data={dataWrapper}
