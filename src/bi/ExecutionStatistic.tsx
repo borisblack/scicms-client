@@ -1,10 +1,10 @@
-import React, {lazy, Suspense} from 'react'
 import {useTranslation} from 'react-i18next'
 import {format as formatSql} from 'sql-formatter'
 import {Descriptions, Space, Typography} from 'antd'
 import {CopyOutlined} from '@ant-design/icons'
 
-import {EditorMode} from '../components/CodeEditor/constants'
+import CodeEditor from '../components/CodeEditor'
+import {EditorMode} from 'src/components/CodeEditor/constants'
 import {copyToClipboard} from '../util'
 import {ExecutionStatisticInfo} from '../types/bi'
 import styles from './ExecutionStatistic.module.css'
@@ -12,7 +12,6 @@ import styles from './ExecutionStatistic.module.css'
 interface ExecutionStatisticProps extends ExecutionStatisticInfo {}
 
 const {Title, Link} = Typography
-const CodeEditor = lazy(() => import('src/components/CodeEditor'))
 
 export default function ExecutionStatistic({timeMs, cacheHit, query, params}: ExecutionStatisticProps) {
     const {t} = useTranslation()
@@ -32,15 +31,12 @@ export default function ExecutionStatistic({timeMs, cacheHit, query, params}: Ex
                     </Link>
                 </Space>
                 <div className={styles.editor}>
-                    <Suspense fallback={null}>
-                        <CodeEditor
-                            value={queryStr}
-                            mode={EditorMode.SQL}
-                            height={400}
-                            canEdit={false}
-                            lineWrapping
-                        />
-                    </Suspense>
+                    <CodeEditor
+                        value={queryStr}
+                        mode={EditorMode.SQL}
+                        height="400px"
+                        canEdit={false}
+                    />
                 </div>
             </div>
         )
@@ -61,15 +57,12 @@ export default function ExecutionStatistic({timeMs, cacheHit, query, params}: Ex
                     </Link>
                 </Space>
                 <div className={styles.editor}>
-                    <Suspense fallback={null}>
-                        <CodeEditor
-                            value={paramsStr}
-                            mode={EditorMode.JAVASCRIPT}
-                            height={300}
-                            canEdit={false}
-                            lineWrapping
-                        />
-                    </Suspense>
+                    <CodeEditor
+                        value={paramsStr}
+                        mode={EditorMode.JAVASCRIPT}
+                        height="300px"
+                        canEdit={false}
+                    />
                 </div>
             </div>
         )

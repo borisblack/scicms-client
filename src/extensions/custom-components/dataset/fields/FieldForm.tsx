@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import React, {lazy, Suspense, useEffect, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Checkbox, Form, Input, InputNumber, Select, Tabs} from 'antd'
 import {FormInstance, RuleObject, RuleRender} from 'rc-field-form/es/interface'
@@ -17,18 +17,17 @@ import {AggregateType, Column} from 'src/types/bi'
 import {FieldType} from 'src/types'
 import FieldTypeIcon from 'src/components/app/FieldTypeIcon'
 import FieldName from 'src/components/app/FieldName'
+import CodeEditor from 'src/components/CodeEditor'
 import {EditorMode} from 'src/components/CodeEditor/constants'
-import styles from './FieldForm.module.css'
 import {LETTER_NO_WHITESPACE_PATTERN} from 'src/config/constants'
 import {CheckboxChangeEvent} from 'antd/es/checkbox'
+import styles from './FieldForm.module.css'
 
 interface ColumnFormProps {
     field: NamedColumn,
     allFields: Record<string, Column>,
     canEdit: boolean
 }
-
-const CodeEditor = lazy(() => import('src/components/CodeEditor'))
 
 export default function FieldForm({field, allFields, canEdit}: ColumnFormProps) {
     const prevField = usePrevious(field)
@@ -182,15 +181,13 @@ export default function FieldForm({field, allFields, canEdit}: ColumnFormProps) 
                             </Form.Item>
 
                             <div className={styles.formulaEditor}>
-                                <Suspense fallback={null}>
-                                    <CodeEditor
-                                        value={formula}
-                                        mode={EditorMode.SQL}
-                                        height={150}
-                                        canEdit={canEdit && field.custom}
-                                        onChange={handleFormulaChange}
-                                    />
-                                </Suspense>
+                                <CodeEditor
+                                    value={formula}
+                                    mode={EditorMode.SQL}
+                                    height="150px"
+                                    canEdit={canEdit && field.custom}
+                                    onChange={handleFormulaChange}
+                                />
                             </div>
                         </>
                     )
