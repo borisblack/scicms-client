@@ -1,5 +1,5 @@
 import {CustomComponent} from '../../index'
-import LifecycleSpec from './LifecycleSpec'
+import LifecycleSpecSuspense from './LifecycleSpecSuspense'
 
 const COMPONENT_ID = 'lifecycleSpec'
 
@@ -9,5 +9,5 @@ export const lifecycleSpec: CustomComponent = {
     priority: 10,
     title: 'Spec',
     icon: 'PartitionOutlined',
-    render: ({context}) => <LifecycleSpec key={COMPONENT_ID} {...context}/>
+    render: ({context}) => <LifecycleSpecSuspense key={COMPONENT_ID} {...context}/>
 }

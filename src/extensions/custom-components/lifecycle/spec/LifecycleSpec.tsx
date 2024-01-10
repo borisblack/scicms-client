@@ -2,14 +2,14 @@ import {useEffect, useRef} from 'react'
 import 'diagram-js/assets/diagram-js.css'
 import 'bpmn-font/dist/css/bpmn-embedded.css'
 
-import {CustomComponentRenderContext} from '../../index'
-import Modeler from '../../../../lib/diagram/Modeler'
-import Viewer from '../../../../lib/diagram/Viewer'
-import customTranslate from '../../../../lib/diagram/i18s/custom-translate'
-import '../../../../lib/diagram/bpmn-js.css'
+import {CustomComponentRenderContext} from 'src/extensions/custom-components'
+import Modeler from 'src/lib/diagram/Modeler'
+import Viewer from 'src/lib/diagram/Viewer'
+import customTranslate from 'src/lib/diagram/i18s/custom-translate'
+import {LIFECYCLE_ITEM_NAME} from 'src/config/constants'
+import {useAcl} from 'src/util/hooks'
+import 'src/lib/diagram/bpmn-js.css'
 import styles from './LifecycleSpec.module.css'
-import {LIFECYCLE_ITEM_NAME} from '../../../../config/constants'
-import {useAcl} from '../../../../util/hooks'
 
 const customTranslateModule = {
     translate: [ 'value', customTranslate ]
