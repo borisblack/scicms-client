@@ -3,10 +3,9 @@ import {v4 as uuidv4} from 'uuid'
 import dayjs, {Dayjs} from 'dayjs'
 import {DateTime} from 'luxon'
 import {notification} from 'antd'
-import {PlotEvent} from '@ant-design/plots'
-import {Plot} from '@antv/g2plot'
-import {evaluate, getInfo} from '../../extensions/functions'
-import {FieldType, PrimitiveFilterInput} from '../../types'
+
+import {evaluate, getInfo} from 'src/extensions/functions'
+import {FieldType, PrimitiveFilterInput} from 'src/types'
 import {
     AggregateType,
     BoolAggregateType,
@@ -540,22 +539,6 @@ export function getCustomFunctionsInfo(): string[] {
     }
 
     return buf
-}
-
-export function handleDashClick(chart: Plot<any>, event: PlotEvent, fieldName: string, cb: (queryFilter: QueryFilter) => void) {
-    if (event.type !== 'click')
-        return
-
-    const v = event.data?.data?.[fieldName]
-    if (v == null)
-        return
-
-    cb({
-        id: uuidv4(),
-        columnName: fieldName,
-        op: QueryOp.$eq,
-        value: v
-    })
 }
 
 function guessType(value: string | number | boolean): FieldType {

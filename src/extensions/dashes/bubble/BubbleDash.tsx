@@ -3,12 +3,13 @@ import {useMemo} from 'react'
 import {Alert} from 'antd'
 import {Scatter, ScatterConfig} from '@ant-design/charts'
 
-import {defaultDashColor, defaultDashColors, formatValue, handleDashClick, isTemporal} from 'src/bi/util'
+import {defaultDashColor, defaultDashColors, formatValue, isTemporal} from 'src/bi/util'
 import {DashEventHandler, DashRenderContext} from '..'
 import biConfig from 'src/config/bi'
 import {LegendPosition} from '../util'
 import * as RulesService from 'src/services/rules'
 import {useBI} from 'src/bi/hooks'
+import {handleDashClick} from '../util/antdPlot'
 
 interface BubbleDashOptions {
     xField?: string

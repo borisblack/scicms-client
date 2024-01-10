@@ -2,12 +2,13 @@ import _ from 'lodash'
 import {useMemo} from 'react'
 import {Alert} from 'antd'
 import {Bar, BarConfig} from '@ant-design/charts'
-import {defaultDashColor, defaultDashColors, formatValue, handleDashClick, isTemporal} from 'src/bi/util'
+import {defaultDashColor, defaultDashColors, formatValue, isTemporal} from 'src/bi/util'
 import {DashEventHandler, DashRenderContext} from '../index'
 import {LegendPosition} from '../util'
 import biConfig from 'src/config/bi'
 import * as RulesService from 'src/services/rules'
 import {useBI} from '../../../bi/hooks'
+import {handleDashClick} from '../util/antdPlot'
 
 interface BarDashOpts {
     xField?: string

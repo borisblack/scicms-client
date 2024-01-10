@@ -4,12 +4,13 @@ import {Alert} from 'antd'
 import {Pie, PieConfig} from '@ant-design/charts'
 
 import {DashEventHandler, DashRenderContext} from '..'
-import {defaultDashColors, formatValue, handleDashClick} from 'src/bi/util'
+import {defaultDashColors, formatValue} from 'src/bi/util'
 import {LegendPosition} from '../util'
 import biConfig from 'src/config/bi'
 import * as RulesService from 'src/services/rules'
 import {FieldType} from 'src/types'
 import {useBI} from 'src/bi/hooks'
+import {handleDashClick} from '../util/antdPlot'
 
 export interface DoughnutDashOptions {
     angleField?: string
