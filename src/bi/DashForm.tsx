@@ -24,7 +24,7 @@ import DashFilters from './dash-filters/DashFilters'
 import {Dash, getDash, getDashIds} from '../extensions/dashes'
 import biConfig from '../config/bi'
 import {useBI} from './hooks'
-import {Split} from '../components/split/Split'
+import {Split} from '../components/Split'
 import appConfig from '../config'
 import DatasetFields from './DatasetFields'
 import styles from './DashForm.module.css'
@@ -179,7 +179,7 @@ export default function DashForm({dash, dashboards, canEdit, datasetMap}: DashFo
                 <div className={styles.datasetFieldsPane}>
                     <FormItem
                         className={styles.formItem}
-                        style={{position: 'sticky', top: 0, background: '#ffffff'}}
+                        style={{position: 'sticky', top: 0, background: '#ffffff', zIndex: 2}}
                         name="dataset"
                         label={(
                             <Space>
