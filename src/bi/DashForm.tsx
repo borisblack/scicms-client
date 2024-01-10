@@ -179,6 +179,7 @@ export default function DashForm({dash, dashboards, canEdit, datasetMap}: DashFo
                 <div className={styles.datasetFieldsPane}>
                     <FormItem
                         className={styles.formItem}
+                        style={{position: 'sticky', top: 0, background: '#ffffff'}}
                         name="dataset"
                         label={(
                             <Space>

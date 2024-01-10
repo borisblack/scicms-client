@@ -27,13 +27,3 @@
 .layout .dashWrapper.activeDash:hover {
     /*background-color: #fef386;*/
 }
-
-.dashModalFooter {
-    width: 100%;
-    text-align: right;
-}
-
-.dashItemField {
-    border-bottom: 1px solid #eee;
-    margin-bottom: 16px;
-}

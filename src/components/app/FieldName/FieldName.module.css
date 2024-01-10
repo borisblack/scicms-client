@@ -5,4 +5,8 @@
     font-size: 6pt;
 }
 
-.fieldNameWrapper {}
+.fieldNameWrapper {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

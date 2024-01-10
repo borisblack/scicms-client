@@ -33,7 +33,7 @@ export default function FieldItem({field, canEdit}: FieldItemProps) {
             <span className="text-ellipsis" title={field.name}>
                 <FieldTypeIcon fieldType={field.type}/>
                 &nbsp;
-                <FieldName name={field.name}/>
+                <FieldName name={field.name} locked={!field.custom}/>
             </span>
         </div>
     )

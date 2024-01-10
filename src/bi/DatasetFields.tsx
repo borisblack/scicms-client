@@ -11,13 +11,18 @@ interface DatasetFieldsProps {
 export default function DatasetFields({dataset, canEdit}: DatasetFieldsProps) {
     return (
         <>
-            {_.map(dataset.spec.columns, (field, fieldName) => (
-                <FieldItem
-                    key={fieldName}
-                    field={{...field, name: fieldName}}
-                    canEdit={canEdit}
-                />
-            ))}
+            {Object.keys(dataset.spec.columns).sort()
+                .map(fieldName => {
+                    const field = dataset.spec.columns[fieldName]
+                    return (
+                        <FieldItem
+                            key={fieldName}
+                            field={{...field, name: fieldName}}
+                            canEdit={canEdit}
+                        />
+                    )
+                })
+            }
         </>
     )
 }
