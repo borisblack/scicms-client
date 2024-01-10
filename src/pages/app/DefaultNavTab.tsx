@@ -20,7 +20,7 @@ import {ApiMiddlewareContext, ApiOperation, handleApiMiddleware, hasApiMiddlewar
 import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME, MEDIA_ITEM_NAME} from 'src/config/constants'
 import {useAuth, useItemOperations, useMutationManager, useRegistry} from 'src/util/hooks'
 import {getTitle} from 'src/util/mdi'
-import Icon from 'src/components/icon/Icon'
+import Icon from 'src/components/icons/Icon'
 import styles from './NavTab.module.css'
 
 interface Props {

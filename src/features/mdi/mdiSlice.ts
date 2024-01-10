@@ -1,6 +1,6 @@
 import {createSlice, Draft, PayloadAction} from '@reduxjs/toolkit'
 
-import {MDITab} from 'src/components/mdi-tabs'
+import {MDITab} from 'src/components/MDITabs'
 import {RootState} from '../../store'
 
 export interface MDIState<T> {

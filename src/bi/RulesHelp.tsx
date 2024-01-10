@@ -1,7 +1,7 @@
 import {useTranslation} from 'react-i18next'
 import React, {useMemo} from 'react'
 import {Tabs} from 'antd'
-import Colors from '../components/colors/Colors'
+import Colors from '../components/Colors'
 import Icons from '../components/icons/Icons'
 
 interface Props {

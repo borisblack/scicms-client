@@ -1,15 +1,14 @@
 import _ from 'lodash'
-import {lazy, memo, Suspense, useMemo} from 'react'
+import {useMemo} from 'react'
 import {Alert} from 'antd'
-import {RoseConfig} from '@ant-design/charts'
-import {DashEventHandler, DashRenderContext} from '../index'
+import {Rose, RoseConfig} from '@ant-design/charts'
+
+import {DashEventHandler, DashRenderContext} from '..'
 import {defaultDashColor, defaultDashColors, formatValue, handleDashClick, isTemporal} from 'src/bi/util'
 import {LegendPosition} from '../util'
 import biConfig from 'src/config/bi'
 import * as RulesService from 'src/services/rules'
-import {useBI} from '../../../bi/hooks'
-
-const Rose = lazy(() => import('./Rose'))
+import {useBI} from 'src/bi/hooks'
 
 interface PolarAreaDashOptions {
     xField?: string
@@ -25,7 +24,7 @@ const {dash: dashConfig, locale} = biConfig
 const axisLabelStyle = dashConfig?.all?.axisLabelStyle
 const legendConfig = dashConfig?.all?.legend
 
-function PolarAreaDash({dataset, dash, data}: DashRenderContext) {
+export default function PolarAreaDash({dataset, dash, data}: DashRenderContext) {
     const {openDashboard} = useBI()
     const {optValues, relatedDashboardId} = dash
     const {
@@ -103,11 +102,5 @@ function PolarAreaDash({dataset, dash, data}: DashRenderContext) {
         onEvent: handleEvent
     }
 
-    return (
-        <Suspense fallback={null}>
-            <Rose {...config} key={relatedDashboardId}/>
-        </Suspense>
-    )
+    return <Rose {...config} key={relatedDashboardId}/>
 }
-
-export default memo(PolarAreaDash)

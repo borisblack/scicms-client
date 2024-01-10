@@ -1,0 +1,30 @@
+.leftPanelSticker {
+    position: fixed;
+    top: 45%;
+    left: 0;
+    background-color: #fff;
+    border-left: 1px solid #ccc;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    border-top-left-radius: 2px;
+    border-bottom-left-radius: 2px;
+    writing-mode: vertical-lr;
+    transform: rotate(-180deg);
+    font-size: 0.9em;
+    font-weight: 600;
+    padding: 8px 4px;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.leftPanel {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    background-color: #fff;
+    width: 0;
+    z-index: 10;
+    border-right: 1px solid #ccc;
+    overflow: auto;
+}

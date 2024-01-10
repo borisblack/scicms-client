@@ -1,5 +1,5 @@
 import {Dash} from '../index'
-import BarDash from './BarDash'
+import BarDashSuspense from './BarDashSuspense'
 import BarDashOptionsForm from './BarDashOptionsForm'
 
 const DASH_ID = 'bar'
@@ -7,5 +7,5 @@ const DASH_ID = 'bar'
 export const bar: Dash = {
     id: DASH_ID,
     renderOptionsForm: (props) => <BarDashOptionsForm {...props}/>,
-    render: ({context}) => <BarDash {...context}/>
+    render: ({context}) => <BarDashSuspense {...context}/>
 }

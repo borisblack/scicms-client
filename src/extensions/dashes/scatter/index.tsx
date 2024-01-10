@@ -1,5 +1,5 @@
 import {Dash} from '../index'
-import ScatterDash from './ScatterDash'
+import ScatterDashSuspense from './ScatterDashSuspense'
 import ScatterDashOptionsForm from './ScatterDashOptionsForm'
 
 const DASH_ID = 'scatter'
@@ -7,5 +7,5 @@ const DASH_ID = 'scatter'
 export const scatter: Dash = {
     id: DASH_ID,
     renderOptionsForm: (props) => <ScatterDashOptionsForm {...props}/>,
-    render: ({context}) => <ScatterDash {...context}/>
+    render: ({context}) => <ScatterDashSuspense {...context}/>
 }

@@ -37,7 +37,7 @@ import {
     hasApiMiddleware
 } from 'src/extensions/api-middleware'
 import {useAuth, useItemOperations, useMutationManager, useRegistry} from 'src/util/hooks'
-import {useMDIContext} from '../../components/mdi-tabs/hooks'
+import {useMDIContext} from '../../components/MDITabs/hooks'
 import {getTitle} from 'src/util/mdi'
 import styles from './NavTab.module.css'
 

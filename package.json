@@ -64,8 +64,11 @@
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "start": "react-scripts start",
+    "start-rewired": "react-app-rewired start",
     "build": "react-scripts build",
+    "build-rewired": "react-app-rewired build",
     "test": "react-scripts test",
+    "test-rewired": "react-app-rewired test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -96,6 +99,7 @@
     "@types/luxon": "^3.2.0",
     "@types/react-measure": "^2.0.12",
     "@types/styled-components": "^5.1.26",
-    "bpmn-font": "^0.10.0"
+    "bpmn-font": "^0.10.0",
+    "react-app-rewired": "^2.2.1"
   }
 }
