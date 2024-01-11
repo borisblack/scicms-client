@@ -11,7 +11,7 @@ import {useAuth, useRegistry} from 'src/util/hooks'
 import {ViewType} from 'src/types'
 import {Item, ItemDataWrapper} from 'src/types/schema'
 import {createMDITab} from 'src/util/mdi'
-import {MDIContext} from '../../components/MDITabs'
+import {MDIContext} from 'src/components/MDITabs'
 import logo from 'src/logo.svg'
 import styles from './Navbar.module.css'
 import Icon from '../../components/icons/Icon'
@@ -35,8 +35,9 @@ const Navbar = ({ctx}: Props) => {
 
     const handleLogout = useCallback(async () => {
         await logout()
+        ctx.reset()
         resetRegistry()
-    }, [logout, resetRegistry])
+    }, [ctx, logout, resetRegistry])
 
     const handleToggle = useCallback(() => {
         setNavbarCollapsed(!collapsed)

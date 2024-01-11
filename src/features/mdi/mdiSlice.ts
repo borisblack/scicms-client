@@ -130,6 +130,11 @@ const mdiSlice = createSlice({
 
             items.splice(closedIndex, 1)
             draft.activeKey = items.length > 0 ? items[items.length - 1].key : undefined
+        },
+
+        reset(draft: Draft<MDIState<any>>) {
+            draft.activeKey = undefined
+            draft.items = []
         }
     }
 })
@@ -145,7 +150,8 @@ export const {
     update,
     updateActive,
     close,
-    closeActive
+    closeActive,
+    reset
 } = mdiSlice.actions
 
 export default mdiSlice.reducer

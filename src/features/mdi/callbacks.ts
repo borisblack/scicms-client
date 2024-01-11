@@ -35,3 +35,9 @@ export function onClose(key: string, data: any, remove: boolean) {
     const callbacks: MDIObservable<any> = localCallbacksStore[key] ?? defaultObservable
     callbacks.onClose.forEach(updCb => updCb(data, remove))
 }
+
+export function reset() {
+    for (const key in localCallbacksStore) {
+        delete localCallbacksStore[key]
+    }
+}

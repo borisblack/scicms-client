@@ -1,14 +1,3 @@
-.toolbar {
-    margin-bottom: 12px;
-    text-align: right;
-}
-
-.toolbarBtn {
-    font-size: 18px;
-    cursor: pointer;
-    margin: 4px;
-}
-
 .pagination {
     margin: 16px 4px;
     padding-top: 12px;

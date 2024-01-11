@@ -96,6 +96,7 @@ function Bi() {
     }, [collapsed])
 
     const handleLogout = useCallback(async () => {
+        mdiContext.reset()
         await logout()
         resetRegistry()
     }, [logout, resetRegistry])

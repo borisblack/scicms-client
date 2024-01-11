@@ -21,6 +21,7 @@ import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME, MEDIA_ITEM_NAME} from 'src/conf
 import {useAuth, useItemOperations, useMutationManager, useRegistry} from 'src/util/hooks'
 import {getTitle} from 'src/util/mdi'
 import Icon from 'src/components/icons/Icon'
+import {useMDIContext} from 'src/components/MDITabs/hooks'
 import styles from './NavTab.module.css'
 
 interface Props {
@@ -32,6 +33,7 @@ const {info} = Modal
 function DefaultNavTab({data: dataWrapper}: Props) {
     const {me, logout} = useAuth()
     const {items: itemMap, permissions: permissionMap, reset: resetRegistry} = useRegistry()
+    const ctx = useMDIContext<ItemDataWrapper>()
     const {create: createItem, open: openItem, close: closeItem} = useItemOperations()
     const mutationManager = useMutationManager()
     const {t} = useTranslation()
@@ -82,8 +84,9 @@ function DefaultNavTab({data: dataWrapper}: Props) {
 
     const handleLogout = useCallback(async () => {
         await logout()
+        ctx.reset()
         resetRegistry()
-    }, [logout, resetRegistry])
+    }, [ctx, logout, resetRegistry])
 
     const refresh = () => setVersion(prevVersion => prevVersion + 1)
 
