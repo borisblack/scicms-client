@@ -34,6 +34,7 @@ const customRu = {
     'Part Types': 'Типы сост. частей',
     'Parts': 'Составные части',
     'Product': 'Изделие',
+    'Product Index': 'Индекс изделия',
     'Products': 'Изделия',
     'Project': 'Проект',
     'Project Management': 'Управление проектами',

@@ -34,6 +34,7 @@ const customEn = {
     'Part Types': 'Part Types',
     'Parts': 'Parts',
     'Product': 'Product',
+    'Product Index': 'Product Index',
     'Products': 'Products',
     'Project': 'Project',
     'Project Management': 'Project Management',
