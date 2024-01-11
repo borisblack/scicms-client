@@ -4,7 +4,7 @@ import {ClearOutlined, ExportOutlined, Html5Outlined, ReloadOutlined, SettingOut
 import {Table} from '@tanstack/react-table'
 import {useTranslation} from 'react-i18next'
 
-import styles from './DataGrid.module.css'
+import styles from './Toolbar.module.css'
 
 interface Props {
     table: Table<any>
@@ -34,6 +34,7 @@ function Toolbar({table, hasFilters, onRefresh, onClearFilters, onHtmlExport}: P
                 <Button
                     icon={<ReloadOutlined/>}
                     type="text"
+                    className={styles.toolbarBtn}
                     onClick={onRefresh}
                 />
             </Tooltip>
@@ -43,6 +44,7 @@ function Toolbar({table, hasFilters, onRefresh, onClearFilters, onHtmlExport}: P
                     <Button
                         icon={<ClearOutlined/>}
                         type="text"
+                        className={styles.toolbarBtn}
                         onClick={onClearFilters}
                     />
                 </Tooltip>
@@ -68,6 +70,7 @@ function Toolbar({table, hasFilters, onRefresh, onClearFilters, onHtmlExport}: P
                     <Button
                         icon={<SettingOutlined/>}
                         type="text"
+                        className={styles.toolbarBtn}
                     />
                 </Popover>
             </Tooltip>
@@ -77,6 +80,7 @@ function Toolbar({table, hasFilters, onRefresh, onClearFilters, onHtmlExport}: P
                     <Button
                         icon={<ExportOutlined/>}
                         type="text"
+                        className={styles.toolbarBtn}
                     />
                 </Dropdown>
             </Tooltip>

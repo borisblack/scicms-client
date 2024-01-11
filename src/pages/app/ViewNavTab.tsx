@@ -117,8 +117,9 @@ function ViewNavTab({data: dataWrapper}: Props) {
 
     const handleLogout = useCallback(async () => {
         await logout()
+        ctx.reset()
         resetRegistry()
-    }, [logout, resetRegistry])
+    }, [ctx, logout, resetRegistry])
 
     const logoutIfNeed = useCallback(() => {
         if (!isSystemItem)

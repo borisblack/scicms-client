@@ -21,6 +21,7 @@ export const UPDATE_ACTION = 'update'
 export const UPDATE_ACTIVE_ACTION = 'updateActive'
 export const CLOSE_ACTION = 'close'
 export const CLOSE_ACTIVE_ACTION = 'closeActive'
+export const RESET_ACTION = 'reset'
 
 export default function mdiTabsReducer<T>(draft: Draft<MDITabsState<T>>, action: MDITabsAction<T>) {
     switch (action.type) {
@@ -146,6 +147,14 @@ export default function mdiTabsReducer<T>(draft: Draft<MDITabsState<T>>, action:
 
             break
         }
+
+        case RESET_ACTION: {
+            draft.activeKey = undefined
+            draft.items = []
+
+            break
+        }
+
         default: {
             throw new Error(`Unknown action: ${action.type}.`)
         }

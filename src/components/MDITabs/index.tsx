@@ -27,6 +27,7 @@ export interface MDIContext<T> {
     updateActiveTab: (data: T, newKey?: string) => void
     closeTab: (key: string, remove?: boolean) => void
     closeActiveTab: (remove?: boolean) => void
+    reset: () => void
 }
 
 interface MDITabsProps<T> {

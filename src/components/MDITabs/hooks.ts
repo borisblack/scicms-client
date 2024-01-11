@@ -9,7 +9,7 @@ import mdiTabsReducer, {
     OPEN_ACTION,
     SET_ACTIVE_KEY,
     UPDATE_ACTION,
-    UPDATE_ACTIVE_ACTION
+    UPDATE_ACTIVE_ACTION, RESET_ACTION
 } from './mdiTabsReducer'
 import {ReactMDIContext} from './ReactMDIContext'
 
@@ -41,7 +41,11 @@ export function useNewMDIContextReducer<T>(initialItems: MDITabObservable<T>[]):
         dispatch({type: CLOSE_ACTIVE_ACTION, remove})
     }, [dispatch])
 
-    return {items, activeKey, setActiveKey, openTab, updateTab, updateActiveTab, closeTab, closeActiveTab}
+    const reset = useCallback(() => {
+        dispatch({type: RESET_ACTION})
+    }, [dispatch])
+
+    return {items, activeKey, setActiveKey, openTab, updateTab, updateActiveTab, closeTab, closeActiveTab, reset}
 }
 
 export function useNewMDIContext<T>(initialItems: MDITabObservable<T>[]): MDIContext<T> {
@@ -145,7 +149,12 @@ export function useNewMDIContext<T>(initialItems: MDITabObservable<T>[]): MDICon
         closedItem.onClose.forEach(closeCb => closeCb(closedItem.data, remove ?? false))
     }, [activeKey, items])
 
-    return {items, activeKey, setActiveKey, openTab, updateTab, updateActiveTab, closeTab, closeActiveTab}
+    const reset = useCallback(() => {
+        setActiveKey(undefined)
+        setItems([])
+    }, [])
+
+    return {items, activeKey, setActiveKey, openTab, updateTab, updateActiveTab, closeTab, closeActiveTab, reset}
 }
 
 export function useMDIContext<T>(): MDIContext<T> {
