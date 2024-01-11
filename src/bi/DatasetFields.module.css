@@ -1,0 +1,7 @@
+.datasetFields {
+    margin: 4px 0;
+    max-height: 80vh;
+    overflow: hidden auto;
+    scrollbar-width: none;
+    /*scrollbar-gutter: stable;*/
+}

@@ -83,7 +83,7 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
 
     function handleLayoutChange(layouts: Layout[]) {
         if (layouts.length !== _.size(allDashes))
-            return
+            throw new Error('Illegal layout state.')
 
         const newSpec: IDashboardSpec = {
             dashes: layouts.map((layout, i) => {

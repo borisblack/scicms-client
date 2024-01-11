@@ -20,5 +20,11 @@ export default function Icon({iconName, size, className, style}: IconProps) {
     if (!Icon)
         return null
 
-    return <Icon size={size} className={className} style={style}/>
+    return (
+        <Icon
+            size={size}
+            className={className}
+            style={style}
+        />
+    )
 }

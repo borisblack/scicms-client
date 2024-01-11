@@ -42,6 +42,16 @@ a.badge-label, a.badge-label:active, a.badge-label:hover {
   margin: 0 0 0 8px !important;
 }
 
+::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cccccc;
+  -webkit-border-radius: 1ex;
+}
+
 /* Colors */
 .black, .black:hover, .black:focus, a.black:hover, a.black:focus {
   color: #343a40;

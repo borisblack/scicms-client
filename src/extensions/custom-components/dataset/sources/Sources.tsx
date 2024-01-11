@@ -23,8 +23,8 @@ import styles from './Sources.module.css'
 
 const MIN_LEFT_PANE_SIZE = '600px'
 const MIN_RIGHT_PANE_SIZE = '700px'
-const MIN_TOP_PANE_SIZE = '300px'
-const MIN_BOTTOM_PANE_SIZE = '300px'
+const MIN_TOP_PANE_SIZE = '250px'
+const MIN_BOTTOM_PANE_SIZE = '250px'
 const DEBOUNCE_WAIT_INTERVAL = 500
 
 const {Search} = Input
@@ -55,7 +55,7 @@ export default function Sources({data: dataWrapper, buffer, onBufferChange}: Cus
     const [tables, setTables] = useState<Table[]>([])
     const [q, setQ] = useState<string>()
     const [pagination, setPagination] = useState<IPagination>(defaultPagination)
-    const editorValue = useMemo(() => buffer.tableName ? `SELECT * FROM ${buffer.tableName}` : buffer.query, [buffer.query, buffer.tableName])
+    const editorValue = useMemo(() => buffer.tableName ? `SELECT * FROM ${buffer.tableName}` : (buffer.query ?? ''), [buffer.query, buffer.tableName])
     const useDesigner: boolean = useMemo(() => spec.useDesigner ?? !editorValue, [editorValue, spec.useDesigner])
     const isNew = !data?.id
 
@@ -138,7 +138,7 @@ export default function Sources({data: dataWrapper, buffer, onBufferChange}: Cus
                 title: (
                     <span>
                         <FieldTypeIcon fieldType={column.type}/>
-                        &nbsp;
+                        &nbsp;&nbsp;
                         <Text>{key}</Text>
                     </span>
                 ),

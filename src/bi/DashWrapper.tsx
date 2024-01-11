@@ -29,7 +29,7 @@ import {DatasetFiltersInput, QueryBlock} from '../types/bi'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
 import FiltersModal from './FiltersModal'
 import DashModal from './DashModal'
-import {usePrevious} from '../util/hooks'
+import {useModal, usePrevious} from '../util/hooks'
 import styles from './DashWrapper.module.css'
 import './DashWrapper.css'
 
@@ -62,8 +62,8 @@ function DashWrapper(props: DashWrapperProps) {
     const [fullScreen, setFullScreen] = useState<boolean>(false)
     const [loading, setLoading] = useState<boolean>(false)
     const [fetchError, setFetchError] = useState<string | null>(null)
-    const [openDashModal, setOpenDashModal] = useState(false)
-    const [openFiltersModal, setOpenFiltersModal] = useState(false)
+    const {show: showDashModal, close: closeDashModal, modalProps: dashModalProps} = useModal()
+    const {show: showFiltersModal, close: closeFiltersModal, modalProps: filtersModalProps} = useModal()
     const [filters, setFilters] = useState<QueryBlock>(getActualFilters(dashboard.id, dash))
     const prevDefaultFilters = usePrevious(dash.defaultFilters)
     const dashHeight = biConfig.rowHeight * dash.h - PAGE_HEADER_HEIGHT
@@ -149,14 +149,14 @@ function DashWrapper(props: DashWrapperProps) {
         if (!fullScreen)
             onLockChange(true)
 
-        setOpenDashModal(true)
+        showDashModal()
     }
 
     function handleDashModalClose() {
         if (!fullScreen)
             onLockChange(false)
 
-        setOpenDashModal(false)
+        closeDashModal()
     }
 
     const renderTitle = () => dash.name + (dash.unit ? `, ${dash.unit}` : '')
@@ -173,7 +173,7 @@ function DashWrapper(props: DashWrapperProps) {
             menuItems.push({
                 key: 'filters',
                 label: <Space><FilterOutlined/>{t('Filters')}</Space>,
-                onClick: () => setOpenFiltersModal(true)
+                onClick: showFiltersModal
             })
         }
 
@@ -281,21 +281,21 @@ function DashWrapper(props: DashWrapperProps) {
 
             {dataset && (
                 <FiltersModal
+                    {...filtersModalProps}
                     dash={dash}
                     dataset={dataset}
                     dashboardId={dashboard.id}
                     filters={filters}
-                    open={openFiltersModal}
                     onChange={handleFiltersChange}
-                    onClose={() => setOpenFiltersModal(false)}
+                    onClose={closeFiltersModal}
                 />
             )}
 
             <DashModal
+                {...dashModalProps}
                 dash={dash}
                 datasetMap={datasetMap}
                 dashboards={dashboards}
-                open={openDashModal}
                 canEdit={canEdit}
                 onChange={onDashChange}
                 onClose={handleDashModalClose}

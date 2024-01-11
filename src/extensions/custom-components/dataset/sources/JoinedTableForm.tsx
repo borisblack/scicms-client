@@ -123,7 +123,7 @@ export default function JoinedTableForm(props: JoinedTableFormProps) {
                                                     label: (
                                                         <span>
                                                             <FieldTypeIcon fieldType={mainTable.columns[col].type}/>
-                                                            &nbsp;
+                                                            &nbsp;&nbsp;
                                                             {col}
                                                         </span>
                                                     )
@@ -161,7 +161,7 @@ export default function JoinedTableForm(props: JoinedTableFormProps) {
                                                     label: (
                                                         <span>
                                                             <FieldTypeIcon fieldType={joinedTable.columns[col].type}/>
-                                                            &nbsp;
+                                                            &nbsp;&nbsp;
                                                             {col}
                                                         </span>
                                                     )
