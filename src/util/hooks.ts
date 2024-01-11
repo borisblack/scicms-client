@@ -210,3 +210,33 @@ export function useItemOperations() {
 
     return {create, open, close}
 }
+
+interface UseModalProps {
+    defaultVisible?: boolean
+}
+
+interface UseModal {
+    visible: boolean
+    modalProps: {
+        open: boolean
+    }
+    show: () => void
+    close: () => void
+}
+
+export function useModal({defaultVisible}: UseModalProps = {}): UseModal {
+    const [open, setOpen] = useState<boolean>(defaultVisible ?? false)
+
+    const handleShow = useCallback(() => setOpen(true), [])
+
+    const handleClose = useCallback(() => setOpen(false), [])
+
+    return {
+        visible: open,
+        modalProps: {
+            open
+        },
+        show: handleShow,
+        close: handleClose
+    }
+}
