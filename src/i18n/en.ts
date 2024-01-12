@@ -134,6 +134,7 @@ const en = {
         'Field': 'Field',
         'Field Hidden': 'Field Hidden',
         'Field Width': 'Field Width',
+        'Field name': 'Field name',
         'Field types do not match': 'Field types do not match',
         'Field %s is required': 'Field %s is required',
         'Fields': 'Fields',

@@ -1,6 +1,14 @@
+.filterInput {
+    position: sticky;
+    top: 0;
+    background: #ffffff;
+    z-index: 2;
+    max-width: 220px;
+}
+
 .datasetFields {
-    margin: 4px 0;
-    max-height: 80vh;
+    margin: 8px 0;
+    max-height: 77vh;
     overflow: hidden auto;
     scrollbar-width: none;
     /*scrollbar-gutter: stable;*/

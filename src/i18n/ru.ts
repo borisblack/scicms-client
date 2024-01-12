@@ -134,6 +134,7 @@ const ru = {
         'Field': 'Поле',
         'Field Hidden': 'Скрытое поле',
         'Field Width': 'Ширина поля',
+        'Field name': 'Имя поля',
         'Field types do not match': 'Типы полей не совпадают',
         'Field %s is required': 'Поле %s обязательное',
         'Fields': 'Поля',

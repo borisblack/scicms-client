@@ -179,7 +179,6 @@ export default function DashForm({dash, dashboards, canEdit, datasetMap}: DashFo
                 <div className={styles.datasetFieldsPane}>
                     <FormItem
                         className={styles.formItem}
-                        style={{position: 'sticky', top: 0, background: '#ffffff', zIndex: 2}}
                         name="dataset"
                         label={(
                             <Space>
@@ -196,7 +195,7 @@ export default function DashForm({dash, dashboards, canEdit, datasetMap}: DashFo
                         initialValue={dash.dataset}
                         rules={[{required: true, message: t('Required field')}]}
                     >
-                        <Select onSelect={handleDatasetChange}>
+                        <Select onSelect={handleDatasetChange} style={{maxWidth: 220}}>
                             {Object.keys(datasetMap).sort().map(d => <SelectOption key={d} value={d}>{d}</SelectOption>)}
                         </Select>
                     </FormItem>
