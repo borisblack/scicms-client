@@ -39,7 +39,7 @@ const NumberAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrN
         >
             <InputNumber
                 id={`${uniqueKey}#${attrName}`}
-                style={{width: '50%'}}
+                style={{width: '100%'}}
                 min={attribute.minRange}
                 max={attribute.maxRange}
                 {...additionalProps}

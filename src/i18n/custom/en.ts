@@ -20,6 +20,7 @@ const customEn = {
     'Half of Day': 'Half of Day',
     'Hour': 'Hour',
     'Label Group': 'Label Group',
+    'Label Groups': 'Label Groups',
     'Notice Type': 'Notice Type',
     'Milestone': 'Milestone',
     'Month': 'Month',

@@ -20,6 +20,7 @@ const customRu = {
     'Half of Day': 'Полдня',
     'Hour': 'Час',
     'Label Group': 'Группа обозначений',
+    'Label Groups': 'Группы обозначений',
     'Milestone': 'Веха',
     'Month': 'Месяц',
     'Notice Type': 'Тип извещения',
