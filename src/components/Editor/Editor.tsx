@@ -38,7 +38,7 @@ export default function Editor({value, mode, height, lineNumbers, canEdit, onCha
 
     return (
         <CodeMirror
-            value={value}
+            value={value ?? ''}
             height={height}
             extensions={[FontSizeTheme, ...getExtensions(mode)]}
             editable={canEdit}
