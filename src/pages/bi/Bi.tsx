@@ -17,9 +17,9 @@ import MDITabs from 'src/components/MDITabs'
 import {createMDITab, generateLabel} from 'src/util/mdi'
 import DashboardSpec from 'src/bi/DashboardSpec'
 import {useNewMDIContextRedux} from 'src/features/mdi/hooks'
-import './Bi.css'
+import Icon from 'src/components/icons/Icon'
 import logo from 'src/logo.svg'
-import Icon from '../../components/icons/Icon'
+import './Bi.css'
 
 const {Content, Sider} = Layout
 
