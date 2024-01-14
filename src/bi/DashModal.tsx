@@ -47,6 +47,17 @@ export default function DashModal({dash, datasetMap, dashboards, canEdit, open, 
     const [fieldToChange, setFieldToChange] = useState<NamedColumn>()
     const {show: showFieldModal, close: closeFieldModal, modalProps: fieldModalProps} = useModal()
 
+    function handleDatasetChange(dataset?: Dataset) {
+        // if (selectedDataset?.name != null && selectedDataset?.name !== dataset?.name) {
+        //     onChange({
+        //         ...dash,
+        //         fields: {}
+        //     })
+        // }
+
+        setSelectedDataset(dataset)
+    }
+
     function handleFormFinish(values: DashFormValues) {
         const dataset = values.dataset ? datasetMap[values.dataset] : null
         if (dataset == null)
@@ -158,7 +169,7 @@ export default function DashModal({dash, datasetMap, dashboards, canEdit, open, 
                     datasetMap={datasetMap}
                     dashboards={dashboards}
                     canEdit={canEdit}
-                    onDatasetChange={setSelectedDataset}
+                    onDatasetChange={handleDatasetChange}
                     onFieldAdd={createDraftField}
                     onFieldOpen={handleFieldOpen}
                     onFieldRemove={handleFieldRemove}
