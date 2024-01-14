@@ -42,7 +42,7 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
     const datasetMap = useMemo(() => _.mapKeys(datasets, ds => ds.name), [datasets])
     const spec: IDashboardSpec = buffer.spec ?? data?.spec ?? initialSpec
     const thisDashboard = {...data, spec} as Dashboard
-    const allDashes = spec.dashes?.map(dash => ({...dash, id: dash.id ?? uuidv4()})) ?? []
+    const allDashes = spec.dashes?.map(dash => ({...dash, id: dash.id ?? uuidv4(), fields: dash.fields ?? {}})) ?? []
     const activeDash = useRef<IDash>()
     const [isLocked, setLocked] = useState<boolean>(false)
     const isNew = !thisDashboard.id
@@ -57,7 +57,7 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
         return null
 
     function handleDashAdd() {
-        const newDash = {
+        const newDash: IDash = {
             id: uuidv4(),
             name: (++seqNum).toString(),
             x: 0,
@@ -65,6 +65,7 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
             w: biConfig.cols / 2,
             h: biConfig.defaultDashHeight,
             type: biConfig.defaultDashType,
+            fields: {},
             optValues: {},
             defaultFilters: generateQueryBlock(),
             isAggregate: false,
@@ -99,6 +100,7 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
                     dataset: curDash.dataset,
                     type: curDash.type,
                     unit: curDash.unit,
+                    fields: curDash.fields,
                     isAggregate: curDash.isAggregate,
                     aggregateType: curDash.aggregateType,
                     aggregateField: curDash.aggregateField,

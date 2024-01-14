@@ -8,13 +8,13 @@ import {RelType} from 'src/types/schema'
 import {NamedAttribute} from './types'
 import {ReactNode} from 'react'
 import FieldTypeIcon from 'src/components/app/FieldTypeIcon'
-import FieldName from 'src/components/app/FieldName'
+import FieldName, {TagType} from 'src/components/app/FieldName'
 
-const renderAttribute = (attribute: NamedAttribute, locked?: boolean): ReactNode => (
+const renderAttribute = (attribute: NamedAttribute, tag?: TagType): ReactNode => (
     <span>
         <FieldTypeIcon fieldType={attribute.type}/>
         &nbsp;
-        <FieldName name={attribute.name} locked={locked}/>
+        <FieldName name={attribute.name} tag={tag}/>
     </span>
 )
 
@@ -24,7 +24,7 @@ export const getAttributeColumns = (core: boolean): ColumnDef<NamedAttribute, an
     [
         columnHelper.accessor('name', {
             header: i18n.t('Name'),
-            cell: info => renderAttribute(info.row.original, core),
+            cell: info => renderAttribute(info.row.original, core ? 'lock' : undefined),
             size: appConfig.ui.dataGrid.colWidth,
             enableSorting: true
         }) as ColumnDef<NamedAttribute, string>,

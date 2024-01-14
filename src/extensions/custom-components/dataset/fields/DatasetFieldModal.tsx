@@ -3,10 +3,10 @@ import {useTranslation} from 'react-i18next'
 import {Form, Modal} from 'antd'
 
 import {NamedColumn} from 'src/types/bi'
-import FieldForm from './FieldForm'
+import FieldForm from 'src/bi/FieldForm'
 import {Column} from 'src/types/bi'
 
-interface ColumnModalProps {
+interface DatasetFieldModalProps {
     field: NamedColumn
     allFields: Record<string, Column>,
     open: boolean
@@ -17,7 +17,7 @@ interface ColumnModalProps {
 
 interface FieldFormValues extends NamedColumn {}
 
-export default function FieldModal({field, allFields, open, canEdit, onChange, onClose}: ColumnModalProps) {
+export default function DatasetFieldModal({field, allFields, open, canEdit, onChange, onClose}: DatasetFieldModalProps) {
     const {t} = useTranslation()
     const [form] = Form.useForm()
 

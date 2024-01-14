@@ -13,7 +13,14 @@ import {
     closeActive,
     reset as doReset
 } from './mdiSlice'
-import {changeKey, onClose, onUpdate, register as registerCallbacks, reset as resetCallbacks} from './callbacks'
+import {
+    changeKey,
+    onClose,
+    onUpdate,
+    register as registerCallbacks,
+    unregister as unregisterCallbacks,
+    reset as resetCallbacks
+} from './callbacks'
 
 export function useNewMDIContextRedux<T>(initialItems: MDITabObservable<T>[]): MDIContext<T> {
     const dispatch = useAppDispatch()
@@ -84,6 +91,7 @@ export function useNewMDIContextRedux<T>(initialItems: MDITabObservable<T>[]): M
         dispatch(close({key}))
 
         onClose(key, closedItem.data, remove ?? false)
+        unregisterCallbacks(key)
     }, [dispatch, items])
 
     const closeActiveTab = useCallback((remove?: boolean) => {
@@ -97,6 +105,7 @@ export function useNewMDIContextRedux<T>(initialItems: MDITabObservable<T>[]): M
         dispatch(closeActive({}))
 
         onClose(activeKey, closedItem.data, remove ?? false)
+        unregisterCallbacks(activeKey)
     }, [activeKey, dispatch, items])
 
     const reset = useCallback(() => {

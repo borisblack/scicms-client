@@ -12,10 +12,10 @@ import appConfig from 'src/config'
 import {getInitialData, processLocal} from 'src/util/datagrid'
 import {Column, Dataset, DatasetSpec} from 'src/types/bi'
 import {NamedColumn} from 'src/types/bi'
-import {getColumns} from './fields-datagrid'
+import {getColumns} from './fieldsDatagrid'
 import {useAcl} from 'src/util/hooks'
 import DataPreview from './DataPreview'
-import FieldModal from './FieldModal'
+import DatasetFieldModal from './DatasetFieldModal'
 
 const MIN_TOP_PANE_SIZE = 400
 const MIN_BOTTOM_PANE_SIZE = 400
@@ -26,9 +26,9 @@ const splitConfig = appConfig.ui.split
 const toNamedFields = (fields: Record<string, Column>): NamedColumn[] =>
     Object.keys(fields).map(colName => ({name: colName, ...fields[colName]}))
 
-let customColumnCounter: number = 0
+let customFieldCounter: number = 0
 
-export default function Fields({data: dataWrapper, buffer, onBufferChange}: CustomComponentRenderContext) {
+export default function DatasetFields({data: dataWrapper, buffer, onBufferChange}: CustomComponentRenderContext) {
     const data = dataWrapper.data as Dataset | undefined
     const {item} = dataWrapper
     if (item.name !== DATASET_ITEM_NAME)
@@ -93,6 +93,9 @@ export default function Fields({data: dataWrapper, buffer, onBufferChange}: Cust
     }
 
     function createDraft() {
+        if (!acl.canWrite)
+            return
+
         const ownColNames = Object.keys(ownFields).sort()
         if (ownColNames.length === 0)
             return
@@ -100,7 +103,7 @@ export default function Fields({data: dataWrapper, buffer, onBufferChange}: Cust
         const firstOwnColName = ownColNames[0]
         const firstOwnColumn = ownFields[firstOwnColName]
         const newField: NamedColumn = {
-            name: `${firstOwnColName}${++customColumnCounter}`,
+            name: `${firstOwnColName}${++customFieldCounter}`,
             type: firstOwnColumn.type,
             custom: true,
             source: firstOwnColName,
@@ -185,7 +188,7 @@ export default function Fields({data: dataWrapper, buffer, onBufferChange}: Cust
             </Split>
 
             {currentField && (
-                <FieldModal
+                <DatasetFieldModal
                     field={currentField}
                     allFields={allFields}
                     open={openFieldModal}

@@ -1,9 +1,0 @@
-.fieldItem {
-    padding: 4px;
-    cursor: move;
-    /*border-radius: 4px;*/
-}
-
-.fieldItem:hover {
-    background-color: #eeeeee
-}

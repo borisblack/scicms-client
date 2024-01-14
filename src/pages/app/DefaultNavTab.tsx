@@ -105,7 +105,7 @@ function DefaultNavTab({data: dataWrapper}: Props) {
         } finally {
             setLoading(false)
         }
-    }, [item, itemMap])
+    }, [item, itemMap, t])
 
     const handleView = useCallback(async (id: string) => {
         setLoading(true)

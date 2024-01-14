@@ -8,7 +8,7 @@ import {
     getCustomFunctionsInfo, saveSessionFilters,
     toFormQueryBlock
 } from './util'
-import DashFilters from './dash-filters/DashFilters'
+import DashFilters from './DashFilters'
 import {Dataset, IDash, QueryBlock} from '../types/bi'
 
 interface FiltersModalProps {

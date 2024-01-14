@@ -87,7 +87,7 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
         } finally {
             setLoading(false)
         }
-    }, [item.name, itemData?.id, itemMap, relAttrName, target])
+    }, [item.name, itemData?.id, itemMap, relAttrName, target, t])
 
     const refresh = () => setVersion(prevVersion => prevVersion + 1)
 
@@ -96,8 +96,11 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
             throw new Error('Illegal attribute.')
 
         const id = updatedItem.data?.id
-        if (id == null)
-            throw new Error('ID of updated item must be set.')
+        if (id == null) {
+            throw new Error('ID of updated item is not set.')
+            // console.debug('ID of updated item is not set.')
+            // return
+        }
 
         if (remove) {
             setLoading(true)
@@ -118,7 +121,7 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
                 setLoading(false)
             }
         }
-    }, [relAttribute.relType, intermediate, queryManager, targetAttrName, mutationManager])
+    }, [relAttribute.relType, intermediate, queryManager, targetAttrName, mutationManager, t])
 
     const processCreatedManyToManyRelation = useCallback(async (updatedItem: ItemDataWrapper, remove: boolean = false) => {
         if (itemData?.id == null)
@@ -128,8 +131,10 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
             throw new Error('Illegal attribute.')
 
         const id = updatedItem.data?.id
-        if (id == null)
-            throw new Error('ID of updated item must be set.')
+        if (id == null) {
+            console.debug('Created item is not saved.')
+            return
+        }
 
         if (!remove && !createdIds.current.has(id)) {
             setLoading(true)
@@ -149,7 +154,7 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
         }
 
         await processExistingManyToManyRelation(updatedItem, remove)
-    }, [relAttribute.relType, intermediate, processExistingManyToManyRelation, mutationManager, sourceAttrName, itemData?.id, targetAttrName])
+    }, [itemData?.id, relAttribute.relType, intermediate, processExistingManyToManyRelation, mutationManager, sourceAttrName, targetAttrName, t])
 
     const createManyToOneInitialData = useCallback((): ItemData | undefined => {
         if (itemData?.id == null)
@@ -211,7 +216,7 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
         } finally {
             setLoading(false)
         }
-    }, [mutationManager, target, closeItem])
+    }, [mutationManager, target, closeItem, t])
 
     const deleteIntermediate = useCallback(async (targetId: string) => {
         if (intermediate == null) {
@@ -240,7 +245,7 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
         } finally {
             setLoading(false)
         }
-    }, [closeItem, intermediate, mutationManager, queryManager, targetAttrName])
+    }, [closeItem, intermediate, mutationManager, queryManager, t, targetAttrName])
 
     const getRowContextMenu = useCallback((row: Row<ItemData>) => {
         const items: ItemType[] = [{

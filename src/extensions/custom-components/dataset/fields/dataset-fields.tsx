@@ -1,5 +1,5 @@
 import {CustomComponent} from 'src/extensions/custom-components'
-import Fields from './Fields'
+import DatasetFields from './DatasetFields'
 
 const COMPONENT_ID = 'datasetFields'
 
@@ -9,5 +9,5 @@ export const datasetFields: CustomComponent = {
     priority: 10,
     title: 'Fields',
     icon: 'BarsOutlined',
-    render: ({context}) => <Fields key={COMPONENT_ID} {...context}/>
+    render: ({context}) => <DatasetFields key={COMPONENT_ID} {...context}/>
 }

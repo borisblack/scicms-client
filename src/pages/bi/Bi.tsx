@@ -99,7 +99,7 @@ function Bi() {
         mdiContext.reset()
         await logout()
         resetRegistry()
-    }, [logout, resetRegistry])
+    }, [logout, mdiContext, resetRegistry])
 
     function getDashboardMenuItems(): ItemType[] {
         const rootCategories =

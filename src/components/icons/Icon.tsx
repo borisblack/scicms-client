@@ -13,12 +13,21 @@ interface IconProps {
 export default function Icon({iconName, size, className, style}: IconProps) {
     const {data: allIcons} = useCache<Record<string, any>>(loadAllIcons)
 
+    const renderEmptyIcon = () => (
+        <span
+            className={className}
+            style={style}
+        >
+                &nbsp;&nbsp;&nbsp;
+            </span>
+    )
+
     if (!iconName || !allIcons)
-        return null
+        return renderEmptyIcon()
 
     const Icon = allIcons[iconName]
     if (!Icon)
-        return null
+        return renderEmptyIcon()
 
     return (
         <Icon

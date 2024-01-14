@@ -89,6 +89,7 @@ export interface IDash {
     dataset?: string
     type: string
     unit?: string
+    fields: Record<string, Column>
     isAggregate: boolean
     aggregateType?: AggregateType
     aggregateField?: string

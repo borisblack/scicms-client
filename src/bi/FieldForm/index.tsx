@@ -196,9 +196,10 @@ export default function FieldForm({field, allFields, canEdit}: ColumnFormProps) 
             />
 
             <Form.Item name="hidden" hidden valuePropName="checked">
-                <Checkbox>{t('Hide')}</Checkbox>
+                <Checkbox disabled={!canEdit}>{t('Hide')}</Checkbox>
             </Form.Item>
             <Checkbox
+                disabled={!canEdit}
                 defaultChecked={!field.hidden}
                 onChange={handleVisibilityChange}
             >
@@ -206,18 +207,19 @@ export default function FieldForm({field, allFields, canEdit}: ColumnFormProps) 
             </Checkbox>
 
             <Form.Item name="alias" label={t('Alias')}>
-                <Input/>
+                <Input disabled={!canEdit}/>
             </Form.Item>
 
             <Form.Item name="format" label={t('Format')}>
                 <Select
                     allowClear
+                    disabled={!canEdit}
                     options={fieldType ? getFormatOptions(fieldType) : []}
                 />
             </Form.Item>
 
             <Form.Item name="colWidth" label={t('Column Width')}>
-                <InputNumber min={0}/>
+                <InputNumber disabled={!canEdit} min={0}/>
             </Form.Item>
         </>
     )

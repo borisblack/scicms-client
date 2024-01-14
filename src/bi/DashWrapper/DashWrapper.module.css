@@ -1,0 +1,25 @@
+.pageHeader {
+    padding: 0 16px;
+}
+
+.title {}
+
+.subTitle {
+    color: rgba(0, 0, 0, 0.65);
+    min-height: 22px;
+    margin-block-start: -16px;
+}
+
+.toolbarBtn {
+    margin: 0 -4px;
+}
+
+.centerChildContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dashContent {
+    margin: 16px;
+}

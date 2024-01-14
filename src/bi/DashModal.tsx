@@ -1,10 +1,13 @@
-import React from 'react'
+import _ from 'lodash'
+import React, {useEffect, useMemo, useState} from 'react'
 import {Button, Drawer, Form, Space} from 'antd'
 
 import {fromFormQueryBlock, generateQueryBlock} from './util'
 import DashForm, {DashFormValues} from './DashForm'
-import {Dashboard, Dataset, IDash} from '../types/bi'
+import {Column, Dashboard, Dataset, IDash, NamedColumn} from '../types/bi'
 import {useTranslation} from 'react-i18next'
+import {useModal} from '../util/hooks'
+import DashFieldModal from './DashFieldModal'
 
 interface DashFormModalProps {
     dash: IDash
@@ -33,9 +36,16 @@ const mapDashValues = (dash: IDash, values: DashFormValues, dataset?: Dataset): 
     defaultFilters: dataset == null ? generateQueryBlock() : fromFormQueryBlock(dataset, values.defaultFilters)
 })
 
+let customFieldCounter: number = 0
+
 export default function DashModal({dash, datasetMap, dashboards, canEdit, open, onChange, onClose}: DashFormModalProps) {
     const {t} = useTranslation()
     const [form] = Form.useForm()
+    const [selectedDataset, setSelectedDataset] = useState<Dataset | undefined>(datasetMap[dash.dataset ?? ''])
+    const allFields = useMemo(() => ({...selectedDataset?.spec.columns ?? {}, ...dash.fields}), [selectedDataset?.spec.columns, dash.fields])
+    const datasetOwnFields = useMemo(() => _.pickBy(allFields, col => !col.custom), [allFields])
+    const [fieldToChange, setFieldToChange] = useState<NamedColumn>()
+    const {show: showFieldModal, close: closeFieldModal, modalProps: fieldModalProps} = useModal()
 
     function handleFormFinish(values: DashFormValues) {
         const dataset = values.dataset ? datasetMap[values.dataset] : null
@@ -49,6 +59,75 @@ export default function DashModal({dash, datasetMap, dashboards, canEdit, open, 
     function cancelEdit() {
         form.resetFields()
         onClose()
+    }
+
+    function createDraftField() {
+        if (!canEdit)
+            return
+
+        const datasetOwnColNames = Object.keys(datasetOwnFields).sort()
+        if (datasetOwnColNames.length === 0)
+            return
+
+        const firstOwnColName = datasetOwnColNames[0]
+        const firstOwnColumn = datasetOwnFields[firstOwnColName]
+        const newField: NamedColumn = {
+            name: `${firstOwnColName}${++customFieldCounter}`,
+            type: firstOwnColumn.type,
+            custom: true,
+            source: firstOwnColName,
+            aggregate: undefined,
+            formula: undefined,
+            hidden: false,
+            alias: undefined,
+            format: undefined,
+            colWidth: undefined
+        }
+        setFieldToChange(newField)
+        showFieldModal()
+    }
+
+    function handleFieldOpen(field: NamedColumn) {
+        setFieldToChange(field)
+        showFieldModal()
+    }
+
+    const canFieldEdit = (fieldName: string) =>
+        !allFields.hasOwnProperty(fieldName) || dash.fields.hasOwnProperty(fieldName)
+
+    function handleFieldChange(field: NamedColumn, prevName: string) {
+        if (!canEdit)
+            return
+
+        if (!canFieldEdit(prevName))
+            throw new Error('Dataset field cannot be changed here.')
+
+        const newFields: Record<string, Column> = {
+            ...dash.fields,
+            [field.name]: field
+        }
+
+        if (prevName !== field.name && dash.fields.hasOwnProperty(prevName)) {
+            delete newFields[prevName]
+        }
+
+        onChange({
+            ...dash,
+            fields: newFields
+        })
+    }
+
+    function handleFieldRemove(fieldName: string) {
+        if (!canEdit)
+            return
+
+        if (!canFieldEdit(fieldName))
+            throw new Error('Dataset field cannot be removed here.')
+
+        onChange({
+            ...dash,
+            fields: _.omit(dash.fields, fieldName)
+        })
     }
 
     return (
@@ -79,8 +158,23 @@ export default function DashModal({dash, datasetMap, dashboards, canEdit, open, 
                     datasetMap={datasetMap}
                     dashboards={dashboards}
                     canEdit={canEdit}
+                    onDatasetChange={setSelectedDataset}
+                    onFieldAdd={createDraftField}
+                    onFieldOpen={handleFieldOpen}
+                    onFieldRemove={handleFieldRemove}
                 />
             </Form>
+
+            {fieldToChange && (
+                <DashFieldModal
+                    {...fieldModalProps}
+                    field={fieldToChange}
+                    allFields={allFields}
+                    canEdit={canEdit && canFieldEdit(fieldToChange.name)}
+                    onChange={handleFieldChange}
+                    onClose={closeFieldModal}
+                />
+            )}
         </Drawer>
     )
 }

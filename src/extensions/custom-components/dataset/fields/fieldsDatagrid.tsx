@@ -12,7 +12,7 @@ import CheckboxCell from 'src/components/datagrid/CheckboxCell'
 import {AggregateType, Column} from 'src/types/bi'
 import {getFormatOptions} from 'src/bi/util'
 import FieldTypeIcon from 'src/components/app/FieldTypeIcon'
-import FieldName from 'src/components/app/FieldName'
+import FieldName, {TagType} from 'src/components/app/FieldName'
 import ClickableCell from 'src/components/datagrid/ClickableCell'
 
 interface GetColumnsProps {
@@ -25,11 +25,14 @@ interface GetColumnsProps {
 const {Text} = Typography
 const columnHelper = createColumnHelper<NamedColumn>()
 
-const renderField = (field: NamedColumn, locked?: boolean): ReactNode => (
+const renderField = (field: NamedColumn, tag?: TagType): ReactNode => (
     <span>
-        <FieldTypeIcon fieldType={field.type}/>
+        <FieldTypeIcon
+            fieldType={field.type}
+            color={(field.custom && ((field.source && field.aggregate) || field.formula)) ? '#007bff' : '#28a745'}
+        />
         &nbsp;
-        <FieldName name={field.name} locked={locked}/>
+        <FieldName name={field.name} tag={tag}/>
     </span>
 )
 
@@ -41,11 +44,11 @@ export function getColumns({ownColumns, canEdit, onChange, onClick}: GetColumnsP
                 const thisField = info.row.original
                 return canEdit /*&& thisField.custom*/ ? (
                     <ClickableCell
-                        value={renderField(thisField, !thisField.custom)}
+                        value={renderField(thisField, thisField.custom ? undefined : 'lock')}
                         onClick={() => onClick(info.getValue())}
                     />
                 ) : (
-                    renderField(thisField, !thisField.custom)
+                    renderField(thisField, thisField.custom ? undefined : 'lock')
                 )
             },
             size: 160,
@@ -120,7 +123,7 @@ export function getColumns({ownColumns, canEdit, onChange, onClick}: GetColumnsP
                     value && <Text code>{info.getValue()}</Text>
                 )
             },
-            size: 220,
+            size: 250,
             enableSorting: true
         }) as ColumnDef<NamedColumn, string>,
         columnHelper.accessor('format', {

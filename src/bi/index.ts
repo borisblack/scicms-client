@@ -1,20 +1,6 @@
-import {Dashboard, DashboardExtra, Dataset, IDash} from '../types/bi'
+import {Dataset} from '../types/bi'
 import {FormInstance} from 'antd'
-
-export interface DashWrapperProps {
-    pageKey: string
-    datasetMap: Record<string, Dataset>
-    dashboards: Dashboard[]
-    dataset?: Dataset
-    dashboard: Dashboard
-    dash: IDash
-    extra?: DashboardExtra
-    readOnly: boolean
-    canEdit: boolean
-    onLockChange: (locked: boolean) => void
-    onDashChange: (dash: IDash) => void
-    onDelete: () => void
-}
+import {DashWrapperProps} from './DashWrapper'
 
 export interface DashProps extends DashWrapperProps {
     dataset: Dataset

@@ -1,0 +1,39 @@
+.fieldItem {
+    position: relative;
+    padding: 4px;
+    cursor: move;
+    /*border-radius: 4px;*/
+    /*white-space: nowrap;*/
+    /*overflow: hidden;*/
+    /*text-overflow: ellipsis;*/
+}
+
+.fieldItem:hover {
+    background-color: #eeeeee
+}
+
+.fieldItem_fnBtn {
+    position: absolute;
+    bottom: 3px;
+}
+
+.fieldItem_removeBtn {
+    position: absolute;
+    bottom: 3px;
+}
+
+.fieldItem .fieldItem_fnBtn {
+    display: none;
+}
+
+.fieldItem .fieldItem_removeBtn {
+    display: none;
+}
+
+.fieldItem:hover .fieldItem_fnBtn {
+    display: block;
+}
+
+.fieldItem:hover .fieldItem_removeBtn {
+    display: block;
+}

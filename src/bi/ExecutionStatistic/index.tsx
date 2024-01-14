@@ -3,10 +3,10 @@ import {format as formatSql} from 'sql-formatter'
 import {Descriptions, Space, Typography} from 'antd'
 import {CopyOutlined} from '@ant-design/icons'
 
-import CodeEditor from '../components/Editor'
+import CodeEditor from '../../components/Editor'
 import {EditorMode} from 'src/components/Editor/constants'
-import {copyToClipboard} from '../util'
-import {ExecutionStatisticInfo} from '../types/bi'
+import {copyToClipboard} from '../../util'
+import {ExecutionStatisticInfo} from '../../types/bi'
 import styles from './ExecutionStatistic.module.css'
 
 interface ExecutionStatisticProps extends ExecutionStatisticInfo {}

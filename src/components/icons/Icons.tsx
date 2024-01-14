@@ -24,7 +24,12 @@ export default function Icons({height, onSelect = copyToClipboard}: Props) {
 
                     return (
                         <Col span={6} key={iconName}>
-                            <span style={{cursor: 'pointer'}} onClick={() => {onSelect(iconName)}}><Icon/>&nbsp;{iconName}</span>
+                            <span
+                                style={{cursor: 'pointer'}}
+                                onClick={() => {onSelect(iconName)}}
+                            >
+                                <Icon/>&nbsp;{iconName}
+                            </span>
                         </Col>
                     )
                 })}

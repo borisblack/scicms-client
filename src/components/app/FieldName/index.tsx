@@ -1,16 +1,31 @@
+import {ReactNode} from 'react'
 import {Badge} from 'antd'
-import {LockFilled, LockOutlined} from '@ant-design/icons'
+import {DatabaseFilled, LockFilled} from '@ant-design/icons'
 
 import styles from './FieldName.module.css'
 
+export type TagType = 'lock' | 'dataset'
+
 interface FieldNameProps {
     name: string
-    locked?: boolean
+    tag?: TagType
 }
 
-export default function FieldName({name, locked}: FieldNameProps) {
-    return locked ? (
-        <Badge className={styles.fieldNameBadge} count={<LockFilled className={styles.badgeIcon}/>} offset={[5, 5]}>
+function renderTagIcon(tag: TagType): ReactNode {
+    switch (tag) {
+        case 'lock':
+            return <LockFilled className={styles.badgeIcon}/>
+        case 'dataset':
+            return <DatabaseFilled className={styles.badgeIcon}/>
+        default:
+            return null
+    }
+}
+
+export default function FieldName({name, tag}: FieldNameProps) {
+
+    return tag ? (
+        <Badge className={styles.fieldNameBadge} count={renderTagIcon(tag)} offset={[5, 5]}>
             <span className={styles.fieldNameWrapper}>{name}</span>
         </Badge>
     ) : (

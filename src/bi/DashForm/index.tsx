@@ -18,15 +18,15 @@ import {CheckboxChangeEvent} from 'antd/es/checkbox'
 import {ArrowDownOutlined, ArrowUpOutlined, FolderOpenOutlined, QuestionCircleOutlined} from '@ant-design/icons'
 import {DefaultOptionType} from 'rc-select/lib/Select'
 
-import {AggregateType, Column, Dashboard, Dataset, IDash, QueryBlock} from '../types/bi'
-import {generateQueryBlock, getCustomFunctionsInfo, toFormQueryBlock} from './util'
-import DashFilters from './dash-filters/DashFilters'
-import {Dash, getDash, getDashIds} from '../extensions/dashes'
-import biConfig from '../config/bi'
-import {useBI} from './hooks'
-import {Split} from '../components/Split'
-import appConfig from '../config'
-import DatasetFields from './DatasetFields'
+import {AggregateType, Column, Dashboard, Dataset, IDash, NamedColumn, QueryBlock} from 'src/types/bi'
+import {generateQueryBlock, getCustomFunctionsInfo, toFormQueryBlock} from '../util'
+import DashFilters from '../DashFilters'
+import {Dash, getDash, getDashIds} from 'src/extensions/dashes'
+import biConfig from 'src/config/bi'
+import {useBI} from '../hooks'
+import {Split} from 'src/components/Split'
+import appConfig from 'src/config'
+import FieldList from './FieldList'
 import styles from './DashForm.module.css'
 
 interface DashFormProps {
@@ -34,6 +34,10 @@ interface DashFormProps {
     dashboards: Dashboard[]
     canEdit: boolean
     datasetMap: Record<string, Dataset>
+    onDatasetChange: (dataset?: Dataset) => void
+    onFieldAdd: () => void
+    onFieldOpen: (field: NamedColumn) => void
+    onFieldRemove: (fieldName: string) => void
 }
 
 export interface DashFormValues {
@@ -51,6 +55,7 @@ export interface DashFormValues {
     defaultFilters: QueryBlock
     relatedDashboardId?: string
     refreshIntervalSeconds: number
+    onOpenField: (field: NamedColumn) => void
 }
 
 const FIELDS_PANE_MIN_SIZE = 200
@@ -61,7 +66,7 @@ const {Link} = Typography
 const splitConfig = appConfig.ui.split
 const dashTypes = getDashIds()
 
-export default function DashForm({dash, dashboards, canEdit, datasetMap}: DashFormProps) {
+export default function DashForm({dash, dashboards, canEdit, datasetMap, onDatasetChange, onFieldAdd, onFieldOpen, onFieldRemove}: DashFormProps) {
     const form = Form.useFormInstance()
     const {t} = useTranslation()
     // const prevDash = usePrevious(dash)
@@ -93,7 +98,9 @@ export default function DashForm({dash, dashboards, canEdit, datasetMap}: DashFo
     // }, [dash])
 
     useEffect(() => {
-        setDataset(dash.dataset ? datasetMap[dash.dataset] : undefined)
+        const newDataset = dash.dataset ? datasetMap[dash.dataset] : undefined
+        setDataset(newDataset)
+        onDatasetChange(newDataset)
     }, [dash.dataset, datasetMap])
 
     const resetAggregateFormFields = useCallback(() => {
@@ -107,12 +114,14 @@ export default function DashForm({dash, dashboards, canEdit, datasetMap}: DashFo
         form.setFieldValue('optValues', {})
     }, [form])
 
-    const handleDatasetChange = useCallback((newDataset: string) => {
+    const handleDatasetChange = useCallback((datasetName: string) => {
         resetAggregateFormFields()
         resetSortAndOptValuesFormFields()
         form.setFieldValue('defaultFilters', generateQueryBlock())
-        setDataset(datasetMap[newDataset])
-    }, [datasetMap, form, resetAggregateFormFields, resetSortAndOptValuesFormFields])
+        const newDataset = datasetMap[datasetName]
+        setDataset(newDataset)
+        onDatasetChange(newDataset)
+    }, [datasetMap, form, onDatasetChange, resetAggregateFormFields, resetSortAndOptValuesFormFields])
 
     const handleAggregateChange = useCallback((evt: CheckboxChangeEvent) => {
         resetAggregateFormFields()
@@ -200,7 +209,16 @@ export default function DashForm({dash, dashboards, canEdit, datasetMap}: DashFo
                         </Select>
                     </FormItem>
 
-                    {dataset && <DatasetFields dataset={dataset} canEdit={canEdit}/>}
+                    {dataset && (
+                        <FieldList
+                            dataset={dataset}
+                            dash={dash}
+                            canEdit={canEdit}
+                            onFieldAdd={onFieldAdd}
+                            onFieldOpen={onFieldOpen}
+                            onFieldRemove={onFieldRemove}
+                        />
+                    )}
                 </div>
 
                 <div className={styles.dashFormPane}>
