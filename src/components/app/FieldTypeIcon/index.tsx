@@ -1,6 +1,6 @@
 import {FieldType} from 'src/types'
 import styles from './FieldTypeIcon.module.css'
-import Icon from 'src/components/icons/Icon'
+import IconSuspense from 'src/components/icons/IconSuspense'
 import {CSSProperties} from 'react'
 
 interface FieldTypeIconProps {
@@ -25,7 +25,7 @@ export default function FieldTypeIcon({fieldType, color, className, style}: Fiel
             case FieldType.double:
             case FieldType.decimal:
                 return (
-                    <Icon
+                    <IconSuspense
                         iconName="FaHashtag"
                         size={ICON_SIZE}
                         className={styles.fieldTypeIcon}
@@ -35,7 +35,7 @@ export default function FieldTypeIcon({fieldType, color, className, style}: Fiel
             case FieldType.string:
             case FieldType.text:
                 return (
-                    <Icon
+                    <IconSuspense
                         iconName="FaFont"
                         size={ICON_SIZE}
                         className={styles.fieldTypeIcon}
@@ -44,7 +44,7 @@ export default function FieldTypeIcon({fieldType, color, className, style}: Fiel
                 )
             case FieldType.bool:
                 return (
-                    <Icon
+                    <IconSuspense
                         iconName="FaCheck"
                         size={ICON_SIZE}
                         className={styles.fieldTypeIcon}
@@ -55,7 +55,7 @@ export default function FieldTypeIcon({fieldType, color, className, style}: Fiel
             case FieldType.datetime:
             case FieldType.timestamp:
                 return (
-                    <Icon
+                    <IconSuspense
                         iconName="FaCalendarDays"
                         size={ICON_SIZE}
                         className={styles.fieldTypeIcon}
@@ -64,7 +64,7 @@ export default function FieldTypeIcon({fieldType, color, className, style}: Fiel
                 )
             case FieldType.time:
                 return (
-                    <Icon
+                    <IconSuspense
                         iconName="FaCalendarTimes"
                         size={ICON_SIZE}
                         className={styles.fieldTypeIcon}
@@ -73,7 +73,7 @@ export default function FieldTypeIcon({fieldType, color, className, style}: Fiel
                 )
             case FieldType.uuid:
                 return (
-                    <Icon
+                    <IconSuspense
                         iconName="FaU"
                         size={ICON_SIZE}
                         className={styles.fieldTypeIcon}
@@ -82,7 +82,7 @@ export default function FieldTypeIcon({fieldType, color, className, style}: Fiel
                 )
             case FieldType.sequence:
                 return (
-                    <Icon
+                    <IconSuspense
                         iconName="FaSortNumericUp"
                         size={ICON_SIZE}
                         className={styles.fieldTypeIcon}
@@ -91,7 +91,7 @@ export default function FieldTypeIcon({fieldType, color, className, style}: Fiel
                 )
             case FieldType.email:
                 return (
-                    <Icon
+                    <IconSuspense
                         iconName="FaEnvelope"
                         size={ICON_SIZE}
                         className={styles.fieldTypeIcon}
@@ -100,7 +100,7 @@ export default function FieldTypeIcon({fieldType, color, className, style}: Fiel
                 )
             case FieldType.enum:
                 return (
-                    <Icon
+                    <IconSuspense
                         iconName="FaE"
                         size={ICON_SIZE}
                         className={styles.fieldTypeIcon}
@@ -109,7 +109,7 @@ export default function FieldTypeIcon({fieldType, color, className, style}: Fiel
                 )
             case FieldType.password:
                 return (
-                    <Icon
+                    <IconSuspense
                         iconName="FaAsterisk"
                         size={ICON_SIZE}
                         className={styles.fieldTypeIcon}
@@ -118,7 +118,7 @@ export default function FieldTypeIcon({fieldType, color, className, style}: Fiel
                 )
             case FieldType.array:
                 return (
-                    <Icon
+                    <IconSuspense
                         iconName="FaList"
                         size={ICON_SIZE}
                         className={styles.fieldTypeIcon}
@@ -127,7 +127,7 @@ export default function FieldTypeIcon({fieldType, color, className, style}: Fiel
                 )
             case FieldType.json:
                 return (
-                    <Icon
+                    <IconSuspense
                         iconName="FaJ"
                         size={ICON_SIZE}
                         className={styles.fieldTypeIcon}
@@ -136,7 +136,7 @@ export default function FieldTypeIcon({fieldType, color, className, style}: Fiel
                 )
             case FieldType.media:
                 return (
-                    <Icon
+                    <IconSuspense
                         iconName="FaPhotoFilm"
                         size={ICON_SIZE}
                         className={styles.fieldTypeIcon}
@@ -145,7 +145,7 @@ export default function FieldTypeIcon({fieldType, color, className, style}: Fiel
                 )
             case FieldType.relation:
                 return (
-                    <Icon
+                    <IconSuspense
                         iconName="FaLink"
                         size={ICON_SIZE}
                         className={styles.fieldTypeIcon}
@@ -154,7 +154,7 @@ export default function FieldTypeIcon({fieldType, color, className, style}: Fiel
                 )
             default:
                 return (
-                    <Icon
+                    <IconSuspense
                         iconName="FaQuestion"
                         size={ICON_SIZE}
                         className={styles.fieldTypeIcon}

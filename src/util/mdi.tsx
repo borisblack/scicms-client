@@ -6,7 +6,7 @@ import React, {ReactNode} from 'react'
 import {ID_ATTR_NAME} from '../config/constants'
 import i18n from '../i18n'
 import {MDITabObservable} from '../components/MDITabs'
-import Icon from '../components/icons/Icon'
+import IconSuspense from '../components/icons/IconSuspense'
 
 const tempIds: Record<string, number> = {}
 
@@ -43,7 +43,7 @@ export function generateLabel(data: ItemDataWrapper): ReactNode {
 
     return (
         <span className="mdi-tab-label" title={title}>
-            {(viewType === ViewType.default) ? <SearchOutlined/> : <Icon iconName={item.icon}/>}
+            {(viewType === ViewType.default) ? <SearchOutlined/> : <IconSuspense iconName={item.icon}/>}
             {title}
             {extra && <ExclamationCircleOutlined className="tab-label-suffix orange"/>}
         </span>

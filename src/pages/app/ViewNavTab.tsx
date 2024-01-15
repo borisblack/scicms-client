@@ -32,7 +32,7 @@ import {exportWinFeatures, exportWinStyle, renderValue} from 'src/util/export'
 import {useAuth, useFormAcl, useMutationManager, useQueryManager, useRegistry} from 'src/util/hooks'
 import {useMDIContext} from 'src/components/MDITabs/hooks'
 import {generateKey} from 'src/util/mdi'
-import Icon from '../../components/icons/Icon'
+import IconSuspense from 'src/components/icons/IconSuspense'
 
 interface Props {
     data: ItemDataWrapper
@@ -438,7 +438,7 @@ function ViewNavTab({data: dataWrapper}: Props) {
             const title = t(component.title ?? 'Untitled')
             return {
                 key: component.id,
-                label: <span><Icon iconName={component.icon}/>&nbsp;{title}</span>,
+                label: <span><IconSuspense iconName={component.icon}/>&nbsp;{title}</span>,
                 children: component.render({context: customComponentContext})
             }
 
@@ -462,7 +462,7 @@ function ViewNavTab({data: dataWrapper}: Props) {
                 const title = t(attribute.displayName)
                 return {
                     key: key,
-                    label: <span><Icon iconName={target.icon}/>{title}</span>,
+                    label: <span><IconSuspense iconName={target.icon}/>{title}</span>,
                     children: (
                         <RelationsDataGridWrapper
                             data={dataWrapper}

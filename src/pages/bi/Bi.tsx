@@ -17,7 +17,7 @@ import MDITabs from 'src/components/MDITabs'
 import {createMDITab, generateLabel} from 'src/util/mdi'
 import DashboardSpec from 'src/bi/DashboardSpec'
 import {useNewMDIContextRedux} from 'src/features/mdi/hooks'
-import Icon from 'src/components/icons/Icon'
+import IconSuspense from 'src/components/icons/IconSuspense'
 import logo from 'src/logo.svg'
 import './Bi.css'
 
@@ -118,7 +118,7 @@ function Bi() {
         ...dashboardCategoryList.map(category => ({
             key: `${prefix}#${category.id}`,
             label: category.name,
-            icon: category.icon ? <Icon iconName={category.icon}/> : <FolderOutlined />,
+            icon: category.icon ? <IconSuspense iconName={category.icon}/> : <FolderOutlined />,
             children: mapDashboardMenuItems(
                 `${prefix}#${category.id}`,
                 category.childCategories.data

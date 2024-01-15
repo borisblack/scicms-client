@@ -12,9 +12,9 @@ import {ViewType} from 'src/types'
 import {Item, ItemDataWrapper} from 'src/types/schema'
 import {createMDITab} from 'src/util/mdi'
 import {MDIContext} from 'src/components/MDITabs'
+import IconSuspense from 'src/components/icons/IconSuspense'
 import logo from 'src/logo.svg'
 import styles from './Navbar.module.css'
-import Icon from '../../components/icons/Icon'
 
 type Props = {
     ctx: MDIContext<ItemDataWrapper>
@@ -61,7 +61,7 @@ const Navbar = ({ctx}: Props) => {
                 return {
                     key: it.key,
                     label: t(it.label),
-                    icon: <span><Icon iconName={it.icon}/></span>,
+                    icon: <span><IconSuspense iconName={it.icon}/></span>,
                     children: toAntdMenuItems(it.children)
                 }
             } else {
@@ -69,7 +69,7 @@ const Navbar = ({ctx}: Props) => {
                 return {
                     key: item.id,
                     label: t(item.displayPluralName),
-                    icon: <span><Icon iconName={item.icon}/></span>,
+                    icon: <span><IconSuspense iconName={item.icon}/></span>,
                     onClick: () => handleItemClick(item)
                 }
             }

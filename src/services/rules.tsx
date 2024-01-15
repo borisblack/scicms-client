@@ -2,7 +2,7 @@ import {getParser} from '../extensions/functions'
 import {notifyErrorThrottled} from '../util'
 import i18n from '../i18n'
 import {CSSProperties, ReactNode} from 'react'
-import Icon from '../components/icons/Icon'
+import IconSuspense from '../components/icons/IconSuspense'
 
 export interface FieldRule {
     condition?: string
@@ -117,7 +117,7 @@ export function renderField(fieldRules: FieldRule[], fieldName: string, value: a
     if (iconProps != null) {
         return (
             <div>
-                <Icon iconName={iconProps.icon} style={toStyle(iconProps)}/>
+                <IconSuspense iconName={iconProps.icon} style={toStyle(iconProps)}/>
                 &nbsp;
                 {value}
             </div>

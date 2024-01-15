@@ -6,8 +6,8 @@ import {FieldType} from 'src/types'
 import {ICON_ATTR_NAME} from 'src/config/constants'
 import {CustomAttributeFieldRenderContext} from '..'
 import styles from '../CustomAttributeField.module.css'
-import Icon from 'src/components/icons/Icon'
-import Icons from 'src/components/icons/Icons'
+import IconSuspense from 'src/components/icons/IconSuspense'
+import IconsSuspense from 'src/components/icons/IconsSuspense'
 import {generateKey} from 'src/util/mdi'
 
 const FormItem = Form.Item
@@ -51,7 +51,7 @@ const IconAttributeField: FC<CustomAttributeFieldRenderContext> = ({data: dataWr
             <FormItem
                 className={styles.formItem}
                 name={attrName}
-                label={<span>{t(attribute.displayName)}&nbsp;<Icon iconName={currentValue}/></span>}
+                label={<span>{t(attribute.displayName)}&nbsp;<IconSuspense iconName={currentValue}/></span>}
                 hidden={attribute.fieldHidden}
                 initialValue={value ?? attribute.defaultValue}
                 rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
@@ -82,7 +82,7 @@ const IconAttributeField: FC<CustomAttributeFieldRenderContext> = ({data: dataWr
                 footer={null}
                 onCancel={() => setIconsModalVisible(false)}
             >
-                <Icons height={ICONS_COMPONENT_HEIGHT} onSelect={handleIconSelect}/>
+                <IconsSuspense height={ICONS_COMPONENT_HEIGHT} onSelect={handleIconSelect}/>
             </Modal>
         </>
     )

@@ -2,7 +2,7 @@ import {useTranslation} from 'react-i18next'
 import React, {useMemo} from 'react'
 import {Tabs} from 'antd'
 import Colors from '../components/Colors'
-import Icons from '../components/icons/Icons'
+import IconsSuspense from '../components/icons/IconsSuspense'
 
 interface Props {
     height?: number | string
@@ -14,7 +14,7 @@ export default function RulesHelp({height}: Props) {
     return <Tabs items={[
         {key: 'rules', label: t('Rules'), children: <RulesDescription height={height}/>},
         {key: 'colors', label: t('Colors'), children: <Colors height={height}/>},
-        {key: 'icons', label: t('Icons'), children: <Icons height={height}/>}
+        {key: 'icons', label: t('Icons'), children: <IconsSuspense height={height}/>}
     ]}/>
 }
 

@@ -1,9 +1,8 @@
 import {CSSProperties} from 'react'
 
-import {loadAllIcons} from 'src/components/icons/loaders'
-import {useCache} from 'src/util/hooks'
+import {allIcons} from './loaders'
 
-interface IconProps {
+export interface IconProps {
     iconName: string | null | undefined
     size?: number
     className?: string
@@ -11,23 +10,12 @@ interface IconProps {
 }
 
 export default function Icon({iconName, size, className, style}: IconProps) {
-    const {data: allIcons} = useCache<Record<string, any>>(loadAllIcons)
-
-    const renderEmptyIcon = () => (
-        <span
-            className={className}
-            style={style}
-        >
-                &nbsp;&nbsp;&nbsp;
-            </span>
-    )
-
-    if (!iconName || !allIcons)
-        return renderEmptyIcon()
+    if (!iconName)
+        return null
 
     const Icon = allIcons[iconName]
     if (!Icon)
-        return renderEmptyIcon()
+        return null
 
     return (
         <Icon

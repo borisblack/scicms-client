@@ -20,7 +20,7 @@ import {ApiMiddlewareContext, ApiOperation, handleApiMiddleware, hasApiMiddlewar
 import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME, MEDIA_ITEM_NAME} from 'src/config/constants'
 import {useAuth, useItemOperations, useMutationManager, useRegistry} from 'src/util/hooks'
 import {getTitle} from 'src/util/mdi'
-import Icon from 'src/components/icons/Icon'
+import IconSuspense from 'src/components/icons/IconSuspense'
 import {useMDIContext} from 'src/components/MDITabs/hooks'
 import styles from './NavTab.module.css'
 
@@ -213,7 +213,7 @@ function DefaultNavTab({data: dataWrapper}: Props) {
         return (
             <PageHeader
                 className={styles.pageHeader}
-                title={<span><Icon iconName={item.icon}/>&nbsp;&nbsp;{getTitle(dataWrapper)}</span>}
+                title={<span><IconSuspense iconName={item.icon}/>&nbsp;&nbsp;{getTitle(dataWrapper)}</span>}
                 extra={canCreate && <Button type="primary" onClick={handleCreate}><PlusCircleOutlined /> {t('Create')}</Button>}
             />
         )
