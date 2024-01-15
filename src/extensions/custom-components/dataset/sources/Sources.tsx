@@ -131,20 +131,17 @@ export default function Sources({data: dataWrapper, buffer, onBufferChange}: Cus
                 canEdit={acl.canWrite}
             />
         ),
-        children: Object.keys(table.columns).map(key => {
-            const column = table.columns[key]
-            return {
-                key: `${table.name}_${key}`,
-                title: (
-                    <span>
-                        <FieldTypeIcon fieldType={column.type}/>
-                        &nbsp;&nbsp;
-                        <Text>{key}</Text>
-                    </span>
-                ),
-                // style: {height: 26}
-            }
-        })
+        children: Object.entries(table.columns).map(([fieldName, field]) => ({
+            key: `${table.name}_${fieldName}`,
+            title: (
+                <span style={{lineHeight: 'normal'}}>
+                    <FieldTypeIcon fieldType={field.type}/>
+                    &nbsp;&nbsp;
+                    {fieldName}
+                </span>
+            ),
+            // style: {height: 26}
+        }))
     }))
 
     return (
