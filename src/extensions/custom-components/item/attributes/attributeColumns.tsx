@@ -11,7 +11,7 @@ import FieldTypeIcon from 'src/components/app/FieldTypeIcon'
 import FieldName, {TagType} from 'src/components/app/FieldName'
 
 const renderAttribute = (attribute: NamedAttribute, tag?: TagType): ReactNode => (
-    <span>
+    <span className="text-ellipsis">
         <FieldTypeIcon fieldType={attribute.type}/>
         &nbsp;
         <FieldName name={attribute.name} tag={tag}/>

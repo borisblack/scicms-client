@@ -146,7 +146,7 @@ export default function FieldForm({field, allFields, canEdit}: ColumnFormProps) 
                                         const ownField = ownFields[f]
                                         return {
                                             label: (
-                                                <span>
+                                                <span className="text-ellipsis">
                                                     <FieldTypeIcon fieldType={ownField.type}/>
                                                     &nbsp;&nbsp;
                                                     <FieldName name={f}/>

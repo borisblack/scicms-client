@@ -134,7 +134,7 @@ export default function Sources({data: dataWrapper, buffer, onBufferChange}: Cus
         children: Object.entries(table.columns).map(([fieldName, field]) => ({
             key: `${table.name}_${fieldName}`,
             title: (
-                <span style={{lineHeight: 'normal'}}>
+                <span className="text-ellipsis">
                     <FieldTypeIcon fieldType={field.type}/>
                     &nbsp;&nbsp;
                     {fieldName}

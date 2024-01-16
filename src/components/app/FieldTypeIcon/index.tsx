@@ -21,7 +21,7 @@ export default function FieldTypeIcon({fieldType, color, className, style}: Fiel
                 return 'fa-solid fa-hashtag'
             case FieldType.string:
             case FieldType.text:
-                return 'fa-solid fa-font'
+                return 'fa-solid fa-t'
             case FieldType.bool:
                 return 'fa-solid fa-check'
             case FieldType.date:
@@ -35,7 +35,7 @@ export default function FieldTypeIcon({fieldType, color, className, style}: Fiel
             case FieldType.sequence:
                 return 'fa-solid fa-arrow-up-1-9'
             case FieldType.email:
-                return 'fa-solid fa-envelope'
+                return 'fa-solid fa-at'
             case FieldType.enum:
                 return 'fa-solid fa-e'
             case FieldType.password:

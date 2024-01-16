@@ -26,7 +26,7 @@ const {Text} = Typography
 const columnHelper = createColumnHelper<NamedColumn>()
 
 const renderField = (field: NamedColumn, tag?: TagType): ReactNode => (
-    <span>
+    <span className="text-ellipsis">
         <FieldTypeIcon
             fieldType={field.type}
             color={(field.custom && ((field.source && field.aggregate) || field.formula)) ? '#007bff' : '#28a745'}

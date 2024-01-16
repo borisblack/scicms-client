@@ -121,7 +121,7 @@ export default function JoinedTableForm(props: JoinedTableFormProps) {
                                                 options={Object.keys(mainTable.columns).map(col => ({
                                                     value: col,
                                                     label: (
-                                                        <span>
+                                                        <span className="text-ellipsis">
                                                             <FieldTypeIcon fieldType={mainTable.columns[col].type}/>
                                                             &nbsp;&nbsp;
                                                             {col}
@@ -159,7 +159,7 @@ export default function JoinedTableForm(props: JoinedTableFormProps) {
                                                 options={Object.keys(joinedTable.columns).map(col => ({
                                                     value: col,
                                                     label: (
-                                                        <span>
+                                                        <span className="text-ellipsis">
                                                             <FieldTypeIcon fieldType={joinedTable.columns[col].type}/>
                                                             &nbsp;&nbsp;
                                                             {col}
