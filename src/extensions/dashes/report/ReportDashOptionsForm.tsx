@@ -1,4 +1,4 @@
-import {DashOptionsFormProps} from '../../../bi'
+import {DashOptionsFormProps} from '..'
 import {Col, Form, Input, Popover, Row, Select, Space} from 'antd'
 import React from 'react'
 import {useTranslation} from 'react-i18next'

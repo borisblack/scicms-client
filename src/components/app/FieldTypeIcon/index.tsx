@@ -41,13 +41,13 @@ export default function FieldTypeIcon({fieldType, color, className, style}: Fiel
             case FieldType.password:
                 return 'fa-solid fa-asterisk'
             case FieldType.array:
-                return 'fa-solid fa-list'
+                return 'fa-solid fa-bars'
             case FieldType.json:
                 return 'fa-solid fa-j'
             case FieldType.media:
                 return 'fa-solid fa-photo-film'
             case FieldType.relation:
-                return 'fa-solid fa-link'
+                return 'fa-solid fa-share-nodes'
             default:
                 return 'fa-solid fa-question'
         }

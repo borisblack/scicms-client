@@ -6,6 +6,8 @@ const DASH_ID = 'bar'
 
 export const bar: Dash = {
     id: DASH_ID,
+    icon: 'FaChartBar',
+    axes: [],
     renderOptionsForm: (props) => <BarDashOptionsForm {...props}/>,
     render: ({context}) => <BarDashSuspense {...context}/>
 }

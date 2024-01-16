@@ -10,6 +10,8 @@ export const MAX_LNG = 180
 
 export const bubbleMap: Dash = {
     id: DASH_ID,
+    icon: 'FaMapMarkerAlt',
+    axes: [],
     renderOptionsForm: (props) => <BubbleMapDashOptionsForm {...props}/>,
     render: ({context}) => <BubbleMapDash {...context}/>
 }

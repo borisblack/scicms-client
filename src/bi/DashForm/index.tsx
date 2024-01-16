@@ -27,6 +27,8 @@ import {useBI} from '../hooks'
 import {Split} from 'src/components/Split'
 import appConfig from 'src/config'
 import FieldList from './FieldList'
+import DashAxes from './DashAxes'
+import IconSuspense from 'src/components/icons/IconSuspense'
 import styles from './DashForm.module.css'
 
 interface DashFormProps {
@@ -59,6 +61,7 @@ export interface DashFormValues {
 }
 
 const FIELDS_PANE_MIN_SIZE = 200
+const AXES_PANE_MIN_SIZE = 200
 
 const {Item: FormItem} = Form
 const {Option: SelectOption} = Select
@@ -204,9 +207,11 @@ export default function DashForm({dash, dashboards, canEdit, datasetMap, onDatas
                         initialValue={dash.dataset}
                         rules={[{required: true, message: t('Required field')}]}
                     >
-                        <Select onSelect={handleDatasetChange} style={{maxWidth: 220}}>
-                            {Object.keys(datasetMap).sort().map(d => <SelectOption key={d} value={d}>{d}</SelectOption>)}
-                        </Select>
+                        <Select
+                            style={{maxWidth: 220}}
+                            options={Object.keys(datasetMap).sort().map(d => ({label: d, value: d}))}
+                            onSelect={handleDatasetChange}
+                        />
                     </FormItem>
 
                     {dataset && (
@@ -221,138 +226,143 @@ export default function DashForm({dash, dashboards, canEdit, datasetMap, onDatas
                     )}
                 </div>
 
-                <div className={styles.dashFormPane}>
-                    <Row gutter={10} style={{marginBottom: 10}}>
-                        <FormItem name="id" hidden initialValue={dash.id}>
-                            <Input/>
+                <Split
+                    minPrimarySize={`${AXES_PANE_MIN_SIZE}px`}
+                    initialPrimarySize={`${AXES_PANE_MIN_SIZE}px`}
+                    defaultSplitterColors={splitConfig.defaultSplitterColors}
+                    splitterSize={splitConfig.splitterSize}
+                    resetOnDoubleClick
+                >
+                    <div className={styles.axesPane}>
+                        <FormItem
+                            className={styles.formItem}
+                            name="type"
+                            label={t('Type')}
+                            initialValue={dash.type}
+                            rules={[{required: true, message: t('Required field')}]}
+                        >
+                            <Select
+                                style={{maxWidth: 220, position: 'sticky', top: 0}}
+                                options={dashTypes.map(dt => ({
+                                    label: (
+                                        <span>
+                                            <IconSuspense iconName={getDash(dt)?.icon} className="red" style={{display: 'inline'}}/>
+                                            &nbsp;
+                                            {dt}
+                                        </span>
+                                    ),
+                                    value: dt
+                                }))}
+                                onSelect={handleDashTypeChange}
+                            />
                         </FormItem>
 
-                        <Col span={12}>
-                            <FormItem
-                                className={styles.formItem}
-                                name="name"
-                                label={t('Name')}
-                                initialValue={dash.name}
-                                rules={[{required: true, message: t('Required field')}]}
-                            >
+                        {dataset && (
+                            <DashAxes
+                                dataset={dataset}
+                                dash={dash}
+                                formFieldName="optValues"
+                                canEdit={canEdit}
+                            />
+                        )}
+                    </div>
+
+                    <div className={styles.dashFormPane}>
+                        <Row gutter={10} style={{marginBottom: 10}}>
+                            <FormItem name="id" hidden initialValue={dash.id}>
                                 <Input/>
                             </FormItem>
-                        </Col>
-                        <Col span={6}>
-                            <FormItem
-                                className={styles.formItem}
-                                name="unit"
-                                label={t('Unit')}
-                                initialValue={dash.unit}
-                            >
-                                <Input/>
-                            </FormItem>
-                        </Col>
-                    </Row>
 
-                    <Collapse
-                        defaultActiveKey={['queryOptions', 'dashOptions', 'defaultFilters']}
-                        items={[{
-                            key: 'queryOptions',
-                            label: t('Query Options'),
-                            children: (
-                                <Row gutter={10}>
-                                    <Col span={6}>
-                                        <FormItem
-                                            className={styles.formItem}
-                                            name="isAggregate"
-                                            initialValue={isAggregate}
-                                            valuePropName="checked"
-                                        >
-                                            <Checkbox
-                                                checked={isAggregate}
-                                                onChange={handleAggregateChange}
-                                                style={{marginTop: 24}}
-                                            >
-                                                {t('Aggregate')}
-                                            </Checkbox>
-                                        </FormItem>
-                                    </Col>
-                                    <Col span={6}>
-                                        <FormItem
-                                            className={styles.formItem}
-                                            name="aggregateType"
-                                            label={t('Aggregate Type')}
-                                            dependencies={['isAggregate']}
-                                            initialValue={dash.aggregateType}
-                                            rules={[{required: isAggregate, message: t('Required field')}]}
-                                        >
-                                            <Select disabled={!canEdit || !isAggregate}>
-                                                {Object.keys(AggregateType).map(it => <SelectOption key={it} value={it}>{it}</SelectOption>)}
-                                            </Select>
-                                        </FormItem>
-                                    </Col>
-                                    <Col span={6}>
-                                        <FormItem
-                                            className={styles.formItem}
-                                            name="aggregateField"
-                                            label={t('Aggregate Field')}
-                                            dependencies={['isAggregate']}
-                                            initialValue={dash.aggregateField}
-                                            rules={[{required: isAggregate, message: t('Required field')}]}
-                                        >
-                                            <Select allowClear disabled={!canEdit || !isAggregate} onSelect={handleAggregateFieldChange} onClear={() => handleAggregateFieldChange(undefined)}>
-                                                {allColNames.map(c => <SelectOption key={c} value={c}>{c}</SelectOption>)}
-                                            </Select>
-                                        </FormItem>
-                                    </Col>
-                                    <Col span={6}>
-                                        <FormItem
-                                            className={styles.formItem}
-                                            name="groupField"
-                                            label={t('Group Fields')}
-                                            dependencies={['isAggregate']}
-                                            initialValue={dash.groupField ? (Array.isArray(dash.groupField) ? dash.groupField : [dash.groupField]) : undefined}
-                                        >
-                                            <Select
-                                                allowClear
-                                                disabled={!canEdit || !isAggregate}
-                                                mode="multiple"
-                                                onChange={handleGroupFieldsChange}
-                                                onClear={() => handleGroupFieldsChange(undefined)}
-                                            >
-                                                {allColNames.filter(c => c !== aggregateField).map(c => <SelectOption key={c} value={c}>{c}</SelectOption>)}
-                                            </Select>
-                                        </FormItem>
-                                    </Col>
+                            <Col span={12}>
+                                <FormItem
+                                    className={styles.formItem}
+                                    name="name"
+                                    label={t('Name')}
+                                    initialValue={dash.name}
+                                    rules={[{required: true, message: t('Required field')}]}
+                                >
+                                    <Input/>
+                                </FormItem>
+                            </Col>
+                            <Col span={6}>
+                                <FormItem
+                                    className={styles.formItem}
+                                    name="unit"
+                                    label={t('Unit')}
+                                    initialValue={dash.unit}
+                                >
+                                    <Input/>
+                                </FormItem>
+                            </Col>
+                        </Row>
 
-                                    <Col span={6}>
-                                        <FormItem
-                                            className={styles.formItem}
-                                            name="sortField"
-                                            label={t('Sort Fields')}
-                                            initialValue={dash.sortField ? (Array.isArray(dash.sortField) ? dash.sortField : [dash.sortField]) : undefined}
-                                        >
-                                            <Select
-                                                allowClear
-                                                mode="multiple"
-                                                options={getSortFieldOptions()}
-                                            />
-                                        </FormItem>
-                                    </Col>
-                                </Row>
-                            )
-                        }, {
-                            key: 'dashOptions',
-                            label: t('Dash Options'),
-                            children: (
-                                <>
-                                    <Row gutter={10} style={{marginBottom: 10}}>
+                        <Collapse
+                            defaultActiveKey={['queryOptions', 'dashOptions', 'defaultFilters']}
+                            items={[{
+                                key: 'queryOptions',
+                                label: t('Query Options'),
+                                children: (
+                                    <Row gutter={10}>
                                         <Col span={6}>
                                             <FormItem
                                                 className={styles.formItem}
-                                                name="type"
-                                                label={t('Type')}
-                                                initialValue={dash.type}
-                                                rules={[{required: true, message: t('Required field')}]}
+                                                name="isAggregate"
+                                                initialValue={isAggregate}
+                                                valuePropName="checked"
                                             >
-                                                <Select onSelect={handleDashTypeChange}>
-                                                    {dashTypes.map(it => <SelectOption key={it} value={it}>{it}</SelectOption>)}
+                                                <Checkbox
+                                                    checked={isAggregate}
+                                                    onChange={handleAggregateChange}
+                                                    style={{marginTop: 24}}
+                                                >
+                                                    {t('Aggregate')}
+                                                </Checkbox>
+                                            </FormItem>
+                                        </Col>
+                                        <Col span={6}>
+                                            <FormItem
+                                                className={styles.formItem}
+                                                name="aggregateType"
+                                                label={t('Aggregate Type')}
+                                                dependencies={['isAggregate']}
+                                                initialValue={dash.aggregateType}
+                                                rules={[{required: isAggregate, message: t('Required field')}]}
+                                            >
+                                                <Select disabled={!canEdit || !isAggregate}>
+                                                    {Object.keys(AggregateType).map(it => <SelectOption key={it} value={it}>{it}</SelectOption>)}
+                                                </Select>
+                                            </FormItem>
+                                        </Col>
+                                        <Col span={6}>
+                                            <FormItem
+                                                className={styles.formItem}
+                                                name="aggregateField"
+                                                label={t('Aggregate Field')}
+                                                dependencies={['isAggregate']}
+                                                initialValue={dash.aggregateField}
+                                                rules={[{required: isAggregate, message: t('Required field')}]}
+                                            >
+                                                <Select allowClear disabled={!canEdit || !isAggregate} onSelect={handleAggregateFieldChange} onClear={() => handleAggregateFieldChange(undefined)}>
+                                                    {allColNames.map(c => <SelectOption key={c} value={c}>{c}</SelectOption>)}
+                                                </Select>
+                                            </FormItem>
+                                        </Col>
+                                        <Col span={6}>
+                                            <FormItem
+                                                className={styles.formItem}
+                                                name="groupField"
+                                                label={t('Group Fields')}
+                                                dependencies={['isAggregate']}
+                                                initialValue={dash.groupField ? (Array.isArray(dash.groupField) ? dash.groupField : [dash.groupField]) : undefined}
+                                            >
+                                                <Select
+                                                    allowClear
+                                                    disabled={!canEdit || !isAggregate}
+                                                    mode="multiple"
+                                                    onChange={handleGroupFieldsChange}
+                                                    onClear={() => handleGroupFieldsChange(undefined)}
+                                                >
+                                                    {allColNames.filter(c => c !== aggregateField).map(c => <SelectOption key={c} value={c}>{c}</SelectOption>)}
                                                 </Select>
                                             </FormItem>
                                         </Col>
@@ -360,62 +370,85 @@ export default function DashForm({dash, dashboards, canEdit, datasetMap, onDatas
                                         <Col span={6}>
                                             <FormItem
                                                 className={styles.formItem}
-                                                name="relatedDashboardId"
-                                                label={t('Related Dashboard')}
-                                                initialValue={dash.relatedDashboardId}
+                                                name="sortField"
+                                                label={t('Sort Fields')}
+                                                initialValue={dash.sortField ? (Array.isArray(dash.sortField) ? dash.sortField : [dash.sortField]) : undefined}
                                             >
-                                                <Select allowClear>
-                                                    {dashboards.map(d => <SelectOption key={d.id} value={d.id}>{d.name}</SelectOption>)}
-                                                </Select>
+                                                <Select
+                                                    allowClear
+                                                    mode="multiple"
+                                                    options={getSortFieldOptions()}
+                                                />
                                             </FormItem>
                                         </Col>
                                     </Row>
+                                )
+                            }, {
+                                key: 'dashOptions',
+                                label: t('Dash Options'),
+                                children: (
+                                    <>
+                                        <Row gutter={10} style={{marginBottom: 10}}>
+                                            <Col span={6}>
+                                                <FormItem
+                                                    className={styles.formItem}
+                                                    name="relatedDashboardId"
+                                                    label={t('Related Dashboard')}
+                                                    initialValue={dash.relatedDashboardId}
+                                                >
+                                                    <Select allowClear>
+                                                        {dashboards.map(d => <SelectOption key={d.id} value={d.id}>{d.name}</SelectOption>)}
+                                                    </Select>
+                                                </FormItem>
+                                            </Col>
+                                        </Row>
 
-                                    {renderDashOptions()}
-                                </>
-                            )
-                        }, {
-                            key: 'defaultFilters',
-                            label: (
-                                <Space>
-                                    {t('Default Filters')}
-                                    <Popover
-                                        arrow={false}
-                                        placement="right"
-                                        overlayInnerStyle={{width: 600}}
-                                        title={<>{getCustomFunctionsInfo().map((s, i) => <div key={i} style={{fontWeight: 'normal'}}>{s}</div>)}</>}
-                                    >
-                                        <QuestionCircleOutlined className="blue"/>
-                                    </Popover>
-                                </Space>
-                            ),
-                            children: (dataset && (
-                                <DashFilters
-                                    namePrefix={['defaultFilters']}
-                                    dataset={dataset}
-                                    initialBlock={toFormQueryBlock(dataset, dash.defaultFilters)}
-                                />
-                            ))
-                        }]}
-                    />
+                                        {renderDashOptions()}
+                                    </>
+                                )
+                            }, {
+                                key: 'defaultFilters',
+                                label: (
+                                    <Space>
+                                        {t('Default Filters')}
+                                        <Popover
+                                            arrow={false}
+                                            placement="right"
+                                            overlayInnerStyle={{width: 600}}
+                                            title={<>{getCustomFunctionsInfo().map((s, i) => <div key={i} style={{fontWeight: 'normal'}}>{s}</div>)}</>}
+                                        >
+                                            <QuestionCircleOutlined className="blue"/>
+                                        </Popover>
+                                    </Space>
+                                ),
+                                children: (dataset && (
+                                    <DashFilters
+                                        namePrefix={['defaultFilters']}
+                                        dataset={dataset}
+                                        initialBlock={toFormQueryBlock(dataset, dash.defaultFilters)}
+                                    />
+                                ))
+                            }]}
+                        />
 
-                    <Row gutter={10} style={{marginTop: 16}}>
-                        <Col span={6}>
-                            <FormItem
-                                className={styles.formItem}
-                                name="refreshIntervalSeconds"
-                                label={t('Refresh Interval (sec)')}
-                                initialValue={dash.refreshIntervalSeconds}
-                                rules={[
-                                    {required: true, message: t('Required field')},
-                                    {type: 'number', min: biConfig.minRefreshIntervalSeconds}
-                                ]}
-                            >
-                                <InputNumber style={{width: '50%'}} min={biConfig.minRefreshIntervalSeconds}/>
-                            </FormItem>
-                        </Col>
-                    </Row>
-                </div>
+                        <Row gutter={10} style={{marginTop: 16}}>
+                            <Col span={6}>
+                                <FormItem
+                                    className={styles.formItem}
+                                    name="refreshIntervalSeconds"
+                                    label={t('Refresh Interval (sec)')}
+                                    initialValue={dash.refreshIntervalSeconds}
+                                    rules={[
+                                        {required: true, message: t('Required field')},
+                                        {type: 'number', min: biConfig.minRefreshIntervalSeconds}
+                                    ]}
+                                >
+                                    <InputNumber style={{width: '50%'}} min={biConfig.minRefreshIntervalSeconds}/>
+                                </FormItem>
+                            </Col>
+                        </Row>
+                    </div>
+                </Split>
             </Split>
         </>
     )

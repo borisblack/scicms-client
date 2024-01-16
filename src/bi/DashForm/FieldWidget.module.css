@@ -1,0 +1,17 @@
+.fieldWidget {
+    position: relative;
+    padding: 3px;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 4px;
+    background: #ededed;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fieldWidget_removeBtn {
+    position: absolute;
+    bottom: 3px;
+    right: 3px;
+}

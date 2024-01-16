@@ -1,4 +1,4 @@
-import {ReactNode} from 'react'
+import {CSSProperties, ReactNode} from 'react'
 import {Badge} from 'antd'
 import {DatabaseFilled, LockFilled} from '@ant-design/icons'
 
@@ -9,6 +9,8 @@ export type TagType = 'lock' | 'dataset'
 interface FieldNameProps {
     name: string
     tag?: TagType
+    className?: string
+    style?: CSSProperties
 }
 
 function renderTagIcon(tag: TagType): ReactNode {
@@ -22,13 +24,23 @@ function renderTagIcon(tag: TagType): ReactNode {
     }
 }
 
-export default function FieldName({name, tag}: FieldNameProps) {
+export default function FieldName({name, tag, className, style}: FieldNameProps) {
 
     return tag ? (
         <Badge className={styles.fieldNameBadge} count={renderTagIcon(tag)} offset={[5, 5]}>
-            <span className={styles.fieldNameWrapper}>{name}</span>
+            <span
+                className={`${className ?? ''} ${styles.fieldNameWrapper}`}
+                style={style}
+            >
+                {name}
+            </span>
         </Badge>
     ) : (
-        <span className={styles.fieldNameWrapper}>{name}</span>
+        <span
+            className={`${className ?? ''} ${styles.fieldNameWrapper}`}
+            style={style}
+        >
+            {name}
+        </span>
     )
 }

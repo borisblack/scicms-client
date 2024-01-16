@@ -2,6 +2,10 @@
     margin: 0 8px 4px 0;
 }
 
+.axesPane {
+    margin: 0 8px 4px 8px;
+}
+
 .dashFormPane {
     margin: 0 0 4px 8px;
 }

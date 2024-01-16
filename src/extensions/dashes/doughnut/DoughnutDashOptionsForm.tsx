@@ -1,4 +1,4 @@
-import {DashOptionsFormProps} from '../../../bi'
+import {DashOptionsFormProps} from '..'
 import {Checkbox, Col, Form, Input, InputNumber, Popover, Row, Select, Space} from 'antd'
 import React from 'react'
 import {useTranslation} from 'react-i18next'
@@ -16,29 +16,29 @@ export default function DoughnutDashOptionsForm({dataset, availableColNames, fie
 
     return (
         <Row gutter={10}>
-            <Col span={6}>
-                <FormItem
-                    className={styles.formItem}
-                    name={[fieldName, 'angleField']}
-                    label={t('Angle field')}
-                    initialValue={values.angleField}
-                    rules={[{required: true, message: t('Required field')}]}
-                >
-                    <Select allowClear options={availableColNames.map(cn => ({value: cn, label: datasetColumns[cn]?.alias ?? cn}))}/>
-                </FormItem>
-            </Col>
+            {/*<Col span={6}>*/}
+            {/*    <FormItem*/}
+            {/*        className={styles.formItem}*/}
+            {/*        name={[fieldName, 'angleField']}*/}
+            {/*        label={t('Angle field')}*/}
+            {/*        initialValue={values.angleField}*/}
+            {/*        rules={[{required: true, message: t('Required field')}]}*/}
+            {/*    >*/}
+            {/*        <Select allowClear options={availableColNames.map(cn => ({value: cn, label: datasetColumns[cn]?.alias ?? cn}))}/>*/}
+            {/*    </FormItem>*/}
+            {/*</Col>*/}
 
-            <Col span={6}>
-                <FormItem
-                    className={styles.formItem}
-                    name={[fieldName, 'colorField']}
-                    label={t('Color field')}
-                    initialValue={values.colorField}
-                    rules={[{required: true, message: t('Required field')}]}
-                >
-                    <Select allowClear options={availableColNames.map(cn => ({value: cn, label: datasetColumns[cn]?.alias ?? cn}))}/>
-                </FormItem>
-            </Col>
+            {/*<Col span={6}>*/}
+            {/*    <FormItem*/}
+            {/*        className={styles.formItem}*/}
+            {/*        name={[fieldName, 'colorField']}*/}
+            {/*        label={t('Color field')}*/}
+            {/*        initialValue={values.colorField}*/}
+            {/*        rules={[{required: true, message: t('Required field')}]}*/}
+            {/*    >*/}
+            {/*        <Select allowClear options={availableColNames.map(cn => ({value: cn, label: datasetColumns[cn]?.alias ?? cn}))}/>*/}
+            {/*    </FormItem>*/}
+            {/*</Col>*/}
 
             <Col span={6}>
                 <FormItem
