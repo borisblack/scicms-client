@@ -57,6 +57,7 @@ export default function FieldTypeIcon({fieldType, color, className, style}: Fiel
         <i
             className={`${iconClassName()} fa-border ${styles.fieldTypeIcon} ${className ?? ''}`}
             style={{color, ...(style ?? {})}}
+            title={fieldType}
         >
         </i>
     )
