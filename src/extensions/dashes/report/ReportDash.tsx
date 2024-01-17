@@ -49,7 +49,7 @@ function ReportDash({dataset, dash, height, fullScreen, data}: DashRenderContext
             size="small"
             columns={columns}
             dataSource={data}
-            // rowKey={keyColName ? keyColName : () => uuidv4()}
+            rowKey={/*keyColName ? keyColName :*/ () => uuidv4()}
             pagination={false}
             scroll={{y: fullScreen ? '80vh' : height - TABLE_HEADER_HEIGHT}}
         />
