@@ -6,7 +6,7 @@ import {useTranslation} from 'react-i18next'
 import {
     DeleteOutlined,
     EditOutlined,
-    ExclamationCircleOutlined,
+    ExclamationCircleOutlined, FieldTimeOutlined,
     FilterOutlined,
     FullscreenExitOutlined,
     FullscreenOutlined,
@@ -20,12 +20,22 @@ import * as DatasetService from 'src/services/dataset'
 import {getActualFilters, printQueryBlock, toDatasetFiltersInput, toSingleDatasetFiltersInput} from '../util'
 import {Dash, getDash} from 'src/extensions/dashes'
 import biConfig from 'src/config/bi'
-import {Column, Dashboard, DashboardExtra, Dataset, DatasetFiltersInput, IDash, QueryBlock} from 'src/types/bi'
+import {
+    Column,
+    Dashboard,
+    DashboardExtra,
+    Dataset,
+    DatasetFiltersInput,
+    ExecutionStatisticInfo,
+    IDash,
+    QueryBlock
+} from 'src/types/bi'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
 import FiltersModal from '../FiltersModal'
 import DashModal from '../DashModal'
 import {useModal, usePrevious} from 'src/util/hooks'
 import {buildFieldsInput} from '../util/datagrid'
+import ExecutionStatisticModal from '../ExecutionStatisticModal'
 import styles from './DashWrapper.module.css'
 import './DashWrapper.css'
 
@@ -75,6 +85,8 @@ function DashWrapper(props: DashWrapperProps) {
     const [fetchError, setFetchError] = useState<string | null>(null)
     const {show: showDashModal, close: closeDashModal, modalProps: dashModalProps} = useModal()
     const {show: showFiltersModal, close: closeFiltersModal, modalProps: filtersModalProps} = useModal()
+    const [statistic, setStatistic] = useState<ExecutionStatisticInfo>()
+    const {show: showStatisticModal, close: closeStatisticModal, modalProps: statisticModalProps} = useModal()
     const [filters, setFilters] = useState<QueryBlock>(getActualFilters(dashboard.id, dash))
     const prevDefaultFilters = usePrevious(dash.defaultFilters)
     const dashHeight = biConfig.rowHeight * dash.h - PAGE_HEADER_HEIGHT
@@ -163,6 +175,12 @@ function DashWrapper(props: DashWrapperProps) {
             const datasetResponse = await DatasetService.loadData(dataset.name, datasetInput)
             fetchedData = datasetResponse.data
             setDatasetData(fetchedData)
+            setStatistic({
+                timeMs: datasetResponse.timeMs,
+                cacheHit: datasetResponse.cacheHit,
+                query: datasetResponse.query,
+                params: datasetResponse.params
+            })
         } catch (e: any) {
             setFetchError(e.message)
             notification.error({
@@ -208,6 +226,12 @@ function DashWrapper(props: DashWrapperProps) {
                 key: 'filters',
                 label: <Space><FilterOutlined/>{t('Filters')}</Space>,
                 onClick: showFiltersModal
+            })
+
+            menuItems.push({
+                key: 'statistic',
+                label: <Space><FieldTimeOutlined/>{t('Execution statistic')}</Space>,
+                onClick: showStatisticModal
             })
         }
 
@@ -334,6 +358,17 @@ function DashWrapper(props: DashWrapperProps) {
                 onChange={onDashChange}
                 onClose={handleDashModalClose}
             />
+
+            {statistic && (
+                <ExecutionStatisticModal
+                    {...statisticModalProps}
+                    timeMs={statistic.timeMs}
+                    cacheHit={statistic.cacheHit}
+                    query={statistic.query}
+                    params={statistic.params}
+                    onClose={closeStatisticModal}
+                />
+            )}
         </>
     )
 }
