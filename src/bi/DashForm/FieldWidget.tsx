@@ -54,31 +54,29 @@ export default function FieldWidget({style, field, isDatasetField, isSortField, 
                     tag={field.custom ? (isDatasetField ? 'dataset' : undefined) : 'lock'}
                 />
 
-                {canEdit && (
-                    <>
-                        {isSortField && (
-                            <Button
-                                className={styles.fieldWidget_sortBtn}
-                                // type="text"
-                                size="small"
-                                title={desc ? t('Sort Descending') : t('Sort Ascending')}
-                                onClick={toggleSort}
-                            >
-                                {desc ? <SortAscendingOutlined/> : <SortDescendingOutlined/>}
-                            </Button>
-                        )}
+                {isSortField && (
+                    <Button
+                        className={styles.fieldWidget_sortBtn}
+                        // type="text"
+                        size="small"
+                        title={desc ? t('Sort Descending') : t('Sort Ascending')}
+                        onClick={toggleSort}
+                    >
+                        {desc ? <SortAscendingOutlined/> : <SortDescendingOutlined/>}
+                    </Button>
+                )}
 
-                        <Button
-                            className={styles.fieldWidget_removeBtn}
-                            style={{right: isSortField ? (BTN_SIZE + BTN_SPACE*2) : BTN_SPACE}}
-                            // type="text"
-                            size="small"
-                            title={t('Remove')}
-                            onClick={onRemove}
-                        >
-                            <CloseOutlined/>
-                        </Button>
-                    </>
+                {canEdit && (
+                    <Button
+                        className={styles.fieldWidget_removeBtn}
+                        style={{right: isSortField ? (BTN_SIZE + BTN_SPACE*2) : BTN_SPACE}}
+                        // type="text"
+                        size="small"
+                        title={t('Remove')}
+                        onClick={onRemove}
+                    >
+                        <CloseOutlined/>
+                    </Button>
                 )}
             </span>
         </div>
