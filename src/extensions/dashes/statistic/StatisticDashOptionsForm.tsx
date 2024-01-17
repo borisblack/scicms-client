@@ -9,24 +9,11 @@ import {QuestionCircleOutlined} from '@ant-design/icons'
 const {Item: FormItem} = Form
 const {TextArea} = Input
 
-export default function StatisticDashOptionsForm({dataset, availableColNames, fieldName, values}: DashOptionsFormProps) {
+export default function StatisticDashOptionsForm({fieldName, values}: DashOptionsFormProps) {
     const {t} = useTranslation()
-    const datasetColumns = dataset.spec.columns ?? {}
 
     return (
         <Row gutter={10}>
-            <Col span={6}>
-                <FormItem
-                    className={styles.formItem}
-                    name={[fieldName, 'statisticField']}
-                    label={t('Statistic field')}
-                    initialValue={values.statisticField}
-                    rules={[{required: true, message: t('Required field')}]}
-                >
-                    <Select allowClear options={availableColNames.map(cn => ({value: cn, label: datasetColumns[cn]?.alias ?? cn}))}/>
-                </FormItem>
-            </Col>
-
             <Col span={12}>
                 <FormItem
                     className={styles.formItem}

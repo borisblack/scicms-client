@@ -15,7 +15,9 @@ interface ReportDashOpts {
 const TABLE_HEADER_HEIGHT = 40
 
 function ReportDash({dataset, dash, height, fullScreen, data}: DashRenderContext) {
-    const {displayedColNames, rules, keyColName} = dash.optValues as ReportDashOpts
+    const optValues = dash.optValues as ReportDashOpts
+    const {displayedColNames, rules} = optValues
+    const keyColName = Array.isArray(optValues.keyColName) ? optValues.keyColName[0] : optValues.keyColName
     const cellRules = useMemo(() => RulesService.parseRules(rules), [rules])
     const datasetColumns = dataset.spec.columns ?? {}
     const columns: ColumnsType<any> =

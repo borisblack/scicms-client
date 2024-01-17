@@ -10,36 +10,11 @@ import {QuestionCircleOutlined} from '@ant-design/icons'
 const {Item: FormItem} = Form
 const {TextArea} = Input
 
-export default function PieDashOptionsForm({dataset, availableColNames, fieldName, values}: DashOptionsFormProps) {
+export default function PieDashOptionsForm({fieldName, values}: DashOptionsFormProps) {
     const {t} = useTranslation()
-    const datasetColumns = dataset.spec.columns ?? {}
 
     return (
         <Row gutter={10}>
-            <Col span={6}>
-                <FormItem
-                    className={styles.formItem}
-                    name={[fieldName, 'angleField']}
-                    label={t('Angle field')}
-                    initialValue={values.angleField}
-                    rules={[{required: true, message: t('Required field')}]}
-                >
-                    <Select allowClear options={availableColNames.map(cn => ({value: cn, label: datasetColumns[cn]?.alias ?? cn}))}/>
-                </FormItem>
-            </Col>
-
-            <Col span={6}>
-                <FormItem
-                    className={styles.formItem}
-                    name={[fieldName, 'colorField']}
-                    label={t('Color field')}
-                    initialValue={values.colorField}
-                    rules={[{required: true, message: t('Required field')}]}
-                >
-                    <Select allowClear options={availableColNames.map(cn => ({value: cn, label: datasetColumns[cn]?.alias ?? cn}))}/>
-                </FormItem>
-            </Col>
-
             <Col span={6}>
                 <FormItem
                     className={styles.formItem}

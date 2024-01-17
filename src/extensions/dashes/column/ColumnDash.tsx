@@ -29,11 +29,9 @@ const legendConfig = dashConfig?.all?.legend
 
 export default function ColumnDash({dataset, dash, data}: DashRenderContext) {
     const {openDashboard} = useBI()
-    const {optValues, relatedDashboardId} = dash
+    const optValues = dash.optValues as ColumnDashOptions
+    const {relatedDashboardId} = dash
     const {
-        xField,
-        yField,
-        seriesField,
         hideLegend,
         legendPosition,
         xAxisLabelAutoRotate,
@@ -41,6 +39,9 @@ export default function ColumnDash({dataset, dash, data}: DashRenderContext) {
         isGroup,
         rules
     } = optValues as ColumnDashOptions
+    const xField = Array.isArray(optValues.xField) ? optValues.xField[0] : optValues.xField
+    const yField = Array.isArray(optValues.yField) ? optValues.yField[0] : optValues.yField
+    const seriesField = Array.isArray(optValues.seriesField) ? optValues.seriesField[0] : optValues.seriesField
     const fieldRules = useMemo(() => RulesService.parseRules(rules), [rules])
     const seriesData = seriesField ? _.uniqBy(data, seriesField) : []
     const seriesColors = seriesField ? RulesService.getSeriesColors(fieldRules, seriesField, seriesData, defaultDashColors(seriesData.length)) : []

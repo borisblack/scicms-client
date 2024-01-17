@@ -10,47 +10,11 @@ import styles from '../DashOptionForm.module.css'
 const {Item: FormItem} = Form
 const {TextArea} = Input
 
-export default function PolarAreaDashOptionsForm({dataset, availableColNames, fieldName, values}: DashOptionsFormProps) {
+export default function PolarAreaDashOptionsForm({fieldName, values}: DashOptionsFormProps) {
     const {t} = useTranslation()
-    const datasetColumns = dataset.spec.columns ?? {}
 
     return (
         <Row gutter={10}>
-            <Col span={6}>
-                <FormItem
-                    className={styles.formItem}
-                    name={[fieldName, 'xField']}
-                    label={t('x-axis field')}
-                    initialValue={values.xField}
-                    rules={[{required: true, message: t('Required field')}]}
-                >
-                    <Select allowClear options={availableColNames.map(cn => ({value: cn, label: datasetColumns[cn]?.alias ?? cn}))}/>
-                </FormItem>
-            </Col>
-
-            <Col span={6}>
-                <FormItem
-                    className={styles.formItem}
-                    name={[fieldName, 'yField']}
-                    label={t('y-axis field')}
-                    initialValue={values.yField}
-                    rules={[{required: true, message: t('Required field')}]}
-                >
-                    <Select allowClear options={availableColNames.map(cn => ({value: cn, label: datasetColumns[cn]?.alias ?? cn}))}/>
-                </FormItem>
-            </Col>
-
-            <Col span={6}>
-                <FormItem
-                    className={styles.formItem}
-                    name={[fieldName, 'seriesField']}
-                    label={t('Series field')}
-                    initialValue={values.seriesField}
-                >
-                    <Select allowClear options={availableColNames.map(cn => ({value: cn, label: datasetColumns[cn]?.alias ?? cn}))}/>
-                </FormItem>
-            </Col>
-
             <Col span={6}>
                 <FormItem
                     className={styles.formItem}

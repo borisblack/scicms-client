@@ -28,17 +28,18 @@ const legendConfig = dashConfig?.all?.legend
 
 export default function BubbleDash({dataset, dash, data}: DashRenderContext) {
     const {openDashboard} = useBI()
-    const {optValues, relatedDashboardId} = dash
+    const optValues = dash.optValues as BubbleDashOptions
+    const {relatedDashboardId} = dash
     const {
-        xField,
-        yField,
-        sizeField,
-        colorField,
         hideLegend,
         legendPosition,
         xAxisLabelAutoRotate,
         rules
-    } = optValues as BubbleDashOptions
+    } = optValues
+    const xField = Array.isArray(optValues.xField) ? optValues.xField[0] : optValues.xField
+    const yField = Array.isArray(optValues.yField) ? optValues.yField[0] : optValues.yField
+    const sizeField = Array.isArray(optValues.sizeField) ? optValues.sizeField[0] : optValues.sizeField
+    const colorField = Array.isArray(optValues.colorField) ? optValues.colorField[0] : optValues.colorField
     const fieldRules = useMemo(() => RulesService.parseRules(rules), [rules])
     const seriesData = colorField ? _.uniqBy(data, colorField) : []
     const seriesColors = colorField ? RulesService.getSeriesColors(fieldRules, colorField, seriesData, defaultDashColors(seriesData.length)) : []

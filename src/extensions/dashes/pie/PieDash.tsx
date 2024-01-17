@@ -25,15 +25,16 @@ const legendConfig = dashConfig?.all?.legend
 
 export default function PieDash({dataset, dash, data}: DashRenderContext) {
     const {openDashboard} = useBI()
-    const {optValues, relatedDashboardId} = dash
+    const optValues = dash.optValues as PieDashOptions
+    const {relatedDashboardId} = dash
     const {
-        angleField,
-        colorField,
         radius,
         hideLegend,
         legendPosition,
         rules
-    } = optValues as PieDashOptions
+    } = optValues
+    const angleField = Array.isArray(optValues.angleField) ? optValues.angleField[0] : optValues.angleField
+    const colorField = Array.isArray(optValues.colorField) ? optValues.colorField[0] : optValues.colorField
     const fieldRules = useMemo(() => RulesService.parseRules(rules), [rules])
     const seriesData = colorField ? _.uniqBy(data, colorField) : []
     const seriesColors = colorField ? RulesService.getSeriesColors(fieldRules, colorField, seriesData, defaultDashColors(seriesData.length)) : []

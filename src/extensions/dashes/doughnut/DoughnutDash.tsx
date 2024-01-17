@@ -13,8 +13,8 @@ import {useBI} from 'src/bi/hooks'
 import {handleDashClick} from '../util/antdPlot'
 
 export interface DoughnutDashOptions {
-    angleField?: string
-    colorField?: string
+    angleField?: string | string[]
+    colorField?: string | string[]
     radius?: number
     innerRadius?: number
     legendPosition?: LegendPosition
@@ -28,16 +28,17 @@ const statisticConfig = dashConfig?.doughnut?.statistic
 
 export default function DoughnutDash({dataset, dash, data}: DashRenderContext) {
     const {openDashboard} = useBI()
-    const {optValues, relatedDashboardId} = dash
+    const optValues = dash.optValues as DoughnutDashOptions
+    const {relatedDashboardId} = dash
     const {
-        angleField,
-        colorField,
         radius,
         innerRadius,
         hideLegend,
         legendPosition,
         rules
-    } = optValues as DoughnutDashOptions
+    } = optValues
+    const angleField = Array.isArray(optValues.angleField) ? optValues.angleField[0] : optValues.angleField
+    const colorField = Array.isArray(optValues.colorField) ? optValues.colorField[0] : optValues.colorField
     const fieldRules = useMemo(() => RulesService.parseRules(rules), [rules])
     const seriesData = colorField ? _.uniqBy(data, colorField) : []
     const seriesColors = colorField ? RulesService.getSeriesColors(fieldRules, colorField, seriesData, defaultDashColors(seriesData.length)) : []

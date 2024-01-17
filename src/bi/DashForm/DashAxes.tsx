@@ -43,7 +43,6 @@ export default function DashAxes({dataset, dash, formFieldName, canEdit}: DashAx
                             <Select
                                 style={{display: 'none'}}
                                 allowClear
-                                disabled={!canEdit}
                                 mode="multiple"
                                 options={[]}
                             />
@@ -59,6 +58,29 @@ export default function DashAxes({dataset, dash, formFieldName, canEdit}: DashAx
                     </div>
                 )
             })}
+
+            <Form.Item
+                className={styles.formItem}
+                // hidden
+                name="sortField"
+                label={t('Sort Fields')}
+                initialValue={dash.sortField ? (Array.isArray(dash.sortField) ? dash.sortField : [dash.sortField]) : undefined}
+            >
+                <Select
+                    style={{display: 'none'}}
+                    allowClear
+                    mode="multiple"
+                    options={[]}
+                />
+            </Form.Item>
+
+            <DashAxisArea
+                dataset={dataset}
+                dash={dash}
+                namePath="sortField"
+                cardinality={-1}
+                canEdit={canEdit}
+            />
         </div>
     )
 }

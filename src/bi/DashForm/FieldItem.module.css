@@ -15,18 +15,12 @@
 .fieldItem_fnBtn {
     position: absolute;
     bottom: 3px;
+    display: none;
 }
 
 .fieldItem_removeBtn {
     position: absolute;
     bottom: 3px;
-}
-
-.fieldItem .fieldItem_fnBtn {
-    display: none;
-}
-
-.fieldItem .fieldItem_removeBtn {
     display: none;
 }
 

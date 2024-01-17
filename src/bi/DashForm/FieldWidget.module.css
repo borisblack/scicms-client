@@ -1,6 +1,7 @@
 .fieldWidget {
     position: relative;
     padding: 3px;
+    margin-top: 4px;
     border-width: 1px;
     border-style: solid;
     border-radius: 4px;
@@ -10,8 +11,19 @@
     text-overflow: ellipsis;
 }
 
+.fieldWidget_sortBtn {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+}
+
 .fieldWidget_removeBtn {
     position: absolute;
-    bottom: 3px;
-    right: 3px;
+    bottom: 2px;
+    right: 2px;
+    display: none;
+}
+
+.fieldWidget:hover .fieldWidget_removeBtn {
+    display: block;
 }

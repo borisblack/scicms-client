@@ -28,21 +28,22 @@ interface BubbleMapDashOptions {
 const mapConfig = biConfig.dash.map
 const defaultColor = defaultDashColor()
 
-function BubbleMapDash({pageKey, fullScreen, dataset, dash, height, data}: DashRenderContext) {
+function BubbleMapDash({fullScreen, dataset, dash, height, data}: DashRenderContext) {
     const {openDashboard} = useBI()
     const {columns} = dataset.spec
     const {relatedDashboardId} = dash
+    const optValues = dash.optValues as BubbleMapDashOptions
     const {
-        latitudeField,
-        longitudeField,
-        sizeField,
-        colorField,
-        labelField,
         centerLatitude,
         centerLongitude,
         defaultZoom,
         rules
-    } = dash.optValues as BubbleMapDashOptions
+    } = optValues
+    const latitudeField = Array.isArray(optValues.latitudeField) ? optValues.latitudeField[0] : optValues.latitudeField
+    const longitudeField = Array.isArray(optValues.longitudeField) ? optValues.longitudeField[0] : optValues.longitudeField
+    const sizeField = Array.isArray(optValues.sizeField) ? optValues.sizeField[0] : optValues.sizeField
+    const colorField = Array.isArray(optValues.colorField) ? optValues.colorField[0] : optValues.colorField
+    const labelField = Array.isArray(optValues.labelField) ? optValues.labelField[0] : optValues.labelField
     const fieldRules = useMemo(() => RulesService.parseRules(rules), [rules])
     const seriesData = useMemo(() => colorField ? _.uniqBy(data, colorField) : [], [colorField, data])
     const seriesColors = useMemo(() => colorField ? RulesService.getSeriesColors(fieldRules, colorField, seriesData, defaultDashColors(seriesData.length)) : [], [colorField, fieldRules, seriesData])

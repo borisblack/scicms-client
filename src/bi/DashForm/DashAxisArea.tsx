@@ -16,7 +16,7 @@ interface DashAxisAreaProps {
     canEdit: boolean
 }
 
-const FIELD_WIDGET_HEIGHT = 30
+const FIELD_WIDGET_HEIGHT = 34
 
 export default function DashAxisArea({dataset, dash, namePath, cardinality, canEdit}: DashAxisAreaProps) {
     const datasetFields = useMemo(() => (dataset.spec.columns ?? {}), [dataset.spec.columns])
@@ -56,6 +56,10 @@ export default function DashAxisArea({dataset, dash, namePath, cardinality, canE
         form.validateFields()
     }
 
+    function handleAxisChange(oldValue: string, newValue: string) {
+        form.setFieldValue(namePath, (value ?? []).map(v => v === oldValue ? newValue : v))
+    }
+
     function handleAxisRemove(valueToRemove: string) {
         const newValue = (value ?? []).filter(v => v !== valueToRemove)
         form.setFieldValue(namePath, newValue.length === 0 ? undefined : newValue)
@@ -69,13 +73,16 @@ export default function DashAxisArea({dataset, dash, namePath, cardinality, canE
             style={{minHeight: (value?.length ?? 1) * FIELD_WIDGET_HEIGHT}}
         >
             {value && value.map(v => {
-                const field = {...allFields[v], name: v}
+                const fieldName = v.includes(':') ? v.substring(0, v.indexOf(':')) : v
+                const field = {...allFields[fieldName], name: v}
                 return (
                     <FieldWidget
                         key={v}
                         field={field}
                         isDatasetField={datasetFields.hasOwnProperty(v)}
+                        isSortField={namePath === 'sortField'}
                         canEdit={canEdit}
+                        onChange={handleAxisChange}
                         onRemove={() => handleAxisRemove(v)}/>
                 )
             })}

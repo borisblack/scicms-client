@@ -18,7 +18,7 @@ interface FieldItemProps {
 }
 
 const BTN_SIZE = 24
-const BTN_SPACE = 3
+const BTN_SPACE = 2
 
 export default function FieldItem({field, isDatasetField, canEdit, onFieldOpen, onFieldRemove}: FieldItemProps) {
     const {t} = useTranslation()

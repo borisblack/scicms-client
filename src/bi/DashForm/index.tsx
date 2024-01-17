@@ -161,24 +161,6 @@ export default function DashForm({dash, dashboards, canEdit, datasetMap, onDatas
         })
     )
 
-    const getSortFieldOptions = (): DefaultOptionType[] => {
-        return [{
-            label: t('Ascending'),
-            options: availableColNames.map(colName => ({
-                key:`${colName}:asc`,
-                label: <span><ArrowUpOutlined/>&nbsp;{colName}</span>,
-                value: `${colName}:asc`
-            }))
-        }, {
-            label: t('Descending'),
-            options: availableColNames.map(colName => ({
-                key: `${colName}:desc`,
-                label: <span><ArrowDownOutlined/>&nbsp;{colName}</span>,
-                value: `${colName}:desc`
-            }))
-        }]
-    }
-
     return (
         <>
             <Split
@@ -294,6 +276,20 @@ export default function DashForm({dash, dashboards, canEdit, datasetMap, onDatas
                                     <Input/>
                                 </FormItem>
                             </Col>
+                            <Col span={6}>
+                                <FormItem
+                                    className={styles.formItem}
+                                    name="refreshIntervalSeconds"
+                                    label={t('Refresh Interval (sec)')}
+                                    initialValue={dash.refreshIntervalSeconds}
+                                    rules={[
+                                        {required: true, message: t('Required field')},
+                                        {type: 'number', min: biConfig.minRefreshIntervalSeconds}
+                                    ]}
+                                >
+                                    <InputNumber style={{width: '100%'}} min={biConfig.minRefreshIntervalSeconds}/>
+                                </FormItem>
+                            </Col>
                         </Row>
 
                         <Collapse
@@ -366,21 +362,6 @@ export default function DashForm({dash, dashboards, canEdit, datasetMap, onDatas
                                                 </Select>
                                             </FormItem>
                                         </Col>
-
-                                        <Col span={6}>
-                                            <FormItem
-                                                className={styles.formItem}
-                                                name="sortField"
-                                                label={t('Sort Fields')}
-                                                initialValue={dash.sortField ? (Array.isArray(dash.sortField) ? dash.sortField : [dash.sortField]) : undefined}
-                                            >
-                                                <Select
-                                                    allowClear
-                                                    mode="multiple"
-                                                    options={getSortFieldOptions()}
-                                                />
-                                            </FormItem>
-                                        </Col>
                                     </Row>
                                 )
                             }, {
@@ -430,23 +411,6 @@ export default function DashForm({dash, dashboards, canEdit, datasetMap, onDatas
                                 ))
                             }]}
                         />
-
-                        <Row gutter={10} style={{marginTop: 16}}>
-                            <Col span={6}>
-                                <FormItem
-                                    className={styles.formItem}
-                                    name="refreshIntervalSeconds"
-                                    label={t('Refresh Interval (sec)')}
-                                    initialValue={dash.refreshIntervalSeconds}
-                                    rules={[
-                                        {required: true, message: t('Required field')},
-                                        {type: 'number', min: biConfig.minRefreshIntervalSeconds}
-                                    ]}
-                                >
-                                    <InputNumber style={{width: '50%'}} min={biConfig.minRefreshIntervalSeconds}/>
-                                </FormItem>
-                            </Col>
-                        </Row>
                     </div>
                 </Split>
             </Split>
