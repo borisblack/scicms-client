@@ -54,7 +54,7 @@ export default function BubbleDash({dataset, dash, data}: DashRenderContext) {
     if (!sizeField)
         return <Alert message="sizeField attribute not specified" type="error"/>
 
-    const columns = dataset.spec.columns ?? {}
+    const columns = {...(dataset.spec.columns ?? {}), ...dash.fields}
     const xColumn = columns[xField]
     const yColumn = columns[yField]
     const sizeColumn = columns[sizeField]

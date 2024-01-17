@@ -49,7 +49,7 @@ export default function RadarDash({dataset, dash, data}: DashRenderContext) {
     if (!yField)
         return <Alert message="yField attribute not specified" type="error"/>
 
-    const columns = dataset.spec.columns ?? {}
+    const columns = {...(dataset.spec.columns ?? {}), ...dash.fields}
     const xColumn = columns[xField]
     const yColumn = columns[yField]
     if (xColumn == null || yColumn == null)

@@ -20,11 +20,12 @@ import * as DatasetService from 'src/services/dataset'
 import {getActualFilters, printQueryBlock, toDatasetFiltersInput, toSingleDatasetFiltersInput} from '../util'
 import {Dash, getDash} from 'src/extensions/dashes'
 import biConfig from 'src/config/bi'
-import {Dashboard, DashboardExtra, Dataset, DatasetFiltersInput, IDash, NamedColumn, QueryBlock} from 'src/types/bi'
+import {Column, Dashboard, DashboardExtra, Dataset, DatasetFiltersInput, IDash, QueryBlock} from 'src/types/bi'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
 import FiltersModal from '../FiltersModal'
 import DashModal from '../DashModal'
 import {useModal, usePrevious} from 'src/util/hooks'
+import {buildFieldsInput} from '../util/datagrid'
 import styles from './DashWrapper.module.css'
 import './DashWrapper.css'
 
@@ -127,6 +128,29 @@ function DashWrapper(props: DashWrapperProps) {
 
             if (dash.groupField)
                 datasetInput.groupFields = Array.isArray(dash.groupField) ? dash.groupField : [dash.groupField]
+        } else {
+            const datasetFields = dataset.spec.columns ?? {}
+            const allFields = {...datasetFields, ...dash.fields}
+            const sortFieldNames: string[] = (dash.sortField ? (Array.isArray(dash.sortField) ? dash.sortField : [dash.sortField]) : [])
+                .map(sf => sf.includes(':') ? sf.substring(0, sf.indexOf(':')) : sf)
+            const fieldNamesToFetch: Set<string> = new Set(sortFieldNames)
+            for (const axis of dashHandler.axes) {
+                const axisValue: string | string[] | undefined = dash.optValues[axis.name]
+                if (!axisValue)
+                    continue
+
+                if (Array.isArray(axisValue))
+                    axisValue.forEach(v => fieldNamesToFetch.add(v))
+                else
+                    fieldNamesToFetch.add(axisValue)
+
+                const fieldsToFetch: Record<string, Column>
+                    = _.pickBy(allFields, (field, fieldName) => fieldNamesToFetch.has(fieldName))
+
+                datasetInput.fields = buildFieldsInput(fieldsToFetch)
+            }
+
+
         }
 
         if (dash.sortField)

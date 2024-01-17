@@ -111,7 +111,7 @@ export async function loadData(dataset: Dataset, actualFields: Record<string, Co
     }
 }
 
-const buildFieldsInput = (actualColumns: Record<string, Column>): DatasetFieldInput[] =>
+export const buildFieldsInput = (actualColumns: Record<string, Column>): DatasetFieldInput[] =>
     Object.keys(actualColumns)
         .filter(colName => !actualColumns[colName].hidden)
         .map(colName => {

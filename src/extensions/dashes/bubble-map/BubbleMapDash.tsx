@@ -30,7 +30,6 @@ const defaultColor = defaultDashColor()
 
 function BubbleMapDash({fullScreen, dataset, dash, height, data}: DashRenderContext) {
     const {openDashboard} = useBI()
-    const {columns} = dataset.spec
     const {relatedDashboardId} = dash
     const optValues = dash.optValues as BubbleMapDashOptions
     const {
@@ -49,6 +48,7 @@ function BubbleMapDash({fullScreen, dataset, dash, height, data}: DashRenderCont
     const seriesColors = useMemo(() => colorField ? RulesService.getSeriesColors(fieldRules, colorField, seriesData, defaultDashColors(seriesData.length)) : [], [colorField, fieldRules, seriesData])
     const mapRef = useRef<HTMLDivElement>(null)
     const mapInstance = useRef<L.Map | null>(null)
+    const columns = useMemo(() => ({...(dataset.spec.columns ?? {}), ...dash.fields}), [dash.fields, dataset.spec.columns])
 
     useEffect(() => {
         const mapEl = mapRef.current

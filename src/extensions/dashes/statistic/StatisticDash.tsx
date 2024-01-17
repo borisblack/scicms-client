@@ -10,7 +10,7 @@ interface StatisticDashOptions {
     rules?: string
 }
 
-function StatisticDash({dataset, dash, data}: DashRenderContext) {
+function StatisticDash({dash, data}: DashRenderContext) {
     const optValues = dash.optValues as StatisticDashOptions
     const {rules} = optValues
     const statisticField = Array.isArray(optValues.statisticField) ? optValues.statisticField[0] : optValues.statisticField

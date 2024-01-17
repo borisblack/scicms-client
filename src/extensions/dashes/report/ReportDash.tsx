@@ -19,12 +19,12 @@ function ReportDash({dataset, dash, height, fullScreen, data}: DashRenderContext
     const {displayedColNames, rules} = optValues
     const keyColName = Array.isArray(optValues.keyColName) ? optValues.keyColName[0] : optValues.keyColName
     const cellRules = useMemo(() => RulesService.parseRules(rules), [rules])
-    const datasetColumns = dataset.spec.columns ?? {}
+    const allColumns = {...(dataset.spec.columns ?? {}), ...dash.fields}
     const columns: ColumnsType<any> =
         displayedColNames
-            .filter(cn => cn in datasetColumns)
+            .filter(cn => cn in allColumns)
             .map(cn => {
-                const datasetColumn = datasetColumns[cn]
+                const datasetColumn = allColumns[cn]
                 return {
                     key: cn,
                     dataIndex: cn,
@@ -36,7 +36,7 @@ function ReportDash({dataset, dash, height, fullScreen, data}: DashRenderContext
             })
 
     function renderCell(colName: string, value: any, record: Record<string, any>): ReactNode {
-        const formattedValue = formatValue(value, columnType(datasetColumns[colName]))
+        const formattedValue = formatValue(value, columnType(allColumns[colName]))
 
         return RulesService.renderField(cellRules, colName, formattedValue, record)
     }
@@ -49,7 +49,7 @@ function ReportDash({dataset, dash, height, fullScreen, data}: DashRenderContext
             size="small"
             columns={columns}
             dataSource={data}
-            rowKey={keyColName ? keyColName : () => uuidv4()}
+            // rowKey={keyColName ? keyColName : () => uuidv4()}
             pagination={false}
             scroll={{y: fullScreen ? '80vh' : height - TABLE_HEADER_HEIGHT}}
         />

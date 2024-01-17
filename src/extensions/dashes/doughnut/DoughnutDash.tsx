@@ -49,7 +49,7 @@ export default function DoughnutDash({dataset, dash, data}: DashRenderContext) {
     if (!colorField)
         return <Alert message="colorField attribute not specified" type="error"/>
 
-    const columns = dataset.spec.columns ?? {}
+    const columns = {...(dataset.spec.columns ?? {}), ...dash.fields}
     const angleColumn = columns[angleField]
     const colorColumn = columns[colorField]
     if (angleColumn == null || colorColumn == null)
