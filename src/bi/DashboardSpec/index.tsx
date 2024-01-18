@@ -1,8 +1,9 @@
 import _ from 'lodash'
-import {memo, useEffect, useMemo, useRef, useState} from 'react'
-import RGL, {Layout, WidthProvider} from 'react-grid-layout'
-import {Alert, Button} from 'antd'
+import React, {memo, useEffect, useMemo, useRef, useState} from 'react'
 import {useTranslation} from 'react-i18next'
+import RGL, {Layout, WidthProvider} from 'react-grid-layout'
+import {Alert, Button, Dropdown, Space} from 'antd'
+import {FundOutlined, PlusCircleOutlined} from '@ant-design/icons'
 import {v4 as uuidv4} from 'uuid'
 import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
@@ -194,7 +195,32 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
                 <Alert style={{marginBottom: 16}} message={t('Filtered')} description={printSingleQueryFilter(extra.queryFilter)} type="warning"/>
             )}
 
-            {!readOnly && <Button type="dashed" style={{marginBottom: 12}} disabled={!isGridEditable} onClick={handleDashAdd}>{t('Add Dash')}</Button>}
+            {!readOnly && (
+                <div style={{marginBottom: 12}}>
+                    <Dropdown
+                        disabled={!isGridEditable}
+                        placement="bottomLeft"
+                        trigger={['hover']}
+                        menu={{
+                            items: [{
+                                key: 'dash',
+                                label: <Space><FundOutlined/>{t('Dash')}</Space>,
+                                onClick: handleDashAdd
+                            }, {
+                                key: 'selector',
+                                label: <Space><i className="fa-solid fa-sliders"></i>{t('Selector')}</Space>,
+                                onClick: () => {}
+                            }, {
+                                key: 'text',
+                                label: <Space><i className="fa-solid fa-font"></i>{t('Text')}</Space>,
+                                onClick: () => {}
+                            }]
+                        }}
+                    >
+                        <Button type="dashed" icon={<PlusCircleOutlined/>}>{t('Add')}</Button>
+                    </Dropdown>
+                </div>
+            )}
 
             {datasets.length >= 0 && allDashes.length > 0 && (
                 <ReactGridLayout

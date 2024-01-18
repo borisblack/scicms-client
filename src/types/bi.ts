@@ -19,7 +19,7 @@ export interface DatasetSpec {
 }
 
 export interface Column {
-    type: FieldType
+    type: ColumnType
     custom: boolean
     source?: string
     aggregate?: AggregateType
@@ -29,6 +29,12 @@ export interface Column {
     format?: FieldType.int | FieldType.float | FieldType.date | FieldType.time | FieldType.datetime
     colWidth?: string | number | null
 }
+
+export type ColumnType =
+    FieldType.string | FieldType.text |
+    FieldType.int | FieldType.long | FieldType.float | FieldType.double | FieldType.decimal |
+    FieldType.date | FieldType.time | FieldType.datetime | FieldType.timestamp |
+    FieldType.bool
 
 export interface NamedColumn extends Column {
     name: string
@@ -76,7 +82,25 @@ export interface DashboardCategory extends DefaultItemTemplate {
 }
 
 export interface IDashboardSpec {
+    layout?: DashboardLayoutItem[]
     dashes: IDash[]
+    selectors?: ISelector[]
+    texts?: IText[]
+}
+
+export interface DashboardLayoutItem {
+    id: string
+    type: DashboardItemType
+    x: number
+    y: number
+    w: number
+    h: number
+}
+
+export enum DashboardItemType {
+    DASH = 'DASH',
+    SELECTOR = 'SELECTOR',
+    TEXT = 'TEXT'
 }
 
 export interface IDash {
@@ -99,6 +123,19 @@ export interface IDash {
     defaultFilters: QueryBlock
     relatedDashboardId?: string
     refreshIntervalSeconds: number
+}
+
+export interface ISelector {
+    id: string
+    name: string
+    type: ColumnType
+    dataset?: string
+    field: string
+}
+
+export interface IText {
+    id: string
+    content: string
 }
 
 export interface ExecutionStatisticInfo {
