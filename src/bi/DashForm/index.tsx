@@ -23,7 +23,7 @@ import {generateQueryBlock, getCustomFunctionsInfo, toFormQueryBlock} from '../u
 import DashFilters from '../DashFilters'
 import {Dash, getDash, getDashIds} from 'src/extensions/dashes'
 import biConfig from 'src/config/bi'
-import {useBI} from '../hooks'
+import {useBI} from '../util/hooks'
 import {Split} from 'src/components/Split'
 import appConfig from 'src/config'
 import FieldList from './FieldList'

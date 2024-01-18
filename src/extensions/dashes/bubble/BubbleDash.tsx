@@ -8,7 +8,7 @@ import {DashEventHandler, DashRenderContext} from '..'
 import biConfig from 'src/config/bi'
 import {LegendPosition} from '../util'
 import * as RulesService from 'src/services/rules'
-import {useBI} from 'src/bi/hooks'
+import {useBI} from 'src/bi/util/hooks'
 import {handleDashClick} from '../util/antdPlot'
 
 interface BubbleDashOptions {

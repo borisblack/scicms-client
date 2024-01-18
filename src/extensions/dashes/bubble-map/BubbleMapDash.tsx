@@ -10,7 +10,7 @@ import {defaultDashColor, defaultDashColors} from 'src/bi/util'
 import biConfig from 'src/config/bi'
 import {MAX_LAT, MAX_LNG, MIN_LAT, MIN_LNG} from '.'
 import {QueryFilter, QueryOp} from 'src/types/bi'
-import {useBI} from 'src/bi/hooks'
+import {useBI} from 'src/bi/util/hooks'
 import 'leaflet/dist/leaflet.css'
 
 interface BubbleMapDashOptions {

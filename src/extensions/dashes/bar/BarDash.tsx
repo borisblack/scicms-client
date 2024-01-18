@@ -7,7 +7,7 @@ import {DashEventHandler, DashRenderContext} from '../index'
 import {LegendPosition} from '../util'
 import biConfig from 'src/config/bi'
 import * as RulesService from 'src/services/rules'
-import {useBI} from '../../../bi/hooks'
+import {useBI} from '../../../bi/util/hooks'
 import {handleDashClick} from '../util/antdPlot'
 
 interface BarDashOpts {

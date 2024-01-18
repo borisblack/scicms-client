@@ -8,7 +8,7 @@ import {defaultDashColor, defaultDashColors, formatValue} from 'src/bi/util'
 import {LegendPosition} from '../util'
 import biConfig from 'src/config/bi'
 import * as RulesService from 'src/services/rules'
-import {useBI} from 'src/bi/hooks'
+import {useBI} from 'src/bi/util/hooks'
 import {handleDashClick} from '../util/antdPlot'
 
 interface ColumnDashOptions {

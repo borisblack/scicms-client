@@ -1,11 +1,11 @@
 import {useCallback, useEffect, useMemo, useState} from 'react'
 
-import * as DatasetService from '../services/dataset'
-import * as DashboardService from '../services/dashboard'
+import * as DatasetService from 'src/services/dataset'
+import * as DashboardService from 'src/services/dashboard'
 import * as DashboardCategoryService from 'src/services/dashboard-category'
-import {useItemOperations, useRegistry} from '../util/hooks'
-import {DASHBOARD_ITEM_NAME, DATASET_ITEM_NAME} from '../config/constants'
-import {Dashboard, DashboardCategory, Dataset, QueryFilter} from '../types/bi'
+import {useItemOperations, useRegistry} from 'src/util/hooks'
+import {DASHBOARD_ITEM_NAME, DATASET_ITEM_NAME} from 'src/config/constants'
+import {Dashboard, DashboardCategory, Dataset, QueryFilter} from 'src/types/bi'
 import _ from 'lodash'
 
 interface UseBIProps {
