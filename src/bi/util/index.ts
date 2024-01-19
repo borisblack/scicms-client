@@ -603,8 +603,8 @@ export function getAggregateTypes(type: FieldType): AggregateType[] {
     }
 }
 
-export const getAggregateOptions = (type: FieldType) =>
-    getAggregateTypes(type).map(aggregateType => ({label: aggregateType, value: aggregateType}))
+export const getAggregateOptions = (type?: FieldType) =>
+    type ? getAggregateTypes(type).map(aggregateType => ({label: aggregateType, value: aggregateType})) : []
 
 export function getFormats(type: FieldType): FieldType[] {
     switch (type) {
