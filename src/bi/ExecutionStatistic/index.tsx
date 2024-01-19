@@ -1,12 +1,12 @@
 import {useTranslation} from 'react-i18next'
 import {format as formatSql} from 'sql-formatter'
-import {Descriptions, Space, Typography} from 'antd'
+import {Descriptions, Space, Tag, Typography} from 'antd'
 import {CopyOutlined} from '@ant-design/icons'
 
-import CodeEditor from '../../components/Editor'
+import CodeEditor from 'src/components/Editor'
 import {EditorMode} from 'src/components/Editor/constants'
-import {copyToClipboard} from '../../util'
-import {ExecutionStatisticInfo} from '../../types/bi'
+import {copyToClipboard} from 'src/util'
+import {ExecutionStatisticInfo} from 'src/types/bi'
 import styles from './ExecutionStatistic.module.css'
 
 interface ExecutionStatisticProps extends ExecutionStatisticInfo {}
@@ -71,9 +71,12 @@ export default function ExecutionStatistic({timeMs, cacheHit, query, params}: Ex
     return (
         <>
             <Descriptions>
-                <Descriptions.Item label={t('Execution time, ms')}>{timeMs}</Descriptions.Item>
-                <Descriptions.Item
-                    label={t('Retrieved from cache')}>{t(cacheHit ? 'Yes' : 'No')}</Descriptions.Item>
+                <Descriptions.Item label={t('Execution time, ms')}>
+                    {timeMs}
+                </Descriptions.Item>
+                <Descriptions.Item label={t('Retrieved from cache')}>
+                    {cacheHit ? <Tag color="green">{t('Yes')}</Tag> : <Tag color="orange">{t('No')}</Tag>}
+                </Descriptions.Item>
             </Descriptions>
 
             {renderQuery()}
