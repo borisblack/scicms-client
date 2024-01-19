@@ -164,7 +164,7 @@ export default function FieldForm({field, allFields, canEdit}: ColumnFormProps) 
                                 <Select
                                     allowClear
                                     disabled={!canEdit || !field.custom || !source}
-                                    options={getAggregateOptions(field.type)}
+                                    options={getAggregateOptions(fieldType)}
                                     onSelect={handleAggregateChange}
                                     onClear={() => handleAggregateChange(undefined)}
                                 />

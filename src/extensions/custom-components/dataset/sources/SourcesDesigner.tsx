@@ -77,7 +77,7 @@ export default function SourcesDesigner({sources, canEdit, onChange}: SourcesDes
 
     function clearSources() {
         const newSources = {
-            mainTable: undefined,
+            mainTable: null,
             joinedTables: []
         }
         onChange(newSources, queryBuilder.build(newSources))

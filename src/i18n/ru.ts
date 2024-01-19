@@ -328,6 +328,7 @@ const ru = {
         'Save': 'Сохранить',
         'Save data error': 'Ошибка сохранения данных',
         'Scale': 'Точность',
+        'Schema': 'Схема',
         'SciCMS': 'SciCMS',
         'SciCMS Admin': 'SciCMS Admin',
         'SciCMS BI': 'SciCMS BI',

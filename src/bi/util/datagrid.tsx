@@ -118,6 +118,7 @@ export const buildFieldsInput = (actualColumns: Record<string, Column>): Dataset
             const column = actualColumns[colName]
             return {
                 name: colName,
+                type: column.type,
                 custom: column.custom ?? false,
                 source: column.source,
                 formula: column.formula,

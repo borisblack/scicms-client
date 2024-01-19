@@ -46,7 +46,7 @@ export interface Table {
 }
 
 export interface DatasetSources {
-    mainTable?: Table
+    mainTable: Table | null
     joinedTables: JoinedTable[]
 }
 
