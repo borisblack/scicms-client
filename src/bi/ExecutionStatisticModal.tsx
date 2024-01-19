@@ -13,6 +13,7 @@ export default function ExecutionStatisticModal({timeMs, cacheHit, query, params
 
     return (
         <Drawer
+            className="no-drag"
             title={t('Execution statistic')}
             width="40%"
             open={open}
