@@ -27,12 +27,12 @@ export default class SourcesQueryBuilder {
             return {tableName: mainTable.name, query: `SELECT * FROM ${mainTable.name}`}
 
         // SELECT
-        let query: string = `SELECT ${Object.keys(mainTable.columns).map(key => `${mainTable.name}.${key}`).join(', ')}${joinedTables.length > 0 ? ',' : ''}\n`
+        let query: string = `SELECT ${Object.keys(mainTable.columns).map(key => `${mainTable.name}.${key}`).join(',\n\t')}${joinedTables.length > 0 ? ',\n\t' : ''}`
         joinedTables.forEach((joinedTable, i) => {
             const joinedTableSelectColumns =
                 Object.keys(joinedTable.columns).map(key => `${joinedTable.alias || joinedTable.name}.${key} AS ${joinedTable.alias || joinedTable.name}__${key}`)
 
-            query += `\t${joinedTableSelectColumns.join(', ')}${i < joinedTables.length - 1 ? ',' : ''}\n`
+            query += `${joinedTableSelectColumns.join(',\n\t')}${i < joinedTables.length - 1 ? ',\n\t' : '\n'}`
         })
 
         // FROM

@@ -41,7 +41,8 @@ export default function Editor({value, mode, height, lineNumbers, canEdit, onCha
             value={value ?? ''}
             height={height}
             extensions={[FontSizeTheme, ...getExtensions(mode)]}
-            editable={canEdit}
+            // editable={canEdit}
+            readOnly={!canEdit}
             basicSetup={{
                 lineNumbers
             }}

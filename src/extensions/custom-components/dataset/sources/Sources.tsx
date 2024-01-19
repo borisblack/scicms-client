@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import {ChangeEvent, useEffect, useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
-import {Checkbox, Input, Pagination, Spin, Tree, Typography} from 'antd'
+import {Checkbox, Form, FormInstance, Input, Pagination, Space, Spin, Tree, Typography} from 'antd'
 import type {DataNode} from 'antd/es/tree'
 import {CheckboxChangeEvent} from 'antd/es/checkbox'
 
@@ -37,10 +37,11 @@ const defaultPagination: IPagination = {
 }
 
 const initialSources: DatasetSources = {
+    mainTable: null,
     joinedTables: []
 }
 
-export default function Sources({data: dataWrapper, buffer, onBufferChange}: CustomComponentRenderContext) {
+export default function Sources({form, data: dataWrapper, buffer, onBufferChange}: CustomComponentRenderContext) {
     const data = dataWrapper.data as Dataset | undefined
     const {item} = dataWrapper
     if (item.name !== DATASET_ITEM_NAME)
@@ -48,16 +49,16 @@ export default function Sources({data: dataWrapper, buffer, onBufferChange}: Cus
 
     const {t} = useTranslation()
     const acl = useAcl(item, data)
-    const datasource = data?.datasource
+    const datasource = Form.useWatch('datasource', form as FormInstance)
     const spec: DatasetSpec = useMemo(() => buffer.spec ?? {}, [buffer])
     const sources: DatasetSources = useMemo(() => spec.sources ?? initialSources, [spec])
     const [loading, setLoading] = useState<boolean>(false)
     const [tables, setTables] = useState<Table[]>([])
+    const [schema, setSchema] = useState<string>()
     const [q, setQ] = useState<string>()
     const [pagination, setPagination] = useState<IPagination>(defaultPagination)
     const editorValue = useMemo(() => buffer.tableName ? `SELECT * FROM ${buffer.tableName}` : (buffer.query ?? ''), [buffer.query, buffer.tableName])
-    const useDesigner: boolean = useMemo(() => spec.useDesigner ?? !editorValue, [editorValue, spec.useDesigner])
-    const isNew = !data?.id
+    const useDesigner: boolean = useMemo(() => spec.useDesigner ?? false /*!editorValue*/, [/*editorValue,*/ spec.useDesigner])
 
     useEffect(() => {
         onBufferChange({
@@ -69,7 +70,7 @@ export default function Sources({data: dataWrapper, buffer, onBufferChange}: Cus
 
     useEffect(() => {
         setLoading(true)
-        loadDatasourceTables(datasource?.data?.name ?? MAIN_DATASOURCE_NAME, {q, pagination})
+        loadDatasourceTables(datasource ?? MAIN_DATASOURCE_NAME, {schema, q, pagination})
             .then(res => {
                 setTables(res.data)
 
@@ -77,12 +78,13 @@ export default function Sources({data: dataWrapper, buffer, onBufferChange}: Cus
                     setPagination(res.meta.pagination)
             })
             .finally(() => setLoading(false))
-    }, [datasource?.data?.name, q, pagination.page, pagination.pageSize, pagination.total])
+    }, [datasource, schema, q, pagination.page, pagination.pageSize, pagination.total])
 
-    if (isNew)
-        return null
+    const handleSchemaChange = _.debounce(async (e: ChangeEvent<HTMLInputElement>) => {
+        setSchema(e.target.value)
+    }, DEBOUNCE_WAIT_INTERVAL)
 
-    const handleFilter = _.debounce(async (e: ChangeEvent<HTMLInputElement>) => {
+    const handleFilterChange = _.debounce(async (e: ChangeEvent<HTMLInputElement>) => {
         setQ(e.target.value)
     }, DEBOUNCE_WAIT_INTERVAL)
 
@@ -117,7 +119,7 @@ export default function Sources({data: dataWrapper, buffer, onBufferChange}: Cus
 
         onBufferChange({
             ...buffer,
-            tableName: undefined,
+            tableName: null,
             query: value
         })
     }
@@ -155,13 +157,18 @@ export default function Sources({data: dataWrapper, buffer, onBufferChange}: Cus
                 resetOnDoubleClick
             >
                 <div className={styles.tablesPane}>
-                    <div className={styles.filterInput}>
+                    <Space.Compact className={styles.filterInput} size="small">
+                        <Input
+                            allowClear
+                            placeholder={t('Schema')}
+                            onChange={handleSchemaChange}
+                        />
                         <Search
                             allowClear
-                            placeholder={t('Source name')} size="small"
-                            onChange={handleFilter}
+                            placeholder={t('Source name')}
+                            onChange={handleFilterChange}
                         />
-                    </div>
+                    </Space.Compact>
 
                     <Tree
                         className={styles.tablesTree}

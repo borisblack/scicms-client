@@ -5,6 +5,7 @@ import {Table} from '../types/bi'
 import qs from 'qs'
 
 export interface DatasourceTablesInput {
+    schema?: string
     q?: string
     pagination?: PaginationInput
 }

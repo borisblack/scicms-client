@@ -327,6 +327,7 @@ const en = {
         'Save': 'Save',
         'Save data error': 'Save data error',
         'Scale': 'Scale',
+        'Schema': 'Schema',
         'SciCMS': 'SciCMS',
         'SciCMS Admin': 'SciCMS Admin',
         'SciCMS BI': 'SciCMS BI',
