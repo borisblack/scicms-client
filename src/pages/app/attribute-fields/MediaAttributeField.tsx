@@ -1,4 +1,4 @@
-import {FC, useMemo, useRef, useState} from 'react'
+import {FC, useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Button, Form, Input, notification, Upload} from 'antd'
 import {UploadOutlined} from '@ant-design/icons'
@@ -18,10 +18,9 @@ const MediaAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, form, 
 
     const {item} = dataWrapper
     const uniqueKey = generateKey(dataWrapper)
-    const mediaData = (value?.data ?? attribute.defaultValue) as Media | null | undefined
+    const mediaData = (value?.data ?? attribute.defaultValue) as Media | MediaInfo | null | undefined
     const {t} = useTranslation()
     const [fileList, setFileList] = useState<UploadFile[]>(getInitialUploadFileList())
-    const mediaRef = useRef<Media | MediaInfo | null | undefined>(mediaData)
     const isDisabled = useMemo(() => attribute.keyed || attribute.readOnly, [attribute.keyed, attribute.readOnly])
     const additionalProps = useMemo((): any => {
         const additionalProps: any = {}
@@ -52,11 +51,11 @@ const MediaAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, form, 
         return false
     }
 
-    async function handleDownload(file: UploadFile) {
-        if (!mediaRef.current)
+    async function handleDownload() {
+        if (!mediaData)
             throw Error('Illegal state')
 
-        const {id, filename} = mediaRef.current
+        const {id, filename} = mediaData
         setLoading(true)
         try {
             await MediaService.download(id, filename)
@@ -70,11 +69,10 @@ const MediaAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, form, 
         setFileList([file])
 
         // Can be used by another versions or localizations
-        if (mediaRef.current && !item.versioned && !item.localized) {
+        if (mediaData && !item.versioned && !item.localized) {
             setLoading(true)
             try {
-                await MediaService.deleteById(mediaRef.current.id)
-                mediaRef.current = null
+                await MediaService.deleteById(mediaData.id)
             } catch (e: any) {
                 file.status = 'error'
                 setFileList([file])
