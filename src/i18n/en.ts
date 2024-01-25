@@ -29,6 +29,7 @@ const en = {
         'Analysis': 'Analysis',
         'Angle field': 'Angle field',
         'Ascending': 'Ascending',
+        'Attachment': 'Attachment',
         'Attribute': 'Attribute',
         'Attributes': 'Attributes',
         'Auto rotate x-axis label': 'Auto rotate x-axis label',
