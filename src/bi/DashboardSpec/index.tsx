@@ -10,7 +10,7 @@ import 'react-resizable/css/styles.css'
 
 import {CustomComponentRenderContext} from 'src/extensions/custom-components'
 import {DASHBOARD_ITEM_NAME} from 'src/config/constants'
-import {Dashboard, DashboardExtra, IDash, IDashboardSpec} from 'src/types/bi'
+import {Dashboard, DashboardExtra, DashboardItemType, DashboardLayoutItem, IDash, IDashboardSpec} from 'src/types/bi'
 import {generateQueryBlock, printSingleQueryFilter} from '../util'
 import biConfig from 'src/config/bi'
 import DashWrapper from '../DashWrapper'
@@ -26,10 +26,38 @@ interface DashboardSpecProps extends CustomComponentRenderContext {
 }
 
 const ReactGridLayout = WidthProvider(RGL)
+
+const DEFAULT_LAYOUT_ITEM_HEIGHT = 1
+
 const initialSpec: IDashboardSpec = {
-    dashes: []
+    layout: [],
+    dashes: [],
+    selectors: [],
+    texts: []
 }
 let seqNum = 0
+
+const createLayoutItem = (type: DashboardItemType): DashboardLayoutItem => ({
+    id: uuidv4(),
+    type,
+    x: 0,
+    y: 0,
+    w: biConfig.cols / 2,
+    h: getDefaultLayoutItemHeight(type)
+})
+
+function getDefaultLayoutItemHeight(type: DashboardItemType) {
+    switch (type) {
+        case DashboardItemType.DASH:
+            return biConfig.defaultDashHeight
+        case DashboardItemType.SELECTOR:
+            return biConfig.defaultSelectorHeight
+        case DashboardItemType.TEXT:
+            return biConfig.defaultTextHeight
+        default:
+            return DEFAULT_LAYOUT_ITEM_HEIGHT
+    }
+}
 
 function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: DashboardSpecProps) {
     const {item, data, extra} = dataWrapper
@@ -41,11 +69,19 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
     const acl = useAcl(item, data)
     const {datasets, dashboards} = useBI({withDatasets: true, withDashboards: true})
     const datasetMap = useMemo(() => _.mapKeys(datasets, ds => ds.name), [datasets])
-    const spec: IDashboardSpec = buffer.spec ?? data?.spec ?? initialSpec
-    const thisDashboard = {...data, spec} as Dashboard
-    const allDashes = spec.dashes?.map(dash => ({...dash, id: dash.id ?? uuidv4(), fields: dash.fields ?? {}})) ?? []
-    const activeDash = useRef<IDash>()
+    const spec: IDashboardSpec = useMemo(() => buffer.spec ?? data?.spec ?? initialSpec, [buffer.spec, data?.spec])
+    const dashboardLayout: DashboardLayoutItem[] = useMemo(() => spec.layout ?? spec.dashes.map(dash => ({
+        id: dash.id,
+        type: DashboardItemType.DASH,
+        x: dash.x as number,
+        y: dash.y as number,
+        w: dash.w as number,
+        h: dash.h as number
+    })), [spec.dashes, spec.layout])
+    const dashboardDashes: IDash[] = useMemo(() => spec.dashes?.map(dash => ({...dash, id: dash.id ?? uuidv4(), fields: dash.fields ?? {}})) ?? [], [spec.dashes])
     const [isLocked, setLocked] = useState<boolean>(false)
+    const isGridEditable = useMemo(() => !readOnly && acl.canWrite && !isLocked, [acl.canWrite, isLocked, readOnly])
+    const thisDashboard = {...data, spec} as Dashboard
     const isNew = !thisDashboard.id
 
     useEffect(() => {
@@ -58,13 +94,10 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
         return null
 
     function handleDashAdd() {
+        const newLayoutItem = createLayoutItem(DashboardItemType.DASH)
         const newDash: IDash = {
-            id: uuidv4(),
-            name: (++seqNum).toString(),
-            x: 0,
-            y: 0,
-            w: biConfig.cols / 2,
-            h: biConfig.defaultDashHeight,
+            id: newLayoutItem.id,
+            name: `${t('Dash')} ${(++seqNum).toString()}`,
             type: biConfig.defaultDashType,
             fields: {},
             optValues: {},
@@ -74,9 +107,13 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
         }
 
         const newSpec: IDashboardSpec = {
+            layout: [
+                newLayoutItem,
+                ...dashboardLayout
+            ],
             dashes: [
-                newDash,
-                ...allDashes
+                ...dashboardDashes,
+                newDash
             ]
         }
 
@@ -84,35 +121,21 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
     }
 
     function handleLayoutChange(layouts: Layout[]) {
-        if (layouts.length !== _.size(allDashes))
+        if (layouts.length !== _.size(dashboardDashes))
             throw new Error('Illegal layout state.')
 
         const newSpec: IDashboardSpec = {
-            dashes: layouts.map((layout, i) => {
-                const curDash = allDashes[i]
-
+            layout: layouts.map(layout => {
+                const curLayout = dashboardLayout.find(layoutItem => layoutItem.id === layout.i) as DashboardLayoutItem
                 return {
-                    id: curDash.id,
+                    ...curLayout,
                     x: layout.x,
                     y: layout.y,
                     w: layout.w,
                     h: layout.h,
-                    name: curDash.name,
-                    dataset: curDash.dataset,
-                    type: curDash.type,
-                    unit: curDash.unit,
-                    fields: curDash.fields,
-                    isAggregate: curDash.isAggregate,
-                    aggregateType: curDash.aggregateType,
-                    aggregateField: curDash.aggregateField,
-                    groupField: curDash.groupField,
-                    sortField: curDash.sortField,
-                    optValues: curDash.optValues,
-                    defaultFilters: curDash.defaultFilters,
-                    relatedDashboardId: curDash.relatedDashboardId,
-                    refreshIntervalSeconds: curDash.refreshIntervalSeconds
                 }
-            })
+            }),
+            dashes: dashboardDashes
         }
 
         onBufferChange({
@@ -121,16 +144,13 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
     }
 
     function selectDash(dash: IDash) {
-        if (dash.id !== activeDash.current?.id)
-            activeDash.current = dash
+        // TODO: Maybe remove this method
     }
 
     function removeDash(id: string) {
-        if (id === activeDash.current?.id)
-            activeDash.current =undefined
-
         const newSpec = {
-            dashes: allDashes.filter(it => it.id !== id)
+            layout: dashboardLayout.filter(layoutItem => layoutItem.id !== id),
+            dashes: dashboardDashes.filter(it => it.id !== id)
         }
 
         onBufferChange({
@@ -142,22 +162,33 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
         if (!acl.canWrite)
             return
 
-        activeDash.current = updatedDash
         const newSpec = {
-            dashes: allDashes.map(dash => dash.id === updatedDash.id ? updatedDash : dash)
+            layout: dashboardLayout,
+            dashes: dashboardDashes.map(dash => dash.id === updatedDash.id ? updatedDash : dash)
         }
         onBufferChange({
             spec: newSpec
         })
     }
 
-    function renderDash(dash: IDash) {
+    function renderLayoutItem(layoutItem: DashboardLayoutItem) {
+        switch (layoutItem.type) {
+            case DashboardItemType.DASH:
+                return renderDash(dashboardDashes.find(dash => dash.id === layoutItem.id) as IDash, layoutItem.h)
+            case DashboardItemType.SELECTOR:
+            case DashboardItemType.TEXT:
+            default:
+                return null
+        }
+    }
+
+    function renderDash(dash: IDash, height: number) {
         const dataset = datasetMap[dash.dataset ?? '']
 
         return (
             <div
-                key={dash.name}
-                className={`${styles.dashWrapper} ${activeDash.current?.name === dash.name ? styles.activeDash : ''} ${acl.canWrite ? styles.editable : ''}`}
+                key={dash.id}
+                className={`${styles.dashWrapper} ${acl.canWrite ? styles.editable : ''}`}
                 onClick={() => selectDash(dash)}
             >
                 <DashWrapper
@@ -167,6 +198,7 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
                     dataset={dataset}
                     dashboard={thisDashboard}
                     dash={dash}
+                    height={height}
                     extra={extra}
                     readOnly={readOnly ?? false}
                     canEdit={acl.canWrite}
@@ -178,17 +210,6 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
         )
     }
 
-    const layout: Layout[] = allDashes.map(it => {
-        return {
-            i: it.name,
-            x: it.x,
-            y: it.y,
-            w: it.w,
-            h: it.h
-        }
-    })
-
-    const isGridEditable = !readOnly && acl.canWrite && !isLocked
     return (
         <>
             {extra && extra.queryFilter && (
@@ -222,10 +243,10 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
                 </div>
             )}
 
-            {datasets.length >= 0 && allDashes.length > 0 && (
+            {datasets.length >= 0 && dashboardLayout.length > 0 && (
                 <ReactGridLayout
                     className={styles.layout}
-                    layout={layout}
+                    layout={dashboardLayout.map(layoutItem => ({...layoutItem, i: layoutItem.id}))}
                     cols={biConfig.cols}
                     rowHeight={biConfig.rowHeight}
                     draggableCancel=".no-drag"
@@ -234,10 +255,7 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
                     isResizable={isGridEditable}
                     onLayoutChange={handleLayoutChange}
                 >
-                    {allDashes
-                        // .filter(dash => dash.dataset != null && datasets[dash.dataset] != null) // new dash doesn't have dataset yet
-                        .map(dash => renderDash(dash))
-                    }
+                    {dashboardLayout.map(renderLayoutItem)}
                 </ReactGridLayout>
             )}
         </>

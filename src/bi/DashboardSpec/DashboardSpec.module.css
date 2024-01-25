@@ -19,11 +19,3 @@
 .layout .dashWrapper:hover {
     /*background-color: #fefbd7;*/
 }
-
-.layout .dashWrapper.activeDash {
-    /*background-color: #fef7af;*/
-}
-
-.layout .dashWrapper.activeDash:hover {
-    /*background-color: #fef386;*/
-}

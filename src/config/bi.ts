@@ -3,6 +3,8 @@ interface BiConfig {
     rowHeight: number
     defaultDashType: string
     defaultDashHeight: number
+    defaultSelectorHeight: number
+    defaultTextHeight: number
     defaultPageSize: number
     defaultRefreshIntervalSeconds: number
     locale: string
@@ -70,6 +72,8 @@ const biConfig: BiConfig = {
     rowHeight: 100,
     defaultDashType: 'bar',
     defaultDashHeight: 3,
+    defaultSelectorHeight: 1,
+    defaultTextHeight: 1,
     defaultPageSize: 100,
     defaultRefreshIntervalSeconds: 300,
     locale: 'ru-RU',

@@ -46,6 +46,7 @@ export interface DashWrapperProps {
     dataset?: Dataset
     dashboard: Dashboard
     dash: IDash
+    height: number
     extra?: DashboardExtra
     readOnly: boolean
     canEdit: boolean
@@ -64,6 +65,7 @@ function DashWrapper(props: DashWrapperProps) {
         dashboard,
         extra,
         dash,
+        height,
         readOnly,
         canEdit,
         onLockChange,
@@ -89,7 +91,7 @@ function DashWrapper(props: DashWrapperProps) {
     const {show: showStatisticModal, close: closeStatisticModal, modalProps: statisticModalProps} = useModal()
     const [filters, setFilters] = useState<QueryBlock>(getActualFilters(dashboard.id, dash))
     const prevDefaultFilters = usePrevious(dash.defaultFilters)
-    const dashHeight = biConfig.rowHeight * dash.h - PAGE_HEADER_HEIGHT
+    const dashHeight = biConfig.rowHeight * height - PAGE_HEADER_HEIGHT
 
     useEffect(() => {
         if (!_.isEqual(dash.defaultFilters, prevDefaultFilters))
@@ -326,11 +328,11 @@ function DashWrapper(props: DashWrapperProps) {
                     ) : (
                         dataset && dashHandler.render({
                             context: {
-                                height: dashHeight,
                                 fullScreen,
                                 data: datasetData,
+                                dataset,
                                 ...props,
-                                dataset
+                                height: dashHeight
                             }
                         })
                     )}

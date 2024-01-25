@@ -106,10 +106,10 @@ export enum DashboardItemType {
 export interface IDash {
     id: string
     name: string
-    x: number
-    y: number
-    w: number
-    h: number
+    x?: number
+    y?: number
+    w?: number
+    h?: number
     dataset?: string
     type: string
     unit?: string
