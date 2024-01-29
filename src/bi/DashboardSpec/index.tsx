@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import React, {memo, useEffect, useMemo, useRef, useState} from 'react'
+import {memo, useEffect, useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import RGL, {Layout, WidthProvider} from 'react-grid-layout'
 import {Alert, Button, Dropdown, Space} from 'antd'
@@ -10,13 +10,15 @@ import 'react-resizable/css/styles.css'
 
 import {CustomComponentRenderContext} from 'src/extensions/custom-components'
 import {DASHBOARD_ITEM_NAME} from 'src/config/constants'
-import {Dashboard, DashboardExtra, DashboardItemType, DashboardLayoutItem, IDash, IDashboardSpec} from 'src/types/bi'
+import {Dashboard, DashboardExtra, DashboardItemType, DashboardLayoutItem, IDash, IDashboardSpec, ISelector, IText} from 'src/types/bi'
 import {generateQueryBlock, printSingleQueryFilter} from '../util'
 import biConfig from 'src/config/bi'
 import DashWrapper from '../DashWrapper'
 import {useAcl} from 'src/util/hooks'
 import {generateKey} from 'src/util/mdi'
 import {useBI} from '../util/hooks'
+import Text from '../Text'
+import Selector from '../Selector'
 import styles from './DashboardSpec.module.css'
 import './DashboardSpec.css'
 
@@ -79,6 +81,8 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
         h: dash.h as number
     })), [spec.dashes, spec.layout])
     const dashboardDashes: IDash[] = useMemo(() => spec.dashes?.map(dash => ({...dash, id: dash.id ?? uuidv4(), fields: dash.fields ?? {}})) ?? [], [spec.dashes])
+    const dashboardTexts: IText[] = useMemo(() => spec.texts ?? [], [spec.texts])
+    const dashboardSelectors: ISelector[] = useMemo(() => spec.selectors ?? [], [spec.selectors])
     const [isLocked, setLocked] = useState<boolean>(false)
     const isGridEditable = useMemo(() => !readOnly && acl.canWrite && !isLocked, [acl.canWrite, isLocked, readOnly])
     const thisDashboard = {...data, spec} as Dashboard
@@ -147,10 +151,12 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
         // TODO: Maybe remove this method
     }
 
-    function removeDash(id: string) {
-        const newSpec = {
+    function removeLayoutItem(type: DashboardItemType, id: string) {
+        const newSpec: IDashboardSpec = {
             layout: dashboardLayout.filter(layoutItem => layoutItem.id !== id),
-            dashes: dashboardDashes.filter(it => it.id !== id)
+            dashes: type === DashboardItemType.DASH ? dashboardDashes.filter(dash => dash.id !== id) : dashboardDashes,
+            texts: type === DashboardItemType.TEXT ? dashboardTexts.filter(text => text.id !== id) : dashboardTexts,
+            selectors: type === DashboardItemType.SELECTOR ? dashboardSelectors.filter(selector => selector.id !== id) : dashboardSelectors
         }
 
         onBufferChange({
@@ -176,9 +182,11 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
             case DashboardItemType.DASH:
                 return renderDash(dashboardDashes.find(dash => dash.id === layoutItem.id) as IDash, layoutItem.h)
             case DashboardItemType.SELECTOR:
+                return renderText(dashboardTexts.find(text => text.id === layoutItem.id) as IText, layoutItem.h)
             case DashboardItemType.TEXT:
+                return renderSelector(dashboardSelectors.find(selector => selector.id === layoutItem.id) as ISelector, layoutItem.h)
             default:
-                return null
+                return <Alert description={t('Unsupported layout item.')} type="error"/>
         }
     }
 
@@ -204,10 +212,18 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
                     canEdit={acl.canWrite}
                     onLockChange={setLocked}
                     onDashChange={handleDashChange}
-                    onDelete={() => removeDash(dash.id)}
+                    onDelete={() => removeLayoutItem(DashboardItemType.DASH, dash.id)}
                 />
             </div>
         )
+    }
+
+    function renderText(text: IText, height: number) {
+        return <Text text={text} height={height}/>
+    }
+
+    function renderSelector(selector: ISelector, height: number) {
+        return <Selector selector={selector} height={height}/>
     }
 
     return (
