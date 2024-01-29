@@ -29,6 +29,7 @@ const ru = {
         'Analysis': 'Анализ',
         'Angle field': 'Поле значения угла',
         'Ascending': 'По возрастанию',
+        'Attachment': 'Вложение',
         'Attribute': 'Атрибут',
         'Attributes': 'Атрибуты',
         'Auto rotate x-axis label': 'Автоповорот метки оси x',

@@ -81,12 +81,14 @@ const menuConfig: MenuConfig = {
         }, {
             itemName: 'part'
         }, {
+            itemName: 'partLabelGroup'
+        }, {
+            itemName: 'labelClaim'
+        }/*, {
             itemName: 'startSheet'
         }, {
             itemName: 'changeNotice'
-        }, {
-            itemName: 'partLabelGroup'
-        }, {
+        }*/, {
             itemName: 'partType'
         }, {
             itemName: 'department'
