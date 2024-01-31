@@ -1,8 +1,10 @@
 import _ from 'lodash'
-import {useEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
+import {Row} from '@tanstack/react-table'
 import {useTranslation} from 'react-i18next'
 import {Button, Space, Typography} from 'antd'
-import {PlusCircleOutlined} from '@ant-design/icons'
+import {ItemType} from 'antd/es/menu/hooks/useItems'
+import {DeleteTwoTone, PlusCircleOutlined} from '@ant-design/icons'
 
 import {Split} from 'src/components/Split'
 import {CustomComponentRenderContext} from 'src/extensions/custom-components'
@@ -77,9 +79,9 @@ export default function DatasetFields({data: dataWrapper, buffer, onBufferChange
         setNamedFields(newNamedFields)
 
         const newFields: Record<string, Column> = {}
-        for (const nc of newNamedFields) {
-            const newField: any = {...nc}
-            newFields[nc.name] = newField
+        for (const nf of newNamedFields) {
+            const newField: any = {...nf}
+            newFields[nf.name] = newField
             delete newField.name
         }
 
@@ -143,6 +145,43 @@ export default function DatasetFields({data: dataWrapper, buffer, onBufferChange
         </Space>
     )
 
+    function getRowContextMenu(row: Row<NamedColumn>): ItemType[] {
+        const items: ItemType[] = []
+
+        if (acl.canWrite && !ownFields.hasOwnProperty(row.original.name)) {
+            items.push({
+                key: 'delete',
+                label: t('Delete'),
+                icon: <DeleteTwoTone twoToneColor="#eb2f96"/>,
+                onClick: () => removeField(row.original.name)
+            })
+        }
+
+        return items
+    }
+
+    function removeField(name: string) {
+        if (!acl.canWrite || ownFields.hasOwnProperty(name))
+            return
+
+        const newNamedFields = namedFields.filter(nf => nf.name !== name)
+
+        setNamedFields(newNamedFields)
+
+        const newFields: Record<string, Column> = {}
+        for (const nf of newNamedFields) {
+            newFields[nf.name] = _.omit(nf, 'name')
+        }
+
+        onBufferChange({
+            ...buffer,
+            spec: {
+                ...spec,
+                columns: newFields
+            }
+        })
+    }
+
     const gridColumns = getColumns({
         ownColumns: ownFields,
         canEdit: acl.canWrite,
@@ -174,6 +213,7 @@ export default function DatasetFields({data: dataWrapper, buffer, onBufferChange
                         toolbar={renderToolbar()}
                         version={version}
                         getRowId={(row: NamedColumn) => row.name}
+                        getRowContextMenu={getRowContextMenu}
                         onRequest={handleRequest}
                     />
                 </div>
