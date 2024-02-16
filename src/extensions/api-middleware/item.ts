@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import axios from 'axios'
 
 import {ApiMiddleware, ApiMiddlewareContext, ApiOperation} from './index'
@@ -41,7 +42,8 @@ async function apply({items, item, values}: ApiMiddlewareContext): Promise<ItemD
     const queryManager = new QueryManager(items)
     let id: string
     try {
-        const res = await axios.post('/api/model/apply', mapItem(values))
+        const model = mapItem(values)
+        const res = await axios.post('/api/model/apply', model)
         id = res.data
     } catch (e: any) {
         throw new Error(extractAxiosErrorMessage(e))
@@ -62,7 +64,7 @@ const mapItem = (item: Item): ItemModel => ({
         displayName: item.displayName,
         pluralName: item.pluralName,
         displayPluralName: item.displayPluralName,
-        dataSource: item.datasource.data?.id ?? MAIN_DATASOURCE_NAME,
+        dataSource: item.datasource?.data?.id ?? MAIN_DATASOURCE_NAME,
         tableName: item.tableName,
         query: item.query,
         cacheTtl: item.cacheTtl,
@@ -74,9 +76,9 @@ const mapItem = (item: Item): ItemModel => ({
         versioned: item.versioned,
         manualVersioning: item.manualVersioning,
         localized: item.localized,
-        revisionPolicy: item.revisionPolicy?.data?.id,
-        lifecycle: item.lifecycle?.data?.id,
-        permission: item.permission?.data?.id,
+        revisionPolicy: _.isString(item.revisionPolicy) ? item.revisionPolicy : item.revisionPolicy?.data?.id,
+        lifecycle: _.isString(item.lifecycle) ? item.lifecycle : item.lifecycle?.data?.id,
+        permission: _.isString(item.permission) ? item.permission : item.permission?.data?.id,
         implementation: item.implementation,
         notLockable: item.notLockable
     },

@@ -6,13 +6,26 @@ import {FieldType} from '../types'
 import {Attribute, Item, ItemData} from '../types/schema'
 import * as MediaService from '../services/media'
 import {
+    CONFIG_ID_ATTR_NAME,
+    CREATED_AT_ATTR_NAME,
+    CREATED_BY_ATTR_NAME,
+    CURRENT_ATTR_NAME,
+    ID_ATTR_NAME,
     LETTER_NO_WHITESPACE_MESSAGE,
     LETTER_NO_WHITESPACE_PATTERN,
+    LIFECYCLE_ATTR_NAME,
+    LOCALE_ATTR_NAME,
+    LOCKED_BY_ATTR_NAME,
     LOWERCASE_NO_WHITESPACE_MESSAGE,
     LOWERCASE_NO_WHITESPACE_PATTERN,
+    MAJOR_REV_ATTR_NAME,
     MINOR_REV_ATTR_NAME,
     PASSWORD_PLACEHOLDER,
+    PERMISSION_ATTR_NAME,
+    REVISION_POLICY_ATTR_NAME,
     STATE_ATTR_NAME,
+    UPDATED_AT_ATTR_NAME,
+    UPDATED_BY_ATTR_NAME,
     UTC
 } from '../config/constants'
 import appConfig from '../config'
@@ -34,8 +47,26 @@ const regExpMessages: Record<string, string> = {
     [LOWERCASE_NO_WHITESPACE_PATTERN.toString()]: LOWERCASE_NO_WHITESPACE_MESSAGE,
 }
 
+const excludedAttrNames = [
+    ID_ATTR_NAME,
+    CONFIG_ID_ATTR_NAME,
+    MAJOR_REV_ATTR_NAME,
+    MINOR_REV_ATTR_NAME,
+    CURRENT_ATTR_NAME,
+    LOCALE_ATTR_NAME,
+    REVISION_POLICY_ATTR_NAME,
+    PERMISSION_ATTR_NAME,
+    LIFECYCLE_ATTR_NAME,
+    STATE_ATTR_NAME,
+    CREATED_AT_ATTR_NAME,
+    CREATED_BY_ATTR_NAME,
+    UPDATED_AT_ATTR_NAME,
+    UPDATED_BY_ATTR_NAME,
+    LOCKED_BY_ATTR_NAME
+]
+
 export async function parseValues(item: Item, data: ItemData | null | undefined, values: any): Promise<ItemData> {
-    const parsedValues: {[name: string]: any} = {}
+    const parsedValues: {[name: string]: any} = data ? _.omit(data, ...excludedAttrNames) : {}
     const {attributes} = item.spec
 
     for (const key in values) {
