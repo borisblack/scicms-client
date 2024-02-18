@@ -166,10 +166,10 @@ function ViewNavTab({data: dataWrapper}: Props) {
                 if (!parsedValues.locale)
                     throw new Error('Locale is required')
 
-                await createLocalization(filterValues(parsedValues), parsedValues.locale)
+                await createLocalization(filteredValues, parsedValues.locale)
                 break
             case ViewState.UPDATE:
-                await update(filterValues(parsedValues))
+                await update(filteredValues)
                 break
             case ViewState.VIEW:
             default:

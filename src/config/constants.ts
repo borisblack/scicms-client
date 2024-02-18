@@ -28,8 +28,9 @@ export const ROLE_DESIGNER: string = 'ROLE_DESIGNER'
 export const ROLE_ANALYST: string = 'ROLE_ANALYST'
 export const ROLE_PROJECT_MANAGER: string = 'ROLE_PROJECT_MANAGER'
 export const ROLE_USER: string = 'ROLE_USER'
-export const PASSWORD_PLACEHOLDER = "********"
+export const ROLE_STANDARD_CONTROL: string = 'ROLE_STANDARD_CONTROL'
 
+export const PASSWORD_PLACEHOLDER = "********"
 export const MAIN_DATASOURCE_NAME = 'main'
 export const ITEM_TEMPLATE_MODEL_KIND = 'ItemTemplate'
 export const ITEM_MODEL_KIND = 'Item'
@@ -64,11 +65,17 @@ export const LOCALE_ATTR_NAME = 'locale'
 export const MAJOR_REV_ATTR_NAME = 'majorRev'
 export const MASK_ATTR_NAME = 'mask'
 export const MINOR_REV_ATTR_NAME = 'minorRev'
+export const REVISION_POLICY_ATTR_NAME = 'revisionPolicy'
 export const PERMISSION_ATTR_NAME = 'permission'
 export const STATE_ATTR_NAME = 'state'
 export const SOURCE_ATTR_NAME = 'source'
 export const TARGET_ATTR_NAME = 'target'
 export const USERNAME_ATTR_NAME = 'username'
+export const CREATED_AT_ATTR_NAME = 'createdAt'
+export const CREATED_BY_ATTR_NAME = 'createdBy'
+export const UPDATED_AT_ATTR_NAME = 'updatedAt'
+export const UPDATED_BY_ATTR_NAME = 'updatedBy'
+export const LOCKED_BY_ATTR_NAME = 'lockedBy'
 
 export enum DndItemType {
     SOURCE_TABLE = 'SOURCE_TABLE',

@@ -1,4 +1,4 @@
-import {ROLE_ADMIN, ROLE_ANALYST, ROLE_DESIGNER, ROLE_PROJECT_MANAGER, ROLE_USER} from './constants'
+import {ROLE_ADMIN, ROLE_ANALYST, ROLE_DESIGNER, ROLE_PROJECT_MANAGER, ROLE_STANDARD_CONTROL, ROLE_USER} from './constants'
 
 interface MenuConfig {
     items: (SubMenu | MenuItem)[]
@@ -75,7 +75,7 @@ const menuConfig: MenuConfig = {
         key: 'design',
         label: 'Design',
         icon: 'RocketOutlined',
-        roles: [ROLE_ADMIN, ROLE_DESIGNER, ROLE_USER], // TODO: Delete ROLE_USER in production
+        roles: [ROLE_ADMIN, ROLE_DESIGNER, ROLE_STANDARD_CONTROL],
         children: [{
             itemName: 'product'
         }, {
