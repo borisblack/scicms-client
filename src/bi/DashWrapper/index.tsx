@@ -229,15 +229,17 @@ function DashWrapper(props: DashWrapperProps) {
                 label: <Space><FilterOutlined/>{t('Filters')}</Space>,
                 onClick: showFiltersModal
             })
-
-            menuItems.push({
-                key: 'statistic',
-                label: <Space><FieldTimeOutlined/>{t('Execution statistic')}</Space>,
-                onClick: showStatisticModal
-            })
         }
 
         if (!readOnly) {
+            if (dataset) {
+                menuItems.push({
+                    key: 'statistic',
+                    label: <Space><FieldTimeOutlined/>{t('Execution statistic')}</Space>,
+                    onClick: showStatisticModal
+                })
+            }
+            
             menuItems.push({type: 'divider'})
             menuItems.push({
                 key: 'edit',

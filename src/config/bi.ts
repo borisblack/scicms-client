@@ -1,9 +1,13 @@
+import {FieldType} from 'src/types'
+import {ColumnType} from 'src/types/bi'
+
 interface BiConfig {
     cols: number
     rowHeight: number
     defaultDashType: string
     defaultDashHeight: number
     defaultSelectorHeight: number
+    defaultSelectorType: ColumnType
     defaultTextHeight: number
     defaultPageSize: number
     defaultRefreshIntervalSeconds: number
@@ -73,6 +77,7 @@ const biConfig: BiConfig = {
     defaultDashType: 'bar',
     defaultDashHeight: 3,
     defaultSelectorHeight: 1,
+    defaultSelectorType: FieldType.string,
     defaultTextHeight: 1,
     defaultPageSize: 100,
     defaultRefreshIntervalSeconds: 300,

@@ -4,12 +4,14 @@
     background-color: #eee;
 }
 
-.layout .dashWrapper {
-    padding: 8px;
+.layout .layoutItem {
     background-color: #fff;
+    padding: 8px;
     user-select: none;
     overflow: hidden;
 }
+
+.layout .dashWrapper {}
 
 .layout .dashWrapper .editable {
     border: 1px solid #ccc;

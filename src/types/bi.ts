@@ -128,14 +128,29 @@ export interface IDash {
 export interface ISelector {
     id: string
     name: string
-    type: ColumnType
     dataset?: string
     field: string
+    type: ColumnType
+    op: BoolQueryOp | UnaryQueryOp | BinaryQueryOp | ListQueryOp
+    links: SelectorLink[]
+    value?: any
+}
+
+export interface SelectorLink {
+    dashId: string
+    type: SelectorLinkType
+}
+
+export enum SelectorLinkType {
+    in = 'in',
+    out = 'out',
+    both = 'both'
 }
 
 export interface IText {
     id: string
     content: string
+    level?: 1 | 2 | 3 | 4 | 5
 }
 
 export interface ExecutionStatisticInfo {
@@ -184,6 +199,23 @@ export interface QueryFilter {
     op: BoolQueryOp | UnaryQueryOp | BinaryQueryOp | ListQueryOp
     value?: any
     show?: boolean
+    extra?: {
+        period?: TemporalPeriod
+        unit?: TemporalUnit
+        value?: number
+        isManual?: boolean
+        isManualLeft?: boolean
+        isManualRight?: boolean
+        left?: any
+        right?: any
+    }
+}
+
+export interface SelectorFilter {
+    field: string
+    type: ColumnType
+    op: BoolQueryOp | UnaryQueryOp | BinaryQueryOp | ListQueryOp
+    value?: any
     extra?: {
         period?: TemporalPeriod
         unit?: TemporalUnit

@@ -10,15 +10,18 @@ import {
     AggregateType,
     BoolAggregateType,
     Column,
+    ColumnType,
     Dataset,
     DatasetFiltersInput,
     DateTimeAggregateType,
     IDash,
+    ISelector,
     LogicalOp,
     PositiveLogicalOp,
     QueryBlock,
     QueryFilter,
     QueryOp,
+    SelectorFilter,
     StringAggregateType,
     TemporalPeriod,
     TemporalType,
@@ -305,7 +308,7 @@ export function toFormQueryBlock(dataset: Dataset, queryBlock?: QueryBlock): Que
         return generateQueryBlock()
 
     const formQueryBlock = _.cloneDeep(queryBlock)
-    processQueryFilters(dataset, formQueryBlock.filters, true)
+    processDatasetQueryFilters(dataset, formQueryBlock.filters, true)
 
     for (let i = 0; i < formQueryBlock.blocks.length; i++) {
         formQueryBlock.blocks[i] = toFormQueryBlock(dataset, formQueryBlock.blocks[i])
@@ -319,7 +322,7 @@ export function fromFormQueryBlock(dataset: Dataset, formQueryBlock?: QueryBlock
         return generateQueryBlock()
 
     const queryBlock = _.cloneDeep(formQueryBlock)
-    processQueryFilters(dataset, queryBlock.filters, false)
+    processDatasetQueryFilters(dataset, queryBlock.filters, false)
 
     for (let i = 0; i < queryBlock.blocks.length; i++) {
         queryBlock.blocks[i] = fromFormQueryBlock(dataset, queryBlock.blocks[i])
@@ -328,7 +331,7 @@ export function fromFormQueryBlock(dataset: Dataset, formQueryBlock?: QueryBlock
     return queryBlock
 }
 
-function processQueryFilters(dataset: Dataset, queryFilters: QueryFilter[], toForm: boolean) {
+function processDatasetQueryFilters(dataset: Dataset, queryFilters: QueryFilter[], toForm: boolean) {
     const columns = dataset.spec?.columns ?? {}
     for (const filter of queryFilters) {
         const {columnName, op} = filter
@@ -342,25 +345,77 @@ function processQueryFilters(dataset: Dataset, queryFilters: QueryFilter[], toFo
         }
 
         const {type} = column
-        if (type == null || !isTemporal(type))
-            continue
+        processQueryFilter(type, filter, toForm)
+    }
+}
 
-        const temporalType = type as TemporalType
-        const extra = filter.extra ?? {}
-        if (op === QueryOp.$eq || op === QueryOp.$ne || op === QueryOp.$gt || op === QueryOp.$gte || op === QueryOp.$lt || op === QueryOp.$lte) {
-            if (filter.value != null && !extra.isManual)
-                filter.value = toForm ? dayjs(filter.value) : formatTemporalIso(filter.value as Dayjs, temporalType)
+function processQueryFilter(type: ColumnType, filter: QueryFilter, toForm: boolean) {
+    const {op} = filter
+    if (op === QueryOp.$null || op === QueryOp.$notNull) {
+        filter.value = null
+        return
+    }
 
-            continue
-        }
+    if (type == null || !isTemporal(type))
+        return
 
-        if (op === QueryOp.$between) {
-            if (extra.left != null && !extra.isManualLeft)
-                extra.left = toForm ? dayjs(extra.left) : formatTemporalIso(extra.left as Dayjs, temporalType)
+    const temporalType = type as TemporalType
+    const extra = filter.extra ?? {}
+    if (op === QueryOp.$eq || op === QueryOp.$ne || op === QueryOp.$gt || op === QueryOp.$gte || op === QueryOp.$lt || op === QueryOp.$lte) {
+        if (filter.value != null && !extra.isManual)
+            filter.value = toForm ? dayjs(filter.value) : formatTemporalIso(filter.value as Dayjs, temporalType)
 
-            if (extra.right != null && !extra.isManualRight)
-                extra.right = toForm ? dayjs(extra.right) : formatTemporalIso(extra.right as Dayjs, temporalType)
-        }
+        return
+    }
+
+    if (op === QueryOp.$between) {
+        if (extra.left != null && !extra.isManualLeft)
+            extra.left = toForm ? dayjs(extra.left) : formatTemporalIso(extra.left as Dayjs, temporalType)
+
+        if (extra.right != null && !extra.isManualRight)
+            extra.right = toForm ? dayjs(extra.right) : formatTemporalIso(extra.right as Dayjs, temporalType)
+    }
+}
+
+export function toFormSelectorFilter(selectorFilter: SelectorFilter): SelectorFilter {
+    const formSelectorFilter = _.cloneDeep(selectorFilter)
+    processSelectorFilter(formSelectorFilter, true)
+
+    return formSelectorFilter
+}
+
+export function fromFormSelectorFilter(formSelectorFilter: SelectorFilter): SelectorFilter {
+    const selectorFilter = _.cloneDeep(formSelectorFilter)
+    processSelectorFilter(selectorFilter, false)
+
+    return selectorFilter
+}
+
+function processSelectorFilter(filter: SelectorFilter, toForm: boolean) {
+    const {type, op} = filter
+    if (op === QueryOp.$null || op === QueryOp.$notNull) {
+        filter.value = null
+        return
+    }
+
+    if (!isTemporal(type))
+        return
+
+    const temporalType = type as TemporalType
+    const extra = filter.extra ?? {}
+    if (op === QueryOp.$eq || op === QueryOp.$ne || op === QueryOp.$gt || op === QueryOp.$gte || op === QueryOp.$lt || op === QueryOp.$lte) {
+        if (filter.value != null && !extra.isManual)
+            filter.value = toForm ? dayjs(filter.value) : formatTemporalIso(filter.value as Dayjs, temporalType)
+
+        return
+    }
+
+    if (op === QueryOp.$between) {
+        if (extra.left != null && !extra.isManualLeft)
+            extra.left = toForm ? dayjs(extra.left) : formatTemporalIso(extra.left as Dayjs, temporalType)
+
+        if (extra.right != null && !extra.isManualRight)
+            extra.right = toForm ? dayjs(extra.right) : formatTemporalIso(extra.right as Dayjs, temporalType)
     }
 }
 
@@ -402,6 +457,12 @@ export const toSingleDatasetFiltersInput = (dataset: Dataset, queryFilter: Query
     }
 })
 
+export const toSingleSelectorFiltersInput = (selectorFilter: SelectorFilter): DatasetFiltersInput<any> => ({
+    [selectorFilter.field]: {
+        [selectorFilter.op]: toSelectorFilterInputValue(selectorFilter)
+    }
+})
+
 function toDatasetFilterInputValue(dataset: Dataset, filter: QueryFilter): any {
     const {columnName} = filter
     const columns = dataset.spec?.columns ?? {}
@@ -412,7 +473,11 @@ function toDatasetFilterInputValue(dataset: Dataset, filter: QueryFilter): any {
     return parseFilterValue(column.type, filter)
 }
 
-function parseFilterValue(type: FieldType, filter: QueryFilter): any {
+function toSelectorFilterInputValue(filter: SelectorFilter): any {
+    return parseFilterValue(filter.type, filter)
+}
+
+function parseFilterValue(type: FieldType, filter: QueryFilter | SelectorFilter): any {
     const {op, value} = filter
     if (op === QueryOp.$null || op === QueryOp.$notNull)
         return true

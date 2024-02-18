@@ -10,7 +10,7 @@ import 'react-resizable/css/styles.css'
 
 import {CustomComponentRenderContext} from 'src/extensions/custom-components'
 import {DASHBOARD_ITEM_NAME} from 'src/config/constants'
-import {Dashboard, DashboardExtra, DashboardItemType, DashboardLayoutItem, IDash, IDashboardSpec, ISelector, IText} from 'src/types/bi'
+import {Dashboard, DashboardExtra, DashboardItemType, DashboardLayoutItem, IDash, IDashboardSpec, ISelector, IText, QueryOp} from 'src/types/bi'
 import {generateQueryBlock, printSingleQueryFilter} from '../util'
 import biConfig from 'src/config/bi'
 import DashWrapper from '../DashWrapper'
@@ -19,8 +19,8 @@ import {generateKey} from 'src/util/mdi'
 import {useBI} from '../util/hooks'
 import Text from '../Text'
 import Selector from '../Selector'
-import styles from './DashboardSpec.module.css'
 import './DashboardSpec.css'
+import styles from './DashboardSpec.module.css'
 
 interface DashboardSpecProps extends CustomComponentRenderContext {
     extra?: DashboardExtra
@@ -118,6 +118,58 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
             dashes: [
                 ...dashboardDashes,
                 newDash
+            ],
+            texts: dashboardTexts,
+            selectors: dashboardSelectors
+        }
+
+        onBufferChange({spec: newSpec})
+    }
+
+    function handleTextAdd() {
+        const newLayoutItem = createLayoutItem(DashboardItemType.TEXT)
+        const newText: IText = {
+            id: newLayoutItem.id,
+            content: ''
+        }
+
+        const newSpec: IDashboardSpec = {
+            layout: [
+                newLayoutItem,
+                ...dashboardLayout
+            ],
+            dashes: dashboardDashes,
+            texts: [
+                ...dashboardTexts,
+                newText
+            ],
+            selectors: dashboardSelectors
+        }
+
+        onBufferChange({spec: newSpec})
+    }
+
+    function handleSelectorAdd() {
+        const newLayoutItem = createLayoutItem(DashboardItemType.SELECTOR)
+        const newSelector: ISelector = {
+            id: newLayoutItem.id,
+            name: `${t('Selector')} ${(++seqNum).toString()}`,
+            type: biConfig.defaultSelectorType,
+            field: '',
+            op: QueryOp.$eq,
+            links: []
+        }
+
+        const newSpec: IDashboardSpec = {
+            layout: [
+                newLayoutItem,
+                ...dashboardLayout
+            ],
+            dashes: dashboardDashes,
+            texts: dashboardTexts,
+            selectors: [
+                ...dashboardSelectors,
+                newSelector
             ]
         }
 
@@ -125,7 +177,7 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
     }
 
     function handleLayoutChange(layouts: Layout[]) {
-        if (layouts.length !== _.size(dashboardDashes))
+        if (layouts.length !== dashboardLayout.length)
             throw new Error('Illegal layout state.')
 
         const newSpec: IDashboardSpec = {
@@ -139,7 +191,9 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
                     h: layout.h,
                 }
             }),
-            dashes: dashboardDashes
+            dashes: dashboardDashes,
+            texts: dashboardTexts,
+            selectors: dashboardSelectors
         }
 
         onBufferChange({
@@ -159,6 +213,13 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
             selectors: type === DashboardItemType.SELECTOR ? dashboardSelectors.filter(selector => selector.id !== id) : dashboardSelectors
         }
 
+        if (type === DashboardItemType.DASH) {
+            newSpec.selectors = newSpec.selectors?.map(selector => ({
+                ...selector,
+                links: selector.links.filter(link => link.dashId !== id)
+            }))
+        }
+
         onBufferChange({
             spec: newSpec
         })
@@ -168,9 +229,42 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
         if (!acl.canWrite)
             return
 
-        const newSpec = {
+        const newSpec: IDashboardSpec = {
             layout: dashboardLayout,
-            dashes: dashboardDashes.map(dash => dash.id === updatedDash.id ? updatedDash : dash)
+            dashes: dashboardDashes.map(dash => dash.id === updatedDash.id ? updatedDash : dash),
+            texts: dashboardTexts,
+            selectors: dashboardSelectors
+        }
+        onBufferChange({
+            spec: newSpec
+        })
+    }
+
+    function handleTextChange(updatedText: IText) {
+        if (!acl.canWrite)
+            return
+
+        const newSpec: IDashboardSpec = {
+            layout: dashboardLayout,
+            dashes: dashboardDashes,
+            texts: dashboardTexts.map(text => text.id === updatedText.id ? updatedText : text),
+            selectors: dashboardSelectors
+        }
+        onBufferChange({
+            spec: newSpec
+        })
+    }
+
+    function handleSelectorChange(updatedSelector: ISelector) {
+        if (!acl.canWrite)
+            return
+
+        const newSpec: IDashboardSpec = {
+            layout: dashboardLayout,
+            dashes: dashboardDashes,
+            texts: dashboardTexts,
+            selectors: dashboardSelectors.map(selector => selector.id === updatedSelector.id ? updatedSelector : selector)
+
         }
         onBufferChange({
             spec: newSpec
@@ -181,9 +275,9 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
         switch (layoutItem.type) {
             case DashboardItemType.DASH:
                 return renderDash(dashboardDashes.find(dash => dash.id === layoutItem.id) as IDash, layoutItem.h)
-            case DashboardItemType.SELECTOR:
-                return renderText(dashboardTexts.find(text => text.id === layoutItem.id) as IText, layoutItem.h)
             case DashboardItemType.TEXT:
+                return renderText(dashboardTexts.find(text => text.id === layoutItem.id) as IText, layoutItem.h)
+            case DashboardItemType.SELECTOR:
                 return renderSelector(dashboardSelectors.find(selector => selector.id === layoutItem.id) as ISelector, layoutItem.h)
             default:
                 return <Alert description={t('Unsupported layout item.')} type="error"/>
@@ -196,7 +290,7 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
         return (
             <div
                 key={dash.id}
-                className={`${styles.dashWrapper} ${acl.canWrite ? styles.editable : ''}`}
+                className={`${styles.layoutItem} ${styles.dashWrapper} ${acl.canWrite ? styles.editable : ''}`}
                 onClick={() => selectDash(dash)}
             >
                 <DashWrapper
@@ -219,11 +313,43 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
     }
 
     function renderText(text: IText, height: number) {
-        return <Text text={text} height={height}/>
+        return (
+            <div
+                key={text.id}
+                className={styles.layoutItem}
+            >
+                <Text
+                    text={text}
+                    height={height}
+                    canEdit={acl.canWrite}
+                    readOnly={readOnly ?? false}
+                    onLockChange={setLocked}
+                    onChange={handleTextChange}
+                    onDelete={() => removeLayoutItem(DashboardItemType.TEXT, text.id)}
+                />
+            </div>
+        )
     }
 
     function renderSelector(selector: ISelector, height: number) {
-        return <Selector selector={selector} height={height}/>
+        return (
+            <div
+                key={selector.id}
+                className={styles.layoutItem}
+            >
+                <Selector
+                    selector={selector}
+                    height={height}
+                    datasetMap={datasetMap}
+                    dashes={dashboardDashes}
+                    canEdit={acl.canWrite}
+                    readOnly={readOnly ?? false}
+                    onLockChange={setLocked}
+                    onChange={handleSelectorChange}
+                    onDelete={() => removeLayoutItem(DashboardItemType.SELECTOR, selector.id)}
+                />
+            </div>
+        )
     }
 
     return (
@@ -246,11 +372,11 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
                             }, {
                                 key: 'selector',
                                 label: <Space><i className="fa-solid fa-sliders"></i>{t('Selector')}</Space>,
-                                onClick: () => {}
+                                onClick: handleSelectorAdd
                             }, {
                                 key: 'text',
                                 label: <Space><i className="fa-solid fa-font"></i>{t('Text')}</Space>,
-                                onClick: () => {}
+                                onClick: handleTextAdd
                             }]
                         }}
                     >
