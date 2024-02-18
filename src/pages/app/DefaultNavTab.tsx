@@ -28,7 +28,7 @@ interface Props {
     data: ItemDataWrapper
 }
 
-const {info} = Modal
+const {confirm} = Modal
 
 function DefaultNavTab({data: dataWrapper}: Props) {
     const {me, logout} = useAuth()
@@ -128,7 +128,7 @@ function DefaultNavTab({data: dataWrapper}: Props) {
         if (!isSystemItem)
             return
 
-        info({
+        confirm({
             title: `${t('You must sign in again to apply the changes')}`,
             onOk: handleLogout
         })
