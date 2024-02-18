@@ -38,7 +38,7 @@ interface Props {
     data: ItemDataWrapper
 }
 
-const {info} = Modal
+const {confirm} = Modal
 
 function ViewNavTab({data: dataWrapper}: Props) {
     const {me, logout} = useAuth()
@@ -125,7 +125,7 @@ function ViewNavTab({data: dataWrapper}: Props) {
         if (!isSystemItem)
             return
 
-        info({
+        confirm({
             title: `${t('You must sign in again to apply the changes')}`,
             onOk: handleLogout
         })
@@ -311,7 +311,8 @@ function ViewNavTab({data: dataWrapper}: Props) {
 
     const filterVisibleAttributeNames = useCallback((attributes: {[name: string]: Attribute}): string[] => Object.keys(attributes).filter(attrName => {
         const attr = attributes[attrName]
-        return !attr.private && !attr.fieldHidden
+        return !attr.private
+            && !attr.fieldHidden
             && (attr.type !== FieldType.relation || (attr.relType !== RelType.oneToMany && attr.relType !== RelType.manyToMany))
             && (item.versioned || (attrName !== CONFIG_ID_ATTR_NAME && attrName !== MAJOR_REV_ATTR_NAME && attrName !== MINOR_REV_ATTR_NAME && attrName !== CURRENT_ATTR_NAME))
             && (item.localized || attrName !== LOCALE_ATTR_NAME)
