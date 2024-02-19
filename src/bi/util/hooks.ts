@@ -5,7 +5,7 @@ import * as DashboardService from 'src/services/dashboard'
 import * as DashboardCategoryService from 'src/services/dashboard-category'
 import {useItemOperations, useRegistry} from 'src/util/hooks'
 import {DASHBOARD_ITEM_NAME, DATASET_ITEM_NAME} from 'src/config/constants'
-import {Dashboard, DashboardCategory, Dataset, QueryFilter} from 'src/types/bi'
+import {Dashboard, DashboardCategory, Dataset, IDash, ISelector, QueryFilter} from 'src/types/bi'
 import _ from 'lodash'
 
 interface UseBIProps {
@@ -14,13 +14,22 @@ interface UseBIProps {
     withDashboardCategories?: boolean
 }
 
-const defaultProps = {
+interface UseBIResult {
+    datasets: Dataset[]
+    dashboards: Dashboard[]
+    dashboardCategories: DashboardCategory[]
+    openDataset: (id: string) => void
+    openDashboard: (id: string, queryFilter?: QueryFilter) => void
+}
+
+
+const defaultUseBIProps = {
     withDatasets: false,
     withDashboards: false,
     withDashboardCategories: false
 }
 
-export function useBI({withDatasets, withDashboards, withDashboardCategories}: UseBIProps = defaultProps) {
+export function useBI({withDatasets, withDashboards, withDashboardCategories}: UseBIProps = defaultUseBIProps): UseBIResult {
     const {items: itemMap} = useRegistry()
     const {open} = useItemOperations()
     const datasetItem = useMemo(() => itemMap[DATASET_ITEM_NAME], [itemMap])
@@ -61,4 +70,24 @@ export function useBI({withDatasets, withDashboards, withDashboardCategories}: U
     }, [dashboardItem, open])
 
     return {datasets, dashboards, dashboardCategories, openDataset, openDashboard}
+}
+
+
+interface UseSelectorsProps {
+    initialSelectors: ISelector[]
+    initialDashes: IDash[]
+}
+
+interface UseSelectorsResult {
+    selectors: ISelector[]
+    setDashValue: (value: any) => void
+    setSelectorValue: (value: any) => void
+}
+
+export function useSelectors({initialSelectors, initialDashes}: UseSelectorsProps): UseSelectorsResult {
+    return {
+        selectors: initialSelectors,
+        setDashValue: (value: any) => {},
+        setSelectorValue: (value: any) => {}
+    }
 }

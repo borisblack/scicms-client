@@ -9,7 +9,7 @@ import SelectorModal from '../SelectorModal'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
 import styles from './Selector.module.css'
 import SelectorValue, {SelectorValueFormValues} from './SelectorValue'
-import {fromFormSelectorFilter, toFormQueryBlock} from '../util'
+import {fromFormSelectorFilter, toFormSelectorFilter} from '../util'
 
 interface SelectorProps {
     selector: ISelector
@@ -41,6 +41,10 @@ export default function Selector({selector, height, datasetMap, dashes, canEdit,
     function handleSelectorValueFormFinish(values: SelectorValueFormValues) {
         const filter = fromFormSelectorFilter(values.selectorFilter)
         console.log(filter)
+        // onChange({
+        //     ...selector,
+        //     value: filter.value
+        // })
     }
 
     const getSettingsMenuItems = (): ItemType[] => {
@@ -105,7 +109,7 @@ export default function Selector({selector, height, datasetMap, dashes, canEdit,
                 form={selectorValueForm}
                 size="small"
                 layout="vertical"
-                initialValues={{selectorFilter: selector}}
+                initialValues={{selectorFilter: toFormSelectorFilter(selector)}}
                 onFinish={handleSelectorValueFormFinish}
             >
                 <SelectorValue
