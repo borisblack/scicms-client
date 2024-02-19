@@ -36,7 +36,7 @@ const regExpMessages: Record<string, string> = {
 
 export async function parseValues(item: Item, data: ItemData | null | undefined, values: any): Promise<ItemData> {
     const hiddenFields = Object.entries(item.spec.attributes)
-        .filter(([attrName, attr]) => attr.fieldHidden)
+        .filter(([attrName, attr]) => attr.fieldHidden && !attr.readOnly)
         .map(([attrName, attr]) => attrName)
     const parsedValues: {[name: string]: any} = data ? _.pick(data, hiddenFields) : {}
     const {attributes} = item.spec
