@@ -85,7 +85,6 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
     const dashboardSelectors: ISelector[] = useMemo(() => spec.selectors ?? [], [spec.selectors])
     const {selectedDashFilters, selectDashValue} = useSelectors({
         selectors: dashboardSelectors,
-        dashes: dashboardDashes,
         onSelectorChange(selector) {
             const newSpec: IDashboardSpec = {
                 layout: dashboardLayout,

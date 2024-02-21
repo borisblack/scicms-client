@@ -7,7 +7,6 @@ import * as DashboardCategoryService from 'src/services/dashboard-category'
 import {useItemOperations, useRegistry} from 'src/util/hooks'
 import {DASHBOARD_ITEM_NAME, DATASET_ITEM_NAME} from 'src/config/constants'
 import {Dashboard, DashboardCategory, Dataset, IDash, ISelector, QueryFilter, SelectorLinkType} from 'src/types/bi'
-import _ from 'lodash'
 import {SelectorFilter} from '../../types/bi'
 
 interface UseBIProps {
