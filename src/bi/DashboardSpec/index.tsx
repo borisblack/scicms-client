@@ -16,7 +16,7 @@ import biConfig from 'src/config/bi'
 import DashWrapper from '../DashWrapper'
 import {useAcl} from 'src/util/hooks'
 import {generateKey} from 'src/util/mdi'
-import {useBI} from '../util/hooks'
+import {useBI, useSelectors} from '../util/hooks'
 import Text from '../Text'
 import Selector from '../Selector'
 import './DashboardSpec.css'
@@ -83,6 +83,20 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
     const dashboardDashes: IDash[] = useMemo(() => spec.dashes?.map(dash => ({...dash, id: dash.id ?? uuidv4(), fields: dash.fields ?? {}})) ?? [], [spec.dashes])
     const dashboardTexts: IText[] = useMemo(() => spec.texts ?? [], [spec.texts])
     const dashboardSelectors: ISelector[] = useMemo(() => spec.selectors ?? [], [spec.selectors])
+    const {selectedDashFilters, selectDashValue} = useSelectors({
+        selectors: dashboardSelectors,
+        dashes: dashboardDashes,
+        onSelectorChange(selector) {
+            const newSpec: IDashboardSpec = {
+                layout: dashboardLayout,
+                dashes: dashboardDashes,
+                texts: dashboardTexts,
+                selectors: dashboardSelectors.map(s => s.id === selector.id ? selector : s)
+            }
+    
+            onBufferChange({spec: newSpec})
+        },
+    })
     const [isLocked, setLocked] = useState<boolean>(false)
     const isGridEditable = useMemo(() => !readOnly && acl.canWrite && !isLocked, [acl.canWrite, isLocked, readOnly])
     const thisDashboard = {...data, spec} as Dashboard

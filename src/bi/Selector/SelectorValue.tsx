@@ -39,7 +39,10 @@ export default function SelectorValue({namePrefix, selector, datasetMap}: Select
     const prevSelector = usePrevious(selector)
 
     useEffect(() => {
-        if (prevSelector?.field !== selector.field || prevSelector?.op !== selector.op)
+        if (prevSelector?.field !== selector.field ||
+            prevSelector?.op !== selector.op ||
+            prevSelector?.value !== selector.value ||
+            prevSelector?.extra !== selector.extra)
             form.resetFields()
     }, [selector])
 

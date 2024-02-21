@@ -125,15 +125,11 @@ export interface IDash {
     refreshIntervalSeconds: number
 }
 
-export interface ISelector {
+export interface ISelector extends SelectorFilter {
     id: string
     name: string
     dataset?: string
-    field: string
-    type: ColumnType
-    op: BoolQueryOp | UnaryQueryOp | BinaryQueryOp | ListQueryOp
     links: SelectorLink[]
-    value?: any
 }
 
 export interface SelectorLink {
