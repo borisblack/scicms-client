@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import React, {memo, useEffect, useMemo, useState} from 'react'
+import React, {useEffect, useMemo, useState} from 'react'
 import {Button, Dropdown, Empty, notification, Space, Spin} from 'antd'
 import {PageHeader} from '@ant-design/pro-layout'
 import {useTranslation} from 'react-i18next'
@@ -17,7 +17,7 @@ import {
 
 import FullScreen from 'src/components/FullScreen'
 import * as DatasetService from 'src/services/dataset'
-import {getActualFilters, printQueryBlock, toDatasetFiltersInput, toSingleDatasetFiltersInput} from '../util'
+import {getActualFilters, printQueryBlock, toDatasetFiltersInput, toSingleDatasetFiltersInput, toSingleSelectorFiltersInput} from '../util'
 import {Dash, getDash} from 'src/extensions/dashes'
 import biConfig from 'src/config/bi'
 import {
@@ -28,7 +28,8 @@ import {
     DatasetFiltersInput,
     ExecutionStatisticInfo,
     IDash,
-    QueryBlock
+    QueryBlock,
+    SelectorFilter
 } from 'src/types/bi'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
 import FiltersModal from '../FiltersModal'
@@ -48,9 +49,11 @@ export interface DashWrapperProps {
     dash: IDash
     height: number
     extra?: DashboardExtra
+    selectedFilters?: SelectorFilter[]
     readOnly: boolean
     canEdit: boolean
     onLockChange: (locked: boolean) => void
+    onDashClick: (value: any) => void
     onDashChange: (dash: IDash) => void
     onDelete: () => void
 }
@@ -64,6 +67,7 @@ function DashWrapper(props: DashWrapperProps) {
         dashboards,
         dashboard,
         extra,
+        selectedFilters,
         dash,
         height,
         readOnly,
@@ -107,7 +111,8 @@ function DashWrapper(props: DashWrapperProps) {
         dash.aggregateField,
         dash.groupField,
         dash.sortField,
-        filters
+        filters,
+        selectedFilters
     ])
 
     useEffect(() => {
@@ -133,6 +138,23 @@ function DashWrapper(props: DashWrapperProps) {
             const datasetFiltersInput = datasetInput.filters as DatasetFiltersInput<any>
             const $and = datasetFiltersInput.$and ?? []
             $and.push(toSingleDatasetFiltersInput(dataset, extraQueryFilter))
+            datasetFiltersInput.$and = $and
+        }
+
+        if (selectedFilters != null && selectedFilters.length > 0) {
+            const datasetFiltersInput = datasetInput.filters as DatasetFiltersInput<any>
+            const $and = datasetFiltersInput.$and ?? []
+            selectedFilters
+                .filter(selectedFilter => {
+                    const field = dataset.spec.columns[selectedFilter.field]
+                    if (field == null)
+                        return false
+
+                    return field.type === selectedFilter.type
+                })
+                .forEach(selectedFilter => {
+                    $and.push(toSingleSelectorFiltersInput(selectedFilter))
+                })
             datasetFiltersInput.$and = $and
         }
 
@@ -377,4 +399,4 @@ function DashWrapper(props: DashWrapperProps) {
     )
 }
 
-export default memo(DashWrapper)
+export default DashWrapper

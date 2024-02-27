@@ -2,6 +2,7 @@ import _ from 'lodash'
 import {useMemo} from 'react'
 import {Alert} from 'antd'
 import {Line, LineConfig} from '@ant-design/charts'
+import {v4 as uuidv4} from 'uuid'
 
 import {DashEventHandler, DashRenderContext} from '..'
 import {defaultDashColor, defaultDashColors, formatValue, isTemporal} from 'src/bi/util'
@@ -25,7 +26,7 @@ const {dash: dashConfig, locale} = biConfig
 const axisLabelStyle = dashConfig?.all?.axisLabelStyle
 const legendConfig = dashConfig?.all?.legend
 
-export default function LineDash({dataset, dash, data}: DashRenderContext) {
+export default function LineDash({dataset, dash, data, onDashClick}: DashRenderContext) {
     const {openDashboard} = useBI()
     const optValues = dash.optValues as LineDashOptions
     const {relatedDashboardId} = dash
@@ -55,10 +56,13 @@ export default function LineDash({dataset, dash, data}: DashRenderContext) {
     if (xColumn == null || yColumn == null)
         return <Alert message="Invalid columns specification" type="error"/>
 
-    const handleEvent: DashEventHandler | undefined =
-        relatedDashboardId ?
-            (chart, event) => handleDashClick(chart, event, seriesField ?? xField, queryFilter => openDashboard(relatedDashboardId, queryFilter)) :
-            undefined
+    const handleEvent: DashEventHandler =
+        (chart, event) => handleDashClick(chart, event, seriesField ?? xField, queryFilter => {
+            if (relatedDashboardId)
+                openDashboard(relatedDashboardId, queryFilter)
+            else
+                onDashClick(queryFilter.value)
+        })
 
     const config: LineConfig = {
         data,
@@ -103,5 +107,5 @@ export default function LineDash({dataset, dash, data}: DashRenderContext) {
         onEvent: handleEvent
     }
 
-    return <Line {...config} key={relatedDashboardId}/>
+    return <Line {...config} key={relatedDashboardId ?? uuidv4()}/>
 }

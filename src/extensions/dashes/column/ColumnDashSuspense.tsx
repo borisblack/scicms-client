@@ -1,4 +1,4 @@
-import {lazy, memo, Suspense} from 'react'
+import {lazy, Suspense} from 'react'
 
 import {DashRenderContext} from '..'
 
@@ -12,4 +12,4 @@ function ColumnDashSuspense(ctx: DashRenderContext) {
     )
 }
 
-export default memo(ColumnDashSuspense)
+export default ColumnDashSuspense

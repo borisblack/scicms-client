@@ -2,6 +2,7 @@ import _ from 'lodash'
 import {useMemo} from 'react'
 import {Alert} from 'antd'
 import {Rose, RoseConfig} from '@ant-design/charts'
+import {v4 as uuidv4} from 'uuid'
 
 import {DashEventHandler, DashRenderContext} from '..'
 import {defaultDashColor, defaultDashColors, formatValue, isTemporal} from 'src/bi/util'
@@ -25,7 +26,7 @@ const {dash: dashConfig, locale} = biConfig
 const axisLabelStyle = dashConfig?.all?.axisLabelStyle
 const legendConfig = dashConfig?.all?.legend
 
-export default function PolarAreaDash({dataset, dash, data}: DashRenderContext) {
+export default function PolarAreaDash({dataset, dash, data, onDashClick}: DashRenderContext) {
     const {openDashboard} = useBI()
     const optValues = dash.optValues as PolarAreaDashOptions
     const {relatedDashboardId} = dash
@@ -55,10 +56,13 @@ export default function PolarAreaDash({dataset, dash, data}: DashRenderContext) 
     if (xColumn == null || yColumn == null)
         return <Alert message="Invalid columns specification" type="error"/>
 
-    const handleEvent: DashEventHandler | undefined =
-        relatedDashboardId ?
-            (chart, event) => handleDashClick(chart, event, seriesField ?? xField, queryFilter => openDashboard(relatedDashboardId, queryFilter)) :
-            undefined
+    const handleEvent: DashEventHandler =
+        (chart, event) => handleDashClick(chart, event, seriesField ?? xField, queryFilter => {
+            if (relatedDashboardId)
+                openDashboard(relatedDashboardId, queryFilter)
+            else
+                onDashClick(queryFilter.value)
+        })
 
     const config: RoseConfig = {
         data,
@@ -104,5 +108,5 @@ export default function PolarAreaDash({dataset, dash, data}: DashRenderContext) 
         onEvent: handleEvent
     }
 
-    return <Rose {...config} key={relatedDashboardId}/>
+    return <Rose {...config} key={relatedDashboardId ?? uuidv4()}/>
 }

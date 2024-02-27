@@ -2,6 +2,7 @@ import _ from 'lodash'
 import {useMemo} from 'react'
 import {Alert} from 'antd'
 import {Pie, PieConfig} from '@ant-design/charts'
+import {v4 as uuidv4} from 'uuid'
 
 import {DashEventHandler, DashRenderContext} from '..'
 import {defaultDashColors, formatValue} from 'src/bi/util'
@@ -23,7 +24,7 @@ interface PieDashOptions {
 const {locale, percentFractionDigits, dash: dashConfig} = biConfig
 const legendConfig = dashConfig?.all?.legend
 
-export default function PieDash({dataset, dash, data}: DashRenderContext) {
+export default function PieDash({dataset, dash, data, onDashClick}: DashRenderContext) {
     const {openDashboard} = useBI()
     const optValues = dash.optValues as PieDashOptions
     const {relatedDashboardId} = dash
@@ -51,10 +52,13 @@ export default function PieDash({dataset, dash, data}: DashRenderContext) {
     if (angleColumn == null || colorColumn == null)
         return <Alert message="Invalid columns specification" type="error"/>
 
-    const handleEvent: DashEventHandler | undefined =
-        relatedDashboardId ?
-            (chart, event) => handleDashClick(chart, event, colorField, queryFilter => openDashboard(relatedDashboardId, queryFilter)) :
-            undefined
+    const handleEvent: DashEventHandler =
+        (chart, event) => handleDashClick(chart, event, colorField, queryFilter => {
+            if (relatedDashboardId)
+                openDashboard(relatedDashboardId, queryFilter)
+            else
+                onDashClick(queryFilter.value)
+        })
 
     const config: PieConfig = {
         appendPadding: 10,
@@ -98,5 +102,5 @@ export default function PieDash({dataset, dash, data}: DashRenderContext) {
         onEvent: handleEvent
     }
 
-    return <Pie {...config} key={relatedDashboardId}/>
+    return <Pie {...config} key={relatedDashboardId ?? uuidv4()}/>
 }

@@ -189,12 +189,9 @@ export interface QueryBlock {
     blocks: QueryBlock[]
 }
 
-export interface QueryFilter {
-    id: string
-    columnName: string
+interface AbstractFilter {
     op: BoolQueryOp | UnaryQueryOp | BinaryQueryOp | ListQueryOp
     value?: any
-    show?: boolean
     extra?: {
         period?: TemporalPeriod
         unit?: TemporalUnit
@@ -207,21 +204,15 @@ export interface QueryFilter {
     }
 }
 
-export interface SelectorFilter {
+export interface QueryFilter extends AbstractFilter {
+    id: string
+    columnName: string
+    show?: boolean
+}
+
+export interface SelectorFilter extends AbstractFilter {
     field: string
     type: ColumnType
-    op: BoolQueryOp | UnaryQueryOp | BinaryQueryOp | ListQueryOp
-    value?: any
-    extra?: {
-        period?: TemporalPeriod
-        unit?: TemporalUnit
-        value?: number
-        isManual?: boolean
-        isManualLeft?: boolean
-        isManualRight?: boolean
-        left?: any
-        right?: any
-    }
 }
 
 export type BoolQueryOp = QueryOp.$null | QueryOp.$notNull

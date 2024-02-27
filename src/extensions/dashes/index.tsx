@@ -41,7 +41,6 @@ interface DashRenderProps {
 }
 
 export interface DashRenderContext extends DashProps {
-    height: number
     fullScreen: boolean
     data: any[]
 }

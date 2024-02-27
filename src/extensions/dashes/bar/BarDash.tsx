@@ -2,6 +2,8 @@ import _ from 'lodash'
 import {useMemo} from 'react'
 import {Alert} from 'antd'
 import {Bar, BarConfig} from '@ant-design/charts'
+import {v4 as uuidv4} from 'uuid'
+
 import {defaultDashColor, defaultDashColors, formatValue, isTemporal} from 'src/bi/util'
 import {DashEventHandler, DashRenderContext} from '../index'
 import {LegendPosition} from '../util'
@@ -26,7 +28,7 @@ const {dash: dashConfig, locale} = biConfig
 const axisLabelStyle = dashConfig?.all?.axisLabelStyle
 const legendConfig = dashConfig?.all?.legend
 
-export default function BarDash({dataset, dash, data}: DashRenderContext) {
+export default function BarDash({dataset, dash, data, onDashClick}: DashRenderContext) {
     const {openDashboard} = useBI()
     const optValues = dash.optValues
     const {relatedDashboardId} = dash
@@ -58,10 +60,13 @@ export default function BarDash({dataset, dash, data}: DashRenderContext) {
     if (xColumn == null || yColumn == null)
         return <Alert message="Invalid columns specification" type="error"/>
 
-    const handleEvent: DashEventHandler | undefined =
-        relatedDashboardId ?
-            (chart, event) => handleDashClick(chart, event, yField, queryFilter => openDashboard(relatedDashboardId, queryFilter)) :
-            undefined
+    const handleEvent: DashEventHandler =
+        (chart, event) => handleDashClick(chart, event, yField, queryFilter => {
+            if (relatedDashboardId)
+                openDashboard(relatedDashboardId, queryFilter)
+            else
+                onDashClick(queryFilter.value)
+        })
 
     const config: BarConfig = {
         data,
@@ -108,5 +113,5 @@ export default function BarDash({dataset, dash, data}: DashRenderContext) {
         onEvent: handleEvent
     }
 
-    return <Bar {...config} key={relatedDashboardId}/>
+    return <Bar {...config} key={relatedDashboardId ?? uuidv4()}/>
 }

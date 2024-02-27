@@ -2,6 +2,7 @@
 
 export const DEBUG: boolean = process.env.NODE_ENV !== 'production'
 export const EMPTY_ARRAY = []
+export const EMPTY_OBJECT = {}
 
 export const ANTD_GRID_COLS = 24
 export const UTC = 'UTC'

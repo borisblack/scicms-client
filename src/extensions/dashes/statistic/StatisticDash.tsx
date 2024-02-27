@@ -1,4 +1,4 @@
-import {memo, useMemo} from 'react'
+import {useMemo} from 'react'
 import {Alert, Statistic} from 'antd'
 
 import {DashRenderContext} from '..'
@@ -34,4 +34,4 @@ function StatisticDash({dash, data}: DashRenderContext) {
     )
 }
 
-export default memo(StatisticDash)
+export default StatisticDash

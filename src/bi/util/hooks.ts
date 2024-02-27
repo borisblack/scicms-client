@@ -114,7 +114,7 @@ export function useSelectors({selectors, onSelectorChange}: UseSelectorsProps): 
                 ...selector,
                 value
             }))
-    }, [selectors])
+    }, [selectors, onSelectorChange])
 
     return {
         selectedDashFilters,

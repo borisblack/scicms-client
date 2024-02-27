@@ -1,4 +1,4 @@
-import {ReactNode, memo, useMemo} from 'react'
+import {ReactNode, useMemo} from 'react'
 import {Alert, Table} from 'antd'
 import {v4 as uuidv4} from 'uuid'
 import {ColumnsType} from 'antd/es/table'
@@ -56,4 +56,4 @@ function ReportDash({dataset, dash, height, fullScreen, data}: DashRenderContext
     )
 }
 
-export default memo(ReportDash)
+export default ReportDash

@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import {memo, useEffect, useMemo, useState} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import RGL, {Layout, WidthProvider} from 'react-grid-layout'
 import {Alert, Button, Dropdown, Space} from 'antd'
@@ -9,7 +9,7 @@ import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
 
 import {CustomComponentRenderContext} from 'src/extensions/custom-components'
-import {DASHBOARD_ITEM_NAME} from 'src/config/constants'
+import {DASHBOARD_ITEM_NAME, EMPTY_ARRAY} from 'src/config/constants'
 import {Dashboard, DashboardExtra, DashboardItemType, DashboardLayoutItem, IDash, IDashboardSpec, ISelector, IText, QueryOp} from 'src/types/bi'
 import {generateQueryBlock, printSingleQueryFilter} from '../util'
 import biConfig from 'src/config/bi'
@@ -85,16 +85,7 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
     const dashboardSelectors: ISelector[] = useMemo(() => spec.selectors ?? [], [spec.selectors])
     const {selectedDashFilters, selectDashValue} = useSelectors({
         selectors: dashboardSelectors,
-        onSelectorChange(selector) {
-            const newSpec: IDashboardSpec = {
-                layout: dashboardLayout,
-                dashes: dashboardDashes,
-                texts: dashboardTexts,
-                selectors: dashboardSelectors.map(s => s.id === selector.id ? selector : s)
-            }
-    
-            onBufferChange({spec: newSpec})
-        },
+        onSelectorChange: handleSelectorChange
     })
     const [isLocked, setLocked] = useState<boolean>(false)
     const isGridEditable = useMemo(() => !readOnly && acl.canWrite && !isLocked, [acl.canWrite, isLocked, readOnly])
@@ -269,8 +260,8 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
     }
 
     function handleSelectorChange(updatedSelector: ISelector) {
-        if (!acl.canWrite)
-            return
+        // if (!acl.canWrite)
+        //     return
 
         const newSpec: IDashboardSpec = {
             layout: dashboardLayout,
@@ -315,9 +306,11 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
                     dash={dash}
                     height={height}
                     extra={extra}
+                    selectedFilters={selectedDashFilters[dash.id] ?? EMPTY_ARRAY}
                     readOnly={readOnly ?? false}
                     canEdit={acl.canWrite}
                     onLockChange={setLocked}
+                    onDashClick={value => selectDashValue(dash.id, value)}
                     onDashChange={handleDashChange}
                     onDelete={() => removeLayoutItem(DashboardItemType.DASH, dash.id)}
                 />
@@ -417,4 +410,4 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
     )
 }
 
-export default memo(DashboardSpec)
+export default DashboardSpec

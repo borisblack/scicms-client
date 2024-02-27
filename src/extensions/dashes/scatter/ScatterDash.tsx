@@ -2,6 +2,7 @@ import _ from 'lodash'
 import {useMemo} from 'react'
 import {Alert} from 'antd'
 import {Scatter, ScatterConfig} from '@ant-design/charts'
+import {v4 as uuidv4} from 'uuid'
 
 import {DashEventHandler, DashRenderContext} from '..'
 import {defaultDashColor, defaultDashColors, formatValue, isTemporal} from 'src/bi/util'
@@ -25,7 +26,7 @@ const {dash: dashConfig, locale} = biConfig
 const axisLabelStyle = dashConfig?.all?.axisLabelStyle
 const legendConfig = dashConfig?.all?.legend
 
-export default function ScatterDash({dataset, dash, data}: DashRenderContext) {
+export default function ScatterDash({dataset, dash, data, onDashClick}: DashRenderContext) {
     const {openDashboard} = useBI()
     const optValues = dash.optValues as ScatterDashOptions
     const {relatedDashboardId} = dash
@@ -55,10 +56,13 @@ export default function ScatterDash({dataset, dash, data}: DashRenderContext) {
     if (xColumn == null || yColumn == null)
         return <Alert message="Invalid columns specification" type="error"/>
 
-    const handleEvent: DashEventHandler | undefined =
-        relatedDashboardId ?
-            (chart, event) => handleDashClick(chart, event, colorField ?? xField, queryFilter => openDashboard(relatedDashboardId, queryFilter)) :
-            undefined
+    const handleEvent: DashEventHandler =
+        (chart, event) => handleDashClick(chart, event, colorField ?? xField, queryFilter => {
+            if (relatedDashboardId)
+                openDashboard(relatedDashboardId, queryFilter)
+            else
+                onDashClick(queryFilter.value)
+        })
 
     const config: ScatterConfig = {
         appendPadding: 10,
@@ -122,5 +126,5 @@ export default function ScatterDash({dataset, dash, data}: DashRenderContext) {
         onEvent: handleEvent
     }
 
-    return <Scatter {...config} key={relatedDashboardId}/>
+    return <Scatter {...config} key={relatedDashboardId ?? uuidv4()}/>
 }

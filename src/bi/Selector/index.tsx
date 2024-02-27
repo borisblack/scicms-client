@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import {useTranslation} from 'react-i18next'
 import {Button, Dropdown, Form, Space} from 'antd'
 import {ClearOutlined, DeleteOutlined, EditOutlined, SettingOutlined} from '@ant-design/icons'
@@ -40,11 +41,14 @@ export default function Selector({selector, height, datasetMap, dashes, canEdit,
 
     function handleSelectorValueFormFinish(values: SelectorValueFormValues) {
         const filter = fromFormSelectorFilter(values.selectorFilter)
-        console.log(filter)
-        // onChange({
-        //     ...selector,
-        //     value: filter.value
-        // })
+        onChange({
+            ...selector,
+            value: filter.value
+        })
+    }
+
+    function handleSelectorClear() {
+        onChange(_.omit(selector, 'value'))
     }
 
     const getSettingsMenuItems = (): ItemType[] => {
@@ -85,7 +89,7 @@ export default function Selector({selector, height, datasetMap, dashes, canEdit,
                         className={styles.toolbarBtn}
                         icon={<ClearOutlined/>}
                         title={t('Clear')}
-                        onClick={() => {}}
+                        onClick={handleSelectorClear}
                         onMouseDown={e => e.stopPropagation()}
                     />,
                     <Dropdown

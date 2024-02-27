@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import {memo, useCallback, useEffect, useMemo, useRef} from 'react'
+import {useCallback, useEffect, useMemo, useRef} from 'react'
 import {Alert} from 'antd'
 import {v4 as uuidv4} from 'uuid'
 import L, {LatLngExpression} from 'leaflet'
@@ -154,4 +154,4 @@ function BubbleMapDash({fullScreen, dataset, dash, height, data}: DashRenderCont
     )
 }
 
-export default memo(BubbleMapDash)
+export default BubbleMapDash

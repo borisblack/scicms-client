@@ -1,4 +1,4 @@
-import {lazy, memo, Suspense} from 'react'
+import {lazy, Suspense} from 'react'
 
 import {DashRenderContext} from '..'
 
@@ -12,4 +12,4 @@ function ScatterDashSuspense(ctx: DashRenderContext) {
     )
 }
 
-export default memo(ScatterDashSuspense)
+export default ScatterDashSuspense
