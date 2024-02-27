@@ -392,6 +392,8 @@ const en = {
         'Temporal': 'Temporal',
         'Temporal Functions': 'Temporal Functions',
         'Text': 'Text',
+        'Theme': 'Theme',
+        'Themes': 'Themes',
         'Timed out waiting for server response': 'Timed out waiting for server response',
         'Title Attribute': 'Title Attribute',
         'Total records': 'Total records',
