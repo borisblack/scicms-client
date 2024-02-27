@@ -208,7 +208,7 @@ function DefaultNavTab({data: dataWrapper}: Props) {
     const renderPageHeader = useCallback((): ReactNode => {
         const permissionId = item.permission.data?.id
         const permission = permissionId ? permissionMap[permissionId] : null
-        const canCreate = !!permission && item.name !== MEDIA_ITEM_NAME && ACL.canCreate(me, permission)
+        const canCreate = !!permission && item.name !== MEDIA_ITEM_NAME && !item.readOnly && ACL.canCreate(me, permission)
 
         return (
             <PageHeader

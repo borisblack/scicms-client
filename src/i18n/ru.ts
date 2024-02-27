@@ -386,6 +386,8 @@ const ru = {
         'Target Permission': 'Целевое разрешение',
         'Temporal': 'Дата/время',
         'Temporal Functions': 'Функции даты/времени',
+        'Theme': 'Тема',
+        'Themes': 'Темы',
         'Timed out waiting for server response': 'Истекло время ожидания ответа сервера',
         'Title Attribute': 'Титульный атрибут',
         'Total records': 'Всего записей',

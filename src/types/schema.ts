@@ -149,7 +149,7 @@ interface ItemMetadata extends ItemTemplateMetadata{
     titleAttribute: string
     description: string | null
     icon: string | null
-    readonly: boolean | null
+    readOnly: boolean | null
     performDdl: boolean | null
     versioned: boolean | null
     manualVersioning: boolean | null

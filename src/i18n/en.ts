@@ -385,6 +385,8 @@ const en = {
         'Target Permission': 'Target Permission',
         'Temporal': 'Temporal',
         'Temporal Functions': 'Temporal Functions',
+        'Theme': 'Theme',
+        'Themes': 'Themes',
         'Timed out waiting for server response': 'Timed out waiting for server response',
         'Title Attribute': 'Title Attribute',
         'Total records': 'Total records',
