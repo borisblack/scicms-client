@@ -102,3 +102,14 @@ export enum ViewType {
     default = 'default',
     view = 'view'
 }
+
+export interface SecurityConfig {
+    oauth2Providers: Oauth2ProviderConfig[]
+}
+
+export interface Oauth2ProviderConfig {
+    id: string
+    name: string
+    authUrl: string
+    clientId: string
+}

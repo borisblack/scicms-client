@@ -5,34 +5,51 @@ import {RootState} from '../../store'
 import {getExpireAt, getJwt, removeExpireAt, removeJwt, storeExpireAt, storeJwt} from '../../services'
 import {DateTime} from 'luxon'
 import {
+    fetchSecurityConfig as doFetchSecurityConfig,
     fetchMe as doFetchMe,
     JwtTokenResponse,
     login as doLogin,
+    loginOauth2 as doLoginOauth2,
     logout as doLogout,
     updateSessionData as doUpdateSessionData
 } from '../../services/auth'
-import {UserInfo} from '../../types'
+import {SecurityConfig, UserInfo} from '../../types'
 import i18n from '../../i18n'
 
 export interface AuthState {
     loading: boolean
+    securityConfig: SecurityConfig
     jwt: string | null
     expireAt: number | null
     me: UserInfo | null
 }
 
 const initialState: AuthState = {
+    securityConfig: {oauth2Providers: []},
     loading: false,
     jwt: getJwt(),
     expireAt: getExpireAt(),
     me: null
 }
 
+const fetchSecurityConfig = createAsyncThunk(
+    'auth/fetchSecurityConfig',
+    () => doFetchSecurityConfig().then(securityConfig => securityConfig)
+)
+
 const login = createAsyncThunk(
     'auth/login',
     (credentials: {username: string, password: string}) => {
         removeJwt()
         return doLogin(credentials).then(tokenResponse => tokenResponse)
+    }
+)
+
+const loginOauth2 = createAsyncThunk(
+    'auth/loginOauth2',
+    (credentials: {provider: string, code: string}) => {
+        removeJwt()
+        return doLoginOauth2(credentials).then(tokenResponse => tokenResponse)
     }
 )
 
@@ -65,6 +82,20 @@ const authSlice = createSlice({
     reducers: {},
     extraReducers: builder => {
         builder
+            .addCase(fetchSecurityConfig.pending, state => {
+                state.loading = true
+            })
+            .addCase(fetchSecurityConfig.fulfilled, (state, action: PayloadAction<SecurityConfig>) => {
+                state.securityConfig = action.payload
+                state.loading = false
+            })
+            .addCase(fetchSecurityConfig.rejected, (state, action) => {
+                state.loading = false
+                notification.error({
+                    message: i18n.t('Error fetching security config') as string,
+                    description: action.error.message
+                })
+            })
             .addCase(login.pending, state => {
                 state.loading = true
             })
@@ -79,6 +110,26 @@ const authSlice = createSlice({
                 state.loading = false
             })
             .addCase(login.rejected, (state, action) => {
+                state.loading = false
+                notification.error({
+                    message: i18n.t('Login error') as string,
+                    description: action.error.message
+                })
+            })
+            .addCase(loginOauth2.pending, state => {
+                state.loading = true
+            })
+            .addCase(loginOauth2.fulfilled, (state, action: PayloadAction<JwtTokenResponse>) => {
+                const {jwt, expirationIntervalMillis, user} = action.payload
+                const expireAt = DateTime.now().plus({millisecond: expirationIntervalMillis}).toMillis()
+                storeJwt(jwt)
+                storeExpireAt(expireAt)
+                state.jwt = jwt
+                state.expireAt = expireAt
+                state.me = user
+                state.loading = false
+            })
+            .addCase(loginOauth2.rejected, (state, action) => {
                 state.loading = false
                 notification.error({
                     message: i18n.t('Login error') as string,
@@ -143,9 +194,11 @@ const authSlice = createSlice({
     }
 })
 
-export {login, fetchMeIfNeeded, logout, updateSessionData}
+export {fetchSecurityConfig, login, loginOauth2, fetchMeIfNeeded, logout, updateSessionData}
 
 export const selectLoading = (state: RootState) => state.auth.loading
+
+export const selectSecurityConfig = (state: RootState) => state.auth.securityConfig
 
 export const selectJwt = (state: RootState) => state.auth.jwt
 

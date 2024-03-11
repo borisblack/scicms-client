@@ -16,6 +16,10 @@ const routes: RouteObject[] = [{
     path: '/login',
     element: <Login/>,
     errorElement: <ErrorFallback/>
+}, {
+    path: '/auth/oauth2/:provider',
+    element: <Login/>,
+    errorElement: <ErrorFallback/>
 }]
 
 export default routes

@@ -1,7 +1,7 @@
 import axios from 'axios'
-import {apolloClient, throwAxiosResponseError} from '.'
+import {apolloClient, extractAxiosErrorMessage, throwAxiosResponseError} from '.'
 import {gql} from '@apollo/client'
-import {UserInfo} from '../types'
+import {SecurityConfig, UserInfo} from '../types'
 
 export interface JwtTokenResponse {
     jwt: string,
@@ -28,6 +28,16 @@ const UPDATE_SESSION_DATA_MUTATION = gql`
     }
 `
 
+export async function fetchSecurityConfig(): Promise<SecurityConfig> {
+    try {
+        const res = await axios.get('/api/config/security')
+
+        return res.data
+    } catch (e: any) {
+        throw new Error(extractAxiosErrorMessage(e))
+    }
+}
+
 export async function login(credentials: { username: string, password: string }) {
     const { username, password } = credentials
 
@@ -35,6 +45,21 @@ export async function login(credentials: { username: string, password: string })
         const res = await axios.post('/api/auth/local', {
             identifier: encodeURI(username),
             password: encodeURI(password)
+        })
+
+        return res.data
+    } catch (e: any) {
+        throwAxiosResponseError(e)
+    }
+}
+
+export async function loginOauth2(credentials: { provider: string, code: string }) {
+    const { provider, code } = credentials
+
+    try {
+        const res = await axios.post('/api/auth/oauth2', {
+            provider: encodeURI(provider),
+            code: encodeURI(code)
         })
 
         return res.data
