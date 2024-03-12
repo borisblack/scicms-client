@@ -74,14 +74,14 @@ function Login() {
 
             dispatch(loginOauth2({provider, code}))
         }
-    }, [location.pathname])
+    }, [dispatch, location.pathname])
 
     useEffect(() => {
         if (jwt && !isExpired && !me)
             dispatch(fetchMeIfNeeded())
     }, [jwt, isExpired, me, dispatch])
 
-    const handleLogin = useCallback(async (credentials: {username: string, password: string}) => {
+    const handleLogin = useCallback((credentials: {username: string, password: string}) => {
         dispatch(login(credentials))
     }, [dispatch])
 

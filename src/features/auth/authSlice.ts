@@ -63,7 +63,7 @@ const fetchMeIfNeeded = createAsyncThunk(
 
 const shouldFetchMe = (state: {auth: AuthState}) => {
     const {loading, me} = state.auth
-    return !me && !loading
+    return !me /*&& !loading*/
 }
 
 const logout = createAsyncThunk(

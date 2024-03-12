@@ -4,6 +4,7 @@ import {codeMessage} from '../i18n'
 import {ApolloClient, ApolloLink, from, InMemoryCache} from '@apollo/client'
 import {createUploadLink} from 'apollo-upload-client'
 import {GraphQLError} from 'graphql/error'
+import {DateTime} from 'luxon'
 
 export const storeJwt = (jwt: string) => { localStorage.setItem('jwt', jwt) }
 
@@ -16,6 +17,11 @@ export const getExpireAt = (): number | null => {
     return expireAt ? Number(expireAt) : null
 }
 
+export function isExpired(): boolean {
+    const expireAt = getExpireAt()
+    return !!expireAt && expireAt < DateTime.now().toMillis()
+}
+
 export const removeJwt = () => { localStorage.removeItem('jwt') }
 
 export const removeExpireAt = () => { localStorage.removeItem('expireAt') }
@@ -25,7 +31,7 @@ axios.defaults.headers.common['X-Requested-Width'] = 'XMLHttpRequest'
 axios.defaults.baseURL = config.coreUrl
 axios.interceptors.request.use((config: AxiosRequestConfig) => {
     const jwt = getJwt()
-    if (jwt) {
+    if (jwt && !isExpired()) {
         if (!config.headers)
             config.headers = {}
 
