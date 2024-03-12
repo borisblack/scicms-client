@@ -1,4 +1,4 @@
-import {useCallback, useEffect} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import {Navigate, useLocation, useParams, useSearchParams} from 'react-router-dom'
 import {useTranslation} from 'react-i18next'
 import type {TabsProps} from 'antd'
@@ -53,7 +53,8 @@ function Login() {
     const targetUrl = searchParams.get('targetUrl') || localStorage.getItem(TARGET_URL_KEY) || '/'
     const location = useLocation()
     const urlParams = useParams()
-
+    const [isOauth2Redirecting, setOauth2Redirecting] = useState(false)
+    
     storeTargetUrl(targetUrl)
 
     useEffect(() => {
@@ -84,12 +85,13 @@ function Login() {
         dispatch(login(credentials))
     }, [dispatch])
 
-    const handleOauth2Login = (credentials: {provider: string}) => {
+    const handleOauth2Redirect = (credentials: {provider: string}) => {
         const {provider: providerId} = credentials
         const provider = securityConfig.oauth2Providers.find(p => p.id === providerId)
         if (provider == null)
             throw new Error('Provider not found.')
 
+        setOauth2Redirecting(true)
         const authUrl = new URL(provider.authUrl)
         authUrl.searchParams.append('client_id', provider.clientId)
         authUrl.searchParams.append('response_type', 'code')
@@ -113,7 +115,7 @@ function Login() {
             children: (
                 <Oauth2LoginForm
                     oauth2Providers={securityConfig.oauth2Providers}
-                    onLogin={handleOauth2Login}
+                    onLogin={handleOauth2Redirect}
                 />
             )
         }
@@ -130,7 +132,7 @@ function Login() {
                 <div className="Login-header-desc">{t('Welcome')}</div>
             </Header>
             <Content>
-                <Spin spinning={loading}>
+                <Spin spinning={loading || isOauth2Redirecting}>
                     <Row justify="center" align="middle">
                         <Col span={6}>
                             <Tabs
