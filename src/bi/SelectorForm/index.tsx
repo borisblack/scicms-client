@@ -11,6 +11,7 @@ import {requiredFieldRule} from 'src/util/form'
 import {datasetFieldTypeOptions, queryOpList, queryOpTitles} from '../util'
 import FieldTypeIcon from 'src/components/app/FieldTypeIcon'
 import styles from './SelectorForm.module.css'
+import SelectorLinkTypeLabel from './SelectorLinkTypeLabel'
 
 interface SelectorFormProps {
     selector: ISelector
@@ -207,7 +208,7 @@ export default function SelectorForm({selector, datasetMap, dashes, canEdit}: Se
                                                     placeholder={t('Type')}
                                                     options={Object.keys(SelectorLinkType).map(linkType => ({
                                                         value: linkType,
-                                                        label: linkType
+                                                        label: <SelectorLinkTypeLabel linkType={linkType as SelectorLinkType}/>
                                                     }))}
                                                 />
                                             </FormItem>

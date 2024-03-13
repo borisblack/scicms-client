@@ -35,7 +35,7 @@ export default function SelectorModal({selector, datasetMap, dashes, canEdit, op
             title={t('Selector')}
             open={open}
             destroyOnClose
-            // width="70%"
+            width={400}
             // onOk={() => form.submit()}
             extra={
                 <Space>

@@ -2,7 +2,7 @@ import _ from 'lodash'
 import {v4 as uuidv4} from 'uuid'
 import dayjs, {Dayjs} from 'dayjs'
 import {DateTime} from 'luxon'
-import {notification} from 'antd'
+import {notification, Space} from 'antd'
 
 import {evaluate, getInfo} from 'src/extensions/functions'
 import {FieldType, PrimitiveFilterInput} from 'src/types'
@@ -31,6 +31,7 @@ import i18n from 'src/i18n'
 import appConfig from 'src/config'
 import biConfig from 'src/config/bi'
 import {assign, extract, extractSessionData} from 'src/util'
+import FieldTypeIcon from 'src/components/app/FieldTypeIcon'
 
 const {dash: dashConfig, dateTime: dateTimeConfig} = biConfig
 const dateTimeRegExp = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.000)?(Z|([-+]00:00))?$/
@@ -110,7 +111,10 @@ export const datasetFieldTypes = [
 ]
 
 export const datasetFieldTypeOptions =
-    datasetFieldTypes.map(dft => ({label: dft, value: dft}))
+    datasetFieldTypes.map(dft => ({
+        label: <Space><FieldTypeIcon fieldType={dft}/>{dft}</Space>,
+        value: dft
+    }))
 
 export const queryOpTitles: {[key: string]: string} = {
     [QueryOp.$eq]: i18n.t('equals'),
