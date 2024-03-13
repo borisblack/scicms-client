@@ -114,10 +114,6 @@ export interface IDash {
     type: string
     unit?: string
     fields: Record<string, Column>
-    isAggregate: boolean
-    aggregateType?: AggregateType
-    aggregateField?: string
-    groupField?: string | string[]
     sortField?: string | string[]
     optValues: {[key: string]: any}
     defaultFilters: QueryBlock

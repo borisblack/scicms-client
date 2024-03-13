@@ -106,10 +106,6 @@ function DashWrapper(props: DashWrapperProps) {
         fetchDatasetData()
     }, [
         dataset,
-        dash.isAggregate,
-        dash.aggregateType,
-        dash.aggregateField,
-        dash.groupField,
         dash.sortField,
         filters,
         selectedFilters
@@ -125,9 +121,6 @@ function DashWrapper(props: DashWrapperProps) {
             console.debug(`No dataset [${dash.dataset}]`)
             return
         }
-
-        if (dash.isAggregate && !dash.aggregateType)
-            throw new Error('aggregateType must be specified')
 
         const datasetInput: DatasetService.DatasetInput<any> = {
             filters: toDatasetFiltersInput(dataset, filters)
@@ -158,35 +151,25 @@ function DashWrapper(props: DashWrapperProps) {
             datasetFiltersInput.$and = $and
         }
 
-        if (dash.isAggregate) {
-            datasetInput.aggregate = dash.aggregateType
-            datasetInput.aggregateField = dash.aggregateField
+        const datasetFields = dataset.spec.columns ?? {}
+        const allFields = {...datasetFields, ...dash.fields}
+        const sortFieldNames: string[] = (dash.sortField ? (Array.isArray(dash.sortField) ? dash.sortField : [dash.sortField]) : [])
+            .map(sf => sf.includes(':') ? sf.substring(0, sf.indexOf(':')) : sf)
+        const fieldNamesToFetch: Set<string> = new Set(sortFieldNames)
+        for (const axis of dashHandler.axes) {
+            const axisValue: string | string[] | undefined = dash.optValues[axis.name]
+            if (!axisValue)
+                continue
 
-            if (dash.groupField)
-                datasetInput.groupFields = Array.isArray(dash.groupField) ? dash.groupField : [dash.groupField]
-        } else {
-            const datasetFields = dataset.spec.columns ?? {}
-            const allFields = {...datasetFields, ...dash.fields}
-            const sortFieldNames: string[] = (dash.sortField ? (Array.isArray(dash.sortField) ? dash.sortField : [dash.sortField]) : [])
-                .map(sf => sf.includes(':') ? sf.substring(0, sf.indexOf(':')) : sf)
-            const fieldNamesToFetch: Set<string> = new Set(sortFieldNames)
-            for (const axis of dashHandler.axes) {
-                const axisValue: string | string[] | undefined = dash.optValues[axis.name]
-                if (!axisValue)
-                    continue
+            if (Array.isArray(axisValue))
+                axisValue.forEach(v => fieldNamesToFetch.add(v))
+            else
+                fieldNamesToFetch.add(axisValue)
 
-                if (Array.isArray(axisValue))
-                    axisValue.forEach(v => fieldNamesToFetch.add(v))
-                else
-                    fieldNamesToFetch.add(axisValue)
+            const fieldsToFetch: Record<string, Column>
+                = _.pickBy(allFields, (field, fieldName) => fieldNamesToFetch.has(fieldName))
 
-                const fieldsToFetch: Record<string, Column>
-                    = _.pickBy(allFields, (field, fieldName) => fieldNamesToFetch.has(fieldName))
-
-                datasetInput.fields = buildFieldsInput(fieldsToFetch)
-            }
-
-
+            datasetInput.fields = buildFieldsInput(fieldsToFetch)
         }
 
         if (dash.sortField)

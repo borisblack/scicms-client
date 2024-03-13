@@ -31,11 +31,15 @@ axios.defaults.headers.common['X-Requested-Width'] = 'XMLHttpRequest'
 axios.defaults.baseURL = config.coreUrl
 axios.interceptors.request.use((config: AxiosRequestConfig) => {
     const jwt = getJwt()
-    if (jwt && !isExpired()) {
-        if (!config.headers)
-            config.headers = {}
+    if (jwt) {
+        if (isExpired()) {
+            console.log('JWT is expired and cannot be used for authorization.')
+        } else {
+            if (!config.headers)
+                config.headers = {}
 
-        config.headers['Authorization'] = `Bearer ${jwt}`
+            config.headers['Authorization'] = `Bearer ${jwt}`
+        }
     }
     return config
 })

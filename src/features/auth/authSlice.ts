@@ -1,9 +1,17 @@
 import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit'
 import {notification} from 'antd'
-
-import {RootState} from '../../store'
-import {getExpireAt, getJwt, removeExpireAt, removeJwt, storeExpireAt, storeJwt} from '../../services'
 import {DateTime} from 'luxon'
+
+import {RootState} from 'src/store'
+import {
+    getExpireAt,
+    getJwt,
+    isExpired as getIsExpired,
+    removeExpireAt,
+    removeJwt,
+    storeExpireAt,
+    storeJwt
+} from 'src/services'
 import {
     fetchSecurityConfig as doFetchSecurityConfig,
     fetchMe as doFetchMe,
@@ -12,15 +20,16 @@ import {
     loginOauth2 as doLoginOauth2,
     logout as doLogout,
     updateSessionData as doUpdateSessionData
-} from '../../services/auth'
-import {SecurityConfig, UserInfo} from '../../types'
-import i18n from '../../i18n'
+} from 'src/services/auth'
+import {SecurityConfig, UserInfo} from 'src/types'
+import i18n from 'src/i18n'
 
 export interface AuthState {
     loading: boolean
     securityConfig: SecurityConfig
     jwt: string | null
     expireAt: number | null
+    isExpired: boolean
     me: UserInfo | null
 }
 
@@ -29,6 +38,7 @@ const initialState: AuthState = {
     loading: false,
     jwt: getJwt(),
     expireAt: getExpireAt(),
+    isExpired: getIsExpired(),
     me: null
 }
 
@@ -106,6 +116,7 @@ const authSlice = createSlice({
                 storeExpireAt(expireAt)
                 state.jwt = jwt
                 state.expireAt = expireAt
+                state.isExpired = expireAt < DateTime.now().toMillis()
                 state.me = user
                 state.loading = false
             })
@@ -126,6 +137,7 @@ const authSlice = createSlice({
                 storeExpireAt(expireAt)
                 state.jwt = jwt
                 state.expireAt = expireAt
+                state.isExpired = expireAt < DateTime.now().toMillis()
                 state.me = user
                 state.loading = false
             })
@@ -159,6 +171,7 @@ const authSlice = createSlice({
                 removeExpireAt()
                 state.jwt = null
                 state.expireAt = null
+                state.isExpired = true
                 state.me = null
                 state.loading = false
             })
@@ -167,6 +180,7 @@ const authSlice = createSlice({
                 removeExpireAt()
                 state.jwt = null
                 state.expireAt = null
+                state.isExpired = true
                 state.me = null
                 state.loading = false
                 notification.error({
@@ -202,7 +216,7 @@ export const selectSecurityConfig = (state: RootState) => state.auth.securityCon
 
 export const selectJwt = (state: RootState) => state.auth.jwt
 
-export const selectIsExpired = (state: RootState) => !!state.auth.expireAt && state.auth.expireAt < DateTime.now().toMillis()
+export const selectIsExpired = (state: RootState) => state.auth.isExpired
 
 export const selectMe = (state: RootState) => state.auth.me
 

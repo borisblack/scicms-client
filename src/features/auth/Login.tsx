@@ -54,6 +54,7 @@ function Login() {
     const location = useLocation()
     const urlParams = useParams()
     const [isOauth2Redirecting, setOauth2Redirecting] = useState(false)
+    const [isOauth2LoggingIn, setOauth2LoggingIn] = useState(false)
     
     storeTargetUrl(targetUrl)
 
@@ -63,29 +64,20 @@ function Login() {
 
     useEffect(() => {
         if (location.pathname.startsWith('/auth/oauth2/')) {
-            const oauth2VerificationCode = searchParams.get('state')
-            if (oauth2VerificationCode !== localStorage.getItem(OAUTH2_VERIFICATION_CODE_KEY))
-                throw new Error('Invalid OAuth2 verification code.')
-
-            const provider = urlParams['provider']
-            const code = searchParams.get('code')
-            if (!provider || !code)
-                throw new Error('Invalid OAuth2 credentials.')
-
-            dispatch(loginOauth2({provider, code}))
+            handleOauth2Login()
         }
-    }, [dispatch, location.pathname])
+    }, [location.pathname])
 
     useEffect(() => {
         if (jwt && !isExpired && !me)
             dispatch(fetchMeIfNeeded())
-    }, [jwt, isExpired, me, dispatch])
+    }, [jwt, isExpired, me])
 
-    const handleLogin = useCallback((credentials: {username: string, password: string}) => {
+    function handleLogin(credentials: {username: string, password: string}) {
         dispatch(login(credentials))
-    }, [dispatch])
+    }
 
-    const handleOauth2Redirect = (credentials: {provider: string}) => {
+    function handleOauth2Redirect(credentials: {provider: string}) {
         const {provider: providerId} = credentials
         const provider = securityConfig.oauth2Providers.find(p => p.id === providerId)
         if (provider == null)
@@ -99,7 +91,24 @@ function Login() {
         window.location.href = authUrl.toString()
     }
 
-    const handleTabsChange = (key: string) => {
+    function handleOauth2Login() {
+        const oauth2VerificationCode = searchParams.get('state')
+        if (oauth2VerificationCode !== localStorage.getItem(OAUTH2_VERIFICATION_CODE_KEY))
+            throw new Error('Invalid OAuth2 verification code.')
+
+        const provider = urlParams['provider']
+        const code = searchParams.get('code')
+        if (!provider || !code)
+            throw new Error('Invalid OAuth2 credentials.')
+
+        setOauth2LoggingIn(true)
+        dispatch(loginOauth2({provider, code}))
+            .finally(() => {
+                setOauth2LoggingIn(false)
+            })
+    }
+
+    function handleTabsChange(key: string) {
         localStorage.setItem(AUTH_TYPE_KEY, key)
     }
 
@@ -132,7 +141,7 @@ function Login() {
                 <div className="Login-header-desc">{t('Welcome')}</div>
             </Header>
             <Content>
-                <Spin spinning={loading || isOauth2Redirecting}>
+                <Spin spinning={loading || isOauth2Redirecting || isOauth2LoggingIn}>
                     <Row justify="center" align="middle">
                         <Col span={6}>
                             <Tabs

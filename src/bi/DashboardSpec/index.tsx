@@ -110,7 +110,6 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
             fields: {},
             optValues: {},
             defaultFilters: generateQueryBlock(),
-            isAggregate: false,
             refreshIntervalSeconds: biConfig.defaultRefreshIntervalSeconds
         }
 
