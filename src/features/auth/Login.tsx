@@ -115,12 +115,12 @@ function Login() {
     const tabs: TabsProps['items'] = [
         {
             key: LOCAL_AUTH_TYPE,
-            label: 'Local',
+            label: t('System'),
             children: <LoginForm onLogin={handleLogin}/>,
         },
         {
             key: OAUTH2_AUTH_TYPE,
-            label: 'OAuth2',
+            label: t('OAuth2'),
             children: (
                 <Oauth2LoginForm
                     oauth2Providers={securityConfig.oauth2Providers}
