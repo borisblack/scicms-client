@@ -89,30 +89,23 @@ export default function DashForm({dash, dashboards, canEdit, datasetMap, onDatas
         onDatasetChange(newDataset)
     }, [dash.dataset, datasetMap])
 
-    const resetAggregateFormFields = useCallback(() => {
-        form.setFieldValue('aggregateType', undefined)
-        form.setFieldValue('aggregateField', undefined)
-        form.setFieldValue('groupField', undefined)
-    }, [form])
-
     const resetSortAndOptValuesFormFields = useCallback(() => {
         form.setFieldValue('sortField', undefined)
         form.setFieldValue('optValues', {})
     }, [form])
 
     const handleDatasetChange = useCallback((datasetName: string) => {
-        resetAggregateFormFields()
         resetSortAndOptValuesFormFields()
         form.setFieldValue('defaultFilters', generateQueryBlock())
         const newDataset = datasetMap[datasetName]
         setDataset(newDataset)
         onDatasetChange(newDataset)
-    }, [datasetMap, form, onDatasetChange, resetAggregateFormFields, resetSortAndOptValuesFormFields])
+    }, [datasetMap, form, onDatasetChange, resetSortAndOptValuesFormFields])
 
     const handleDashTypeChange = useCallback((newDashType: string) => {
-        // form.setFieldValue('optValues', {})
+        form.setFieldValue('optValues', {})
         setDashType(newDashType)
-    }, [])
+    }, [form])
 
     const renderDashOptions = () => (
         dataset && dashHandler && dashHandler.renderOptionsForm({

@@ -31,12 +31,12 @@ const ReactGridLayout = WidthProvider(RGL)
 
 const DEFAULT_LAYOUT_ITEM_HEIGHT = 1
 
-const initialSpec: IDashboardSpec = {
+const initialSpec: () => IDashboardSpec = () => ({
     layout: [],
     dashes: [],
     selectors: [],
     texts: []
-}
+})
 let seqNum = 0
 
 const createLayoutItem = (type: DashboardItemType): DashboardLayoutItem => ({
@@ -71,7 +71,7 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
     const acl = useAcl(item, data)
     const {datasets, dashboards} = useBI({withDatasets: true, withDashboards: true})
     const datasetMap = useMemo(() => _.mapKeys(datasets, ds => ds.name), [datasets])
-    const spec: IDashboardSpec = useMemo(() => buffer.spec ?? data?.spec ?? initialSpec, [buffer.spec, data?.spec])
+    const spec: IDashboardSpec = useMemo(() => buffer.spec ?? data?.spec ?? initialSpec(), [buffer.spec, data?.spec])
     const dashboardLayout: DashboardLayoutItem[] = useMemo(() => spec.layout ?? spec.dashes.map(dash => ({
         id: dash.id,
         type: DashboardItemType.DASH,
@@ -94,7 +94,7 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
 
     useEffect(() => {
         onBufferChange({
-            spec: data?.spec ?? {}
+            spec: data?.spec ?? initialSpec()
         })
     }, [data])
 
