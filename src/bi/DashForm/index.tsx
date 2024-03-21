@@ -103,7 +103,7 @@ export default function DashForm({dash, dashboards, canEdit, datasetMap, onDatas
     }, [datasetMap, form, onDatasetChange, resetSortAndOptValuesFormFields])
 
     const handleDashTypeChange = useCallback((newDashType: string) => {
-        form.setFieldValue('optValues', {})
+        // form.setFieldValue('optValues', {})
         setDashType(newDashType)
     }, [form])
 
@@ -195,10 +195,11 @@ export default function DashForm({dash, dashboards, canEdit, datasetMap, onDatas
                             />
                         </FormItem>
 
-                        {dataset && (
+                        {dataset && dashHandler && (
                             <DashAxes
                                 dataset={dataset}
                                 dash={dash}
+                                dashHandler={dashHandler}
                                 formFieldName="optValues"
                                 canEdit={canEdit}
                             />

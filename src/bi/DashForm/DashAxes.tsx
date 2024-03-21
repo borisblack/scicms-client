@@ -12,15 +12,12 @@ import styles from './DashAxes.module.css'
 interface DashAxesProps {
     dataset: Dataset
     dash: IDash
+    dashHandler: Dash
     formFieldName: string
     canEdit: boolean
 }
 
-export default function DashAxes({dataset, dash, formFieldName, canEdit}: DashAxesProps) {
-    const dashHandler: Dash | undefined = useMemo(() => getDash(dash.type), [dash.type])
-    if (dashHandler == null)
-        throw new Error('Illegal argument')
-
+export default function DashAxes({dataset, dash, dashHandler, formFieldName, canEdit}: DashAxesProps) {
     const {t} = useTranslation()
     const values = (dash as Record<string, any>)[formFieldName] ?? {}
 
