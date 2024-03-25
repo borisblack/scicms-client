@@ -26,7 +26,13 @@ export interface UserInfo {
     id: string
     username: string,
     roles: string[],
+    authType: AuthType,
     sessionData: {[key: string]: any} | null
+}
+
+export enum AuthType {
+    LOCAL = 'LOCAL',
+    OAUTH2 = 'OAUTH2'
 }
 
 export interface MediaInfo {

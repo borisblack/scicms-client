@@ -44,13 +44,19 @@ axios.interceptors.request.use((config: AxiosRequestConfig) => {
     return config
 })
 
-export function extractAxiosErrorMessage(e: AxiosError): string {
+export function extractAxiosErrorMessage(e: AxiosError, showServerErrorMessage: boolean = true): string {
+    console.log(e)
     const res = e.response
     if (res) {
-        if (res.status === 401 && getJwt())
+        if (res.status === 401 && getJwt()) {
             return 'User session expired'
-        else
-            return codeMessage[res.status] || e.message
+        } else {
+            if (showServerErrorMessage) {
+                return (res.data as any)?.message|| codeMessage[res.status] || e.message 
+            }
+        
+            return codeMessage[res.status] || (res.data as any)?.message || e.message
+        }
     } else
         return e.message
 }

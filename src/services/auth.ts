@@ -4,9 +4,14 @@ import {apolloClient, extractAxiosErrorMessage, throwAxiosResponseError} from '.
 import {SecurityConfig, UserInfo} from '../types'
 
 export interface JwtTokenResponse {
-    jwt: string,
-    user: UserInfo,
+    jwt: string
+    user: UserInfo
     expirationIntervalMillis: number
+}
+
+interface ChangePasswordRequest {
+    oldPassword: string
+    newPassword: string
 }
 
 const ME_QUERY = gql`
@@ -15,6 +20,7 @@ const ME_QUERY = gql`
             id
             username
             roles
+            authType
             sessionData
         }
     }
@@ -73,6 +79,14 @@ export async function logout() {
         const res = await axios.post('/logout')
 
         return res.data
+    } catch (e: any) {
+        throwAxiosResponseError(e)
+    }
+}
+
+export async function changePassword(request: ChangePasswordRequest) {
+    try {
+        await axios.post('/api/auth/local/password', request)
     } catch (e: any) {
         throwAxiosResponseError(e)
     }

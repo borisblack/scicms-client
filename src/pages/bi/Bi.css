@@ -2,26 +2,6 @@
   min-height: 100vh;
 }
 
-.Bi-logo-wrapper {
-  height: 32px;
-  margin: 16px;
-  cursor: pointer;
-}
-
-.Bi-logo {
-  height: 32px;
-  pointer-events: none;
-  margin: 0 8px;
-}
-
-.Bi-logo-text {
-  position: relative;
-  top: 1px;
-  color: #fff;
-  font-weight: 600;
-  font-size: 16px;
-}
-
 .Bi-content-wrapper {
   margin: 12px;
 }

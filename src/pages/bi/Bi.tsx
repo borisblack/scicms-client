@@ -1,8 +1,8 @@
 import _ from 'lodash'
-import React, {ReactNode, useCallback, useEffect, useState} from 'react'
+import {ReactNode, useEffect, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Navigate} from 'react-router-dom'
-import {Layout, Menu, Spin} from 'antd'
+import {Layout} from 'antd'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
 import {FolderOutlined, FundOutlined, LogoutOutlined, UserOutlined} from '@ant-design/icons'
 import {useAuth, useRegistry} from 'src/util/hooks'
@@ -18,20 +18,16 @@ import {createMDITab, generateLabel} from 'src/util/mdi'
 import DashboardSpec from 'src/bi/DashboardSpec'
 import {useNewMDIContextRedux} from 'src/features/mdi/hooks'
 import IconSuspense from 'src/components/icons/IconSuspense'
-import logo from 'src/logo.svg'
 import './Bi.css'
+import Navbar from 'src/features/registry/Navbar'
 
-const {Content, Sider} = Layout
-
-const isNavbarCollapsed = () => localStorage.getItem('biNavbarCollapsed') === '1'
-const setNavbarCollapsed = (collapsed: boolean) => localStorage.setItem('biNavbarCollapsed', collapsed ? '1' : '0')
+const {Content} = Layout
 
 function Bi() {
     const {t} = useTranslation()
-    const {me, isExpired, logout} = useAuth()
+    const {me, isExpired} = useAuth()
     const {isInitialized, items: itemMap, initializeIfNeeded, reset: resetRegistry} = useRegistry()
     const mdiContext = useNewMDIContextRedux<ItemDataWrapper>(EMPTY_ARRAY)
-    const [collapsed, setCollapsed] = useState(isNavbarCollapsed())
     const [dashboardMap, setDashboardMap] = useState<Record<string, Dashboard>>({})
     const [dashboardCategoryMap, setDashboardCategoryMap] = useState<Record<string, DashboardCategory>>({})
     const [loading, setLoading] = useState<boolean>(false)
@@ -89,17 +85,6 @@ function Bi() {
             )
         )
     }
-
-    const handleToggle = useCallback(() => {
-        setNavbarCollapsed(!collapsed)
-        setCollapsed(!collapsed)
-    }, [collapsed])
-
-    const handleLogout = useCallback(async () => {
-        mdiContext.reset()
-        await logout()
-        resetRegistry()
-    }, [logout, mdiContext, resetRegistry])
 
     function getDashboardMenuItems(): ItemType[] {
         const rootCategories =
@@ -160,41 +145,18 @@ function Bi() {
 
     return (
         <Layout className="Bi">
-            <Sider
-                collapsible
-                collapsed={collapsed}
-                trigger={null}
-                width={275}
-                onCollapse={handleToggle}
-            >
-                <div className="Bi-logo-wrapper" onClick={handleToggle}>
-                    <img src={logo} className="Bi-logo" alt="logo"/>
-                    {!collapsed && <span className="Bi-logo-text">{t('SciCMS BI')}</span>}
-                </div>
-                <Spin spinning={loading}>
-                    <Menu
-                        mode="inline"
-                        theme="dark"
-                        defaultOpenKeys={['dashboards']}
-                        items={[{
-                            key: 'profile',
-                            label: `${t('Profile')} (${me.username})`,
-                            icon: <UserOutlined />,
-                            children: [{
-                                key: 'logout',
-                                label: t('Logout'),
-                                icon: <LogoutOutlined/>,
-                                onClick: handleLogout
-                            }]
-                        }, {
-                            key: 'dashboards',
-                            label: t('Dashboards'),
-                            icon: <FundOutlined />,
-                            children: getDashboardMenuItems()
-                        }]}
-                    />
-                </Spin>
-            </Sider>
+            <Navbar
+                ctx={mdiContext}
+                menuItems={[{
+                    key: 'dashboards',
+                    label: t('Dashboards'),
+                    icon: <FundOutlined />,
+                    children: getDashboardMenuItems()
+                }]}
+                isLoading={loading}
+                appPrefix="bi"
+                width={300}
+            />
             <Layout>
                 <Content className="Bi-content-wrapper">
                     <div className="Bi-content">
