@@ -5,7 +5,7 @@ import {Scatter, ScatterConfig} from '@ant-design/charts'
 import {v4 as uuidv4} from 'uuid'
 
 import {DashEventHandler, DashRenderContext} from '..'
-import {defaultDashColor, defaultDashColors, formatValue, isTemporal} from 'src/bi/util'
+import {defaultDashColor, defaultDashColors, columnType, formatValue, isTemporal} from 'src/bi/util'
 import {LegendPosition} from '../util'
 import biConfig from 'src/config/bi'
 import * as RulesService from 'src/services/rules'
@@ -114,11 +114,11 @@ export default function ScatterDash({dataset, dash, data, onDashClick}: DashRend
         meta: {
             [xField]: {
                 alias: xColumn.alias || xField,
-                formatter: (value: any) => formatValue(value, xColumn.type)
+                formatter: (value: any) => formatValue(value, columnType(xColumn))
             },
             [yField]: {
                 alias: yColumn.alias || yField,
-                formatter: (value: any) => formatValue(value, yColumn.type)
+                formatter: (value: any) => formatValue(value, columnType(yColumn))
             }
         },
         color: colorField ? seriesColors : (record => (RulesService.getFieldColor(fieldRules, record) ?? (defaultColor as string))),

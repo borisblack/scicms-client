@@ -5,7 +5,7 @@ import {Column, ColumnConfig} from '@ant-design/charts'
 import {v4 as uuidv4} from 'uuid'
 
 import {DashEventHandler, DashRenderContext} from 'src/extensions/dashes'
-import {defaultDashColor, defaultDashColors, formatValue} from 'src/bi/util'
+import {defaultDashColor, defaultDashColors, columnType, formatValue} from 'src/bi/util'
 import {LegendPosition} from '../util'
 import biConfig from 'src/config/bi'
 import * as RulesService from 'src/services/rules'
@@ -59,7 +59,7 @@ export default function ColumnDash({dataset, dash, data, onDashClick}: DashRende
     const yColumn = columns[yField]
     if (xColumn == null || yColumn == null)
         return <Alert message="Invalid columns specification" type="error"/>
-
+    
     const handleEvent: DashEventHandler =
         (chart, event) => handleDashClick(chart, event, xField, queryFilter => {
             if (relatedDashboardId)
@@ -101,11 +101,11 @@ export default function ColumnDash({dataset, dash, data, onDashClick}: DashRende
         meta: {
             [xField]: {
                 alias: xColumn.alias,
-                formatter: (value: any) => formatValue(value, xColumn.type)
+                formatter: (value: any) => formatValue(value, columnType(xColumn))
             },
             [yField]: {
                 alias: yColumn.alias,
-                formatter: (value: any) => formatValue(value, yColumn.type)
+                formatter: (value: any) => formatValue(value, columnType(yColumn))
             }
         },
         color: seriesField ? seriesColors : (record => (RulesService.getFieldColor(fieldRules, record) ?? (defaultColor as string))),

@@ -5,7 +5,7 @@ import {Pie, PieConfig} from '@ant-design/charts'
 import {v4 as uuidv4} from 'uuid'
 
 import {DashEventHandler, DashRenderContext} from '..'
-import {defaultDashColors, formatValue} from 'src/bi/util'
+import {defaultDashColors, columnType, formatValue} from 'src/bi/util'
 import {LegendPosition} from '../util'
 import biConfig from 'src/config/bi'
 import * as RulesService from 'src/services/rules'
@@ -97,11 +97,11 @@ export default function DoughnutDash({dataset, dash, data, onDashClick}: DashRen
         meta: {
             [angleField]: {
                 alias: angleColumn.alias || angleField,
-                formatter: (value: any) => formatValue(value?.toFixed(angleColumn.format === FieldType.int ? 0 : fractionDigits), angleColumn.type)
+                formatter: (value: any) => formatValue(value?.toFixed(angleColumn.format === FieldType.int ? 0 : fractionDigits), columnType(angleColumn))
             },
             [colorField]: {
                 alias: colorColumn.alias || colorField,
-                formatter: (value: any) => formatValue(value, colorColumn.type)
+                formatter: (value: any) => formatValue(value, columnType(colorColumn))
             }
         },
         color: seriesColors,

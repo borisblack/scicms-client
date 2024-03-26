@@ -4,7 +4,7 @@ import {Alert} from 'antd'
 import {Bar, BarConfig} from '@ant-design/charts'
 import {v4 as uuidv4} from 'uuid'
 
-import {defaultDashColor, defaultDashColors, formatValue, isTemporal} from 'src/bi/util'
+import {defaultDashColor, defaultDashColors, columnType, formatValue, isTemporal} from 'src/bi/util'
 import {DashEventHandler, DashRenderContext} from '../index'
 import {LegendPosition} from '../util'
 import biConfig from 'src/config/bi'
@@ -101,11 +101,11 @@ export default function BarDash({dataset, dash, data, onDashClick}: DashRenderCo
         meta: {
             [xField]: {
                 alias: xColumn.alias || xField,
-                formatter: (value: any) => formatValue(value, xColumn.type)
+                formatter: (value: any) => formatValue(value, columnType(xColumn))
             },
             [yField]: {
                 alias: yColumn.alias || yField,
-                formatter: (value: any) => formatValue(value, yColumn.type)
+                formatter: (value: any) => formatValue(value, columnType(yColumn))
             }
         },
         color: seriesField ? seriesColors : (record => (RulesService.getFieldColor(fieldRules, record) ?? (defaultColor as string))),

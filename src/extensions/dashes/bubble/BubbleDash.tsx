@@ -4,7 +4,7 @@ import {Alert} from 'antd'
 import {Scatter, ScatterConfig} from '@ant-design/charts'
 import {v4 as uuidv4} from 'uuid'
 
-import {defaultDashColor, defaultDashColors, formatValue, isTemporal} from 'src/bi/util'
+import {defaultDashColor, defaultDashColors, columnType, formatValue, isTemporal} from 'src/bi/util'
 import {DashEventHandler, DashRenderContext} from '..'
 import biConfig from 'src/config/bi'
 import {LegendPosition} from '../util'
@@ -117,11 +117,11 @@ export default function BubbleDash({dataset, dash, data, onDashClick}: DashRende
         meta: {
             [xField]: {
                 alias: xColumn.alias || xField,
-                formatter: (value: any) => formatValue(value, xColumn.type)
+                formatter: (value: any) => formatValue(value, columnType(xColumn))
             },
             [yField]: {
                 alias: yColumn.alias || yField,
-                formatter: (value: any) => formatValue(value, yColumn.type)
+                formatter: (value: any) => formatValue(value, columnType(yColumn))
             },
             [sizeField]: {
                 alias: sizeColumn.alias || sizeField,
