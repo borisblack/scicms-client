@@ -5,7 +5,7 @@ import {Pie, PieConfig} from '@ant-design/charts'
 import {v4 as uuidv4} from 'uuid'
 
 import {DashEventHandler, DashRenderContext} from '..'
-import {defaultDashColors, columnType, formatValue} from 'src/bi/util'
+import {defaultDashColors, columnType, formatValue, toPercent} from 'src/bi/util'
 import {LegendPosition} from '../util'
 import biConfig from 'src/config/bi'
 import * as RulesService from 'src/services/rules'
@@ -78,7 +78,7 @@ export default function PieDash({dataset, dash, data, onDashClick}: DashRenderCo
         label: {
             type: 'inner',
             offset: '-30%',
-            content: ({ percent }) => `${(percent * 100).toFixed(percentFractionDigits)}%`,
+            content: ({ percent }) => `${toPercent(percent)}%`,
             style: dashConfig?.pie?.labelStyle
         },
         interactions: [{

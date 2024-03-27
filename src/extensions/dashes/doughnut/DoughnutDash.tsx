@@ -5,7 +5,7 @@ import {Pie, PieConfig} from '@ant-design/charts'
 import {v4 as uuidv4} from 'uuid'
 
 import {DashEventHandler, DashRenderContext} from '..'
-import {defaultDashColors, columnType, formatValue} from 'src/bi/util'
+import {defaultDashColors, columnType, formatValue, toPercent} from 'src/bi/util'
 import {LegendPosition} from '../util'
 import biConfig from 'src/config/bi'
 import * as RulesService from 'src/services/rules'
@@ -84,7 +84,7 @@ export default function DoughnutDash({dataset, dash, data, onDashClick}: DashRen
         label: {
             type: 'inner',
             offset: '-50%',
-            content: ({ percent }) => `${(percent * 100).toFixed(percentFractionDigits)}%`,
+            content: ({ percent }) => `${toPercent(percent)}%`,
             style: dashConfig?.doughnut?.labelStyle
         },
         statistic,
@@ -97,7 +97,7 @@ export default function DoughnutDash({dataset, dash, data, onDashClick}: DashRen
         meta: {
             [angleField]: {
                 alias: angleColumn.alias || angleField,
-                formatter: (value: any) => formatValue(value?.toFixed(angleColumn.format === FieldType.int ? 0 : fractionDigits), columnType(angleColumn))
+                formatter: (value: any) => formatValue(value, columnType(angleColumn))
             },
             [colorField]: {
                 alias: colorColumn.alias || colorField,

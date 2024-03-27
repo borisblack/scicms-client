@@ -33,7 +33,7 @@ import biConfig from 'src/config/bi'
 import {assign, extract, extractSessionData} from 'src/util'
 import FieldTypeIcon from 'src/components/app/FieldTypeIcon'
 
-const {dash: dashConfig, dateTime: dateTimeConfig} = biConfig
+const {dash: dashConfig, dateTime: dateTimeConfig, fractionDigits, percentFractionDigits} = biConfig
 const dateTimeRegExp = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.000)?(Z|([-+]00:00))?$/
 const dateRegExp = /^\d{4}-\d{2}-\d{2}$/
 const timeRegExp = /^\d{2}:\d{2}:\d{2}(\.000)?(Z|([-+]00:00))?$/
@@ -283,14 +283,23 @@ export const formatValue = (value: any, type: FieldType) => {
             return dt.format((dt.hour() === 0 && dt.minute() === 0) ? dateTimeConfig.dateFormatString : dateTimeConfig.dateTimeFormatString)
         case FieldType.int:
         case FieldType.long:
+        case FieldType.sequence:
+            return separateDigitGroups(parseInt(value))
         case FieldType.float:
         case FieldType.double:
         case FieldType.decimal:
-        case FieldType.sequence:
-            return `${value}`.replace(/\d{1,3}(?=(\d{3})+(?:\.\d+)?$)/g, s => `${s} `)
+            return separateDigitGroups(_.isInteger(value) ? value : parseFloat(value).toFixed(fractionDigits))
         default:
             return value
     }
+}
+
+const separateDigitGroups = (value: number | string) =>
+    `${value}`.replace(/\d{1,3}(?=(\d{3})+(?:\.\d+)?$)/g, s => `${s} `)
+
+export function toPercent(value: number): string {
+    const percent = value * 100
+    return _.isInteger(percent) ? percent.toString() : percent.toFixed(percentFractionDigits)
 }
 
 export function defaultDashColor(): string | undefined {
