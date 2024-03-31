@@ -100,8 +100,8 @@ export default function ViewNavTabHeader({
                 ctx.updateActiveTab({...dataWrapper, data: locked.data})
             else
                 notification.warning({
-                    message: 'Locking warning',
-                    description: t('New item cannot be locked')
+                    message: 'Locking error',
+                    description: t('Item cannot be locked')
                 })
 
             setLockedByMe(locked.success)
@@ -136,8 +136,8 @@ export default function ViewNavTabHeader({
                 ctx.updateActiveTab({...dataWrapper, data: unlocked.data})
             } else {
                 notification.warning({
-                    message: 'Cancellation warning',
-                    description: t('New item cannot be unlocked')
+                    message: 'Cancellation error',
+                    description: t('Item cannot be unlocked')
                 })
             }
             setLockedByMe(!unlocked)
