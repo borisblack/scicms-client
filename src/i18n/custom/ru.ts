@@ -1,4 +1,5 @@
 const customRu = {
+    'Agreed with Customer': 'Согласовано с заказчиком',
     'Assignment': 'Назначение',
     'Assignments': 'Назначения',
     'Cause': 'Причина',
