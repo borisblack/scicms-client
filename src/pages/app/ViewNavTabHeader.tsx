@@ -71,6 +71,7 @@ export default function ViewNavTabHeader({
     const ctx = useMDIContext<ItemDataWrapper>()
     const {open: openItem} = useItemOperations()
     const isNew = !data?.id
+    const isLocked = data?.lockedBy?.data?.id != null
     const Icon = item.icon ? (icons as any)[item.icon] : null
     const {t} = useTranslation()
     const [isVersionsModalVisible, setVersionsModalVisible] = useState(false)
@@ -314,7 +315,7 @@ export default function ViewNavTabHeader({
                 if (isLockedByMe /*&& viewState !== ViewState.VIEW*/) {
                     extra.push(<Button key="save" type="primary" onClick={handleSave}><SaveOutlined/> {t('Save')}</Button>)
                     extra.push(<Button key="cancel" icon={<LockOutlined/>} onClick={handleCancel}>{t('Cancel')}</Button>)
-                } else {
+                } else if (!isLocked) {
                     extra.push(<Button key="lock" type="primary" icon={<UnlockOutlined/>} onClick={handleLock}>{t('Edit')}</Button>)
                 }
             }
@@ -331,7 +332,7 @@ export default function ViewNavTabHeader({
                 )
             }
 
-            if (canDelete) {
+            if (canDelete && (isLockedByMe || !isLocked)) {
                 if (item.versioned) {
                     extra.push(
                         <Dropdown key="purge" placement="bottomRight" menu={{items: getPurgeMenu()}}>

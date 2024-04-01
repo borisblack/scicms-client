@@ -33,6 +33,7 @@ import {useAuth, useFormAcl, useMutationManager, useQueryManager, useRegistry} f
 import {useMDIContext} from 'src/components/MDITabs/hooks'
 import {generateKey} from 'src/util/mdi'
 import IconSuspense from 'src/components/icons/IconSuspense'
+import {sortAttributes} from 'src/util/schema'
 
 interface Props {
     data: ItemDataWrapper
@@ -388,7 +389,7 @@ function ViewNavTab({data: dataWrapper}: Props) {
             const itemTemplate = itemTemplates[itemTemplateName]
             templateAttributes = {...templateAttributes, ...itemTemplate.spec.attributes}
         }
-        return templateAttributes
+        return sortAttributes(templateAttributes)
     }, [item.includeTemplates, itemTemplates])
 
     const ownAttributes = useMemo(() => {
@@ -398,7 +399,7 @@ function ViewNavTab({data: dataWrapper}: Props) {
             if (!(attrName in templateAttributes))
                 ownAttributes[attrName] = allAttributes[attrName]
         }
-        return ownAttributes
+        return sortAttributes(ownAttributes)
     }, [item.spec.attributes, templateAttributes])
 
     const handleHtmlExport = useCallback(() => {

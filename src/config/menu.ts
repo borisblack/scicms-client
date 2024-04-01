@@ -79,20 +79,22 @@ const menuConfig: MenuConfig = {
         children: [{
             itemName: 'product'
         }, {
-            itemName: 'part'
-        }, {
             itemName: 'partLabelGroup'
         }, {
+            itemName: 'part'
+        }, {
             itemName: 'labelClaim'
-        }/*, {
+        }, /*{
             itemName: 'startSheet'
         }, {
             itemName: 'changeNotice'
-        }*/, {
-            itemName: 'partType'
         }, {
+            itemName: 'partType'
+        },*/ {
+            itemName: 'theme'
+        }, /*{
             itemName: 'department'
-        }]
+        }*/]
     }, {
         key: 'projectManagement',
         label: 'Project Management',

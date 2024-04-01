@@ -186,6 +186,7 @@ export interface ItemSpec {
 
 export interface Attribute {
     type: FieldType
+    sortOrder?: number
     columnName?: string
     displayName: string
     description?: string
@@ -215,6 +216,10 @@ export interface Attribute {
     colWidth?: number
     fieldHidden?: boolean
     fieldWidth?: number
+}
+
+export interface NamedAttribute extends Attribute {
+    name: string
 }
 
 export enum RelType {
