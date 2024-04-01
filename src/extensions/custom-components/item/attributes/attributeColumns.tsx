@@ -34,6 +34,12 @@ export const getAttributeColumns = (core: boolean): ColumnDef<NamedAttribute, an
             size: appConfig.ui.dataGrid.colWidth,
             enableSorting: true
         }) as ColumnDef<NamedAttribute, FieldType>,
+        columnHelper.accessor('sortOrder', {
+          header: i18n.t('Sort Order'),
+          cell: info => info.getValue(),
+          size: 180,
+          enableSorting: true
+      }) as ColumnDef<NamedAttribute, number>,
         columnHelper.accessor('columnName', {
             header: i18n.t('Column Name'),
             cell: info => info.getValue(),

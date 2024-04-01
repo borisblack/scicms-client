@@ -99,7 +99,7 @@ const renderCell = (
         case FieldType.array:
             return value ? JSON.stringify(value) : null
         case FieldType.bool:
-            return <Checkbox checked={value}/>
+            return <div className="text-centered"><Checkbox checked={value}/></div>
         case FieldType.date:
             return value ? DateTime.fromISO(value, {zone: UTC}).toFormat(luxonDisplayDateFormatString) : null
         case FieldType.time:

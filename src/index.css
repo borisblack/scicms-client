@@ -115,3 +115,7 @@ form.ant-form-horizontal .ant-form-item-label {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.text-centered {
+  text-align: center;
+}
