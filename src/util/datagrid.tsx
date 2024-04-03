@@ -14,6 +14,7 @@ import i18n from '../i18n'
 import {getBit} from './index'
 import {download} from '../services/media'
 import {ItemMap} from '../services/item'
+import {sortAttributes} from './schema'
 
 const {Link} = Typography
 const {luxonDisplayDateFormatString, luxonDisplayTimeFormatString, luxonDisplayDateTimeFormatString} = appConfig.dateTime
@@ -31,11 +32,8 @@ export const getInitialData = (): DataWithPagination<any> => ({
 export function getColumns(items: ItemMap, item: Item, onOpenItem: (item: Item, id: string) => void): ColumnDef<any, any>[] {
     const columns: ColumnDef<any, any>[] = []
     const {attributes} = item.spec
-    for (const attrName in attributes) {
-        if (!attributes.hasOwnProperty(attrName))
-            continue
-
-        const attr = attributes[attrName]
+    const sortedAttributes = sortAttributes(attributes)
+    for (const [attrName, attr] of Object.entries(sortedAttributes)) {
         if (attr.private || (attr.type === FieldType.relation && (attr.relType === RelType.oneToMany || attr.relType === RelType.manyToMany)))
             continue
 
