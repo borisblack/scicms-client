@@ -15,38 +15,38 @@ export interface EditorProps {
 }
 
 const FontSizeTheme = EditorView.theme({
-    '&': {
-        fontSize: "10pt" // default - 10.5pt
-    }
-});
+  '&': {
+    fontSize: '10pt' // default - 10.5pt
+  }
+})
 
 function getExtensions(mode: EditorMode): Extension[] {
-    switch (mode) {
-        case EditorMode.SQL:
-            return [sql({dialect: StandardSQL})]
-        case EditorMode.JAVASCRIPT:
-        default:
-            return [javascript({jsx: true})]
-    }
+  switch (mode) {
+    case EditorMode.SQL:
+      return [sql({dialect: StandardSQL})]
+    case EditorMode.JAVASCRIPT:
+    default:
+      return [javascript({jsx: true})]
+  }
 }
 
 export default function Editor({value, mode, height, lineNumbers, canEdit, onChange}: EditorProps) {
-    function handleChange(newValue: string) {
-        if (canEdit && newValue !== value && onChange)
-            onChange(newValue)
-    }
+  function handleChange(newValue: string) {
+    if (canEdit && newValue !== value && onChange)
+      onChange(newValue)
+  }
 
-    return (
-        <CodeMirror
-            value={value ?? ''}
-            height={height}
-            extensions={[FontSizeTheme, ...getExtensions(mode)]}
-            // editable={canEdit}
-            readOnly={!canEdit}
-            basicSetup={{
-                lineNumbers
-            }}
-            onChange={handleChange}
-        />
-    )
+  return (
+    <CodeMirror
+      value={value ?? ''}
+      height={height}
+      extensions={[FontSizeTheme, ...getExtensions(mode)]}
+      // editable={canEdit}
+      readOnly={!canEdit}
+      basicSetup={{
+        lineNumbers
+      }}
+      onChange={handleChange}
+    />
+  )
 }

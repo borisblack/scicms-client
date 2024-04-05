@@ -8,20 +8,20 @@ interface SelectorLinkTypeProps {
 }
 
 export default function SelectorLinkTypeLabel({linkType}: SelectorLinkTypeProps) {
-    function renderIcon() {
-        switch(linkType) {
-            case SelectorLinkType.in:
-                return <SwapLeftOutlined />
-            case SelectorLinkType.out:
-                return <SwapRightOutlined />
-            case SelectorLinkType.both:
-                return <SwapOutlined />
-            default:
-                throw new Error('Illegal selector link type.')
-        }
+  function renderIcon() {
+    switch(linkType) {
+      case SelectorLinkType.in:
+        return <SwapLeftOutlined />
+      case SelectorLinkType.out:
+        return <SwapRightOutlined />
+      case SelectorLinkType.both:
+        return <SwapOutlined />
+      default:
+        throw new Error('Illegal selector link type.')
     }
+  }
 
-    return (
-        <Space>{renderIcon()}{linkType}</Space>
-    )
+  return (
+    <Space>{renderIcon()}{linkType}</Space>
+  )
 }

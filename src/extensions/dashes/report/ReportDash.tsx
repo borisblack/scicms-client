@@ -15,45 +15,45 @@ interface ReportDashOpts {
 const TABLE_HEADER_HEIGHT = 40
 
 function ReportDash({dataset, dash, height, fullScreen, data}: DashRenderContext) {
-    const optValues = dash.optValues as ReportDashOpts
-    const {displayedColNames, rules} = optValues
-    const keyColName = Array.isArray(optValues.keyColName) ? optValues.keyColName[0] : optValues.keyColName
-    const cellRules = useMemo(() => RulesService.parseRules(rules), [rules])
-    const allColumns = {...(dataset.spec.columns ?? {}), ...dash.fields}
-    const columns: ColumnsType<any> =
+  const optValues = dash.optValues as ReportDashOpts
+  const {displayedColNames, rules} = optValues
+  const keyColName = Array.isArray(optValues.keyColName) ? optValues.keyColName[0] : optValues.keyColName
+  const cellRules = useMemo(() => RulesService.parseRules(rules), [rules])
+  const allColumns = {...(dataset.spec.columns ?? {}), ...dash.fields}
+  const columns: ColumnsType<any> =
         displayedColNames
-            .filter(cn => cn in allColumns)
-            .map(cn => {
-                const datasetColumn = allColumns[cn]
-                return {
-                    key: cn,
-                    dataIndex: cn,
-                    title: datasetColumn.alias ?? cn,
-                    width: datasetColumn.colWidth as string | number | undefined,
-                    render: (value, record) => renderCell(cn, value, record),
-                    onCell: record => ({style: RulesService.getFieldStyle(cellRules, cn, record)})
-                }
-            })
+          .filter(cn => cn in allColumns)
+          .map(cn => {
+            const datasetColumn = allColumns[cn]
+            return {
+              key: cn,
+              dataIndex: cn,
+              title: datasetColumn.alias ?? cn,
+              width: datasetColumn.colWidth as string | number | undefined,
+              render: (value, record) => renderCell(cn, value, record),
+              onCell: record => ({style: RulesService.getFieldStyle(cellRules, cn, record)})
+            }
+          })
 
-    function renderCell(colName: string, value: any, record: Record<string, any>): ReactNode {
-        const formattedValue = formatValue(value, columnType(allColumns[colName]))
+  function renderCell(colName: string, value: any, record: Record<string, any>): ReactNode {
+    const formattedValue = formatValue(value, columnType(allColumns[colName]))
 
-        return RulesService.renderField(cellRules, colName, formattedValue, record)
-    }
+    return RulesService.renderField(cellRules, colName, formattedValue, record)
+  }
 
-    if (columns.length !== displayedColNames.length)
-        return <Alert message="Invalid columns specification" type="error"/>
+  if (columns.length !== displayedColNames.length)
+    return <Alert message="Invalid columns specification" type="error"/>
 
-    return (
-        <Table
-            size="small"
-            columns={columns}
-            dataSource={data}
-            rowKey={/*keyColName ? keyColName :*/ () => uuidv4()}
-            pagination={false}
-            scroll={{y: fullScreen ? '80vh' : height - TABLE_HEADER_HEIGHT}}
-        />
-    )
+  return (
+    <Table
+      size="small"
+      columns={columns}
+      dataSource={data}
+      rowKey={/*keyColName ? keyColName :*/ () => uuidv4()}
+      pagination={false}
+      scroll={{y: fullScreen ? '80vh' : height - TABLE_HEADER_HEIGHT}}
+    />
+  )
 }
 
 export default ReportDash

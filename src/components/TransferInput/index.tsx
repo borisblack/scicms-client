@@ -12,14 +12,14 @@ interface Props<RecordType extends TransferItem> {
 }
 
 export default function TransferInput<RecordType extends TransferItem>({dataSource, listStyle, titles, render, value, onChange}: Props<RecordType>) {
-    return (
-        <Transfer
-            dataSource={dataSource}
-            listStyle={listStyle}
-            titles={titles}
-            targetKeys={value ?? []}
-            onChange={onChange}
-            render={render}
-        />
-    )
+  return (
+    <Transfer
+      dataSource={dataSource}
+      listStyle={listStyle}
+      titles={titles}
+      targetKeys={value ?? []}
+      onChange={onChange}
+      render={render}
+    />
+  )
 }

@@ -23,68 +23,68 @@ export interface RegistryState {
 }
 
 const initialState: RegistryState = {
-    isInitialized: false,
-    loading: false,
-    itemTemplates: {},
-    items: {},
-    permissions: {},
-    lifecycles: {},
-    locales: []
+  isInitialized: false,
+  loading: false,
+  itemTemplates: {},
+  items: {},
+  permissions: {},
+  lifecycles: {},
+  locales: []
 }
 
 const initializeIfNeeded = createAsyncThunk(
-    'registry/initialize',
-    async (me: UserInfo) => Promise.all([
-        fetchCoreConfig(),
-        fetchItemTemplates(),
-        fetchItems(),
-        fetchPermissions(me),
-        fetchLifecycles(),
-        fetchLocales()
-    ]), {
-        condition: (credentials, {getState}) => shouldInitialize(getState() as {registry: RegistryState})
-    }
+  'registry/initialize',
+  async (me: UserInfo) => Promise.all([
+    fetchCoreConfig(),
+    fetchItemTemplates(),
+    fetchItems(),
+    fetchPermissions(me),
+    fetchLifecycles(),
+    fetchLocales()
+  ]), {
+    condition: (credentials, {getState}) => shouldInitialize(getState() as {registry: RegistryState})
+  }
 )
 
 const shouldInitialize = (state: {registry: RegistryState}) => {
-    const {isInitialized, loading} = state.registry
-    return !isInitialized && !loading
+  const {isInitialized, loading} = state.registry
+  return !isInitialized && !loading
 }
 
 const registrySlice = createSlice({
-    name: 'registry',
-    initialState,
-    reducers: {
-        reset: () => {
-            return initialState
-        }
-    },
-    extraReducers: builder => {
-        builder
-            .addCase(initializeIfNeeded.pending, state => {
-                state.loading = true
-            })
-            .addCase(initializeIfNeeded.fulfilled, (state, action: PayloadAction<any[]>) => {
-                const response = action.payload
-                state.coreConfig = response[0]
-                state.itemTemplates = response[1]
-                state.items = response[2]
-                state.permissions = response[3]
-                state.lifecycles = response[4]
-                state.locales = response[5]
-
-                state.isInitialized = true
-                state.loading = false
-            })
-            .addCase(initializeIfNeeded.rejected, (state, action) => {
-                state.isInitialized = false
-                state.loading = false
-                notification.error({
-                    message: i18n.t('Initialization error') as string,
-                    description: action.error.message
-                })
-            })
+  name: 'registry',
+  initialState,
+  reducers: {
+    reset: () => {
+      return initialState
     }
+  },
+  extraReducers: builder => {
+    builder
+      .addCase(initializeIfNeeded.pending, state => {
+        state.loading = true
+      })
+      .addCase(initializeIfNeeded.fulfilled, (state, action: PayloadAction<any[]>) => {
+        const response = action.payload
+        state.coreConfig = response[0]
+        state.itemTemplates = response[1]
+        state.items = response[2]
+        state.permissions = response[3]
+        state.lifecycles = response[4]
+        state.locales = response[5]
+
+        state.isInitialized = true
+        state.loading = false
+      })
+      .addCase(initializeIfNeeded.rejected, (state, action) => {
+        state.isInitialized = false
+        state.loading = false
+        notification.error({
+          message: i18n.t('Initialization error') as string,
+          description: action.error.message
+        })
+      })
+  }
 })
 
 export {initializeIfNeeded}

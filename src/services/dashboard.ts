@@ -25,11 +25,11 @@ const FIND_ALL_QUERY = gql`
 `
 
 export const fetchDashboards = (): Promise<Dashboard[]> =>
-    apolloClient.query({query: FIND_ALL_QUERY})
-        .then(res => {
-            if (res.errors) {
-                console.error(extractGraphQLErrorMessages(res.errors))
-                throw new Error(i18n.t('An error occurred while executing the request'))
-            }
-            return res.data.dashboards.data
-        })
+  apolloClient.query({query: FIND_ALL_QUERY})
+    .then(res => {
+      if (res.errors) {
+        console.error(extractGraphQLErrorMessages(res.errors))
+        throw new Error(i18n.t('An error occurred while executing the request'))
+      }
+      return res.data.dashboards.data
+    })

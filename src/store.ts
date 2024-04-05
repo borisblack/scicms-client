@@ -5,11 +5,11 @@ import registryReducer from './features/registry/registrySlice'
 import mdiReducer from './features/mdi/mdiSlice'
 
 export const store = configureStore({
-    reducer: {
-        auth: authReducer,
-        registry: registryReducer,
-        mdi: mdiReducer
-    }
+  reducer: {
+    auth: authReducer,
+    registry: registryReducer,
+    mdi: mdiReducer
+  }
 })
 
 export type RootState = ReturnType<typeof store.getState>

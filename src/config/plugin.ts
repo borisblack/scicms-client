@@ -8,10 +8,10 @@ interface PluginConfig {
 
 // Add plugins here
 const pluginConfig: PluginConfig = {
-    plugins: [
-        // helloPlugin,
-        // hiPlugin
-    ]
+  plugins: [
+    // helloPlugin,
+    // hiPlugin
+  ]
 }
 
 export default pluginConfig

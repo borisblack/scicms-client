@@ -11,65 +11,65 @@ const {Item: FormItem} = Form
 const {TextArea} = Input
 
 export default function ScatterDashOptionsForm({fieldName, values}: DashOptionsFormProps) {
-    const {t} = useTranslation()
+  const {t} = useTranslation()
 
-    return (
-        <Row gutter={10}>
-            <Col span={6}>
-                <FormItem
-                    className={styles.formItem}
-                    name={[fieldName, 'legendPosition']}
-                    label={t('Legend position')}
-                    initialValue={values.legendPosition ?? 'top-left'}
-                >
-                    <Select allowClear options={legendPositions.map(p => ({value: p, label: p}))}/>
-                </FormItem>
-            </Col>
+  return (
+    <Row gutter={10}>
+      <Col span={6}>
+        <FormItem
+          className={styles.formItem}
+          name={[fieldName, 'legendPosition']}
+          label={t('Legend position')}
+          initialValue={values.legendPosition ?? 'top-left'}
+        >
+          <Select allowClear options={legendPositions.map(p => ({value: p, label: p}))}/>
+        </FormItem>
+      </Col>
 
-            <Col span={6}>
-                <FormItem
-                    className={styles.formItem}
-                    name={[fieldName, 'hideLegend']}
-                    valuePropName="checked"
-                    initialValue={values.hideLegend}
-                >
-                    <Checkbox style={{marginTop: 24}}>{t('Hide legend')}</Checkbox>
-                </FormItem>
-            </Col>
+      <Col span={6}>
+        <FormItem
+          className={styles.formItem}
+          name={[fieldName, 'hideLegend']}
+          valuePropName="checked"
+          initialValue={values.hideLegend}
+        >
+          <Checkbox style={{marginTop: 24}}>{t('Hide legend')}</Checkbox>
+        </FormItem>
+      </Col>
 
-            <Col span={6}>
-                <FormItem
-                    className={styles.formItem}
-                    name={[fieldName, 'xAxisLabelAutoRotate']}
-                    valuePropName="checked"
-                    initialValue={values.xAxisLabelAutoRotate}
-                >
-                    <Checkbox style={{marginTop: 24}}>{t('Auto rotate x-axis label')}</Checkbox>
-                </FormItem>
-            </Col>
+      <Col span={6}>
+        <FormItem
+          className={styles.formItem}
+          name={[fieldName, 'xAxisLabelAutoRotate']}
+          valuePropName="checked"
+          initialValue={values.xAxisLabelAutoRotate}
+        >
+          <Checkbox style={{marginTop: 24}}>{t('Auto rotate x-axis label')}</Checkbox>
+        </FormItem>
+      </Col>
 
-            <Col span={12}>
-                <FormItem
-                    className={styles.formItem}
-                    name={[fieldName, 'rules']}
-                    label={(
-                        <Space>
-                            {t('Rules')}
-                            <Popover
-                                arrow={false}
-                                placement="bottom"
-                                content={<RulesHelp height={350}/>}
-                                overlayInnerStyle={{width: 1060}}
-                            >
-                                <QuestionCircleOutlined className="blue"/>
-                            </Popover>
-                        </Space>
-                    )}
-                    initialValue={values.rules}
-                >
-                    <TextArea rows={8}/>
-                </FormItem>
-            </Col>
-        </Row>
-    )
+      <Col span={12}>
+        <FormItem
+          className={styles.formItem}
+          name={[fieldName, 'rules']}
+          label={(
+            <Space>
+              {t('Rules')}
+              <Popover
+                arrow={false}
+                placement="bottom"
+                content={<RulesHelp height={350}/>}
+                overlayInnerStyle={{width: 1060}}
+              >
+                <QuestionCircleOutlined className="blue"/>
+              </Popover>
+            </Space>
+          )}
+          initialValue={values.rules}
+        >
+          <TextArea rows={8}/>
+        </FormItem>
+      </Col>
+    </Row>
+  )
 }

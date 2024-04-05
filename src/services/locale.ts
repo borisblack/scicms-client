@@ -22,11 +22,11 @@ const FIND_ALL_QUERY = gql`
 `
 
 export async function fetchLocales(): Promise<Locale[]> {
-    const res = await apolloClient.query({query: FIND_ALL_QUERY})
-    if (res.errors) {
-        console.error(extractGraphQLErrorMessages(res.errors))
-        throw new Error(i18n.t('An error occurred while executing the request'))
-    }
+  const res = await apolloClient.query({query: FIND_ALL_QUERY})
+  if (res.errors) {
+    console.error(extractGraphQLErrorMessages(res.errors))
+    throw new Error(i18n.t('An error occurred while executing the request'))
+  }
 
-    return res.data.locales.data
+  return res.data.locales.data
 }

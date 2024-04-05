@@ -30,71 +30,71 @@ interface BpmnDefinitions {
 }
 
 export function parseBpmn(bpmn: string): BpmnDefinitions {
-    const parser = new DOMParser()
-    const doc = parser.parseFromString(bpmn, "application/xml")
-    const processEl = doc.getElementsByTagName('bpmn:process')[0]
-    const startEventEl = processEl.getElementsByTagName('bpmn:startEvent')[0]
-    const endEventEl = processEl.getElementsByTagName('bpmn:endEvent')[0]
-    const taskEls = processEl.getElementsByTagName('bpmn:task')
-    const sequenceFlowEls = processEl.getElementsByTagName('bpmn:sequenceFlow')
+  const parser = new DOMParser()
+  const doc = parser.parseFromString(bpmn, 'application/xml')
+  const processEl = doc.getElementsByTagName('bpmn:process')[0]
+  const startEventEl = processEl.getElementsByTagName('bpmn:startEvent')[0]
+  const endEventEl = processEl.getElementsByTagName('bpmn:endEvent')[0]
+  const taskEls = processEl.getElementsByTagName('bpmn:task')
+  const sequenceFlowEls = processEl.getElementsByTagName('bpmn:sequenceFlow')
 
-    return {
-        process: {
-            id: processEl.getAttribute('id') as string,
-            isExecutable: processEl.getAttribute('isExecutable') === 'true',
-            startEvent: {
-                id: startEventEl.getAttribute('id') as string,
-                outgoings: Array.from(startEventEl.getElementsByTagName('bpmn:outgoing')).map(it => it.textContent) as string[]
-            },
-            endEvent: {
-                id: endEventEl.getAttribute('id') as string,
-                incomings: Array.from(endEventEl.getElementsByTagName('bpmn:incoming')).map(it => it.textContent) as string[]
-            },
-            tasks: Array.from(taskEls).map(it => ({
-                id: it.getAttribute('id') as string,
-                name: it.getAttribute('name') as string,
-                incomings: Array.from(it.getElementsByTagName('bpmn:incoming')).map(it => it.textContent) as string[],
-                outgoings: Array.from(it.getElementsByTagName('bpmn:outgoing')).map(it => it.textContent) as string[],
-            })),
-            sequenceFlows: Array.from(sequenceFlowEls).map(it => ({
-                id: it.getAttribute('id') as string,
-                name: it.getAttribute('name'),
-                sourceRef: it.getAttribute('sourceRef') as string,
-                targetRef: it.getAttribute('targetRef') as string
-            }))
-        }
+  return {
+    process: {
+      id: processEl.getAttribute('id') as string,
+      isExecutable: processEl.getAttribute('isExecutable') === 'true',
+      startEvent: {
+        id: startEventEl.getAttribute('id') as string,
+        outgoings: Array.from(startEventEl.getElementsByTagName('bpmn:outgoing')).map(it => it.textContent) as string[]
+      },
+      endEvent: {
+        id: endEventEl.getAttribute('id') as string,
+        incomings: Array.from(endEventEl.getElementsByTagName('bpmn:incoming')).map(it => it.textContent) as string[]
+      },
+      tasks: Array.from(taskEls).map(it => ({
+        id: it.getAttribute('id') as string,
+        name: it.getAttribute('name') as string,
+        incomings: Array.from(it.getElementsByTagName('bpmn:incoming')).map(it => it.textContent) as string[],
+        outgoings: Array.from(it.getElementsByTagName('bpmn:outgoing')).map(it => it.textContent) as string[]
+      })),
+      sequenceFlows: Array.from(sequenceFlowEls).map(it => ({
+        id: it.getAttribute('id') as string,
+        name: it.getAttribute('name'),
+        sourceRef: it.getAttribute('sourceRef') as string,
+        targetRef: it.getAttribute('targetRef') as string
+      }))
     }
+  }
 }
 
 export function parseLifecycleSpec(bpmn: string): LifecycleSpec {
-    const definitions = parseBpmn(bpmn)
-    const {process} = definitions
-    const tasks = _.mapKeys(process.tasks, it => it.id)
-    const sequenceFlows = _.mapKeys(process.sequenceFlows, it => it.id)
+  const definitions = parseBpmn(bpmn)
+  const {process} = definitions
+  const tasks = _.mapKeys(process.tasks, it => it.id)
+  const sequenceFlows = _.mapKeys(process.sequenceFlows, it => it.id)
 
-    const startTransitions = process.startEvent.outgoings
-        .map(sequenceFlowId => sequenceFlows[sequenceFlowId])
-        .filter(sequenceFlow => sequenceFlow.targetRef !== process.endEvent.id)
-        .map(sequenceFlow => {
-            const targetTask = tasks[sequenceFlow.targetRef]
-            return targetTask.name
-        })
-
-    const states: StateMap = {}
-    process.tasks.forEach(task => {
-        const transitions = task.outgoings
-            .map(sequenceFlowId => sequenceFlows[sequenceFlowId])
-            .filter(sequenceFlow => sequenceFlow.targetRef !== process.endEvent.id)
-            .map(sequenceFlow => {
-                const targetTask = tasks[sequenceFlow.targetRef]
-                return targetTask.name
-            })
-
-        states[task.name] = {transitions}
+  const startTransitions = process.startEvent.outgoings
+    .map(sequenceFlowId => sequenceFlows[sequenceFlowId])
+    .filter(sequenceFlow => sequenceFlow.targetRef !== process.endEvent.id)
+    .map(sequenceFlow => {
+      const targetTask = tasks[sequenceFlow.targetRef]
+      return targetTask.name
     })
 
-    return {
-        startEvent: {transitions: startTransitions},
-        states
-    }
+  const states: StateMap = {}
+  process.tasks.forEach(task => {
+    const transitions = task.outgoings
+      .map(sequenceFlowId => sequenceFlows[sequenceFlowId])
+      .filter(sequenceFlow => sequenceFlow.targetRef !== process.endEvent.id)
+      .map(sequenceFlow => {
+        const targetTask = tasks[sequenceFlow.targetRef]
+        return targetTask.name
+      })
+
+    states[task.name] = {transitions}
+  })
+
+  return {
+    startEvent: {transitions: startTransitions},
+    states
+  }
 }

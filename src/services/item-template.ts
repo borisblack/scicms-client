@@ -32,12 +32,12 @@ const FIND_ALL_QUERY = gql`
 `
 
 export const fetchItemTemplates = (): Promise<ItemTemplateMap> =>
-    apolloClient.query({query: FIND_ALL_QUERY})
-        .then((res) => {
-            if (res.errors) {
-                console.error(extractGraphQLErrorMessages(res.errors))
-                throw new Error(i18n.t('An error occurred while executing the request'))
-            }
+  apolloClient.query({query: FIND_ALL_QUERY})
+    .then((res) => {
+      if (res.errors) {
+        console.error(extractGraphQLErrorMessages(res.errors))
+        throw new Error(i18n.t('An error occurred while executing the request'))
+      }
 
-            return _.mapKeys(res.data.itemTemplates.data, itemTemplate => itemTemplate.name)
-        })
+      return _.mapKeys(res.data.itemTemplates.data, itemTemplate => itemTemplate.name)
+    })

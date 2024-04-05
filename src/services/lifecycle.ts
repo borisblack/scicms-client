@@ -38,21 +38,21 @@ const FIND_BY_ID_QUERY = gql`
 `
 
 export const fetchLifecycles = async (): Promise<LifecycleMap> => {
-    const res = await apolloClient.query({query: FIND_ALL_QUERY})
-    if (res.errors) {
-        console.error(extractGraphQLErrorMessages(res.errors))
-        throw new Error(i18n.t('An error occurred while executing the request'))
-    }
+  const res = await apolloClient.query({query: FIND_ALL_QUERY})
+  if (res.errors) {
+    console.error(extractGraphQLErrorMessages(res.errors))
+    throw new Error(i18n.t('An error occurred while executing the request'))
+  }
 
-    return  _.mapKeys(res.data.lifecycles.data, lifecycle => lifecycle.id)
+  return  _.mapKeys(res.data.lifecycles.data, lifecycle => lifecycle.id)
 }
 
 export const findLifecycleById = async (id: string): Promise<Lifecycle> => {
-    const res = await apolloClient.query({query: FIND_BY_ID_QUERY, variables: {id}})
-    if (res.errors) {
-        console.error(extractGraphQLErrorMessages(res.errors))
-        throw new Error(i18n.t('An error occurred while executing the request'))
-    }
+  const res = await apolloClient.query({query: FIND_BY_ID_QUERY, variables: {id}})
+  if (res.errors) {
+    console.error(extractGraphQLErrorMessages(res.errors))
+    throw new Error(i18n.t('An error occurred while executing the request'))
+  }
 
-    return  res.data.lifecycle.data
+  return  res.data.lifecycle.data
 }

@@ -17,20 +17,20 @@ interface CustomComponentConfig {
 
 // Add custom components here
 const customComponentConfig: CustomComponentConfig = {
-    components: [
-        itemAttributes,
-        itemTemplateAttributes,
-        itemIndexes,
-        itemTemplateIndexes,
-        userRoles,
-        lifecycleSpec,
-        datasetSources,
-        datasetFields,
-        dashboardSpec,
-        userGroups, // owner is a group
+  components: [
+    itemAttributes,
+    itemTemplateAttributes,
+    itemIndexes,
+    itemTemplateIndexes,
+    userRoles,
+    lifecycleSpec,
+    datasetSources,
+    datasetFields,
+    dashboardSpec,
+    userGroups, // owner is a group
 
-        projectGantt
-    ]
+    projectGantt
+  ]
 }
 
 export default customComponentConfig

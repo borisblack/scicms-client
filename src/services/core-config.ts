@@ -26,11 +26,11 @@ const FETCH_CORE_CONFIG_QUERY = gql`
 `
 
 export async function fetchCoreConfig(): Promise<CoreConfig> {
-    const res = await apolloClient.query({query: FETCH_CORE_CONFIG_QUERY})
-    if (res.errors) {
-        console.error(extractGraphQLErrorMessages(res.errors))
-        throw new Error(i18n.t('An error occurred while executing the request'))
-    }
+  const res = await apolloClient.query({query: FETCH_CORE_CONFIG_QUERY})
+  if (res.errors) {
+    console.error(extractGraphQLErrorMessages(res.errors))
+    throw new Error(i18n.t('An error occurred while executing the request'))
+  }
 
-    return res.data.config
+  return res.data.config
 }

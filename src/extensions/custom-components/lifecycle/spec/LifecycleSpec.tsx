@@ -12,55 +12,55 @@ import 'src/lib/diagram/bpmn-js.css'
 import styles from './LifecycleSpec.module.css'
 
 const customTranslateModule = {
-    translate: [ 'value', customTranslate ]
+  translate: [ 'value', customTranslate ]
 }
 
 export default function LifecycleSpec({data: dataWrapper, onBufferChange}: CustomComponentRenderContext) {
-    const {item, data} = dataWrapper
-    if (item.name !== LIFECYCLE_ITEM_NAME)
-        throw new Error('Illegal argument')
+  const {item, data} = dataWrapper
+  if (item.name !== LIFECYCLE_ITEM_NAME)
+    throw new Error('Illegal argument')
 
-    const acl = useAcl(item, data)
-    const container = useRef<HTMLDivElement>(null)
-    const modeler = useRef<any>(null)
+  const acl = useAcl(item, data)
+  const container = useRef<HTMLDivElement>(null)
+  const modeler = useRef<any>(null)
 
-    useEffect(() => {
-        const props = {
-            container: container.current,
-            additionalModules: [customTranslateModule]
-        }
+  useEffect(() => {
+    const props = {
+      container: container.current,
+      additionalModules: [customTranslateModule]
+    }
 
-        let m: any
-        if (acl.canWrite) {
-            m = new Modeler(props)
-            const eventBus = m.get('eventBus')
-            eventBus.on('elements.changed', (context: any) => {
-                m.saveXML({format: true})
-                    .then((xml: any) => {
-                        onBufferChange({spec: xml.xml})
-                    })
-            })
-        } else {
-            m = new Viewer(props)
-        }
+    let m: any
+    if (acl.canWrite) {
+      m = new Modeler(props)
+      const eventBus = m.get('eventBus')
+      eventBus.on('elements.changed', (context: any) => {
+        m.saveXML({format: true})
+          .then((xml: any) => {
+            onBufferChange({spec: xml.xml})
+          })
+      })
+    } else {
+      m = new Viewer(props)
+    }
 
-        if (data?.spec)
-            m.importXML(data.spec)
-        else
-            m.createDiagram()
+    if (data?.spec)
+      m.importXML(data.spec)
+    else
+      m.createDiagram()
 
-        modeler.current = m
+    modeler.current = m
 
-        return () => {
-            m.destroy()
-            m = null
-            modeler.current = null
-        }
-    }, [acl.canWrite, data?.spec])
+    return () => {
+      m.destroy()
+      m = null
+      modeler.current = null
+    }
+  }, [acl.canWrite, data?.spec])
 
-    return (
-        <div className={styles.bpmnDiagramWrapper}>
-            <div className={styles.bpmnDiagramContainer} ref={container}/>
-        </div>
-    )
+  return (
+    <div className={styles.bpmnDiagramWrapper}>
+      <div className={styles.bpmnDiagramContainer} ref={container}/>
+    </div>
+  )
 }

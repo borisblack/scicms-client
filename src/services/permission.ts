@@ -88,55 +88,55 @@ const FIND_ALL_BY_IDENTITY_NAMES_QUERY = gql`
 `
 
 const fetchAllPermissions = (): Promise<Permission[]> =>
-    apolloClient.query({query: FIND_ALL_QUERY})
-        .then(res => {
-            if (res.errors) {
-                console.error(extractGraphQLErrorMessages(res.errors))
-                throw new Error(i18n.t('An error occurred while executing the request'))
-            }
-            return res.data.permissions.data
-        })
+  apolloClient.query({query: FIND_ALL_QUERY})
+    .then(res => {
+      if (res.errors) {
+        console.error(extractGraphQLErrorMessages(res.errors))
+        throw new Error(i18n.t('An error occurred while executing the request'))
+      }
+      return res.data.permissions.data
+    })
 
 export async function fetchPermissions(me: UserInfo): Promise<PermissionMap> {
-    const data = await findAllByIdentityNames([...me.roles, me.username])
-    return _.mapKeys(data, permission => permission.id)
+  const data = await findAllByIdentityNames([...me.roles, me.username])
+  return _.mapKeys(data, permission => permission.id)
 }
 
 const findAllByIdentityNames = (identityNames: string[]): Promise<Permission[]> =>
-    apolloClient.query({query: FIND_ALL_BY_IDENTITY_NAMES_QUERY, variables: {identityNames}})
-        .then(res => {
-            if (res.errors) {
-                console.error(extractGraphQLErrorMessages(res.errors))
-                throw new Error(i18n.t('An error occurred while executing the request'))
-            }
-            return res.data.permissions.data
-        })
+  apolloClient.query({query: FIND_ALL_BY_IDENTITY_NAMES_QUERY, variables: {identityNames}})
+    .then(res => {
+      if (res.errors) {
+        console.error(extractGraphQLErrorMessages(res.errors))
+        throw new Error(i18n.t('An error occurred while executing the request'))
+      }
+      return res.data.permissions.data
+    })
 
 export default class PermissionManager {
-    constructor(private permissions: PermissionMap) {}
+  constructor(private permissions: PermissionMap) {}
 
-    getAcl(me: UserInfo | null, item: Item, data?: ItemData | null): Acl {
-        if (me == null) {
-            return {
-                canCreate: false,
-                canRead: false,
-                canWrite: false,
-                canDelete: false,
-                canAdmin: false
-            }
-        }
-
-        const itemPermissionId = item.permission.data?.id
-        const itemPermission = itemPermissionId ? this.permissions[itemPermissionId] : null
-        const canCreate = !!itemPermission && ACL.canCreate(me, itemPermission)
-
-        const dataPermissionId = data?.permission?.data?.id
-        const dataPermission = dataPermissionId ? this.permissions[dataPermissionId] : null
-        const canRead = !!dataPermission && ACL.canRead(me, dataPermission)
-        const canWrite = !!dataPermission && ACL.canWrite(me, dataPermission)
-        const canDelete = !!dataPermission && ACL.canDelete(me, dataPermission)
-        const canAdmin = !!dataPermission && ACL.canAdmin(me, dataPermission)
-
-        return {canCreate, canRead, canWrite, canDelete, canAdmin}
+  getAcl(me: UserInfo | null, item: Item, data?: ItemData | null): Acl {
+    if (me == null) {
+      return {
+        canCreate: false,
+        canRead: false,
+        canWrite: false,
+        canDelete: false,
+        canAdmin: false
+      }
     }
+
+    const itemPermissionId = item.permission.data?.id
+    const itemPermission = itemPermissionId ? this.permissions[itemPermissionId] : null
+    const canCreate = !!itemPermission && ACL.canCreate(me, itemPermission)
+
+    const dataPermissionId = data?.permission?.data?.id
+    const dataPermission = dataPermissionId ? this.permissions[dataPermissionId] : null
+    const canRead = !!dataPermission && ACL.canRead(me, dataPermission)
+    const canWrite = !!dataPermission && ACL.canWrite(me, dataPermission)
+    const canDelete = !!dataPermission && ACL.canDelete(me, dataPermission)
+    const canAdmin = !!dataPermission && ACL.canAdmin(me, dataPermission)
+
+    return {canCreate, canRead, canWrite, canDelete, canAdmin}
+  }
 }

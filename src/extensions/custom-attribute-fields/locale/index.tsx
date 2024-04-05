@@ -6,7 +6,7 @@ import {FieldType} from '../../../types'
 const ATTRIBUTE_FIELD_ID = 'locale'
 
 export const locale: CustomAttributeField = {
-    id: ATTRIBUTE_FIELD_ID,
-    supports: (itemName, attrName, attribute) => attrName === LOCALE_ATTR_NAME && attribute.type === FieldType.string,
-    render: ({context}) => <LocaleAttributeField {...context}/>
+  id: ATTRIBUTE_FIELD_ID,
+  supports: (itemName, attrName, attribute) => attrName === LOCALE_ATTR_NAME && attribute.type === FieldType.string,
+  render: ({context}) => <LocaleAttributeField {...context}/>
 }

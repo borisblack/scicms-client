@@ -14,26 +14,26 @@ interface TableWidgetProps {
 }
 
 export default function TableWidget({style, table, canEdit, onRemove}: TableWidgetProps) {
-    const {t} = useTranslation()
+  const {t} = useTranslation()
 
-    return (
-        <div className={styles.tableWidget} style={style}>
-            <span title={table.name}>
-                <TableOutlined className="green"/>
+  return (
+    <div className={styles.tableWidget} style={style}>
+      <span title={table.name}>
+        <TableOutlined className="green"/>
                 &nbsp;&nbsp;
-                {table.name}
-                {canEdit && (
-                    <Button
-                        className={styles.tableWidget_removeBtn}
-                        type="text"
-                        size="small"
-                        title={t('Remove')}
-                        onClick={onRemove}
-                    >
-                        <CloseOutlined/>
-                    </Button>
-                )}
-            </span>
-        </div>
-    )
+        {table.name}
+        {canEdit && (
+          <Button
+            className={styles.tableWidget_removeBtn}
+            type="text"
+            size="small"
+            title={t('Remove')}
+            onClick={onRemove}
+          >
+            <CloseOutlined/>
+          </Button>
+        )}
+      </span>
+    </div>
+  )
 }

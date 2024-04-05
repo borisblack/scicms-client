@@ -18,13 +18,13 @@ export interface CustomAttributeFieldRenderContext extends AttributeFieldProps {
 const attributeFields: CustomAttributeField[] = customAttributeFieldConfig.attributeFields
 
 export const hasAttributeField = (itemName: string, attrName: string, attribute: Attribute): boolean =>
-    getAttributeField(itemName, attrName, attribute) != null
+  getAttributeField(itemName, attrName, attribute) != null
 
 export const getAttributeField = (itemName: string, attrName: string, attribute: Attribute): CustomAttributeField | undefined =>
-    attributeFields.find(af => af.supports(itemName, attrName, attribute))
+  attributeFields.find(af => af.supports(itemName, attrName, attribute))
 
 export function renderAttributeField(context: CustomAttributeFieldRenderContext, defaultRender: FC<CustomAttributeFieldRenderContext>): ReactElement | null {
-    const attributeField = getAttributeField(context.data.item.name, context.attrName, context.attribute)
+  const attributeField = getAttributeField(context.data.item.name, context.attrName, context.attribute)
 
-    return <>{attributeField ? attributeField.render({context}) : defaultRender(context)}</>
+  return <>{attributeField ? attributeField.render({context}) : defaultRender(context)}</>
 }

@@ -12,34 +12,34 @@ const FormItem = Form.Item
 const {Option: SelectOption} = Select
 
 const LocaleAttributeField: FC<CustomAttributeFieldRenderContext> = ({attrName, attribute, value, onChange}) => {
-    if (attribute.type !== FieldType.string || attrName !== LOCALE_ATTR_NAME)
-        throw new Error('Illegal attribute')
+  if (attribute.type !== FieldType.string || attrName !== LOCALE_ATTR_NAME)
+    throw new Error('Illegal attribute')
 
-    const {locales} = useRegistry()
-    const {t} = useTranslation()
-    const isDisabled = useMemo(() => attribute.keyed || attribute.readOnly, [attribute.keyed, attribute.readOnly])
-    const additionalProps = useMemo((): any => {
-        const additionalProps: any = {}
-        if (isDisabled)
-            additionalProps.disabled = true
+  const {locales} = useRegistry()
+  const {t} = useTranslation()
+  const isDisabled = useMemo(() => attribute.keyed || attribute.readOnly, [attribute.keyed, attribute.readOnly])
+  const additionalProps = useMemo((): any => {
+    const additionalProps: any = {}
+    if (isDisabled)
+      additionalProps.disabled = true
 
-        return additionalProps
-    }, [isDisabled])
+    return additionalProps
+  }, [isDisabled])
 
-    return (
-        <FormItem
-            className={styles.formItem}
-            name={attrName}
-            label={t(attribute.displayName)}
-            hidden={attribute.fieldHidden}
-            initialValue={value ?? attribute.defaultValue}
-            rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
-        >
-            <Select onSelect={(val: string) => onChange(val)} {...additionalProps}>
-                {locales.map(it => <SelectOption key={it.name} value={it.name}>{it.displayName}</SelectOption>)}
-            </Select>
-        </FormItem>
-    )
+  return (
+    <FormItem
+      className={styles.formItem}
+      name={attrName}
+      label={t(attribute.displayName)}
+      hidden={attribute.fieldHidden}
+      initialValue={value ?? attribute.defaultValue}
+      rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
+    >
+      <Select onSelect={(val: string) => onChange(val)} {...additionalProps}>
+        {locales.map(it => <SelectOption key={it.name} value={it.name}>{it.displayName}</SelectOption>)}
+      </Select>
+    </FormItem>
+  )
 }
 
 export default LocaleAttributeField

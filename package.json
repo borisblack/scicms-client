@@ -1,6 +1,6 @@
 {
   "name": "scicms-client",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "private": true,
   "dependencies": {
     "@ant-design/charts": "^1.4.2",
@@ -67,6 +67,7 @@
     "start-rewired": "react-app-rewired start",
     "build": "react-scripts build",
     "build-rewired": "react-app-rewired build",
+    "lint": "eslint --fix ./src",
     "test": "react-scripts test",
     "test-rewired": "react-app-rewired test",
     "eject": "react-scripts eject"
@@ -77,9 +78,21 @@
       "react-app/jest"
     ],
     "rules": {
-      "no-unused-expressions": "off"
+      "comma-dangle": "off",
+      "no-useless-escape": "off",
+      "no-unused-expressions": "off",
+      "indent": ["error", 2, {"SwitchCase": 1}],
+      "quotes": ["error", "single"],
+      "semi": "off",
+      "@typescript-eslint/comma-dangle": "error",
+      "@typescript-eslint/semi": ["error", "never"],
+      "@typescript-eslint/member-delimiter-style": [
+        "error",
+        {"multiline": {"delimiter": "none"}, "singleline": {"delimiter": "comma"}}
+      ]
     }
   },
+  "eslintIgnore": ["src/lib/*"],
   "browserslist": {
     "production": [
       ">0.2%",

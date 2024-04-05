@@ -12,62 +12,62 @@ import DefaultNavTab from './DefaultNavTab'
 import {generateLabel} from 'src/util/mdi'
 import menuConfig from 'src/config/menu'
 import {useNewMDIContextRedux} from 'src/features/mdi/hooks'
-import {EMPTY_ARRAY} from "src/config/constants"
+import {EMPTY_ARRAY} from 'src/config/constants'
 import {toAntdMenuItems} from 'src/features/registry/util'
 import './App.css'
 
 const {Content} = Layout
 
 function App() {
-    const {me, isExpired} = useAuth()
-    const {isInitialized, initializeIfNeeded, items} = useRegistry()
-    const mdiContext = useNewMDIContextRedux<ItemDataWrapper>(EMPTY_ARRAY)
+  const {me, isExpired} = useAuth()
+  const {isInitialized, initializeIfNeeded, items} = useRegistry()
+  const mdiContext = useNewMDIContextRedux<ItemDataWrapper>(EMPTY_ARRAY)
 
-    useEffect(() => {
-        if (me) {
-            initializeIfNeeded(me)
-        }
-    }, [me, initializeIfNeeded])
+  useEffect(() => {
+    if (me) {
+      initializeIfNeeded(me)
+    }
+  }, [me, initializeIfNeeded])
 
-    const renderItem = (data: ItemDataWrapper): ReactNode =>
-        data.viewType === ViewType.view ? (
-            <ViewNavTab data={data}/>
-        ) : (
-            <DefaultNavTab data={data}/>
-        )
-
-    if (!me || isExpired)
-        return <Navigate to="/login?targetUrl=/"/>
-
-    if (!isInitialized)
-        return null
-
-    return (
-        <Layout className="App">
-            <Navbar
-                ctx={mdiContext}
-                menuItems={toAntdMenuItems({
-                    me,
-                    ctx: mdiContext,
-                    items,
-                    menuItems: menuConfig.items
-                })}
-            />
-            <Layout>
-                <Content className="App-content-wrapper">
-                    <div className="App-content">
-                        <MDITabs
-                            ctx={mdiContext}
-                            className="pages"
-                            type="editable-card"
-                            getItemLabel={generateLabel}
-                            renderItem={renderItem}
-                        />
-                    </div>
-                </Content>
-            </Layout>
-        </Layout>
+  const renderItem = (data: ItemDataWrapper): ReactNode =>
+    data.viewType === ViewType.view ? (
+      <ViewNavTab data={data}/>
+    ) : (
+      <DefaultNavTab data={data}/>
     )
+
+  if (!me || isExpired)
+    return <Navigate to="/login?targetUrl=/"/>
+
+  if (!isInitialized)
+    return null
+
+  return (
+    <Layout className="App">
+      <Navbar
+        ctx={mdiContext}
+        menuItems={toAntdMenuItems({
+          me,
+          ctx: mdiContext,
+          items,
+          menuItems: menuConfig.items
+        })}
+      />
+      <Layout>
+        <Content className="App-content-wrapper">
+          <div className="App-content">
+            <MDITabs
+              ctx={mdiContext}
+              className="pages"
+              type="editable-card"
+              getItemLabel={generateLabel}
+              renderItem={renderItem}
+            />
+          </div>
+        </Content>
+      </Layout>
+    </Layout>
+  )
 }
 
 export default App

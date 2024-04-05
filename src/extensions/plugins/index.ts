@@ -29,7 +29,7 @@ export interface CustomPlugin {
 }
 
 export interface CustomPluginRenderProps {
-    node: HTMLElement,
+    node: HTMLElement
     context: CustomPluginRenderContext
 }
 
@@ -45,17 +45,17 @@ const plugins: CustomPlugin[] = pluginConfig.plugins.sort((a, b) => a.priority -
 const pluginsByPluginPoint: {[pluginPoint: string]: CustomPlugin[]} = _.groupBy(plugins, plugin => plugin.pluginPoint)
 
 export function hasPlugins(...pluginPoints: string[]): boolean {
-    for (const pluginPoint of pluginPoints) {
-        if (pluginPoint in pluginsByPluginPoint)
-            return true
-    }
-    return false
+  for (const pluginPoint of pluginPoints) {
+    if (pluginPoint in pluginsByPluginPoint)
+      return true
+  }
+  return false
 }
 
 export function renderPlugins(pluginPoint: string, node: HTMLElement, context: CustomPluginRenderContext) {
-    const plugins = pluginsByPluginPoint[pluginPoint]
-    plugins?.forEach(plugin => {
-        console.debug(`Rendering plugin [${plugin.id}] with pluginPoint = ${pluginPoint} and item = ${context.item.name}`)
-        plugin.render({node, context})
-    })
+  const plugins = pluginsByPluginPoint[pluginPoint]
+  plugins?.forEach(plugin => {
+    console.debug(`Rendering plugin [${plugin.id}] with pluginPoint = ${pluginPoint} and item = ${context.item.name}`)
+    plugin.render({node, context})
+  })
 }

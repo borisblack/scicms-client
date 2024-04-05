@@ -14,33 +14,33 @@ interface FieldNameProps {
 }
 
 function renderTagIcon(tag: TagType): ReactNode {
-    switch (tag) {
-        case 'lock':
-            return <LockFilled className={styles.badgeIcon}/>
-        case 'dataset':
-            return <DatabaseFilled className={styles.badgeIcon}/>
-        default:
-            return null
-    }
+  switch (tag) {
+    case 'lock':
+      return <LockFilled className={styles.badgeIcon}/>
+    case 'dataset':
+      return <DatabaseFilled className={styles.badgeIcon}/>
+    default:
+      return null
+  }
 }
 
 export default function FieldName({name, tag, className, style}: FieldNameProps) {
 
-    return tag ? (
-        <Badge className={styles.fieldNameBadge} count={renderTagIcon(tag)} offset={[5, 5]}>
-            <span
-                className={`${className ?? ''} ${styles.fieldNameWrapper}`}
-                style={style}
-            >
-                {name}
-            </span>
-        </Badge>
-    ) : (
-        <span
-            className={`${className ?? ''} ${styles.fieldNameWrapper}`}
-            style={style}
-        >
-            {name}
-        </span>
-    )
+  return tag ? (
+    <Badge className={styles.fieldNameBadge} count={renderTagIcon(tag)} offset={[5, 5]}>
+      <span
+        className={`${className ?? ''} ${styles.fieldNameWrapper}`}
+        style={style}
+      >
+        {name}
+      </span>
+    </Badge>
+  ) : (
+    <span
+      className={`${className ?? ''} ${styles.fieldNameWrapper}`}
+      style={style}
+    >
+      {name}
+    </span>
+  )
 }

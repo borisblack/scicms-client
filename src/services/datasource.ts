@@ -20,12 +20,12 @@ interface DatasourceResponseMeta {
 }
 
 export async function loadDatasourceTables(datasource: string, input: DatasourceTablesInput): Promise<DatasourceTablesResponse> {
-    const query = qs.stringify(input)
+  const query = qs.stringify(input)
 
-    try {
-        const res = await axios.get(`/api/datasource/${datasource}/tables${query ? `?${query}` : ''}`)
-        return res.data
-    } catch (e: any) {
-        throw new Error(extractAxiosErrorMessage(e))
-    }
+  try {
+    const res = await axios.get(`/api/datasource/${datasource}/tables${query ? `?${query}` : ''}`)
+    return res.data
+  } catch (e: any) {
+    throw new Error(extractAxiosErrorMessage(e))
+  }
 }

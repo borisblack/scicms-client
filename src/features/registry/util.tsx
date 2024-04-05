@@ -18,30 +18,30 @@ interface ToAntdMenuItemsParams {
 }
 
 export const toAntdMenuItems = ({me, ctx, items, menuItems}: ToAntdMenuItemsParams): ItemType[] =>
-    menuItems
-        .filter(it => !('roles' in it) || _.intersection(it.roles, me?.roles).length > 0)
-        .filter(it => !('itemName' in it) || items[it.itemName])
-        .map(it => {
-            if ('children' in it) {
-                return {
-                    key: it.key,
-                    label: i18n.t(it.label) as string,
-                    icon: <span><IconSuspense iconName={it.icon}/></span>,
-                    children: toAntdMenuItems({me, ctx, items, menuItems: it.children})
-                }
-            } else {
-                const item = items[it.itemName]
-                return {
-                    key: item.id,
-                    label: i18n.t(item.displayPluralName) as string,
-                    icon: <span><IconSuspense iconName={item.icon}/></span>,
-                    onClick: () => handleItemClick(ctx, item)
-                }
-            }
-        })
+  menuItems
+    .filter(it => !('roles' in it) || _.intersection(it.roles, me?.roles).length > 0)
+    .filter(it => !('itemName' in it) || items[it.itemName])
+    .map(it => {
+      if ('children' in it) {
+        return {
+          key: it.key,
+          label: i18n.t(it.label) as string,
+          icon: <span><IconSuspense iconName={it.icon}/></span>,
+          children: toAntdMenuItems({me, ctx, items, menuItems: it.children})
+        }
+      } else {
+        const item = items[it.itemName]
+        return {
+          key: item.id,
+          label: i18n.t(item.displayPluralName) as string,
+          icon: <span><IconSuspense iconName={item.icon}/></span>,
+          onClick: () => handleItemClick(ctx, item)
+        }
+      }
+    })
 
 function handleItemClick(ctx: MDIContext<ItemDataWrapper>, item: Item) {
-    ctx.openTab(
-        createMDITab(item, ViewType.default)
-    )
+  ctx.openTab(
+    createMDITab(item, ViewType.default)
+  )
 }

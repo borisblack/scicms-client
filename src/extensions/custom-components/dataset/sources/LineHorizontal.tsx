@@ -9,10 +9,10 @@ interface LineHorizontalProps {
 }
 
 const LineHorizontal = ({y, x1, x2, valid, onClick}: LineHorizontalProps) =>
-    <div
-        className={`${styles.lineHorizontal} ${valid ? styles.valid : styles.invalid}`}
-        style={{top: y, left: x1, width: x2 - x1}}
-        onClick={onClick}
-    />
+  <div
+    className={`${styles.lineHorizontal} ${valid ? styles.valid : styles.invalid}`}
+    style={{top: y, left: x1, width: x2 - x1}}
+    onClick={onClick}
+  />
 
 export default LineHorizontal

@@ -9,20 +9,20 @@ interface Props {
 }
 
 export default function CheckboxCell({value, disabled, onChange}: Props) {
-    const checkboxInput = useRef<HTMLInputElement>(null)
+  const checkboxInput = useRef<HTMLInputElement>(null)
 
-    function handleChange(e: CheckboxChangeEvent) {
-        onChange(e.target.checked)
-    }
+  function handleChange(e: CheckboxChangeEvent) {
+    onChange(e.target.checked)
+  }
 
-    return (
-        <div style={{textAlign: 'center'}}>
-            <Checkbox
-                ref={checkboxInput}
-                checked={value}
-                disabled={disabled}
-                onChange={handleChange}
-            />
-        </div>
-    )
+  return (
+    <div style={{textAlign: 'center'}}>
+      <Checkbox
+        ref={checkboxInput}
+        checked={value}
+        disabled={disabled}
+        onChange={handleChange}
+      />
+    </div>
+  )
 }

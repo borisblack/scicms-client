@@ -22,57 +22,57 @@ interface Props {
 }
 
 export default function SearchDataGridWrapper({item, notHiddenColumns = [], extraFiltersInput, majorRev, locale, state, onSelect}: Props) {
-    const {items: itemMap} = useRegistry()
-    const {open: openItem} = useItemOperations()
-    const {t} = useTranslation()
-    const [loading, setLoading] = useState<boolean>(false)
-    const [data, setData] = useState(getInitialData())
-    const [version, setVersion] = useState<number>(0)
-    const showAllLocalesRef = useRef<boolean>(false)
+  const {items: itemMap} = useRegistry()
+  const {open: openItem} = useItemOperations()
+  const {t} = useTranslation()
+  const [loading, setLoading] = useState<boolean>(false)
+  const [data, setData] = useState(getInitialData())
+  const [version, setVersion] = useState<number>(0)
+  const showAllLocalesRef = useRef<boolean>(false)
 
-    const notHiddenColumnSet = useMemo(() => new Set(notHiddenColumns), [notHiddenColumns])
-    const columnsMemoized = useMemo(() => getColumns(itemMap, item, openItem), [item, itemMap])
-    const hiddenColumnsMemoized = useMemo(() => getHiddenColumns(item).filter(it => !notHiddenColumnSet.has(it)), [item, notHiddenColumnSet])
+  const notHiddenColumnSet = useMemo(() => new Set(notHiddenColumns), [notHiddenColumns])
+  const columnsMemoized = useMemo(() => getColumns(itemMap, item, openItem), [item, itemMap])
+  const hiddenColumnsMemoized = useMemo(() => getHiddenColumns(item).filter(it => !notHiddenColumnSet.has(it)), [item, notHiddenColumnSet])
 
-    const handleRequest = useCallback(async (params: RequestParams) => {
-        const allParams: ExtRequestParams = {...params, majorRev, locale: showAllLocalesRef.current ? 'all' : locale, state}
+  const handleRequest = useCallback(async (params: RequestParams) => {
+    const allParams: ExtRequestParams = {...params, majorRev, locale: showAllLocalesRef.current ? 'all' : locale, state}
 
-        try {
-            setLoading(true)
-            const dataWithPagination = await findAll(itemMap, item, allParams, extraFiltersInput)
-            setData(dataWithPagination)
-        } catch (e: any) {
-            console.error(e.message)
-            notification.error({
-                message: t('Request error'),
-                description: e.message
-            })
-        } finally {
-            setLoading(false)
-        }
-    }, [majorRev, locale, state, itemMap, item, extraFiltersInput])
+    try {
+      setLoading(true)
+      const dataWithPagination = await findAll(itemMap, item, allParams, extraFiltersInput)
+      setData(dataWithPagination)
+    } catch (e: any) {
+      console.error(e.message)
+      notification.error({
+        message: t('Request error'),
+        description: e.message
+      })
+    } finally {
+      setLoading(false)
+    }
+  }, [majorRev, locale, state, itemMap, item, extraFiltersInput])
 
-    const handleLocalizationsCheckBoxChange = useCallback((e: CheckboxChangeEvent) => {
-        showAllLocalesRef.current = e.target.checked
-        setVersion(prevVersion => prevVersion + 1)
-    }, [])
+  const handleLocalizationsCheckBoxChange = useCallback((e: CheckboxChangeEvent) => {
+    showAllLocalesRef.current = e.target.checked
+    setVersion(prevVersion => prevVersion + 1)
+  }, [])
 
-    const handleRowDoubleClick = useCallback((row: Row<ItemData>) => onSelect(row.original), [onSelect])
+  const handleRowDoubleClick = useCallback((row: Row<ItemData>) => onSelect(row.original), [onSelect])
 
-    return (
-        <DataGrid
-            loading={loading}
-            columns={columnsMemoized}
-            data={data}
-            version={version}
-            initialState={{
-                hiddenColumns: hiddenColumnsMemoized,
-                pageSize: appConfig.query.defaultPageSize
-            }}
-            toolbar={item.localized && <Checkbox onChange={handleLocalizationsCheckBoxChange}>{t('All Locales')}</Checkbox>}
-            title={t(item.displayPluralName)}
-            onRequest={handleRequest}
-            onRowDoubleClick={handleRowDoubleClick}
-        />
-    )
+  return (
+    <DataGrid
+      loading={loading}
+      columns={columnsMemoized}
+      data={data}
+      version={version}
+      initialState={{
+        hiddenColumns: hiddenColumnsMemoized,
+        pageSize: appConfig.query.defaultPageSize
+      }}
+      toolbar={item.localized && <Checkbox onChange={handleLocalizationsCheckBoxChange}>{t('All Locales')}</Checkbox>}
+      title={t(item.displayPluralName)}
+      onRequest={handleRequest}
+      onRowDoubleClick={handleRowDoubleClick}
+    />
+  )
 }

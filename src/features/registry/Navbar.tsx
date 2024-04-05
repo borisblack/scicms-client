@@ -33,88 +33,88 @@ const isNavbarCollapsed = (key: string) => localStorage.getItem(key) === '1'
 const setNavbarCollapsed = (key: string, collapsed: boolean) => localStorage.setItem(key, collapsed ? '1' : '0')
 
 const Navbar = ({ctx, menuItems, isLoading = false, appPrefix, width = DEFAULT_NAVBAR_WIDTH}: NavbarProps) => {
-    const {me, logout} = useAuth()
-    const {loading, reset: resetRegistry} = useRegistry()
-    const {t} = useTranslation()
-    const navbarCollapsedKey = appPrefix ? `${appPrefix}${NAVBAR_COLLAPSED_KEY_SUFFIX}` : NAVBAR_COLLAPSED_KEY
-    const [collapsed, setCollapsed] = useState(isNavbarCollapsed(navbarCollapsedKey))
-    const {show: showChangePasswordModal, close: closeChangePasswordModal, modalProps: changePasswordModalProps} = useModal()
-    // const { loading, error, data } = useQuery(ME_QUERY, {errorPolicy: 'all'})
+  const {me, logout} = useAuth()
+  const {loading, reset: resetRegistry} = useRegistry()
+  const {t} = useTranslation()
+  const navbarCollapsedKey = appPrefix ? `${appPrefix}${NAVBAR_COLLAPSED_KEY_SUFFIX}` : NAVBAR_COLLAPSED_KEY
+  const [collapsed, setCollapsed] = useState(isNavbarCollapsed(navbarCollapsedKey))
+  const {show: showChangePasswordModal, close: closeChangePasswordModal, modalProps: changePasswordModalProps} = useModal()
+  // const { loading, error, data } = useQuery(ME_QUERY, {errorPolicy: 'all'})
 
-    const handleLogout = useCallback(async () => {
-        await logout()
-        ctx.reset()
-        resetRegistry()
-    }, [ctx, logout, resetRegistry])
+  const handleLogout = useCallback(async () => {
+    await logout()
+    ctx.reset()
+    resetRegistry()
+  }, [ctx, logout, resetRegistry])
 
-    const handleToggle = useCallback(() => {
-        setNavbarCollapsed(navbarCollapsedKey, !collapsed)
-        setCollapsed(!collapsed)
-    }, [collapsed])
+  const handleToggle = useCallback(() => {
+    setNavbarCollapsed(navbarCollapsedKey, !collapsed)
+    setCollapsed(!collapsed)
+  }, [collapsed])
 
-    function handleChangePassword() {
-        showChangePasswordModal()
+  function handleChangePassword() {
+    showChangePasswordModal()
+  }
+
+  const getProfileChildMenuItems = (): ItemType[] => {
+    if (me == null)
+      return []
+
+    const profileChildMenuItems: ItemType[] = []
+
+    if (me.authType === AuthType.LOCAL) {
+      profileChildMenuItems.push({
+        key: 'changePassword',
+        label: t('Change password'),
+        onClick: handleChangePassword
+      })
     }
 
-    const getProfileChildMenuItems = (): ItemType[] => {
-        if (me == null)
-            return []
+    profileChildMenuItems.push({
+      key: 'logout',
+      label: t('Logout'),
+      icon: <LogoutOutlined/>,
+      onClick: handleLogout
+    })
 
-        const profileChildMenuItems: ItemType[] = []
+    return profileChildMenuItems
+  }
 
-        if (me.authType === AuthType.LOCAL) {
-            profileChildMenuItems.push({
-                key: 'changePassword',
-                label: t('Change password'),
-                onClick: handleChangePassword
-            })
-        }
+  return (
+    <Sider
+      className={styles.navbarSider}
+      collapsible
+      collapsed={collapsed}
+      trigger={null}
+      width={width}
+      onCollapse={handleToggle}
+    >
+      <div className={styles.navbarLogoWrapper} onClick={handleToggle}>
+        <img src={logo} className={styles.navbarLogo} alt="logo"/>
+        {!collapsed && <span className={styles.navbarLogoText}>{t('SciCMS Admin')}</span>}
+      </div>
+      <Spin spinning={loading || isLoading}>
+        <Menu
+          mode="inline"
+          theme="dark"
+          items={[
+            {
+              key: 'profile',
+              label: `${t('Profile')} (${me?.username ?? 'Anonymous'})`,
+              icon: <UserOutlined />,
+              children: getProfileChildMenuItems()
+            },
+            ...menuItems
+          ]}
+        />
+      </Spin>
 
-        profileChildMenuItems.push({
-            key: 'logout',
-            label: t('Logout'),
-            icon: <LogoutOutlined/>,
-            onClick: handleLogout
-        })
-
-        return profileChildMenuItems
-    }
-
-    return (
-        <Sider
-            className={styles.navbarSider}
-            collapsible
-            collapsed={collapsed}
-            trigger={null}
-            width={width}
-            onCollapse={handleToggle}
-        >
-            <div className={styles.navbarLogoWrapper} onClick={handleToggle}>
-                <img src={logo} className={styles.navbarLogo} alt="logo"/>
-                {!collapsed && <span className={styles.navbarLogoText}>{t('SciCMS Admin')}</span>}
-            </div>
-            <Spin spinning={loading || isLoading}>
-                <Menu
-                    mode="inline"
-                    theme="dark"
-                    items={[
-                        {
-                            key: 'profile',
-                            label: `${t('Profile')} (${me?.username ?? 'Anonymous'})`,
-                            icon: <UserOutlined />,
-                            children: getProfileChildMenuItems()
-                        },
-                        ...menuItems
-                    ]}
-                />
-            </Spin>
-
-            <ChangePasswordModal
-                {...changePasswordModalProps}
-                onClose={closeChangePasswordModal}
-            />
-        </Sider>
-    )
+      <ChangePasswordModal
+        {...changePasswordModalProps}
+        onClose={closeChangePasswordModal}
+      />
+    </Sider>
+  )
 }
 
 export default Navbar

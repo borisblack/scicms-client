@@ -25,113 +25,113 @@ interface SelectorProps {
 }
 
 export default function Selector({selector, height, datasetMap, dashes, canEdit, readOnly, onLockChange, onChange, onDelete}: SelectorProps) {
-    const {t} = useTranslation()
-    const [selectorValueForm] = Form.useForm()
-    const {show: showSelectorModal, close: closeSelectorModal, modalProps: selectorModalProps} = useModal()
+  const {t} = useTranslation()
+  const [selectorValueForm] = Form.useForm()
+  const {show: showSelectorModal, close: closeSelectorModal, modalProps: selectorModalProps} = useModal()
 
-    function handleSelectorModalOpen() {
-        onLockChange(true)
-        showSelectorModal()
-    }
+  function handleSelectorModalOpen() {
+    onLockChange(true)
+    showSelectorModal()
+  }
 
-    function handleSelectorModalClose() {
-        onLockChange(false)
-        closeSelectorModal()
-    }
+  function handleSelectorModalClose() {
+    onLockChange(false)
+    closeSelectorModal()
+  }
 
-    function handleSelectorValueFormFinish(values: SelectorValueFormValues) {
-        const filter = fromFormSelectorFilter(values.selectorFilter)
-        onChange({
-            ...selector,
-            value: filter.value
-        })
-    }
+  function handleSelectorValueFormFinish(values: SelectorValueFormValues) {
+    const filter = fromFormSelectorFilter(values.selectorFilter)
+    onChange({
+      ...selector,
+      value: filter.value
+    })
+  }
 
-    function handleSelectorClear() {
-        onChange(_.omit(selector, 'value'))
-    }
+  function handleSelectorClear() {
+    onChange(_.omit(selector, 'value'))
+  }
 
-    const getSettingsMenuItems = (): ItemType[] => {
-        const menuItems: ItemType[] = []
+  const getSettingsMenuItems = (): ItemType[] => {
+    const menuItems: ItemType[] = []
 
-        if (!readOnly) {
-            menuItems.push(
-                /*{
+    if (!readOnly) {
+      menuItems.push(
+        /*{
                     type: 'divider'
                 },*/
-                {
-                    key: 'edit',
-                    label: <Space><EditOutlined/>{t('Edit')}</Space>,
-                    onClick: handleSelectorModalOpen
-                },
-                {
-                    key: 'delete',
-                    label: <Space><DeleteOutlined className="red"/>{t('Delete')}</Space>,
-                    disabled: !canEdit,
-                    onClick: onDelete
-                }
-            )
+        {
+          key: 'edit',
+          label: <Space><EditOutlined/>{t('Edit')}</Space>,
+          onClick: handleSelectorModalOpen
+        },
+        {
+          key: 'delete',
+          label: <Space><DeleteOutlined className="red"/>{t('Delete')}</Space>,
+          disabled: !canEdit,
+          onClick: onDelete
         }
-
-        return menuItems
+      )
     }
 
-    return (
-        <>
-            <PageHeader
-                className={styles.pageHeader}
-                title={selector.name}
-                // footer={''}
-                extra={[
-                    <Button
-                        key="clear"
-                        type="text"
-                        className={styles.toolbarBtn}
-                        icon={<ClearOutlined/>}
-                        title={t('Clear')}
-                        onClick={handleSelectorClear}
-                        onMouseDown={e => e.stopPropagation()}
-                    />,
-                    <Dropdown
-                        key="settings"
-                        placement="bottomRight"
-                        trigger={['click']}
-                        menu={{items: getSettingsMenuItems()}}
-                    >
-                        <Button
-                            type="text"
-                            className={styles.toolbarBtn}
-                            icon={<SettingOutlined/>}
-                            title={t('Settings')}
-                            onMouseDown={e => e.stopPropagation()}
-                        />
-                    </Dropdown>
-                ]}
-            />
+    return menuItems
+  }
 
-            <Form
-                form={selectorValueForm}
-                size="small"
-                layout="vertical"
-                initialValues={{selectorFilter: toFormSelectorFilter(selector)}}
-                onFinish={handleSelectorValueFormFinish}
-            >
-                <SelectorValue
-                    namePrefix={['selectorFilter']}
-                    selector={selector}
-                    datasetMap={datasetMap}
-                />
-            </Form>
-
-            <SelectorModal
-                {...selectorModalProps}
-                selector={selector}
-                datasetMap={datasetMap}
-                dashes={dashes}
-                canEdit={canEdit}
-                onChange={onChange}
-                onClose={handleSelectorModalClose}
+  return (
+    <>
+      <PageHeader
+        className={styles.pageHeader}
+        title={selector.name}
+        // footer={''}
+        extra={[
+          <Button
+            key="clear"
+            type="text"
+            className={styles.toolbarBtn}
+            icon={<ClearOutlined/>}
+            title={t('Clear')}
+            onClick={handleSelectorClear}
+            onMouseDown={e => e.stopPropagation()}
+          />,
+          <Dropdown
+            key="settings"
+            placement="bottomRight"
+            trigger={['click']}
+            menu={{items: getSettingsMenuItems()}}
+          >
+            <Button
+              type="text"
+              className={styles.toolbarBtn}
+              icon={<SettingOutlined/>}
+              title={t('Settings')}
+              onMouseDown={e => e.stopPropagation()}
             />
-        </>
-    )
+          </Dropdown>
+        ]}
+      />
+
+      <Form
+        form={selectorValueForm}
+        size="small"
+        layout="vertical"
+        initialValues={{selectorFilter: toFormSelectorFilter(selector)}}
+        onFinish={handleSelectorValueFormFinish}
+      >
+        <SelectorValue
+          namePrefix={['selectorFilter']}
+          selector={selector}
+          datasetMap={datasetMap}
+        />
+      </Form>
+
+      <SelectorModal
+        {...selectorModalProps}
+        selector={selector}
+        datasetMap={datasetMap}
+        dashes={dashes}
+        canEdit={canEdit}
+        onChange={onChange}
+        onClose={handleSelectorModalClose}
+      />
+    </>
+  )
 }

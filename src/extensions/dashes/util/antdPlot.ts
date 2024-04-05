@@ -7,19 +7,19 @@ import {RU_RU_LOCALE} from './locales/ru_RU'
 import {QueryFilter, QueryOp} from 'src/types/bi'
 
 export function handleDashClick(chart: Plot<any>, event: PlotEvent, fieldName: string, cb: (queryFilter: QueryFilter) => void) {
-    if (event.type !== 'click')
-        return
+  if (event.type !== 'click')
+    return
 
-    const v = event.data?.data?.[fieldName]
-    if (v == null)
-        return
+  const v = event.data?.data?.[fieldName]
+  if (v == null)
+    return
 
-    cb({
-        id: uuidv4(),
-        columnName: fieldName,
-        op: QueryOp.$eq,
-        value: v
-    })
+  cb({
+    id: uuidv4(),
+    columnName: fieldName,
+    op: QueryOp.$eq,
+    value: v
+  })
 }
 
 // Register additional locales

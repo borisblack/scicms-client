@@ -20,77 +20,77 @@ interface TextProps {
 }
 
 export default function Text({text, height, readOnly, canEdit, onLockChange, onChange, onDelete}: TextProps) {
-    const {t} = useTranslation()
-    const {show: showTextModal, close: closeTextModal, modalProps: textModalProps} = useModal()
+  const {t} = useTranslation()
+  const {show: showTextModal, close: closeTextModal, modalProps: textModalProps} = useModal()
 
-    function handleTextModalOpen() {
-        onLockChange(true)
-        showTextModal()
-    }
+  function handleTextModalOpen() {
+    onLockChange(true)
+    showTextModal()
+  }
 
-    function handleTextModalClose() {
-        onLockChange(false)
-        closeTextModal()
-    }
+  function handleTextModalClose() {
+    onLockChange(false)
+    closeTextModal()
+  }
 
-    const getSettingsMenuItems = (): ItemType[] => {
-        const menuItems: ItemType[] = []
+  const getSettingsMenuItems = (): ItemType[] => {
+    const menuItems: ItemType[] = []
 
-        if (!readOnly) {
-            menuItems.push(
-                /*{
+    if (!readOnly) {
+      menuItems.push(
+        /*{
                     type: 'divider'
                 },*/
-                {
-                    key: 'edit',
-                    label: <Space><EditOutlined/>{t('Edit')}</Space>,
-                    // disabled: !canEdit,
-                    onClick: handleTextModalOpen
-                },
-                {
-                    key: 'delete',
-                    label: <Space><DeleteOutlined className="red"/>{t('Delete')}</Space>,
-                    disabled: !canEdit,
-                    onClick: onDelete
-                }
-            )
+        {
+          key: 'edit',
+          label: <Space><EditOutlined/>{t('Edit')}</Space>,
+          // disabled: !canEdit,
+          onClick: handleTextModalOpen
+        },
+        {
+          key: 'delete',
+          label: <Space><DeleteOutlined className="red"/>{t('Delete')}</Space>,
+          disabled: !canEdit,
+          onClick: onDelete
         }
-
-        return menuItems
+      )
     }
 
-    return (
-        <>
-            {(canEdit && !readOnly) && (
-                <PageHeader
-                    className={styles.pageHeader}
-                    extra={[
-                        <Dropdown key="settings" placement="bottomRight" trigger={['click']} menu={{items: getSettingsMenuItems()}}>
-                            <Button
-                                type="text"
-                                className={styles.toolbarBtn}
-                                icon={<SettingOutlined/>}
-                                title={t('Settings')}
-                                onMouseDown={e => e.stopPropagation()}
-                            />
-                        </Dropdown>
-                    ]}
-                />
-            )}
+    return menuItems
+  }
 
-            {(text.level == null) ? (
-                <Typography.Text>{text.content}</Typography.Text>
-            ) : (
-                <Typography.Title level={text.level}>{text.content}</Typography.Title>
-            )}
+  return (
+    <>
+      {(canEdit && !readOnly) && (
+        <PageHeader
+          className={styles.pageHeader}
+          extra={[
+            <Dropdown key="settings" placement="bottomRight" trigger={['click']} menu={{items: getSettingsMenuItems()}}>
+              <Button
+                type="text"
+                className={styles.toolbarBtn}
+                icon={<SettingOutlined/>}
+                title={t('Settings')}
+                onMouseDown={e => e.stopPropagation()}
+              />
+            </Dropdown>
+          ]}
+        />
+      )}
 
-            <TextModal
-                {...textModalProps}
-                text={text}
-                canEdit={canEdit}
-                onChange={onChange}
-                onClose={handleTextModalClose}
-            />
-        </>
-    )
+      {(text.level == null) ? (
+        <Typography.Text>{text.content}</Typography.Text>
+      ) : (
+        <Typography.Title level={text.level}>{text.content}</Typography.Title>
+      )}
+
+      <TextModal
+        {...textModalProps}
+        text={text}
+        canEdit={canEdit}
+        onChange={onChange}
+        onClose={handleTextModalClose}
+      />
+    </>
+  )
 }

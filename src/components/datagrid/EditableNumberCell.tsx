@@ -10,56 +10,56 @@ interface Props {
 }
 
 export default function EditableNumberCell({value, min, max, step, onChange}: Props) {
-    const [innerValue, setInnerValue] = useState(value)
-    const [editing, setEditing] = useState(false)
-    const editInput = useRef<HTMLInputElement>(null)
+  const [innerValue, setInnerValue] = useState(value)
+  const [editing, setEditing] = useState(false)
+  const editInput = useRef<HTMLInputElement>(null)
 
-    useEffect(() => {
-        setInnerValue(value)
-    }, [value])
+  useEffect(() => {
+    setInnerValue(value)
+  }, [value])
 
-    function startEditing() {
-        setEditing(true)
-        setTimeout(() => editInput.current?.select(), 100)
+  function startEditing() {
+    setEditing(true)
+    setTimeout(() => editInput.current?.select(), 100)
+  }
+
+  function handleChange(v: string | number | null) {
+    setInnerValue(v)
+  }
+
+  function handleKeyUp(evt: KeyboardEvent<HTMLInputElement>) {
+    if (evt.key === 'Escape') {
+      setEditing(false)
+      setInnerValue(value)
+      return
     }
 
-    function handleChange(v: string | number | null) {
-        setInnerValue(v)
+    if (evt.key === 'Enter') {
+      setEditing(false)
+      const v = (evt.target as HTMLInputElement).value
+      onChange(v ? Number(v) : null)
     }
+  }
 
-    function handleKeyUp(evt: KeyboardEvent<HTMLInputElement>) {
-        if (evt.key === 'Escape') {
-            setEditing(false)
-            setInnerValue(value)
-            return
-        }
+  function handleBlur(evt: FocusEvent<HTMLInputElement>) {
+    setEditing(false)
+  }
 
-        if (evt.key === 'Enter') {
-            setEditing(false)
-            const v = (evt.target as HTMLInputElement).value
-            onChange(v ? Number(v) : null)
-        }
-    }
-
-    function handleBlur(evt: FocusEvent<HTMLInputElement>) {
-        setEditing(false)
-    }
-
-    return editing ? (
-        <InputNumber
-            ref={editInput}
-            size="small"
-            value={innerValue}
-            min={min}
-            max={max}
-            step={step}
-            onBlur={handleBlur}
-            onChange={handleChange}
-            onKeyUp={handleKeyUp}
-        />
-    ) : (
-        <div style={{minHeight: 22}} onDoubleClick={startEditing}>
-            {innerValue}
-        </div>
-    )
+  return editing ? (
+    <InputNumber
+      ref={editInput}
+      size="small"
+      value={innerValue}
+      min={min}
+      max={max}
+      step={step}
+      onBlur={handleBlur}
+      onChange={handleChange}
+      onKeyUp={handleKeyUp}
+    />
+  ) : (
+    <div style={{minHeight: 22}} onDoubleClick={startEditing}>
+      {innerValue}
+    </div>
+  )
 }

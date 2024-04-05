@@ -4,22 +4,22 @@ import {DateTime} from 'luxon'
 
 import {RootState} from 'src/store'
 import {
-    getExpireAt,
-    getJwt,
-    isExpired as getIsExpired,
-    removeExpireAt,
-    removeJwt,
-    storeExpireAt,
-    storeJwt
+  getExpireAt,
+  getJwt,
+  isExpired as getIsExpired,
+  removeExpireAt,
+  removeJwt,
+  storeExpireAt,
+  storeJwt
 } from 'src/services'
 import {
-    fetchSecurityConfig as doFetchSecurityConfig,
-    fetchMe as doFetchMe,
-    JwtTokenResponse,
-    login as doLogin,
-    loginOauth2 as doLoginOauth2,
-    logout as doLogout,
-    updateSessionData as doUpdateSessionData
+  fetchSecurityConfig as doFetchSecurityConfig,
+  fetchMe as doFetchMe,
+  JwtTokenResponse,
+  login as doLogin,
+  loginOauth2 as doLoginOauth2,
+  logout as doLogout,
+  updateSessionData as doUpdateSessionData
 } from 'src/services/auth'
 import {SecurityConfig, UserInfo} from 'src/types'
 import i18n from 'src/i18n'
@@ -34,178 +34,178 @@ export interface AuthState {
 }
 
 const initialState: AuthState = {
-    securityConfig: {oauth2Providers: []},
-    loading: false,
-    jwt: getJwt(),
-    expireAt: getExpireAt(),
-    isExpired: getIsExpired(),
-    me: null
+  securityConfig: {oauth2Providers: []},
+  loading: false,
+  jwt: getJwt(),
+  expireAt: getExpireAt(),
+  isExpired: getIsExpired(),
+  me: null
 }
 
 const fetchSecurityConfig = createAsyncThunk(
-    'auth/fetchSecurityConfig',
-    () => doFetchSecurityConfig().then(securityConfig => securityConfig)
+  'auth/fetchSecurityConfig',
+  () => doFetchSecurityConfig().then(securityConfig => securityConfig)
 )
 
 const login = createAsyncThunk(
-    'auth/login',
-    (credentials: {username: string, password: string}) => {
-        removeJwt()
-        return doLogin(credentials).then(tokenResponse => tokenResponse)
-    }
+  'auth/login',
+  (credentials: {username: string, password: string}) => {
+    removeJwt()
+    return doLogin(credentials).then(tokenResponse => tokenResponse)
+  }
 )
 
 const loginOauth2 = createAsyncThunk(
-    'auth/loginOauth2',
-    (credentials: {provider: string, code: string}) => {
-        removeJwt()
-        return doLoginOauth2(credentials).then(tokenResponse => tokenResponse)
-    }
+  'auth/loginOauth2',
+  (credentials: {provider: string, code: string}) => {
+    removeJwt()
+    return doLoginOauth2(credentials).then(tokenResponse => tokenResponse)
+  }
 )
 
 const fetchMeIfNeeded = createAsyncThunk(
-    'auth/fetchMeIfNeeded',
-    () => doFetchMe().then(me => me),
-    {
-        condition: (credentials, {getState}) => shouldFetchMe(getState() as {auth: AuthState})
-    }
+  'auth/fetchMeIfNeeded',
+  () => doFetchMe().then(me => me),
+  {
+    condition: (credentials, {getState}) => shouldFetchMe(getState() as {auth: AuthState})
+  }
 )
 
 const shouldFetchMe = (state: {auth: AuthState}) => {
-    const {loading, me} = state.auth
-    return !me /*&& !loading*/
+  const {loading, me} = state.auth
+  return !me /*&& !loading*/
 }
 
 const logout = createAsyncThunk(
-    'auth/logout',
-    () => doLogout()
+  'auth/logout',
+  () => doLogout()
 )
 
 const updateSessionData = createAsyncThunk(
-    'auth/updateSessionData',
-    doUpdateSessionData
+  'auth/updateSessionData',
+  doUpdateSessionData
 )
 
 const authSlice = createSlice({
-    name: 'auth',
-    initialState,
-    reducers: {},
-    extraReducers: builder => {
-        builder
-            .addCase(fetchSecurityConfig.pending, state => {
-                state.loading = true
-            })
-            .addCase(fetchSecurityConfig.fulfilled, (state, action: PayloadAction<SecurityConfig>) => {
-                state.securityConfig = action.payload
-                state.loading = false
-            })
-            .addCase(fetchSecurityConfig.rejected, (state, action) => {
-                state.loading = false
-                notification.error({
-                    message: i18n.t('Error fetching security config') as string,
-                    description: action.error.message
-                })
-            })
-            .addCase(login.pending, state => {
-                state.loading = true
-            })
-            .addCase(login.fulfilled, (state, action: PayloadAction<JwtTokenResponse>) => {
-                const {jwt, expirationIntervalMillis, user} = action.payload
-                const expireAt = DateTime.now().plus({millisecond: expirationIntervalMillis}).toMillis()
-                storeJwt(jwt)
-                storeExpireAt(expireAt)
-                state.jwt = jwt
-                state.expireAt = expireAt
-                state.isExpired = expireAt < DateTime.now().toMillis()
-                state.me = user
-                state.loading = false
-            })
-            .addCase(login.rejected, (state, action) => {
-                state.loading = false
-                notification.error({
-                    message: i18n.t('Login error') as string,
-                    description: action.error.message
-                })
-            })
-            .addCase(loginOauth2.pending, state => {
-                state.loading = true
-            })
-            .addCase(loginOauth2.fulfilled, (state, action: PayloadAction<JwtTokenResponse>) => {
-                const {jwt, expirationIntervalMillis, user} = action.payload
-                const expireAt = DateTime.now().plus({millisecond: expirationIntervalMillis}).toMillis()
-                storeJwt(jwt)
-                storeExpireAt(expireAt)
-                state.jwt = jwt
-                state.expireAt = expireAt
-                state.isExpired = expireAt < DateTime.now().toMillis()
-                state.me = user
-                state.loading = false
-            })
-            .addCase(loginOauth2.rejected, (state, action) => {
-                state.loading = false
-                notification.error({
-                    message: i18n.t('Login error') as string,
-                    description: action.error.message
-                })
-            })
-            .addCase(fetchMeIfNeeded.pending, state => {
-                state.loading = true
-            })
-            .addCase(fetchMeIfNeeded.fulfilled, (state, action: PayloadAction<UserInfo>) => {
-                state.me = action.payload
-                state.loading = false
-            })
-            .addCase(fetchMeIfNeeded.rejected, (state, action) => {
-                state.me = null
-                state.loading = false
-                notification.error({
-                    message: i18n.t('Error fetching user info') as string,
-                    description: action.error.message
-                })
-            })
-            .addCase(logout.pending, state => {
-                state.loading = true
-            })
-            .addCase(logout.fulfilled, state => {
-                removeJwt()
-                removeExpireAt()
-                state.jwt = null
-                state.expireAt = null
-                state.isExpired = true
-                state.me = null
-                state.loading = false
-            })
-            .addCase(logout.rejected, (state, action) => {
-                removeJwt()
-                removeExpireAt()
-                state.jwt = null
-                state.expireAt = null
-                state.isExpired = true
-                state.me = null
-                state.loading = false
-                notification.error({
-                    message: i18n.t('Logout error') as string,
-                    description: action.error.message
-                })
-            })
-            .addCase(updateSessionData.pending, state => {
-                state.loading = true
-            })
-            .addCase(updateSessionData.fulfilled, (state, action: PayloadAction<{[key: string]: any}>) => {
-                const {me} = state
-                if (me != null) {
-                    me.sessionData = action.payload
-                }
-                state.loading = false
-            })
-            .addCase(updateSessionData.rejected, (state, action) => {
-                state.loading = false
-                notification.error({
-                    message: i18n.t('Session data update error') as string,
-                    description: action.error.message
-                })
-            })
-    }
+  name: 'auth',
+  initialState,
+  reducers: {},
+  extraReducers: builder => {
+    builder
+      .addCase(fetchSecurityConfig.pending, state => {
+        state.loading = true
+      })
+      .addCase(fetchSecurityConfig.fulfilled, (state, action: PayloadAction<SecurityConfig>) => {
+        state.securityConfig = action.payload
+        state.loading = false
+      })
+      .addCase(fetchSecurityConfig.rejected, (state, action) => {
+        state.loading = false
+        notification.error({
+          message: i18n.t('Error fetching security config') as string,
+          description: action.error.message
+        })
+      })
+      .addCase(login.pending, state => {
+        state.loading = true
+      })
+      .addCase(login.fulfilled, (state, action: PayloadAction<JwtTokenResponse>) => {
+        const {jwt, expirationIntervalMillis, user} = action.payload
+        const expireAt = DateTime.now().plus({millisecond: expirationIntervalMillis}).toMillis()
+        storeJwt(jwt)
+        storeExpireAt(expireAt)
+        state.jwt = jwt
+        state.expireAt = expireAt
+        state.isExpired = expireAt < DateTime.now().toMillis()
+        state.me = user
+        state.loading = false
+      })
+      .addCase(login.rejected, (state, action) => {
+        state.loading = false
+        notification.error({
+          message: i18n.t('Login error') as string,
+          description: action.error.message
+        })
+      })
+      .addCase(loginOauth2.pending, state => {
+        state.loading = true
+      })
+      .addCase(loginOauth2.fulfilled, (state, action: PayloadAction<JwtTokenResponse>) => {
+        const {jwt, expirationIntervalMillis, user} = action.payload
+        const expireAt = DateTime.now().plus({millisecond: expirationIntervalMillis}).toMillis()
+        storeJwt(jwt)
+        storeExpireAt(expireAt)
+        state.jwt = jwt
+        state.expireAt = expireAt
+        state.isExpired = expireAt < DateTime.now().toMillis()
+        state.me = user
+        state.loading = false
+      })
+      .addCase(loginOauth2.rejected, (state, action) => {
+        state.loading = false
+        notification.error({
+          message: i18n.t('Login error') as string,
+          description: action.error.message
+        })
+      })
+      .addCase(fetchMeIfNeeded.pending, state => {
+        state.loading = true
+      })
+      .addCase(fetchMeIfNeeded.fulfilled, (state, action: PayloadAction<UserInfo>) => {
+        state.me = action.payload
+        state.loading = false
+      })
+      .addCase(fetchMeIfNeeded.rejected, (state, action) => {
+        state.me = null
+        state.loading = false
+        notification.error({
+          message: i18n.t('Error fetching user info') as string,
+          description: action.error.message
+        })
+      })
+      .addCase(logout.pending, state => {
+        state.loading = true
+      })
+      .addCase(logout.fulfilled, state => {
+        removeJwt()
+        removeExpireAt()
+        state.jwt = null
+        state.expireAt = null
+        state.isExpired = true
+        state.me = null
+        state.loading = false
+      })
+      .addCase(logout.rejected, (state, action) => {
+        removeJwt()
+        removeExpireAt()
+        state.jwt = null
+        state.expireAt = null
+        state.isExpired = true
+        state.me = null
+        state.loading = false
+        notification.error({
+          message: i18n.t('Logout error') as string,
+          description: action.error.message
+        })
+      })
+      .addCase(updateSessionData.pending, state => {
+        state.loading = true
+      })
+      .addCase(updateSessionData.fulfilled, (state, action: PayloadAction<{[key: string]: any}>) => {
+        const {me} = state
+        if (me != null) {
+          me.sessionData = action.payload
+        }
+        state.loading = false
+      })
+      .addCase(updateSessionData.rejected, (state, action) => {
+        state.loading = false
+        notification.error({
+          message: i18n.t('Session data update error') as string,
+          description: action.error.message
+        })
+      })
+  }
 })
 
 export {fetchSecurityConfig, login, loginOauth2, fetchMeIfNeeded, logout, updateSessionData}

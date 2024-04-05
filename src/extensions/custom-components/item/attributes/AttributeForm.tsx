@@ -61,8 +61,8 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
       setSeqNameOptions(sequences.map(it => ({label: it.name, value: it.name})))
     } catch (e: any) {
       notification.error({
-          message: t('Request error'),
-          description: e.message
+        message: t('Request error'),
+        description: e.message
       })
     }
   }, DEBOUNCE_WAIT_INTERVAL)
@@ -137,11 +137,11 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
             label={t('Name')}
             initialValue={attribute?.name}
             rules={[
-                {required: true, message: t('Required field')},
-                regExpRule(LOWERCASE_NO_WHITESPACE_PATTERN)
+              {required: true, message: t('Required field')},
+              regExpRule(LOWERCASE_NO_WHITESPACE_PATTERN)
             ]}
           >
-            <Input style={{maxWidth: 300}} maxLength={50} disabled={attribute?.name != null}/>
+            <Input style={{maxWidth: 300}} maxLength={50} disabled={attribute?.name != null} />
           </FormItem>
 
           <FormItem
@@ -157,7 +157,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
                 value: ft,
                 label: (
                   <span className="text-ellipsis">
-                    <FieldTypeIcon fieldType={ft as FieldType}/>
+                    <FieldTypeIcon fieldType={ft as FieldType} />
                     &nbsp;&nbsp;
                     {ft}
                   </span>
@@ -173,8 +173,8 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
             label={t('Sort Order')}
             initialValue={attribute?.sortOrder}
             rules={[{type: 'number', min: 0}]}
-        >
-              <InputNumber style={{width: 150}} min={0}/>
+          >
+            <InputNumber style={{width: 150}} min={0} />
           </FormItem>
 
           {!isCollectionRelation && (
@@ -184,7 +184,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
               label={t('Column Name')}
               initialValue={attribute?.columnName}
             >
-              <Input style={{maxWidth: 300}} maxLength={50}/>
+              <Input style={{maxWidth: 300}} maxLength={50} />
             </FormItem>
           )}
 
@@ -195,7 +195,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
             initialValue={attribute?.displayName}
             rules={[{required: true, message: t('Required field')}]}
           >
-            <Input style={{maxWidth: 300}} maxLength={50}/>
+            <Input style={{maxWidth: 300}} maxLength={50} />
           </FormItem>
 
           <FormItem
@@ -204,7 +204,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
             label={t('Description')}
             initialValue={attribute?.description}
           >
-            <Input maxLength={250}/>
+            <Input maxLength={250} />
           </FormItem>
 
           {!isCollectionRelation && (
@@ -224,7 +224,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
                 label={t('Default Value')}
                 initialValue={attribute?.defaultValue}
               >
-                <Input style={{maxWidth: 300}} maxLength={50}/>
+                <Input style={{maxWidth: 300}} maxLength={50} />
               </FormItem>
             </>
           )}
@@ -312,7 +312,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
               initialValue={attribute?.enumSet?.join('\n')}
               rules={[{required: true, message: t('Required field')}]}
             >
-              <TextArea style={{maxWidth: 180}} rows={appConfig.ui.form.textAreaRows}/>
+              <TextArea style={{maxWidth: 180}} rows={appConfig.ui.form.textAreaRows} />
             </FormItem>
           )}
 
@@ -417,25 +417,25 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
           {attrType === FieldType.string && (
             <>
               <FormItem
-                  className={styles.formItem}
-                  name="length"
-                  label={t('Length')}
-                  initialValue={attribute?.length}
-                  rules={[
-                      {required: true, message: t('Required field')},
-                      {type: 'number', min: 0}
-                  ]}
+                className={styles.formItem}
+                name="length"
+                label={t('Length')}
+                initialValue={attribute?.length}
+                rules={[
+                  {required: true, message: t('Required field')},
+                  {type: 'number', min: 0}
+                ]}
               >
-                  <InputNumber style={{width: 150}} min={0}/>
+                <InputNumber style={{width: 150}} min={0} />
               </FormItem>
 
               <FormItem
-                  className={styles.formItem}
-                  name="pattern"
-                  label={t('Pattern')}
-                  initialValue={attribute?.pattern}
+                className={styles.formItem}
+                name="pattern"
+                label={t('Pattern')}
+                initialValue={attribute?.pattern}
               >
-                  <Input style={{maxWidth: 300}} maxLength={50}/>
+                <Input style={{maxWidth: 300}} maxLength={50} />
               </FormItem>
             </>
           )}
@@ -449,7 +449,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
                 initialValue={attribute?.precision}
                 rules={[{type: 'number', min: 0, max: 22}]}
               >
-                <InputNumber style={{width: 150}} min={0} max={22}/>
+                <InputNumber style={{width: 150}} min={0} max={22} />
               </FormItem>
 
               <FormItem
@@ -459,7 +459,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
                 initialValue={attribute?.scale}
                 rules={[{type: 'number', min: 0, max: 22}]}
               >
-                <InputNumber style={{width: 150}} min={0} max={22}/>
+                <InputNumber style={{width: 150}} min={0} max={22} />
               </FormItem>
             </>
           )}
@@ -473,7 +473,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
                 initialValue={attribute?.minRange}
                 rules={[{type: 'number'}]}
               >
-                <InputNumber style={{width: 150}}/>
+                <InputNumber style={{width: 150}} />
               </FormItem>
 
               <FormItem
@@ -483,7 +483,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
                 initialValue={attribute?.maxRange}
                 rules={[{type: 'number'}]}
               >
-                <InputNumber style={{width: 150}}/>
+                <InputNumber style={{width: 150}} />
               </FormItem>
             </>
           )}
@@ -497,7 +497,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
                 initialValue={attribute?.colWidth}
                 rules={[{type: 'number', min: 0}]}
               >
-                <InputNumber style={{width: 150}} min={0}/>
+                <InputNumber style={{width: 150}} min={0} />
               </FormItem>
 
               <FormItem
@@ -516,7 +516,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
                 initialValue={attribute?.fieldWidth}
                 rules={[{type: 'number', min: 0}]}
               >
-                <InputNumber style={{width: 150}} min={0}/>
+                <InputNumber style={{width: 150}} min={0} />
               </FormItem>
             </>
           )}

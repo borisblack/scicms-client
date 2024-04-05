@@ -142,7 +142,7 @@ interface ItemMetadata extends ItemTemplateMetadata{
     displayName: string
     pluralName: string
     displayPluralName: string
-    dataSource: string,
+    dataSource: string
     tableName: string | null
     query: string | null
     cacheTtl: number | null

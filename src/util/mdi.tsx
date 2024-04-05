@@ -11,84 +11,84 @@ import IconSuspense from '../components/icons/IconSuspense'
 const tempIds: Record<string, number> = {}
 
 function generateId(itemName: string) {
-    const tempId = (tempIds[itemName] ?? 0) + 1
-    tempIds[itemName] = tempId
+  const tempId = (tempIds[itemName] ?? 0) + 1
+  tempIds[itemName] = tempId
 
-    return tempId.toString()
+  return tempId.toString()
 }
 
 
 export function generateKey(data: ItemDataWrapper): string {
-    const {item, viewType, data: itemData, extra} = data
-    const itemName = item.name
+  const {item, viewType, data: itemData, extra} = data
+  const itemName = item.name
 
-    return generateKeyById(itemName, viewType, itemData?.id ?? data.id, extra)
+  return generateKeyById(itemName, viewType, itemData?.id ?? data.id, extra)
 }
 
 export function generateKeyById(itemName: string, viewType: ViewType, id?: string, extra?: Record<string, any>): string {
-    let key = `${itemName}#${viewType}`
-    if (id != null) {
-        key += `#${id}`
-    } else if (viewType === ViewType.view) {
-        key += `#${generateId(itemName)}`
-    }
+  let key = `${itemName}#${viewType}`
+  if (id != null) {
+    key += `#${id}`
+  } else if (viewType === ViewType.view) {
+    key += `#${generateId(itemName)}`
+  }
 
-    const suffix = extra == null ? undefined : objectToHash(extra).toString()
-    return suffix == null ? key : `${key}#${suffix}`
+  const suffix = extra == null ? undefined : objectToHash(extra).toString()
+  return suffix == null ? key : `${key}#${suffix}`
 }
 
 export function generateLabel(data: ItemDataWrapper): ReactNode {
-    const {item, viewType, extra} = data
-    const title = getTitle(data)
+  const {item, viewType, extra} = data
+  const title = getTitle(data)
 
-    return (
-        <span className="mdi-tab-label" title={title}>
-            {(viewType === ViewType.default) ? <SearchOutlined/> : <IconSuspense iconName={item.icon}/>}
-            {title}
-            {extra && <ExclamationCircleOutlined className="tab-label-suffix orange"/>}
-        </span>
-    )
+  return (
+    <span className="mdi-tab-label" title={title}>
+      {(viewType === ViewType.default) ? <SearchOutlined/> : <IconSuspense iconName={item.icon}/>}
+      {title}
+      {extra && <ExclamationCircleOutlined className="tab-label-suffix orange"/>}
+    </span>
+  )
 }
 
 export function getTitle(data: ItemDataWrapper): string {
-    const {item, viewType, data: itemData} = data
-    const key = generateKey(data)
-    switch (viewType) {
-        case ViewType.view:
-            if (itemData?.id) {
-                let titleAttrValue = itemData[item.titleAttribute]
-                if (!titleAttrValue || item.titleAttribute === ID_ATTR_NAME)
-                    titleAttrValue = `${i18n.t(item.displayName)} ${itemData.id.substring(0, 8)}`
+  const {item, viewType, data: itemData} = data
+  const key = generateKey(data)
+  switch (viewType) {
+    case ViewType.view:
+      if (itemData?.id) {
+        let titleAttrValue = itemData[item.titleAttribute]
+        if (!titleAttrValue || item.titleAttribute === ID_ATTR_NAME)
+          titleAttrValue = `${i18n.t(item.displayName)} ${itemData.id.substring(0, 8)}`
 
-                return titleAttrValue
-            }
-            return `${i18n.t(item.displayName)} ${key.substring(key.lastIndexOf('#') + 1)} *`
-        case ViewType.default:
-        default:
-            return i18n.t(item.displayPluralName)
-    }
+        return titleAttrValue
+      }
+      return `${i18n.t(item.displayName)} ${key.substring(key.lastIndexOf('#') + 1)} *`
+    case ViewType.default:
+    default:
+      return i18n.t(item.displayPluralName)
+  }
 }
 
 export function createMDITab(
-    item: Item,
-    viewType: ViewType,
-    data?: ItemData,
-    extra?: Record<string, any>,
-    onUpdate?: (updatedData: ItemDataWrapper) => void,
-    onClose?: (closedData: ItemDataWrapper, remove: boolean) => void
+  item: Item,
+  viewType: ViewType,
+  data?: ItemData,
+  extra?: Record<string, any>,
+  onUpdate?: (updatedData: ItemDataWrapper) => void,
+  onClose?: (closedData: ItemDataWrapper, remove: boolean) => void
 ): MDITabObservable<ItemDataWrapper> {
-    const itemDataWrapper = {
-        item,
-        viewType,
-        id: (viewType === ViewType.view && data?.id == null) ? generateId(item.name) : undefined,
-        data,
-        extra
-    }
+  const itemDataWrapper = {
+    item,
+    viewType,
+    id: (viewType === ViewType.view && data?.id == null) ? generateId(item.name) : undefined,
+    data,
+    extra
+  }
 
-    return {
-        key: generateKey(itemDataWrapper),
-        data: itemDataWrapper,
-        onUpdate: onUpdate == null ? [] : [onUpdate],
-        onClose: onClose == null ? [] : [onClose]
-    }
+  return {
+    key: generateKey(itemDataWrapper),
+    data: itemDataWrapper,
+    onUpdate: onUpdate == null ? [] : [onUpdate],
+    onClose: onClose == null ? [] : [onClose]
+  }
 }

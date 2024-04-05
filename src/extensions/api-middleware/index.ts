@@ -15,7 +15,7 @@ export enum ApiOperation {
     UNLOCK = 'UNLOCK',
     DELETE = 'DELETE',
     PURGE = 'PURGE',
-    PROMOTE = 'PROMOTE',
+    PROMOTE = 'PROMOTE'
 }
 
 export interface ApiMiddleware {
@@ -40,17 +40,17 @@ const apiMiddlewareByItemName: {[itemName: string]: ApiMiddleware[]} = _.groupBy
 export const hasApiMiddleware = (itemName: string): boolean => itemName in apiMiddlewareByItemName || '*' in apiMiddlewareByItemName
 
 export async function handleApiMiddleware(itemName: string, operation: ApiOperation, context: ApiMiddlewareContext, next: () => any): Promise<any> {
-    const apiMiddlewareList = [...(apiMiddlewareByItemName[itemName] ?? []), ...(apiMiddlewareByItemName['*'] ?? [])]
-    if (apiMiddlewareList.length === 0)
-        return await next()
+  const apiMiddlewareList = [...(apiMiddlewareByItemName[itemName] ?? []), ...(apiMiddlewareByItemName['*'] ?? [])]
+  if (apiMiddlewareList.length === 0)
+    return await next()
 
-    return await handleApiMiddlewareList(apiMiddlewareList, operation, context, next)
+  return await handleApiMiddlewareList(apiMiddlewareList, operation, context, next)
 }
 
 async function handleApiMiddlewareList(list: ApiMiddleware[], operation: ApiOperation, context: ApiMiddlewareContext, next: () => any): Promise<any> {
-    if (list.length === 0)
-        return await next()
+  if (list.length === 0)
+    return await next()
 
-    const first = list[0]
-    return await first.handle(operation, context, () => handleApiMiddlewareList(list.slice(1), operation, context, next))
+  const first = list[0]
+  return await first.handle(operation, context, () => handleApiMiddlewareList(list.slice(1), operation, context, next))
 }

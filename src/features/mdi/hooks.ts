@@ -2,116 +2,116 @@ import {useCallback, useEffect} from 'react'
 import {MDIContext, MDITabObservable} from 'src/components/MDITabs'
 import {useAppDispatch, useAppSelector} from 'src/util/hooks'
 import {
-    selectActiveKey,
-    selectItems,
-    initItems,
-    setActiveKey as doSetActiveKey,
-    open,
-    update,
-    updateActive,
-    close,
-    closeActive,
-    reset as doReset
+  selectActiveKey,
+  selectItems,
+  initItems,
+  setActiveKey as doSetActiveKey,
+  open,
+  update,
+  updateActive,
+  close,
+  closeActive,
+  reset as doReset
 } from './mdiSlice'
 import {
-    changeKey,
-    onClose,
-    onUpdate,
-    register as registerCallbacks,
-    unregister as unregisterCallbacks,
-    reset as resetCallbacks
+  changeKey,
+  onClose,
+  onUpdate,
+  register as registerCallbacks,
+  unregister as unregisterCallbacks,
+  reset as resetCallbacks
 } from './callbacks'
 
 export function useNewMDIContextRedux<T>(initialItems: MDITabObservable<T>[]): MDIContext<T> {
-    const dispatch = useAppDispatch()
-    const items = useAppSelector(selectItems)
-    const activeKey = useAppSelector(selectActiveKey)
+  const dispatch = useAppDispatch()
+  const items = useAppSelector(selectItems)
+  const activeKey = useAppSelector(selectActiveKey)
 
-    useEffect(() => {
-        if (initialItems == null || initialItems.length === 0)
-            return
+  useEffect(() => {
+    if (initialItems == null || initialItems.length === 0)
+      return
 
-        dispatch(
-            initItems({
-                initialItems: initialItems.map(item => ({
-                    key: item.key,
-                    data: item.data
-                }))
-            })
-        )
+    dispatch(
+      initItems({
+        initialItems: initialItems.map(item => ({
+          key: item.key,
+          data: item.data
+        }))
+      })
+    )
 
-        for (const item of initialItems) {
-            registerCallbacks(item.key, item)
+    for (const item of initialItems) {
+      registerCallbacks(item.key, item)
+    }
+  }, [dispatch, initialItems])
+
+  const setActiveKey = useCallback((key: string) => {
+    dispatch(doSetActiveKey({key}))
+  }, [dispatch])
+
+  const openTab = useCallback((item: MDITabObservable<T>) => {
+    dispatch(
+      open({
+        item: {
+          key: item.key,
+          data: item.data
         }
-    }, [dispatch, initialItems])
+      })
+    )
 
-    const setActiveKey = useCallback((key: string) => {
-        dispatch(doSetActiveKey({key}))
-    }, [dispatch])
+    registerCallbacks(item.key, item)
+  }, [dispatch])
 
-    const openTab = useCallback((item: MDITabObservable<T>) => {
-        dispatch(
-            open({
-                item: {
-                    key: item.key,
-                    data: item.data
-                }
-            })
-        )
+  const updateTab = useCallback((key: string, data: T, newKey?: string) => {
+    dispatch(update({key, newKey, data}))
 
-        registerCallbacks(item.key, item)
-    }, [dispatch])
+    onUpdate(key, data)
 
-    const updateTab = useCallback((key: string, data: T, newKey?: string) => {
-        dispatch(update({key, newKey, data}))
+    if (newKey != null && newKey !== key)
+      changeKey(key, newKey)
+  }, [dispatch])
 
-        onUpdate(key, data)
+  const updateActiveTab = useCallback((data: T, newKey?: string) => {
+    if (activeKey == null)
+      return
 
-        if (newKey != null && newKey !== key)
-            changeKey(key, newKey)
-    }, [dispatch])
+    dispatch(updateActive({newKey, data}))
 
-    const updateActiveTab = useCallback((data: T, newKey?: string) => {
-        if (activeKey == null)
-            return
+    onUpdate(activeKey, data)
 
-        dispatch(updateActive({newKey, data}))
+    if (newKey != null && newKey !== activeKey)
+      changeKey(activeKey, newKey)
+  }, [activeKey, dispatch])
 
-        onUpdate(activeKey, data)
+  const closeTab = useCallback((key: string, remove?: boolean) => {
+    const closedItem = items.find(existingItem => existingItem.key === key)
+    if (closedItem == null)
+      return
 
-        if (newKey != null && newKey !== activeKey)
-            changeKey(activeKey, newKey)
-    }, [activeKey, dispatch])
+    dispatch(close({key}))
 
-    const closeTab = useCallback((key: string, remove?: boolean) => {
-        const closedItem = items.find(existingItem => existingItem.key === key)
-        if (closedItem == null)
-            return
+    onClose(key, closedItem.data, remove ?? false)
+    unregisterCallbacks(key)
+  }, [dispatch, items])
 
-        dispatch(close({key}))
+  const closeActiveTab = useCallback((remove?: boolean) => {
+    if (activeKey == null)
+      return
 
-        onClose(key, closedItem.data, remove ?? false)
-        unregisterCallbacks(key)
-    }, [dispatch, items])
+    const closedItem = items.find(existingItem => existingItem.key === activeKey)
+    if (closedItem == null)
+      return
 
-    const closeActiveTab = useCallback((remove?: boolean) => {
-        if (activeKey == null)
-            return
+    dispatch(closeActive({}))
 
-        const closedItem = items.find(existingItem => existingItem.key === activeKey)
-        if (closedItem == null)
-            return
+    onClose(activeKey, closedItem.data, remove ?? false)
+    unregisterCallbacks(activeKey)
+  }, [activeKey, dispatch, items])
 
-        dispatch(closeActive({}))
+  const reset = useCallback(() => {
+    resetCallbacks()
+    dispatch(doReset())
+  }, [dispatch])
 
-        onClose(activeKey, closedItem.data, remove ?? false)
-        unregisterCallbacks(activeKey)
-    }, [activeKey, dispatch, items])
-
-    const reset = useCallback(() => {
-        resetCallbacks()
-        dispatch(doReset())
-    }, [dispatch])
-
-    return {items, activeKey, setActiveKey, openTab, updateTab, updateActiveTab, closeTab, closeActiveTab, reset}
+  return {items, activeKey, setActiveKey, openTab, updateTab, updateActiveTab, closeTab, closeActiveTab, reset}
 }

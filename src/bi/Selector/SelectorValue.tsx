@@ -24,70 +24,70 @@ export interface SelectorValueFormValues {
 const {Item: FormItem} = Form
 
 export default function SelectorValue({namePrefix, selector, datasetMap}: SelectorValueProps) {
-    const {t} = useTranslation()
-    const form = Form.useFormInstance()
-    const {dataset: datasetName, field: fieldName, type, op, value} = selector
-    const dataset = useMemo(() => datasetName ? datasetMap[datasetName] : undefined, [datasetName, datasetMap])
-    const field: Column = useMemo(
-        () => (dataset ? dataset.spec.columns[fieldName] : {type, custom: true, hidden: false}),
-        [dataset, fieldName]
-    )
-    const fieldOptions: DefaultOptionType[] = useMemo(
-        () => (dataset ? [{label: dataset.spec.columns[fieldName].alias || fieldName, value: fieldName}] : [{label: fieldName, value: fieldName}]),
-        [dataset, fieldName]
-    )
-    const prevSelector = usePrevious(selector)
+  const {t} = useTranslation()
+  const form = Form.useFormInstance()
+  const {dataset: datasetName, field: fieldName, type, op, value} = selector
+  const dataset = useMemo(() => datasetName ? datasetMap[datasetName] : undefined, [datasetName, datasetMap])
+  const field: Column = useMemo(
+    () => (dataset ? dataset.spec.columns[fieldName] : {type, custom: true, hidden: false}),
+    [dataset, fieldName]
+  )
+  const fieldOptions: DefaultOptionType[] = useMemo(
+    () => (dataset ? [{label: dataset.spec.columns[fieldName].alias || fieldName, value: fieldName}] : [{label: fieldName, value: fieldName}]),
+    [dataset, fieldName]
+  )
+  const prevSelector = usePrevious(selector)
 
-    useEffect(() => {
-        if (prevSelector?.field !== selector.field ||
+  useEffect(() => {
+    if (prevSelector?.field !== selector.field ||
             prevSelector?.op !== selector.op ||
             prevSelector?.value !== selector.value ||
             prevSelector?.extra !== selector.extra)
-            form.resetFields()
-    }, [selector])
+      form.resetFields()
+  }, [selector])
 
-    return (
-        <Space>
-            <FormItem
-                className={styles.formItem}
-                name={[...namePrefix, 'field']}
-                rules={[requiredFieldRule()]}
-            >
-                <Select
-                    bordered={false}
-                    disabled
-                    style={{width: 160}}
-                    placeholder={t('Field name')}
-                    options={fieldOptions}
-                />
-            </FormItem>
+  return (
+    <Space>
+      <FormItem
+        className={styles.formItem}
+        name={[...namePrefix, 'field']}
+        rules={[requiredFieldRule()]}
+      >
+        <Select
+          bordered={false}
+          disabled
+          style={{width: 160}}
+          placeholder={t('Field name')}
+          options={fieldOptions}
+        />
+      </FormItem>
 
-            <FormItem
-                className={styles.formItem}
-                name={[...namePrefix, 'op']}
-                rules={[requiredFieldRule()]}
-            >
-                <Select
-                    bordered={false}
-                    disabled
-                    style={{width: 160}}
-                    placeholder={t('Operator')}
-                    options={[{
-                        label: queryOpTitles[op],
-                        value: op
-                    }]}
-                />
-            </FormItem>
+      <FormItem
+        className={styles.formItem}
+        name={[...namePrefix, 'op']}
+        rules={[requiredFieldRule()]}
+      >
+        <Select
+          bordered={false}
+          disabled
+          style={{width: 160}}
+          placeholder={t('Operator')}
+          options={[{
+            label: queryOpTitles[op],
+            value: op
+          }]}
+        />
+      </FormItem>
 
-            <FilterValueFieldWrapper form={form} namePrefix={namePrefix} column={field} op={op}/>
+      <FilterValueFieldWrapper form={form} namePrefix={namePrefix} column={field} op={op}/>
 
-            <Button
-                type="text"
-                icon={<ReloadOutlined/>}
-                title={t('Apply')}
-                onMouseDown={e => e.stopPropagation()}
-                onClick={() => form.submit()}
-            />
-        </Space>
-    )
+      <Button
+        type="text"
+        icon={<ReloadOutlined/>}
+        title={t('Apply')}
+        onMouseDown={e => e.stopPropagation()}
+        onClick={() => form.submit()}
+      />
+    </Space>
+  )
 }

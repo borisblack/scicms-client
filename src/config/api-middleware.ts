@@ -8,10 +8,10 @@ interface ApiMiddlewareConfig {
 
 // Add middleware here
 const apiMiddlewareConfig: ApiMiddlewareConfig = {
-    apiMiddleware: [
-        itemMiddleware,
-        itemTemplateMiddleware
-    ]
+  apiMiddleware: [
+    itemMiddleware,
+    itemTemplateMiddleware
+  ]
 }
 
 export default apiMiddlewareConfig

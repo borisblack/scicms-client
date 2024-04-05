@@ -10,74 +10,74 @@ import './DashAxes.css'
 import styles from './DashAxes.module.css'
 
 interface DashAxesProps {
-    dataset: Dataset
-    dash: IDash
-    dashHandler: Dash
-    formFieldName: string
-    canEdit: boolean
+  dataset: Dataset
+  dash: IDash
+  dashHandler: Dash
+  formFieldName: string
+  canEdit: boolean
 }
 
 export default function DashAxes({dataset, dash, dashHandler, formFieldName, canEdit}: DashAxesProps) {
-    const {t} = useTranslation()
-    const values = (dash as Record<string, any>)[formFieldName] ?? {}
+  const {t} = useTranslation()
+  const values = (dash as Record<string, any>)[formFieldName] ?? {}
 
-    return (
-        <div className={`dash-axes ${styles.dashAxes}`}>
-            {dashHandler.axes.map(axis => {
-                const rawValue = values[axis.name]
-                const initialValue = rawValue ? (Array.isArray(rawValue) ? rawValue : [rawValue]) : undefined
+  return (
+    <div className={`dash-axes ${styles.dashAxes}`}>
+      {dashHandler.axes.map(axis => {
+        const rawValue = values[axis.name]
+        const initialValue = rawValue ? (Array.isArray(rawValue) ? rawValue : [rawValue]) : undefined
 
-                return (
-                    <div key={axis.name}>
-                        <Form.Item
-                            className={styles.formItem}
-                            // hidden
-                            name={[formFieldName, axis.name]}
-                            label={t(axis.label)}
-                            initialValue={initialValue}
-                            rules={axis.required ? [requiredFieldRule()] : []}
-                        >
-                            <Select
-                                style={{display: 'none'}}
-                                allowClear
-                                mode="multiple"
-                                options={[]}
-                            />
-                        </Form.Item>
-
-                        <DashAxisArea
-                            dataset={dataset}
-                            dash={dash}
-                            namePath={[formFieldName, axis.name]}
-                            cardinality={axis.cardinality}
-                            canEdit={canEdit}
-                        />
-                    </div>
-                )
-            })}
-
+        return (
+          <div key={axis.name}>
             <Form.Item
-                className={styles.formItem}
-                // hidden
-                name="sortField"
-                label={t('Sort Fields')}
-                initialValue={dash.sortField ? (Array.isArray(dash.sortField) ? dash.sortField : [dash.sortField]) : undefined}
+              className={styles.formItem}
+              // hidden
+              name={[formFieldName, axis.name]}
+              label={t(axis.label)}
+              initialValue={initialValue}
+              rules={axis.required ? [requiredFieldRule()] : []}
             >
-                <Select
-                    style={{display: 'none'}}
-                    allowClear
-                    mode="multiple"
-                    options={[]}
-                />
+              <Select
+                style={{display: 'none'}}
+                allowClear
+                mode="multiple"
+                options={[]}
+              />
             </Form.Item>
 
             <DashAxisArea
-                dataset={dataset}
-                dash={dash}
-                namePath="sortField"
-                cardinality={-1}
-                canEdit={canEdit}
+              dataset={dataset}
+              dash={dash}
+              namePath={[formFieldName, axis.name]}
+              cardinality={axis.cardinality}
+              canEdit={canEdit}
             />
-        </div>
-    )
+          </div>
+        )
+      })}
+
+      <Form.Item
+        className={styles.formItem}
+        // hidden
+        name="sortField"
+        label={t('Sort Fields')}
+        initialValue={dash.sortField ? (Array.isArray(dash.sortField) ? dash.sortField : [dash.sortField]) : undefined}
+      >
+        <Select
+          style={{display: 'none'}}
+          allowClear
+          mode="multiple"
+          options={[]}
+        />
+      </Form.Item>
+
+      <DashAxisArea
+        dataset={dataset}
+        dash={dash}
+        namePath="sortField"
+        cardinality={-1}
+        canEdit={canEdit}
+      />
+    </div>
+  )
 }

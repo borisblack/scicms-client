@@ -11,13 +11,13 @@ interface CustomAttributeFieldConfig {
 
 // Add custom attribute fields here
 const customAttributeFieldConfig: CustomAttributeFieldConfig = {
-    attributeFields: [
-        accessMask,
-        icon,
-        locale,
-        mediaFile,
-        userRelated
-    ]
+  attributeFields: [
+    accessMask,
+    icon,
+    locale,
+    mediaFile,
+    userRelated
+  ]
 }
 
 export default customAttributeFieldConfig

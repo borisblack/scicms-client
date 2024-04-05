@@ -5,7 +5,7 @@ import StringRelationAttributeField from '../StringRelationAttributeField'
 const ATTRIBUTE_FIELD_ID = 'userRelated'
 
 export const userRelated: CustomAttributeField = {
-    id: ATTRIBUTE_FIELD_ID,
-    supports: (itemName, attrName, attribute) => attrName === USERNAME_ATTR_NAME && (itemName === ROLE_ITEM_NAME || itemName === GROUP_MEMBER_ITEM_NAME),
-    render: ({context}) => <StringRelationAttributeField {...context} target={USER_ITEM_NAME}/>
+  id: ATTRIBUTE_FIELD_ID,
+  supports: (itemName, attrName, attribute) => attrName === USERNAME_ATTR_NAME && (itemName === ROLE_ITEM_NAME || itemName === GROUP_MEMBER_ITEM_NAME),
+  render: ({context}) => <StringRelationAttributeField {...context} target={USER_ITEM_NAME}/>
 }

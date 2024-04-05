@@ -9,29 +9,29 @@ import TemporalFilterValueField from './filterValueFields/TemporalFilterValueFie
 import BoolFilterValueField from './filterValueFields/BoolFilterValueField'
 
 function filterValueField(type: FieldType): FC<FilterValueFieldProps> {
-    if (isString(type))
-        return StringFilterValueField
+  if (isString(type))
+    return StringFilterValueField
 
-    if (isNumeric(type))
-        return NumericFilterValueField
+  if (isNumeric(type))
+    return NumericFilterValueField
 
-    if (isTemporal(type))
-        return TemporalFilterValueField
+  if (isTemporal(type))
+    return TemporalFilterValueField
 
-    if (isBool(type))
-        return BoolFilterValueField
+  if (isBool(type))
+    return BoolFilterValueField
 
-    return UnsupportedType
+  return UnsupportedType
 }
 
 function UnsupportedType() {
-    const {t} = useTranslation()
+  const {t} = useTranslation()
 
-    return <span className="red">{t('Unsupported type')}</span>
+  return <span className="red">{t('Unsupported type')}</span>
 }
 
 export default function FilterValueFieldWrapper(props: FilterValueFieldProps) {
-    const FilterValueFieldComponent = filterValueField(props.column.type)
+  const FilterValueFieldComponent = filterValueField(props.column.type)
 
-    return <FilterValueFieldComponent {...props}/>
+  return <FilterValueFieldComponent {...props}/>
 }

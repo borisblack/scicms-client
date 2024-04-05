@@ -24,9 +24,9 @@ export enum FieldType {
 
 export interface UserInfo {
     id: string
-    username: string,
-    roles: string[],
-    authType: AuthType,
+    username: string
+    roles: string[]
+    authType: AuthType
     sessionData: {[key: string]: any} | null
 }
 
@@ -100,7 +100,7 @@ export interface IBuffer {
 export interface PaginationInput {
     page?: number
     pageSize?: number
-    start?: number,
+    start?: number
     limit?: number
 }
 

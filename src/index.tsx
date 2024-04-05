@@ -26,17 +26,17 @@ const container = document.getElementById('root')
 const root = createRoot(container as HTMLElement)
 const router = createBrowserRouter(routes)
 root.render(
-    <Provider store={store}>
-        <ApolloProvider client={apolloClient}>
-            <I18nextProvider i18n={i18n}>
-                <DndProvider backend={HTML5Backend}>
-                    <ConfigProvider locale={config.antdLocale}>
-                        <RouterProvider router={router}/>
-                    </ConfigProvider>
-                </DndProvider>
-            </I18nextProvider>
-        </ApolloProvider>
-    </Provider>
+  <Provider store={store}>
+    <ApolloProvider client={apolloClient}>
+      <I18nextProvider i18n={i18n}>
+        <DndProvider backend={HTML5Backend}>
+          <ConfigProvider locale={config.antdLocale}>
+            <RouterProvider router={router}/>
+          </ConfigProvider>
+        </DndProvider>
+      </I18nextProvider>
+    </ApolloProvider>
+  </Provider>
 )
 
 // If you want to start measuring performance in your app, pass a function

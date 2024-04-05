@@ -47,7 +47,7 @@ export interface CustomComponentRenderProps {
 }
 
 export interface CustomComponentRenderContext {
-    data: ItemDataWrapper,
+    data: ItemDataWrapper
     form?: FormInstance | null
     buffer: IBuffer
     onBufferChange: (buffer: IBuffer) => void
@@ -58,23 +58,23 @@ const customComponents: CustomComponent[] = customComponentConfig.components.sor
 const componentsByMountPoint = _.groupBy(customComponents, component => component.mountPoint)
 
 export function hasComponents(...mountPoints: string[]): boolean {
-    for (const mountPoint of mountPoints) {
-        if (mountPoint in componentsByMountPoint)
-            return true
-    }
-    return false
+  for (const mountPoint of mountPoints) {
+    if (mountPoint in componentsByMountPoint)
+      return true
+  }
+  return false
 }
 
 export const getComponents = (mountPoint: string): CustomComponent[] => componentsByMountPoint[mountPoint] ?? []
 
 export function renderComponents(mountPoint: string, context: CustomComponentRenderContext): ReactElement | null {
-    const components = componentsByMountPoint[mountPoint]
-    if (!components)
-        return null
+  const components = componentsByMountPoint[mountPoint]
+  if (!components)
+    return null
 
-    return (
-        <>
-            {components.map(component => component.render({context}))}
-        </>
-    )
+  return (
+    <>
+      {components.map(component => component.render({context}))}
+    </>
+  )
 }

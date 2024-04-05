@@ -7,19 +7,19 @@ interface ClickableCellProps {
 }
 
 export default function ClickableCell({value, onClick}: ClickableCellProps) {
-    const {t} = useTranslation()
+  const {t} = useTranslation()
 
-    function handleClick() {
-        onClick(value)
-    }
+  function handleClick() {
+    onClick(value)
+  }
 
-    return (
-        <div
-            className={styles.clickableCell}
-            title={t('Edit')}
-            onClick={handleClick}
-        >
-            {value}
-        </div>
-    )
+  return (
+    <div
+      className={styles.clickableCell}
+      title={t('Edit')}
+      onClick={handleClick}
+    >
+      {value}
+    </div>
+  )
 }

@@ -22,119 +22,119 @@ interface Props extends CustomAttributeFieldRenderContext {
 }
 
 const StringRelationAttributeField: FC<Props> = ({data: dataWrapper, form, attrName, attribute, target, value, forceVisible}) => {
-    if (attribute.type !== FieldType.string)
-        throw new Error('Illegal attribute')
+  if (attribute.type !== FieldType.string)
+    throw new Error('Illegal attribute')
 
-    const uniqueKey = generateKey(dataWrapper)
-    const {items: itemMap} = useRegistry()
-    const {open: openItem} = useItemOperations()
-    const {t} = useTranslation()
-    const [loading, setLoading] = useState<boolean>(false)
-    const [isSearchModalVisible, setSearchModalVisible] = useState<boolean>(false)
-    const queryManager = useQueryManager()
-    const isDisabled = useMemo(() => attribute.readOnly, [attribute.readOnly])
-    const additionalProps = useMemo((): any => {
-        const additionalProps: any = {}
-        if (isDisabled)
-            additionalProps.disabled = true
+  const uniqueKey = generateKey(dataWrapper)
+  const {items: itemMap} = useRegistry()
+  const {open: openItem} = useItemOperations()
+  const {t} = useTranslation()
+  const [loading, setLoading] = useState<boolean>(false)
+  const [isSearchModalVisible, setSearchModalVisible] = useState<boolean>(false)
+  const queryManager = useQueryManager()
+  const isDisabled = useMemo(() => attribute.readOnly, [attribute.readOnly])
+  const additionalProps = useMemo((): any => {
+    const additionalProps: any = {}
+    if (isDisabled)
+      additionalProps.disabled = true
 
-        return additionalProps
-    }, [isDisabled])
+    return additionalProps
+  }, [isDisabled])
 
-    const [currentValue, setCurrentValue] = useState(value)
-    const targetItem = itemMap[target]
+  const [currentValue, setCurrentValue] = useState(value)
+  const targetItem = itemMap[target]
 
-    function handleRelationSelect(itemData: ItemData) {
-        const selectedValue = itemData[targetItem.titleAttribute]
-        setCurrentValue(selectedValue)
-        form.setFieldValue(attrName, selectedValue)
+  function handleRelationSelect(itemData: ItemData) {
+    const selectedValue = itemData[targetItem.titleAttribute]
+    setCurrentValue(selectedValue)
+    form.setFieldValue(attrName, selectedValue)
 
-        setSearchModalVisible(false)
+    setSearchModalVisible(false)
+  }
+
+  async function openRelation() {
+    if (!currentValue)
+      return
+
+    setLoading(true)
+    try {
+      const targetTitleAttrName = targetItem.titleAttribute
+      if (targetTitleAttrName.includes('.'))
+        return Promise.reject('Title attribute must belong to item')
+
+      const found = await queryManager.findAllBy(targetItem, {[targetItem.titleAttribute]: {eq: currentValue}})
+      if (found.length !== 1)
+        return Promise.reject(`Illegal state. Found ${found.length} records`)
+
+      await openItem(targetItem, found[0].id)
+    } catch (e: any) {
+      console.error(e.message)
+      notification.error({
+        message: t('Opening error'),
+        description: e.message
+      })
+    } finally {
+      setLoading(false)
     }
+  }
 
-    async function openRelation() {
-        if (!currentValue)
-            return
+  function handleClear() {
+    setCurrentValue(null)
+    form.setFieldValue(attrName, null)
+  }
 
-        setLoading(true)
-        try {
-            const targetTitleAttrName = targetItem.titleAttribute
-            if (targetTitleAttrName.includes('.'))
-                return Promise.reject('Title attribute must belong to item')
+  return (
+    <>
+      <FormItem
+        className={styles.formItem}
+        name={attrName}
+        label={t(attribute.displayName)}
+        hidden={attribute.fieldHidden && !forceVisible}
+        initialValue={value ?? attribute.defaultValue}
+        rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
+      >
+        <Search
+          id={`${uniqueKey}#${attrName}`}
+          readOnly
+          onSearch={() => setSearchModalVisible(true)}
+          addonAfter={currentValue && [
+            <Tooltip key="open" title={t('Open')}>
+              <Button
+                type="link"
+                style={{marginLeft: 4, width: SUFFIX_BUTTON_WIDTH}}
+                icon={<FolderOpenOutlined/>}
+                loading={loading}
+                onClick={openRelation}
+              />
+            </Tooltip>,
+            <Tooltip key="clear" title={t('Clear')}>
+              <Button
+                type="link"
+                style={{width: SUFFIX_BUTTON_WIDTH}}
+                icon={<CloseCircleOutlined/>}
+                onClick={handleClear}
+              />
+            </Tooltip>
+          ]}
+          {...additionalProps}
+        />
+      </FormItem>
 
-            const found = await queryManager.findAllBy(targetItem, {[targetItem.titleAttribute]: {eq: currentValue}})
-            if (found.length !== 1)
-                return Promise.reject(`Illegal state. Found ${found.length} records`)
-
-            await openItem(targetItem, found[0].id)
-        } catch (e: any) {
-            console.error(e.message)
-            notification.error({
-                message: t('Opening error'),
-                description: e.message
-            })
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    function handleClear() {
-        setCurrentValue(null)
-        form.setFieldValue(attrName, null)
-    }
-
-    return (
-        <>
-            <FormItem
-                className={styles.formItem}
-                name={attrName}
-                label={t(attribute.displayName)}
-                hidden={attribute.fieldHidden && !forceVisible}
-                initialValue={value ?? attribute.defaultValue}
-                rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
-            >
-                <Search
-                    id={`${uniqueKey}#${attrName}`}
-                    readOnly
-                    onSearch={() => setSearchModalVisible(true)}
-                    addonAfter={currentValue && [
-                        <Tooltip key="open" title={t('Open')}>
-                            <Button
-                                type="link"
-                                style={{marginLeft: 4, width: SUFFIX_BUTTON_WIDTH}}
-                                icon={<FolderOpenOutlined/>}
-                                loading={loading}
-                                onClick={openRelation}
-                            />
-                        </Tooltip>,
-                        <Tooltip key="clear" title={t('Clear')}>
-                            <Button
-                                type="link"
-                                style={{width: SUFFIX_BUTTON_WIDTH}}
-                                icon={<CloseCircleOutlined/>}
-                                onClick={handleClear}
-                            />
-                        </Tooltip>
-                    ]}
-                    {...additionalProps}
-                />
-            </FormItem>
-
-            <Modal
-                title={t(attribute.displayName)}
-                open={isSearchModalVisible}
-                destroyOnClose
-                width={RELATION_MODAL_WIDTH}
-                footer={null}
-                onCancel={() => setSearchModalVisible(false)}
-            >
-                <SearchDataGridWrapper
-                    item={targetItem}
-                    onSelect={itemData => handleRelationSelect(itemData)}
-                />
-            </Modal>
-        </>
-    )
+      <Modal
+        title={t(attribute.displayName)}
+        open={isSearchModalVisible}
+        destroyOnClose
+        width={RELATION_MODAL_WIDTH}
+        footer={null}
+        onCancel={() => setSearchModalVisible(false)}
+      >
+        <SearchDataGridWrapper
+          item={targetItem}
+          onSelect={itemData => handleRelationSelect(itemData)}
+        />
+      </Modal>
+    </>
+  )
 }
 
 export default StringRelationAttributeField

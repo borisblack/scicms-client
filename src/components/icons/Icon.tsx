@@ -10,18 +10,18 @@ export interface IconProps {
 }
 
 export default function Icon({iconName, size, className, style}: IconProps) {
-    if (!iconName)
-        return null
+  if (!iconName)
+    return null
 
-    const Icon = allIcons[iconName]
-    if (!Icon)
-        return null
+  const Icon = allIcons[iconName]
+  if (!Icon)
+    return null
 
-    return (
-        <Icon
-            size={size}
-            className={className}
-            style={style}
-        />
-    )
+  return (
+    <Icon
+      size={size}
+      className={className}
+      style={style}
+    />
+  )
 }

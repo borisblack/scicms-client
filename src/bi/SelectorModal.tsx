@@ -16,50 +16,50 @@ interface SelectorFormModalProps {
 }
 
 export default function SelectorModal({selector, datasetMap, dashes, canEdit, open, onChange, onClose}: SelectorFormModalProps) {
-    const {t} = useTranslation()
-    const [form] = Form.useForm()
+  const {t} = useTranslation()
+  const [form] = Form.useForm()
 
-    function handleFormFinish(values: SelectorFormValues) {
-        onChange({...values})
-        onClose()
-    }
+  function handleFormFinish(values: SelectorFormValues) {
+    onChange({...values})
+    onClose()
+  }
 
-    function cancelEdit() {
-        form.resetFields()
-        onClose()
-    }
+  function cancelEdit() {
+    form.resetFields()
+    onClose()
+  }
 
-    return (
-        <Drawer
-            className="no-drag"
-            title={t('Selector')}
-            open={open}
-            destroyOnClose
-            width={400}
-            // onOk={() => form.submit()}
-            extra={
-                <Space>
-                    <Button onClick={cancelEdit}>{t('Cancel')}</Button>
-                    <Button disabled={!canEdit} type="primary" onClick={() => form.submit()}>OK</Button>
-                </Space>
-            }
-            onClose={onClose}
-        >
-            <Form
-                form={form}
-                size="small"
-                layout="vertical"
-                disabled={!canEdit}
-                initialValues={selector}
-                onFinish={handleFormFinish}
-            >
-                <SelectorForm
-                    selector={selector}
-                    datasetMap={datasetMap}
-                    dashes={dashes}
-                    canEdit={canEdit}
-                />
-            </Form>
-        </Drawer>
-    )
+  return (
+    <Drawer
+      className="no-drag"
+      title={t('Selector')}
+      open={open}
+      destroyOnClose
+      width={400}
+      // onOk={() => form.submit()}
+      extra={
+        <Space>
+          <Button onClick={cancelEdit}>{t('Cancel')}</Button>
+          <Button disabled={!canEdit} type="primary" onClick={() => form.submit()}>OK</Button>
+        </Space>
+      }
+      onClose={onClose}
+    >
+      <Form
+        form={form}
+        size="small"
+        layout="vertical"
+        disabled={!canEdit}
+        initialValues={selector}
+        onFinish={handleFormFinish}
+      >
+        <SelectorForm
+          selector={selector}
+          datasetMap={datasetMap}
+          dashes={dashes}
+          canEdit={canEdit}
+        />
+      </Form>
+    </Drawer>
+  )
 }

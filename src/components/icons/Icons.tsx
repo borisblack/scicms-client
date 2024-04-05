@@ -10,30 +10,30 @@ export interface IconsProps {
 }
 
 export default function Icons({height, onSelect = copyToClipboard}: IconsProps) {
-    const renderIcons = (icons: Record<string, FC>) => (
-        <div style={{height, overflowY: 'scroll'}}>
-            <Row>
-                {Object.entries(icons).map(([iconName, Icon]) => (
-                    <Col span={6} key={iconName}>
-                        <span
-                            style={{cursor: 'pointer'}}
-                            onClick={() => {onSelect(iconName)}}
-                        >
-                            <Icon/>&nbsp;{iconName}
-                        </span>
-                    </Col>
-                ))}
-            </Row>
-        </div>
-    )
+  const renderIcons = (icons: Record<string, FC>) => (
+    <div style={{height, overflowY: 'scroll'}}>
+      <Row>
+        {Object.entries(icons).map(([iconName, Icon]) => (
+          <Col span={6} key={iconName}>
+            <span
+              style={{cursor: 'pointer'}}
+              onClick={() => {onSelect(iconName)}}
+            >
+              <Icon/>&nbsp;{iconName}
+            </span>
+          </Col>
+        ))}
+      </Row>
+    </div>
+  )
 
-    return (
-        <Tabs
-            type="card"
-            items={[
-                {key: 'antd', label: 'Ant Design', children: renderIcons(antdIcons)},
-                {key: 'fa', label: 'Font Awesome', children: renderIcons({...allFaIcons})}
-            ]}
-        />
-    )
+  return (
+    <Tabs
+      type="card"
+      items={[
+        {key: 'antd', label: 'Ant Design', children: renderIcons(antdIcons)},
+        {key: 'fa', label: 'Font Awesome', children: renderIcons({...allFaIcons})}
+      ]}
+    />
+  )
 }

@@ -17,33 +17,33 @@ import {renderAttributeField} from '../../extensions/custom-attribute-fields'
 import './attribute-fields/AttributeField.css'
 
 const attributeFields: AttributeFields = {
-    [FieldType.string]: StringAttributeField,
-    [FieldType.uuid]: StringAttributeField,
-    [FieldType.sequence]: StringAttributeField,
-    [FieldType.email]: StringAttributeField,
-    [FieldType.enum]: EnumAttributeField,
-    [FieldType.password]: PasswordAttributeField,
-    [FieldType.bool]: BoolAttributeField,
-    [FieldType.text]: TextAttributeField,
-    [FieldType.json]: JsonAttributeField,
-    [FieldType.array]: ArrayAttributeField,
-    [FieldType.int]: NumberAttributeField,
-    [FieldType.long]: NumberAttributeField,
-    [FieldType.float]: NumberAttributeField,
-    [FieldType.double]: NumberAttributeField,
-    [FieldType.decimal]: NumberAttributeField,
-    [FieldType.date]: DateAttributeField,
-    [FieldType.time]: TimeAttributeField,
-    [FieldType.datetime]: DateTimeAttributeField,
-    [FieldType.timestamp]: DateTimeAttributeField,
-    [FieldType.media]: MediaAttributeField,
-    [FieldType.relation]: RelationAttributeField
+  [FieldType.string]: StringAttributeField,
+  [FieldType.uuid]: StringAttributeField,
+  [FieldType.sequence]: StringAttributeField,
+  [FieldType.email]: StringAttributeField,
+  [FieldType.enum]: EnumAttributeField,
+  [FieldType.password]: PasswordAttributeField,
+  [FieldType.bool]: BoolAttributeField,
+  [FieldType.text]: TextAttributeField,
+  [FieldType.json]: JsonAttributeField,
+  [FieldType.array]: ArrayAttributeField,
+  [FieldType.int]: NumberAttributeField,
+  [FieldType.long]: NumberAttributeField,
+  [FieldType.float]: NumberAttributeField,
+  [FieldType.double]: NumberAttributeField,
+  [FieldType.decimal]: NumberAttributeField,
+  [FieldType.date]: DateAttributeField,
+  [FieldType.time]: TimeAttributeField,
+  [FieldType.datetime]: DateTimeAttributeField,
+  [FieldType.timestamp]: DateTimeAttributeField,
+  [FieldType.media]: MediaAttributeField,
+  [FieldType.relation]: RelationAttributeField
 }
 
 export default function AttributeFieldWrapper(props: AttributeFieldProps) {
-    const AttributeFieldComponent = attributeFields[props.attribute.type]
-    if (!AttributeFieldComponent)
-        throw new Error('Illegal attribute')
+  const AttributeFieldComponent = attributeFields[props.attribute.type]
+  if (!AttributeFieldComponent)
+    throw new Error('Illegal attribute')
 
-    return renderAttributeField({...props}, AttributeFieldComponent)
+  return renderAttributeField({...props}, AttributeFieldComponent)
 }

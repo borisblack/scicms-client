@@ -5,18 +5,18 @@ import {IconProps} from './Icon'
 const Icon = lazy(() => import('./Icon'))
 
 export default function IconSuspense(props: IconProps) {
-    const renderEmptyIcon = () => (
-        <span
-            className={props.className}
-            style={props.style}
-        >
+  const renderEmptyIcon = () => (
+    <span
+      className={props.className}
+      style={props.style}
+    >
             &nbsp;&nbsp;&nbsp;
-        </span>
-    )
+    </span>
+  )
 
-    return (
-        <Suspense fallback={renderEmptyIcon()}>
-            <Icon {...props}/>
-        </Suspense>
-    )
+  return (
+    <Suspense fallback={renderEmptyIcon()}>
+      <Icon {...props}/>
+    </Suspense>
+  )
 }

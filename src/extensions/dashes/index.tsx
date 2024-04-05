@@ -27,7 +27,7 @@ interface IDashAxis {
 export interface DashOptionsFormProps {
     dataset: Dataset
     availableColNames: string[]
-    fieldName: string,
+    fieldName: string
     form: FormInstance
     values: {[key: string]: any}
 }
@@ -48,12 +48,12 @@ export interface DashRenderContext extends DashProps {
 export type DashEventHandler = (chart: Plot<any>, event: PlotEvent) => void
 
 const allDashes: Dash[] = dashConfig.dashes.sort((a, b) => {
-    if (a.id < b.id)
-        return -1
-    else if (a.id > b.id)
-        return 1
-    else
-        return 0
+  if (a.id < b.id)
+    return -1
+  else if (a.id > b.id)
+    return 1
+  else
+    return 0
 })
 
 const dashesById = _.mapKeys(allDashes, d => d.id)
@@ -65,9 +65,9 @@ export const hasDash = (id: string): boolean => id in dashesById
 export const getDash = (id: string): Dash | undefined => dashesById.hasOwnProperty(id) ? {...dashesById[id]} : undefined
 
 export function renderDash(id: string, context: DashRenderContext): ReactElement | null {
-    const dash = dashesById[id]
-    if (dash == null)
-        return null
+  const dash = dashesById[id]
+  if (dash == null)
+    return null
 
-    return <>{dash.render({context})}</>
+  return <>{dash.render({context})}</>
 }

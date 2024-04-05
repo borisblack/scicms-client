@@ -17,38 +17,38 @@ interface JoinedTableModalProps {
 interface JoinsFormValues extends Required<JoinedTable>{}
 
 export default function JoinedTableModal({mainTable, joinedTable, open, canEdit, onChange, onClose}: JoinedTableModalProps) {
-    const {t} = useTranslation()
-    const [form] = Form.useForm()
+  const {t} = useTranslation()
+  const [form] = Form.useForm()
 
-    function handleFormFinish(values: JoinsFormValues) {
-        if (!canEdit)
-            return
+  function handleFormFinish(values: JoinsFormValues) {
+    if (!canEdit)
+      return
 
-        onChange({...joinedTable, ...values})
-        onClose()
-    }
+    onChange({...joinedTable, ...values})
+    onClose()
+  }
 
-    return (
-        <Modal
-            title={t('Join')}
-            open={open}
-            destroyOnClose
-            width={800}
-            okButtonProps={{disabled: !canEdit, size: 'small'}}
-            cancelButtonProps={{size: 'small'}}
-            onOk={() => form.submit()}
-            onCancel={onClose}
-        >
-            <Form
-                form={form}
-                layout="horizontal"
-                size="small"
-                disabled={!canEdit}
-                initialValues={joinedTable}
-                onFinish={handleFormFinish}
-            >
-                <JoinedTableForm mainTable={mainTable} joinedTable={joinedTable}/>
-            </Form>
-        </Modal>
-    )
+  return (
+    <Modal
+      title={t('Join')}
+      open={open}
+      destroyOnClose
+      width={800}
+      okButtonProps={{disabled: !canEdit, size: 'small'}}
+      cancelButtonProps={{size: 'small'}}
+      onOk={() => form.submit()}
+      onCancel={onClose}
+    >
+      <Form
+        form={form}
+        layout="horizontal"
+        size="small"
+        disabled={!canEdit}
+        initialValues={joinedTable}
+        onFinish={handleFormFinish}
+      >
+        <JoinedTableForm mainTable={mainTable} joinedTable={joinedTable}/>
+      </Form>
+    </Modal>
+  )
 }

@@ -19,72 +19,72 @@ interface StateItem {
 const {Item: ListItem} = List
 
 export default function Promote({lifecycleId, currentState: currentStateName, onSelect}: Props) {
-    const {t} = useTranslation()
-    const [loading, setLoading] = useState(false)
-    const [lifecycle, setLifecycle] = useState<Lifecycle | null>(null)
+  const {t} = useTranslation()
+  const [loading, setLoading] = useState(false)
+  const [lifecycle, setLifecycle] = useState<Lifecycle | null>(null)
 
-    useEffect(() => {
-        setLoading(true)
-        findLifecycleById(lifecycleId)
-            .then(it => {
-                setLifecycle(it)
-            })
-            .catch((e: any) => {
-                notification.error({
-                    message: t('Request error'),
-                    description: e.message
-                })
-            })
-            .finally(() => {
-                setLoading(false)
-            })
-    }, [lifecycleId])
+  useEffect(() => {
+    setLoading(true)
+    findLifecycleById(lifecycleId)
+      .then(it => {
+        setLifecycle(it)
+      })
+      .catch((e: any) => {
+        notification.error({
+          message: t('Request error'),
+          description: e.message
+        })
+      })
+      .finally(() => {
+        setLoading(false)
+      })
+  }, [lifecycleId])
 
-    const getAllowedStates = useCallback((): StateItem[] => {
-        if (!lifecycle)
-            return []
+  const getAllowedStates = useCallback((): StateItem[] => {
+    if (!lifecycle)
+      return []
 
-        const {startEvent, states} = parseLifecycleSpec(lifecycle.spec)
-        if (!currentStateName) {
-            return startEvent.transitions
-                .map(targetStateName => {
-                    const allowedState = states[targetStateName]
-                    if (!allowedState)
-                        throw new Error('Invalid transition')
+    const {startEvent, states} = parseLifecycleSpec(lifecycle.spec)
+    if (!currentStateName) {
+      return startEvent.transitions
+        .map(targetStateName => {
+          const allowedState = states[targetStateName]
+          if (!allowedState)
+            throw new Error('Invalid transition')
 
-                    return {title: targetStateName}
-                })
-        }
+          return {title: targetStateName}
+        })
+    }
 
-        const currentState = states[currentStateName]
-        if (!currentState)
-            throw new Error('Invalid current state')
+    const currentState = states[currentStateName]
+    if (!currentState)
+      throw new Error('Invalid current state')
 
-        return currentState.transitions
-            .map(targetStateName => {
-                const allowedState = states[targetStateName]
-                if (!allowedState)
-                    throw new Error('Invalid transition')
+    return currentState.transitions
+      .map(targetStateName => {
+        const allowedState = states[targetStateName]
+        if (!allowedState)
+          throw new Error('Invalid transition')
 
-                return {title: targetStateName}
-            })
-    }, [currentStateName, lifecycle])
+        return {title: targetStateName}
+      })
+  }, [currentStateName, lifecycle])
 
-    return (
-        <Spin spinning={loading}>
-            {lifecycle && (
-                <List
-                    itemLayout="horizontal"
-                    dataSource={getAllowedStates()}
-                    renderItem={it => (
-                        <ListItem>
-                            <ListItem.Meta
-                                title={<Button type="link" icon={<RightCircleOutlined/>} style={{paddingLeft: 0, paddingRight: 0}} onClick={() => onSelect(it.title)}>{it.title}</Button>}
-                            />
-                        </ListItem>
-                    )}
-                />
-            )}
-        </Spin>
-    )
+  return (
+    <Spin spinning={loading}>
+      {lifecycle && (
+        <List
+          itemLayout="horizontal"
+          dataSource={getAllowedStates()}
+          renderItem={it => (
+            <ListItem>
+              <ListItem.Meta
+                title={<Button type="link" icon={<RightCircleOutlined/>} style={{paddingLeft: 0, paddingRight: 0}} onClick={() => onSelect(it.title)}>{it.title}</Button>}
+              />
+            </ListItem>
+          )}
+        />
+      )}
+    </Spin>
+  )
 }

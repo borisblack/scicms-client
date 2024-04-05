@@ -21,22 +21,22 @@ export const exportWinStyle = `
 `
 
 export function renderValue(value: any) {
-    if (value == null || value === false)
+  if (value == null || value === false)
+    return ''
+
+  if (value === true)
+    return 'x'
+
+  if (_.isObject(value)) {
+    if ('data' in value) {
+      if ((value as any).data == null)
         return ''
 
-    if (value === true)
-        return 'x'
-
-    if (_.isObject(value)) {
-        if ('data' in value) {
-            if ((value as any).data == null)
-                return ''
-
-            return JSON.stringify((value as any).data)
-        }
-
-        return JSON.stringify(value)
+      return JSON.stringify((value as any).data)
     }
 
-    return value
+    return JSON.stringify(value)
+  }
+
+  return value
 }

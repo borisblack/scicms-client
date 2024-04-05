@@ -41,7 +41,7 @@ export interface NamedColumn extends Column {
 }
 
 export interface Table {
-    name: string,
+    name: string
     columns: Record<string, Column>
 }
 
@@ -163,12 +163,12 @@ export enum AggregateType {
 
 export enum StringAggregateType {
     count = 'count',
-    countd = 'countd',
+    countd = 'countd'
 }
 
 export enum BoolAggregateType {
     count = 'count',
-    countd = 'countd',
+    countd = 'countd'
 }
 
 export enum DateTimeAggregateType {
@@ -274,7 +274,7 @@ export enum JoinType {
     inner = 'inner',
     left = 'left',
     right = 'right',
-    full = 'full',
+    full = 'full'
 }
 
 export type DatasetFiltersInput<T> = {

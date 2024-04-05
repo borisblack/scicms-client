@@ -9,36 +9,36 @@ interface Props {
 }
 
 export default function ColumnFilter({column, onSubmit}: Props) {
-    const columnFilterValue = column.getFilterValue() as any
+  const columnFilterValue = column.getFilterValue() as any
 
-    function handleClick(evt: MouseEvent) {
-        evt.stopPropagation()
-    }
+  function handleClick(evt: MouseEvent) {
+    evt.stopPropagation()
+  }
 
-    function handleKeyDown(evt: KeyboardEvent<any>) {
-        evt.stopPropagation()
-    }
+  function handleKeyDown(evt: KeyboardEvent<any>) {
+    evt.stopPropagation()
+  }
 
-    function handleKeyUp(evt: KeyboardEvent<any>) {
-        evt.stopPropagation()
-        if (evt.key === 'Enter')
-            onSubmit()
-    }
+  function handleKeyUp(evt: KeyboardEvent<any>) {
+    evt.stopPropagation()
+    if (evt.key === 'Enter')
+      onSubmit()
+  }
 
-    function handleChange(evt: ChangeEvent<any>) {
-        column.setFilterValue(evt.target.value ?? undefined) // set undefined to remove the filter entirely
-    }
+  function handleChange(evt: ChangeEvent<any>) {
+    column.setFilterValue(evt.target.value ?? undefined) // set undefined to remove the filter entirely
+  }
 
-    return (
-        <div className={styles.tableColumnFilter}>
-            <Input
-                size="small"
-                value={columnFilterValue ?? ''}
-                onKeyDown={handleKeyDown}
-                onKeyUp={handleKeyUp}
-                onClick={handleClick}
-                onChange={handleChange}
-            />
-        </div>
-    )
+  return (
+    <div className={styles.tableColumnFilter}>
+      <Input
+        size="small"
+        value={columnFilterValue ?? ''}
+        onKeyDown={handleKeyDown}
+        onKeyUp={handleKeyUp}
+        onClick={handleClick}
+        onChange={handleChange}
+      />
+    </div>
+  )
 }
