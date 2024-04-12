@@ -30,15 +30,11 @@ import {
   MAJOR_REV_ATTR_NAME,
   MINOR_REV_ATTR_NAME
 } from 'src/config/constants'
-import {
-  ApiMiddlewareContext,
-  ApiOperation,
-  handleApiMiddleware,
-  hasApiMiddleware
-} from 'src/extensions/api-middleware'
 import {useAuth, useItemOperations, useMutationManager, useRegistry} from 'src/util/hooks'
 import {useMDIContext} from '../../components/MDITabs/hooks'
 import {getTitle} from 'src/util/mdi'
+import {pluginEngine} from 'src/extensions/plugins'
+import {ApiMiddlewareContext, ApiOperation} from 'src/extensions/plugins/types'
 import styles from './NavTab.module.css'
 
 interface Props {
@@ -91,9 +87,9 @@ export default function ViewNavTabHeader({
       const id = data?.id as string
       const doLock = async () => await mutationManager.lock(item, id)
       let locked: FlaggedResponse
-      if (hasApiMiddleware(item.name)) {
+      if (pluginEngine.hasApiMiddleware(item.name)) {
         const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values: {id}}
-        locked = await handleApiMiddleware(item.name, ApiOperation.LOCK, apiMiddlewareContext, doLock)
+        locked = await pluginEngine.handleApiMiddleware(item.name, ApiOperation.LOCK, apiMiddlewareContext, doLock)
       } else {
         locked = await doLock()
       }
@@ -127,9 +123,9 @@ export default function ViewNavTabHeader({
       const id = data?.id as string
       const doUnlock = async () => await mutationManager.unlock(item, id)
       let unlocked
-      if (hasApiMiddleware(item.name)) {
+      if (pluginEngine.hasApiMiddleware(item.name)) {
         const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values: {id}}
-        unlocked = await handleApiMiddleware(item.name, ApiOperation.UNLOCK, apiMiddlewareContext, doUnlock)
+        unlocked = await pluginEngine.handleApiMiddleware(item.name, ApiOperation.UNLOCK, apiMiddlewareContext, doUnlock)
       } else {
         unlocked = await doUnlock()
       }
@@ -166,9 +162,9 @@ export default function ViewNavTabHeader({
       const id = data?.id as string
       const doDelete = async () => await mutationManager.remove(item, id, appConfig.mutation.deletingStrategy)
       let deleted: ItemData
-      if (hasApiMiddleware(item.name)) {
+      if (pluginEngine.hasApiMiddleware(item.name)) {
         const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values: {id}}
-        deleted = await handleApiMiddleware(item.name, ApiOperation.DELETE, apiMiddlewareContext, doDelete)
+        deleted = await pluginEngine.handleApiMiddleware(item.name, ApiOperation.DELETE, apiMiddlewareContext, doDelete)
       } else {
         deleted = await doDelete()
       }
@@ -199,9 +195,9 @@ export default function ViewNavTabHeader({
       const id = data?.id as string
       const doPurge = async () => await mutationManager.purge(item, id, appConfig.mutation.deletingStrategy)
       let purged: ResponseCollection<ItemData>
-      if (hasApiMiddleware(item.name)) {
+      if (pluginEngine.hasApiMiddleware(item.name)) {
         const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values: {id}}
-        purged = await handleApiMiddleware(item.name, ApiOperation.PURGE, apiMiddlewareContext, doPurge)
+        purged = await pluginEngine.handleApiMiddleware(item.name, ApiOperation.PURGE, apiMiddlewareContext, doPurge)
       } else {
         purged = await doPurge()
       }
@@ -232,9 +228,9 @@ export default function ViewNavTabHeader({
       const id = data?.id as string
       const doPromote = async () => await mutationManager.promote(item, id, state)
       let promoted: ItemData
-      if (hasApiMiddleware(item.name)) {
+      if (pluginEngine.hasApiMiddleware(item.name)) {
         const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values: {id}}
-        promoted = await handleApiMiddleware(item.name, ApiOperation.PROMOTE, apiMiddlewareContext, doPromote)
+        promoted = await pluginEngine.handleApiMiddleware(item.name, ApiOperation.PROMOTE, apiMiddlewareContext, doPromote)
       } else {
         promoted = await doPromote()
       }

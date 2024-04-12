@@ -30,6 +30,7 @@ export const ROLE_ANALYST: string = 'ROLE_ANALYST'
 export const ROLE_PROJECT_MANAGER: string = 'ROLE_PROJECT_MANAGER'
 export const ROLE_USER: string = 'ROLE_USER'
 export const ROLE_STANDARD_CONTROL: string = 'ROLE_STANDARD_CONTROL'
+export const ROLE_OOTIZ: string = 'ROLE_OOTIZ'
 
 export const PASSWORD_PLACEHOLDER = '********'
 export const MAIN_DATASOURCE_NAME = 'main'

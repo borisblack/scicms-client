@@ -1,20 +1,20 @@
 import {FieldType} from '../../types'
-import {AttributeFieldProps, AttributeFields} from './attribute-fields'
-import RelationAttributeField from './attribute-fields/RelationAttributeField'
-import DateTimeAttributeField from './attribute-fields/DateTimeAttributeField'
-import TimeAttributeField from './attribute-fields/TimeAttributeField'
-import DateAttributeField from './attribute-fields/DateAttributeField'
-import NumberAttributeField from './attribute-fields/NumberAttributeField'
-import JsonAttributeField from './attribute-fields/JsonAttributeField'
-import TextAttributeField from './attribute-fields/TextAttributeField'
-import BoolAttributeField from './attribute-fields/BoolAttributeField'
-import PasswordAttributeField from './attribute-fields/PasswordAttributeField'
-import StringAttributeField from './attribute-fields/StringAttributeField'
-import MediaAttributeField from './attribute-fields/MediaAttributeField'
-import EnumAttributeField from './attribute-fields/EnumAttributeField'
-import ArrayAttributeField from './attribute-fields/ArrayAttributeField'
-import {renderAttributeField} from '../../extensions/custom-attribute-fields'
-import './attribute-fields/AttributeField.css'
+import {AttributeFieldProps, AttributeFields} from './attributeFields'
+import RelationAttributeField from './attributeFields/RelationAttributeField'
+import DateTimeAttributeField from './attributeFields/DateTimeAttributeField'
+import TimeAttributeField from './attributeFields/TimeAttributeField'
+import DateAttributeField from './attributeFields/DateAttributeField'
+import NumberAttributeField from './attributeFields/NumberAttributeField'
+import JsonAttributeField from './attributeFields/JsonAttributeField'
+import TextAttributeField from './attributeFields/TextAttributeField'
+import BoolAttributeField from './attributeFields/BoolAttributeField'
+import PasswordAttributeField from './attributeFields/PasswordAttributeField'
+import StringAttributeField from './attributeFields/StringAttributeField'
+import MediaAttributeField from './attributeFields/MediaAttributeField'
+import EnumAttributeField from './attributeFields/EnumAttributeField'
+import ArrayAttributeField from './attributeFields/ArrayAttributeField'
+import {pluginEngine} from 'src/extensions/plugins'
+import './attributeFields/AttributeField.css'
 
 const attributeFields: AttributeFields = {
   [FieldType.string]: StringAttributeField,
@@ -45,5 +45,5 @@ export default function AttributeFieldWrapper(props: AttributeFieldProps) {
   if (!AttributeFieldComponent)
     throw new Error('Illegal attribute')
 
-  return renderAttributeField({...props}, AttributeFieldComponent)
+  return pluginEngine.renderAttributeField({...props}, AttributeFieldComponent)
 }

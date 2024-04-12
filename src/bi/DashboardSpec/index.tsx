@@ -8,7 +8,6 @@ import {v4 as uuidv4} from 'uuid'
 import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
 
-import {CustomComponentRenderContext} from 'src/extensions/custom-components'
 import {DASHBOARD_ITEM_NAME, EMPTY_ARRAY} from 'src/config/constants'
 import {Dashboard, DashboardExtra, DashboardItemType, DashboardLayoutItem, IDash, IDashboardSpec, ISelector, IText, QueryOp} from 'src/types/bi'
 import {generateQueryBlock, printSingleQueryFilter} from '../util'
@@ -21,8 +20,9 @@ import Text from '../Text'
 import Selector from '../Selector'
 import './DashboardSpec.css'
 import styles from './DashboardSpec.module.css'
+import {CustomComponentContext} from 'src/extensions/plugins/types'
 
-interface DashboardSpecProps extends CustomComponentRenderContext {
+interface DashboardSpecProps extends CustomComponentContext {
   extra?: DashboardExtra
   readOnly?: boolean
 }

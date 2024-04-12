@@ -1,5 +1,5 @@
 import {Parser} from 'js-expression'
-import functionConfig from '../../config/custom-function'
+import functionConfig from '../../config/customFunction'
 
 export interface CustomFunction {
     id: string

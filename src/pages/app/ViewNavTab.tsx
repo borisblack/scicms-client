@@ -1,16 +1,9 @@
-import React, {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {Col, Collapse, Form, Modal, notification, Row, Spin, Tabs} from 'antd'
 import {Tab} from 'rc-tabs/lib/interface'
 import {FieldType, IBuffer, ViewState} from 'src/types'
 import {Attribute, ItemData, ItemDataWrapper, RelType} from 'src/types/schema'
 import {useTranslation} from 'react-i18next'
-import {CustomPluginRenderContext, hasPlugins, renderPlugins} from 'src/extensions/plugins'
-import {
-  CustomComponentRenderContext,
-  getComponents,
-  hasComponents,
-  renderComponents
-} from 'src/extensions/custom-components'
 import AttributeFieldWrapper from './AttributeFieldWrapper'
 import {filterValues, parseValues} from 'src/util/form'
 import appConfig from 'src/config'
@@ -27,13 +20,14 @@ import {
   MINOR_REV_ATTR_NAME
 } from 'src/config/constants'
 import RelationsDataGridWrapper from './RelationsDataGridWrapper'
-import {ApiMiddlewareContext, ApiOperation, handleApiMiddleware, hasApiMiddleware} from 'src/extensions/api-middleware'
 import {exportWinFeatures, exportWinStyle, renderValue} from 'src/util/export'
 import {useAuth, useFormAcl, useMutationManager, useQueryManager, useRegistry} from 'src/util/hooks'
 import {useMDIContext} from 'src/components/MDITabs/hooks'
 import {generateKey} from 'src/util/mdi'
 import IconSuspense from 'src/components/icons/IconSuspense'
 import {sortAttributes} from 'src/util/schema'
+import {ApiMiddlewareContext, ApiOperation, CustomComponentContext, CustomRendererContext} from 'src/extensions/plugins/types'
+import {pluginEngine} from 'src/extensions/plugins'
 
 interface Props {
   data: ItemDataWrapper
@@ -63,14 +57,14 @@ function ViewNavTab({data: dataWrapper}: Props) {
   const mutationManager = useMutationManager()
   const acl = useFormAcl(item, data)
   const handleBufferChange = useCallback((bufferChanges: IBuffer) => setBuffer({...buffer, ...bufferChanges}), [buffer])
-  const pluginContext: CustomPluginRenderContext = useMemo(() => ({
+  const renderContext: CustomRendererContext = useMemo(() => ({
     item,
     buffer,
     data,
     onBufferChange: handleBufferChange
   }), [buffer, data, handleBufferChange, item])
 
-  const customComponentContext: CustomComponentRenderContext = useMemo(() => ({
+  const customComponentContext: CustomComponentContext = useMemo(() => ({
     data: dataWrapper,
     form,
     buffer,
@@ -87,34 +81,34 @@ function ViewNavTab({data: dataWrapper}: Props) {
   useEffect(() => {
     const headerNode = headerRef.current
     if (headerNode) {
-      renderPlugins('view.header', headerNode, pluginContext)
-      renderPlugins(`${item.name}.view.header`, headerNode, pluginContext)
+      pluginEngine.render('view.header', headerNode, renderContext)
+      pluginEngine.render(`${item.name}.view.header`, headerNode, renderContext)
     }
 
     const contentNode = contentRef.current
     if (contentNode) {
-      renderPlugins('view.content', contentNode, pluginContext)
-      renderPlugins(`${item.name}.view.content`, contentNode, pluginContext)
+      pluginEngine.render('view.content', contentNode, renderContext)
+      pluginEngine.render(`${item.name}.view.content`, contentNode, renderContext)
     }
 
     const contentFormNode = contentFormRef.current
     if (contentFormNode) {
-      renderPlugins('view.content.form', contentFormNode, pluginContext)
-      renderPlugins(`${item.name}.view.content,form`, contentFormNode, pluginContext)
+      pluginEngine.render('view.content.form', contentFormNode, renderContext)
+      pluginEngine.render(`${item.name}.view.content,form`, contentFormNode, renderContext)
     }
 
     const footerNode = footerRef.current
     if (footerNode) {
-      renderPlugins('view.footer', footerNode, pluginContext)
-      renderPlugins(`${item.name}.view.footer`, footerNode, pluginContext)
+      pluginEngine.render('view.footer', footerNode, renderContext)
+      pluginEngine.render(`${item.name}.view.footer`, footerNode, renderContext)
     }
 
     const tabsContentNode = tabsContentRef.current
     if (tabsContentNode) {
-      renderPlugins('tabs.content', tabsContentNode, pluginContext)
-      renderPlugins(`${item.name}.tabs.content`, tabsContentNode, pluginContext)
+      pluginEngine.render('tabs.content', tabsContentNode, renderContext)
+      pluginEngine.render(`${item.name}.tabs.content`, tabsContentNode, renderContext)
     }
-  }, [item.name, pluginContext])
+  }, [item.name, renderContext])
 
   const handleLogout = useCallback(async () => {
     await logout()
@@ -186,9 +180,9 @@ function ViewNavTab({data: dataWrapper}: Props) {
     try {
       const doCreate = async () => await mutationManager.create(item, values, majorRev, locale)
       let created: ItemData
-      if (hasApiMiddleware(item.name)) {
+      if (pluginEngine.hasApiMiddleware(item.name)) {
         const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values}
-        created = await handleApiMiddleware(item.name, ApiOperation.CREATE, apiMiddlewareContext, doCreate)
+        created = await pluginEngine.handleApiMiddleware(item.name, ApiOperation.CREATE, apiMiddlewareContext, doCreate)
       } else {
         created = await doCreate()
       }
@@ -222,9 +216,9 @@ function ViewNavTab({data: dataWrapper}: Props) {
     try {
       const doCreateVersion = async () => await mutationManager.createVersion(item, data.id, values, majorRev, locale, appConfig.mutation.copyCollectionRelations)
       let createdVersion: ItemData
-      if (hasApiMiddleware(item.name)) {
+      if (pluginEngine.hasApiMiddleware(item.name)) {
         const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values}
-        createdVersion = await handleApiMiddleware(item.name, ApiOperation.CREATE_VERSION, apiMiddlewareContext, doCreateVersion)
+        createdVersion = await pluginEngine.handleApiMiddleware(item.name, ApiOperation.CREATE_VERSION, apiMiddlewareContext, doCreateVersion)
       } else {
         createdVersion = await doCreateVersion()
       }
@@ -257,9 +251,9 @@ function ViewNavTab({data: dataWrapper}: Props) {
     try {
       const doCreateLocalization = async () => await mutationManager.createLocalization(item, data.id, values, locale, appConfig.mutation.copyCollectionRelations)
       let createdLocalization: ItemData
-      if (hasApiMiddleware(item.name)) {
+      if (pluginEngine.hasApiMiddleware(item.name)) {
         const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values}
-        createdLocalization = await handleApiMiddleware(item.name, ApiOperation.CREATE_LOCALIZATION, apiMiddlewareContext, doCreateLocalization)
+        createdLocalization = await pluginEngine.handleApiMiddleware(item.name, ApiOperation.CREATE_LOCALIZATION, apiMiddlewareContext, doCreateLocalization)
       } else {
         createdLocalization = await doCreateLocalization()
       }
@@ -289,9 +283,9 @@ function ViewNavTab({data: dataWrapper}: Props) {
     try {
       const doUpdate = async () => await mutationManager.update(item, data.id, values)
       let updated: ItemData
-      if (hasApiMiddleware(item.name)) {
+      if (pluginEngine.hasApiMiddleware(item.name)) {
         const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values}
-        updated = await handleApiMiddleware(item.name, ApiOperation.UPDATE, apiMiddlewareContext, doUpdate)
+        updated = await pluginEngine.handleApiMiddleware(item.name, ApiOperation.UPDATE, apiMiddlewareContext, doUpdate)
       } else {
         updated = await doUpdate()
       }
@@ -436,7 +430,7 @@ function ViewNavTab({data: dataWrapper}: Props) {
   }, [data, filterVisibleAttributeNames, item.displayName, item.spec, t])
 
   const getComponentTabs = useCallback((mountPoint: string): Tab[] =>
-    getComponents(mountPoint).map(component => {
+    pluginEngine.getComponents(mountPoint).map(component => {
       const title = t(component.title ?? 'Untitled')
       return {
         key: component.id,
@@ -448,10 +442,10 @@ function ViewNavTab({data: dataWrapper}: Props) {
 
   const getTabs = useCallback((collectionAttrNames: string[]): Tab[] => {
     const tabs: Tab[] = []
-    if (hasComponents('tabs.begin'))
+    if (pluginEngine.hasComponents('tabs.begin'))
       tabs.push(...getComponentTabs('tabs.begin'))
 
-    if (hasComponents(`${item.name}.tabs.begin`))
+    if (pluginEngine.hasComponents(`${item.name}.tabs.begin`))
       tabs.push(...getComponentTabs(`${item.name}.tabs.begin`))
 
     if (!isNew) {
@@ -476,22 +470,22 @@ function ViewNavTab({data: dataWrapper}: Props) {
       }))
     }
 
-    if (hasComponents('tabs.end'))
+    if (pluginEngine.hasComponents('tabs.end'))
       tabs.push(...getComponentTabs('tabs.end'))
 
-    if (hasComponents(`${item.name}.tabs.end`))
+    if (pluginEngine.hasComponents(`${item.name}.tabs.end`))
       tabs.push(...getComponentTabs(`${item.name}.tabs.end`))
 
     return tabs
   }, [getComponentTabs, item, isNew, itemMap, t, dataWrapper])
 
   const renderTabs = useCallback(() => {
-    const hasTabsContentPlugins = hasPlugins('tabs.content', `${item.name}.tabs.content`)
+    const hasTabsContentPlugins = pluginEngine.hasRenderers('tabs.content', `${item.name}.tabs.content`)
     const hasTabsContentPluginsOrComponents =
-      hasTabsContentPlugins || hasComponents('tabs.content', `${item.name}.tabs.content`)
+      hasTabsContentPlugins || pluginEngine.hasComponents('tabs.content', `${item.name}.tabs.content`)
 
     const hasTabsPluginsOrComponents =
-      hasTabsContentPluginsOrComponents || hasComponents('tabs.begin', `${item.name}.tabs.begin`, 'tabs.end', `${item.name}.tabs.end`)
+      hasTabsContentPluginsOrComponents || pluginEngine.hasComponents('tabs.begin', `${item.name}.tabs.begin`, 'tabs.end', `${item.name}.tabs.end`)
 
     if (isNew && !hasTabsPluginsOrComponents)
       return null
@@ -505,27 +499,27 @@ function ViewNavTab({data: dataWrapper}: Props) {
       })
 
     const hasTabs =
-      !hasTabsContentPluginsOrComponents && (collectionAttrNames.length > 0 || hasComponents('tabs.begin', `${item.name}.tabs.begin`, 'tabs.end', `${item.name}.tabs.end`))
+      !hasTabsContentPluginsOrComponents && (collectionAttrNames.length > 0 || pluginEngine.hasComponents('tabs.begin', `${item.name}.tabs.begin`, 'tabs.end', `${item.name}.tabs.end`))
 
     return (
       <>
-        {hasComponents('tabs.content') && renderComponents('tabs.content', customComponentContext)}
-        {hasComponents(`${item.name}.tabs.content`) && renderComponents(`${item.name}.tabs.content`, customComponentContext)}
+        {pluginEngine.hasComponents('tabs.content') && pluginEngine.renderComponents('tabs.content', customComponentContext)}
+        {pluginEngine.hasComponents(`${item.name}.tabs.content`) && pluginEngine.renderComponents(`${item.name}.tabs.content`, customComponentContext)}
         {hasTabsContentPlugins && <div ref={tabsContentRef} />}
         {hasTabs && <Tabs items={getTabs(collectionAttrNames)} />}
       </>
     )
   }, [item.name, item.spec.attributes, isNew, customComponentContext, getTabs])
 
-  const hasHeaderPlugins = hasPlugins('view.header', `${item.name}.view.header`)
-  const hasContentPlugins = hasPlugins('view.content', `${item.name}.view.content`)
+  const hasHeaderPlugins = pluginEngine.hasRenderers('view.header', `${item.name}.view.header`)
+  const hasContentPlugins = pluginEngine.hasRenderers('view.content', `${item.name}.view.content`)
   return (
     <Spin spinning={loading}>
-      {hasComponents('view.header') && renderComponents('view.header', customComponentContext)}
-      {hasComponents(`${item.name}.view.header`) && renderComponents(`${item.name}.view.header`, customComponentContext)}
+      {pluginEngine.hasComponents('view.header') && pluginEngine.renderComponents('view.header', customComponentContext)}
+      {pluginEngine.hasComponents(`${item.name}.view.header`) && pluginEngine.renderComponents(`${item.name}.view.header`, customComponentContext)}
       {hasHeaderPlugins && <div ref={headerRef} />}
 
-      {(!hasComponents('view.header', `${item.name}.view.header`) && !hasHeaderPlugins) && (
+      {(!pluginEngine.hasComponents('view.header', `${item.name}.view.header`) && !hasHeaderPlugins) && (
         <ViewNavTabHeader
           data={dataWrapper}
           form={form}
@@ -543,11 +537,11 @@ function ViewNavTab({data: dataWrapper}: Props) {
         />
       )}
 
-      {hasComponents('view.content') && renderComponents('view.content', customComponentContext)}
-      {hasComponents(`${item.name}.view.content`) && renderComponents(`${item.name}.view.content`, customComponentContext)}
+      {pluginEngine.hasComponents('view.content') && pluginEngine.renderComponents('view.content', customComponentContext)}
+      {pluginEngine.hasComponents(`${item.name}.view.content`) && pluginEngine.renderComponents(`${item.name}.view.content`, customComponentContext)}
       {hasContentPlugins && <div ref={contentRef} />}
 
-      {(!hasComponents('view.content', `${item.name}.view.content`) && !hasContentPlugins) &&
+      {(!pluginEngine.hasComponents('view.content', `${item.name}.view.content`) && !hasContentPlugins) &&
         <Form
           form={form}
           size="small"
@@ -555,8 +549,8 @@ function ViewNavTab({data: dataWrapper}: Props) {
           disabled={(!acl.canWrite || !isLockedByMe /*|| viewState === ViewState.VIEW*/) && (!acl.canCreate || !isNew)}
           onFinish={handleFormFinish}
         >
-          {hasComponents('view.content.form.begin') && renderComponents('view.content.form.begin', customComponentContext)}
-          {hasComponents(`${item.name}.view.content.form.begin`) && renderComponents(`${item.name}.view.content.form.begin`, customComponentContext)}
+          {pluginEngine.hasComponents('view.content.form.begin') && pluginEngine.renderComponents('view.content.form.begin', customComponentContext)}
+          {pluginEngine.hasComponents(`${item.name}.view.content.form.begin`) && pluginEngine.renderComponents(`${item.name}.view.content.form.begin`, customComponentContext)}
           <Collapse
             defaultActiveKey={['mainAttributes']}
             items={[{
@@ -569,14 +563,14 @@ function ViewNavTab({data: dataWrapper}: Props) {
               children: renderAttributes(templateAttributes)
             }]}
           />
-          {hasComponents('view.content.form.end') && renderComponents('view.content.form.end', customComponentContext)}
-          {hasComponents('view.content.form.end') && renderComponents('view.content.form.end', customComponentContext)}
+          {pluginEngine.hasComponents('view.content.form.end') && pluginEngine.renderComponents('view.content.form.end', customComponentContext)}
+          {pluginEngine.hasComponents('view.content.form.end') && pluginEngine.renderComponents('view.content.form.end', customComponentContext)}
         </Form>
       }
 
-      {hasComponents('view.footer') && renderComponents('view.footer', customComponentContext)}
-      {hasComponents(`${item.name}.view.footer`) && renderComponents(`${item.name}.view.footer`, customComponentContext)}
-      {hasPlugins('view.footer', `${item.name}.view.footer`) && <div ref={footerRef} />}
+      {pluginEngine.hasComponents('view.footer') && pluginEngine.renderComponents('view.footer', customComponentContext)}
+      {pluginEngine.hasComponents(`${item.name}.view.footer`) && pluginEngine.renderComponents(`${item.name}.view.footer`, customComponentContext)}
+      {pluginEngine.hasRenderers('view.footer', `${item.name}.view.footer`) && <div ref={footerRef} />}
 
       {renderTabs()}
     </Spin>

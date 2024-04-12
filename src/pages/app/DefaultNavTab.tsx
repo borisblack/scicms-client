@@ -11,17 +11,16 @@ import appConfig from 'src/config'
 import {IBuffer} from 'src/types'
 import {ItemData, ItemDataWrapper} from 'src/types/schema'
 import DataGrid, {RequestParams} from '../../components/datagrid/DataGrid'
-import {CustomPluginRenderContext, hasPlugins, renderPlugins} from 'src/extensions/plugins'
-import {CustomComponentRenderContext, hasComponents, renderComponents} from 'src/extensions/custom-components'
 import * as ACL from 'src/util/acl'
 import {findAll, getColumns, getHiddenColumns, getInitialData} from 'src/util/datagrid'
 import {ExtRequestParams} from 'src/services/query'
-import {ApiMiddlewareContext, ApiOperation, handleApiMiddleware, hasApiMiddleware} from 'src/extensions/api-middleware'
 import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME, MEDIA_ITEM_NAME} from 'src/config/constants'
 import {useAuth, useItemOperations, useMutationManager, useRegistry} from 'src/util/hooks'
 import {getTitle} from 'src/util/mdi'
 import IconSuspense from 'src/components/icons/IconSuspense'
 import {useMDIContext} from 'src/components/MDITabs/hooks'
+import {ApiMiddlewareContext, ApiOperation, CustomComponentContext, CustomRendererContext} from 'src/extensions/plugins/types'
+import {pluginEngine} from 'src/extensions/plugins'
 import styles from './NavTab.module.css'
 
 interface Props {
@@ -50,13 +49,13 @@ function DefaultNavTab({data: dataWrapper}: Props) {
   const columnsMemoized = useMemo(() => getColumns(itemMap, item, openItem), [item, itemMap])
   const hiddenColumnsMemoized = useMemo(() => getHiddenColumns(item), [item])
   const handleBufferChange = useCallback((bufferChanges: IBuffer) => setBuffer({...buffer, ...bufferChanges}), [buffer])
-  const pluginContext: CustomPluginRenderContext = useMemo(() => ({
+  const renderContext: CustomRendererContext = useMemo(() => ({
     item,
     buffer,
     onBufferChange: handleBufferChange
   }), [buffer, handleBufferChange, item])
 
-  const customComponentContext: CustomComponentRenderContext = useMemo(() => ({
+  const customComponentContext: CustomComponentContext = useMemo(() => ({
     data: dataWrapper,
     buffer,
     onBufferChange: handleBufferChange
@@ -65,22 +64,22 @@ function DefaultNavTab({data: dataWrapper}: Props) {
   useEffect(() => {
     const headerNode = headerRef.current
     if (headerNode) {
-      renderPlugins('default.header', headerNode, pluginContext)
-      renderPlugins(`${item.name}.default.header`, headerNode, pluginContext)
+      pluginEngine.render('default.header', headerNode, renderContext)
+      pluginEngine.render(`${item.name}.default.header`, headerNode, renderContext)
     }
 
     const contentNode = contentRef.current
     if (contentNode) {
-      renderPlugins('default.content', contentNode, pluginContext)
-      renderPlugins(`${item.name}.default.content`, contentNode, pluginContext)
+      pluginEngine.render('default.content', contentNode, renderContext)
+      pluginEngine.render(`${item.name}.default.content`, contentNode, renderContext)
     }
 
     const footerNode = footerRef.current
     if (footerNode) {
-      renderPlugins('default.footer', footerNode, pluginContext)
-      renderPlugins(`${item.name}.default.footer`, footerNode, pluginContext)
+      pluginEngine.render('default.footer', footerNode, renderContext)
+      pluginEngine.render(`${item.name}.default.footer`, footerNode, renderContext)
     }
-  }, [item.name, pluginContext])
+  }, [item.name, renderContext])
 
   const handleLogout = useCallback(async () => {
     await logout()
@@ -141,9 +140,9 @@ function DefaultNavTab({data: dataWrapper}: Props) {
         await mutationManager.purge(item, id, appConfig.mutation.deletingStrategy)
       } else {
         const doDelete = async () => await mutationManager.remove(item, id, appConfig.mutation.deletingStrategy)
-        if (hasApiMiddleware(item.name)) {
+        if (pluginEngine.hasApiMiddleware(item.name)) {
           const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values: {id}}
-          await handleApiMiddleware(item.name, ApiOperation.DELETE, apiMiddlewareContext, doDelete)
+          await pluginEngine.handleApiMiddleware(item.name, ApiOperation.DELETE, apiMiddlewareContext, doDelete)
         } else {
           await doDelete()
         }
@@ -228,17 +227,17 @@ function DefaultNavTab({data: dataWrapper}: Props) {
 
   return (
     <>
-      {hasComponents('default.header') && renderComponents('default.header', customComponentContext)}
-      {hasComponents(`${item.name}.default.header`) && renderComponents(`${item.name}.default.header`, customComponentContext)}
-      {hasPlugins('default.header', `${item.name}.default.header`) && <div ref={headerRef} />}
+      {pluginEngine.hasComponents('default.header') && pluginEngine.renderComponents('default.header', customComponentContext)}
+      {pluginEngine.hasComponents(`${item.name}.default.header`) && pluginEngine.renderComponents(`${item.name}.default.header`, customComponentContext)}
+      {pluginEngine.hasRenderers('default.header', `${item.name}.default.header`) && <div ref={headerRef} />}
 
-      {(!hasComponents('default.header', `${item.name}.default.header`) && !hasPlugins('default.header', `${item.name}.default.header`)) && renderPageHeader()}
+      {(!pluginEngine.hasComponents('default.header', `${item.name}.default.header`) && !pluginEngine.hasRenderers('default.header', `${item.name}.default.header`)) && renderPageHeader()}
 
-      {hasComponents('default.content') && renderComponents('default.content', customComponentContext)}
-      {hasComponents(`${item.name}.default.content`) && renderComponents(`${item.name}.default.content`, customComponentContext)}
-      {hasPlugins('default.content', `${item.name}.default.content`) && <div ref={contentRef} />}
+      {pluginEngine.hasComponents('default.content') && pluginEngine.renderComponents('default.content', customComponentContext)}
+      {pluginEngine.hasComponents(`${item.name}.default.content`) && pluginEngine.renderComponents(`${item.name}.default.content`, customComponentContext)}
+      {pluginEngine.hasRenderers('default.content', `${item.name}.default.content`) && <div ref={contentRef} />}
 
-      {(!hasComponents('default.content', `${item.name}.default.content`) && !hasPlugins('default.content', `${item.name}.default.content`)) &&
+      {(!pluginEngine.hasComponents('default.content', `${item.name}.default.content`) && !pluginEngine.hasRenderers('default.content', `${item.name}.default.content`)) &&
         <DataGrid
           loading={loading}
           columns={columnsMemoized}
@@ -257,9 +256,9 @@ function DefaultNavTab({data: dataWrapper}: Props) {
         />
       }
 
-      {hasComponents('default.footer') && renderComponents('default.footer', customComponentContext)}
-      {hasComponents(`${item.name}.default.footer`) && renderComponents(`${item.name}.default.footer`, customComponentContext)}
-      {hasPlugins('default.footer', `${item.name}.default.footer`) && <div ref={footerRef} />}
+      {pluginEngine.hasComponents('default.footer') && pluginEngine.renderComponents('default.footer', customComponentContext)}
+      {pluginEngine.hasComponents(`${item.name}.default.footer`) && pluginEngine.renderComponents(`${item.name}.default.footer`, customComponentContext)}
+      {pluginEngine.hasRenderers('default.footer', `${item.name}.default.footer`) && <div ref={footerRef} />}
     </>
   )
 }

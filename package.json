@@ -1,6 +1,6 @@
 {
   "name": "scicms-client",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "private": true,
   "dependencies": {
     "@ant-design/charts": "^1.4.2",
