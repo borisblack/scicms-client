@@ -51,7 +51,7 @@ const mapItemTemplate = (item: ItemTemplate): ItemTemplateModel => ({
     name: item.name,
     core: item.core
   },
-  spec: item.spec
+  spec: item.spec ?? {}
 })
 
 async function remove({items, item, values}: ApiMiddlewareContext): Promise<ItemData> {
