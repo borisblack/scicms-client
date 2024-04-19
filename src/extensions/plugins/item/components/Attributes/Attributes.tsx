@@ -11,8 +11,7 @@ import {
   type RequestParams,
   DataGrid
 } from 'src/components/DataGrid'
-import appConfig from 'src/config'
-import {getInitialData, processLocal} from 'src/util/datagrid'
+import {processLocal} from 'src/util/datagrid'
 import AttributeForm from './AttributeForm'
 import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design/icons'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
@@ -59,7 +58,14 @@ export function Attributes({data: dataWrapper, buffer, onBufferChange}: CustomCo
 
   }, [data?.includeTemplates, isNew, item.name, itemTemplates, spec.attributes])
   const [namedAttributes, setNamedAttributes] = useState<NamedAttribute[]>(initialNamedAttributes)
-  const [filteredData, setFilteredData] = useState<DataWithPagination<NamedAttribute>>(getInitialData())
+  const [filteredData, setFilteredData] = useState<DataWithPagination<NamedAttribute>>({
+    data: [],
+    pagination: {
+      page: 1,
+      pageSize: DEFAULT_PAGE_SIZE,
+      total: 0
+    }
+  })
   const [selectedAttribute, setSelectedAttribute] = useState<NamedAttribute | null>(null)
   const [isEditModalVisible, setEditModalVisible] = useState<boolean>(false)
   const [attributeForm] = Form.useForm()
@@ -81,6 +87,7 @@ export function Attributes({data: dataWrapper, buffer, onBufferChange}: CustomCo
   }, [onBufferChange])
 
   const handleRequest = useCallback(async (params: RequestParams) => {
+    console.log(params)
     setFilteredData(processLocal(namedAttributes, params))
   }, [namedAttributes])
 
