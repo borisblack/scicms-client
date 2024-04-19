@@ -202,7 +202,7 @@ export function Attributes({data: dataWrapper, buffer, onBufferChange}: CustomCo
         getRowContextMenu={getRowContextMenu}
         onRequest={handleRequest}
         onRowDoubleClick={handleRowDoubleClick}
-        onRowMove={acl.canWrite ? handleRowMove : undefined}
+        onRowMove={/*acl.canWrite ?*/ handleRowMove /*: undefined*/}
       />
       <Modal
         title={t('Attribute')}
