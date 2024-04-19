@@ -3,8 +3,13 @@ import {useCallback, useEffect, useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Button, notification, Space, Typography} from 'antd'
 import {FieldTimeOutlined} from '@ant-design/icons'
+import md5 from 'crypto-js/md5'
 
-import DataGrid, {DataWithPagination, RequestParams} from 'src/components/datagrid/DataGrid'
+import {
+  type DataWithPagination,
+  type RequestParams,
+  DataGrid
+} from 'src/components/DataGrid'
 import {getColumns, getHiddenColumns, getInitialData, loadData} from 'src/bi/util/datagrid'
 import appConfig from 'src/config'
 import {Column, Dataset, ExecutionStatisticInfo} from 'src/types/bi'
@@ -97,6 +102,7 @@ export default function DataPreview(props: DataPreviewProps) {
         height={height}
         toolbar={renderToolbar()}
         title={t('Preview')}
+        getRowId={originalRow => md5(JSON.stringify(originalRow)).toString()} // TODO: Won't work if rows fully identical
         onRequest={handleRequest}
       />
 

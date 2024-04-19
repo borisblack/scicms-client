@@ -6,7 +6,10 @@ import {DateTime} from 'luxon'
 
 import {FieldType, Pagination, PrimitiveFilterInput} from 'src/types'
 import appConfig from 'src/config'
-import {DataWithPagination, RequestParams} from 'src/components/datagrid/DataGrid'
+import {
+  type DataWithPagination,
+  type RequestParams
+} from 'src/components/DataGrid'
 import {
   LUXON_DATE_FORMAT_STRING,
   LUXON_DATE_HOURS_FORMAT_STRING,

@@ -10,7 +10,7 @@ interface Props {
     onChange: (value: any) => void
 }
 
-export default function SelectableCell({value, allowClear = false, options, onChange}: Props) {
+export function SelectableCell({value, allowClear = false, options, onChange}: Props) {
   const [editing, setEditing] = useState(false)
   const selectInput = useRef<BaseSelectRef>(null)
 

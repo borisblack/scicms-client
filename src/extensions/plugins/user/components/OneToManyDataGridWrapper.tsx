@@ -3,7 +3,7 @@ import {Row} from '@tanstack/react-table'
 import {Button, notification, Space} from 'antd'
 
 import appConfig from 'src/config'
-import DataGrid, {RequestParams} from 'src/components/datagrid/DataGrid'
+import {type RequestParams, DataGrid} from 'src/components/DataGrid'
 import {findAll, getColumns, getHiddenColumns, getInitialData} from 'src/util/datagrid'
 import {ItemData, ItemDataWrapper} from 'src/types/schema'
 import {useTranslation} from 'react-i18next'
@@ -28,7 +28,7 @@ export default function OneToManyDataGridWrapper({data: dataWrapper, itemName, t
   const {create: createItem, open: openItem, close: closeItem} = useItemOperations()
   const {t} = useTranslation()
   const [loading, setLoading] = useState<boolean>(false)
-  const [data, setData] = useState(getInitialData())
+  const [data, setData] = useState(getInitialData<ItemData>())
   const [version, setVersion] = useState<number>(0)
   const item = useMemo(() => itemMap[itemName], [itemMap, itemName])
   const targetItem = useMemo(() => itemMap[targetItemName], [itemMap, targetItemName])
@@ -159,6 +159,7 @@ export default function OneToManyDataGridWrapper({data: dataWrapper, itemName, t
         }}
         toolbar={renderToolbar()}
         title={t(targetItem.displayPluralName)}
+        getRowId={originalRow => originalRow.id}
         getRowContextMenu={getRowContextMenu}
         onRequest={handleRequest}
         onRowDoubleClick={row => openTarget(row.original.id)}

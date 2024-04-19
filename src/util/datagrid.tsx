@@ -7,7 +7,7 @@ import {DateTime} from 'luxon'
 import {FieldType} from '../types'
 import {Attribute, Item, ItemData, Media, RelType} from '../types/schema'
 import appConfig from '../config'
-import {DataWithPagination, RequestParams} from '../components/datagrid/DataGrid'
+import {DataWithPagination, RequestParams} from '../components/DataGrid'
 import QueryManager, {ExtRequestParams, ItemFiltersInput} from '../services/query'
 import {ACCESS_ITEM_NAME, FILENAME_ATTR_NAME, MASK_ATTR_NAME, MEDIA_ITEM_NAME, UTC} from '../config/constants'
 import i18n from '../i18n'
@@ -20,17 +20,19 @@ const {Link} = Typography
 const {luxonDisplayDateFormatString, luxonDisplayTimeFormatString, luxonDisplayDateTimeFormatString} = appConfig.dateTime
 const columnHelper = createColumnHelper<any>()
 
-export const getInitialData = (): DataWithPagination<any> => ({
-  data: [],
-  pagination: {
-    page: 1,
-    pageSize: appConfig.query.defaultPageSize,
-    total: 0
+export function getInitialData<T>(): DataWithPagination<T>{
+  return {
+    data: [],
+    pagination: {
+      page: 1,
+      pageSize: appConfig.query.defaultPageSize,
+      total: 0
+    }
   }
-})
+}
 
-export function getColumns(items: ItemMap, item: Item, onOpenItem: (item: Item, id: string) => void): ColumnDef<any, any>[] {
-  const columns: ColumnDef<any, any>[] = []
+export function getColumns(items: ItemMap, item: Item, onOpenItem: (item: Item, id: string) => void): ColumnDef<ItemData, any>[] {
+  const columns: ColumnDef<ItemData, any>[] = []
   const {attributes} = item.spec
   const sortedAttributes = sortAttributes(attributes)
   for (const [attrName, attr] of Object.entries(sortedAttributes)) {
@@ -45,7 +47,7 @@ export function getColumns(items: ItemMap, item: Item, onOpenItem: (item: Item, 
       enableColumnFilter: item.name !== ACCESS_ITEM_NAME || attrName !== MASK_ATTR_NAME
     })
 
-    columns.push(column)
+    columns.push(column as ColumnDef<ItemData>)
   }
 
   return columns

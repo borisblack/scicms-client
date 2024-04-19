@@ -1,6 +1,8 @@
 import _ from 'lodash'
-import {MouseEvent, ReactNode, useCallback, useEffect, useState} from 'react'
+import {MouseEvent, ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import {
+  ColumnDef,
   ColumnFiltersState,
   ColumnResizeMode,
   flexRender,
@@ -9,21 +11,34 @@ import {
   SortingState,
   useReactTable
 } from '@tanstack/react-table'
-import {Col, Dropdown, MenuProps, Pagination, Row as AntdRow, Spin} from 'antd'
+import {SortableContext, verticalListSortingStrategy} from '@dnd-kit/sortable'
+import {
+  closestCenter,
+  DndContext,
+  DragEndEvent,
+  KeyboardSensor,
+  MouseSensor,
+  TouchSensor,
+  UniqueIdentifier,
+  useSensor,
+  useSensors
+} from '@dnd-kit/core'
+import {restrictToVerticalAxis} from '@dnd-kit/modifiers'
+import {Col, MenuProps, Pagination, Row as AntdRow, Spin} from 'antd'
 import {CaretDownFilled, CaretUpFilled} from '@ant-design/icons'
 
-import styles from './DataGrid.module.css'
-import './DataGrid.css'
 import ColumnFilter from './ColumnFilter'
 import Toolbar from './Toolbar'
-import {useTranslation} from 'react-i18next'
 import {exportWinFeatures, exportWinStyle, renderValue} from 'src/util/export'
-import {ItemData} from 'src/types/schema'
+import {DraggableRow} from './DraggableRow'
+import {RowDragHandleCell} from './RowDragHandleCell'
+import styles from './DataGrid.module.css'
+import './DataGrid.css'
 
 interface DataGridProps<T> {
     loading?: boolean
-    columns: any[]
-    data: DataWithPagination<any>
+    columns: ColumnDef<T>[]
+    data: DataWithPagination<T>
     initialState: {
         hiddenColumns: string[]
         pageSize: number
@@ -33,10 +48,11 @@ interface DataGridProps<T> {
     toolbar?: ReactNode
     title?: string
     height?: number
-    getRowId?: (originalRow: T, index: number, parent?: Row<T>) => string
-    getRowContextMenu?: (row: any) => MenuProps['items']
+    getRowId: (originalRow: T, index: number, parent?: Row<T>) => string
+    getRowContextMenu?: (row: Row<T>) => MenuProps['items']
     onRequest: (params: RequestParams) => void
     onRowDoubleClick?: (row: Row<any>) => void
+    onRowMove?: (evt: DragEndEvent) => void
 }
 
 export interface DataWithPagination<T> {
@@ -66,12 +82,11 @@ interface RequestPagination {
 const COLUMN_RESIZE_MODE: ColumnResizeMode = 'onChange'
 const HEADER_FOOTER_HEIGHT = 184
 
-function DataGrid<T>({
+export function DataGrid<T>({
   loading = false,
-  columns,
+  columns: propColumns,
   data,
   initialState,
-  hasFilters = true,
   version = 0,
   toolbar = null,
   title = '',
@@ -79,7 +94,8 @@ function DataGrid<T>({
   getRowId,
   getRowContextMenu,
   onRequest,
-  onRowDoubleClick = () => {}
+  onRowDoubleClick = () => {},
+  onRowMove
 }: DataGridProps<T>) {
   const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>(() => {
     const initialColumnVisibility: ColumnVisibility = {}
@@ -93,6 +109,26 @@ function DataGrid<T>({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [rowSelection, setRowSelection] = useState({})
   const {t} = useTranslation()
+  const columns = useMemo(() => {
+    if (!onRowMove)
+      return propColumns
+
+    return [
+      {
+        id: 'drag-handle',
+        header: '',
+        cell: ({row}: any) => <RowDragHandleCell rowId={row.id}/>,
+        size: 40
+      },
+      ...(propColumns.map(col => ({...col, enableSorting: false, enableColumnFilter: false})))
+    ]
+  }, [propColumns])
+  const hasFilters = useMemo(() => columns.some(col => col.enableColumnFilter), [columns])
+
+  const dataIds = useMemo<UniqueIdentifier[]>(
+    () => data.data.map((row, i) => getRowId?.(row, i) ?? i),
+    [data.data]
+  )
 
   const table = useReactTable({
     columns,
@@ -176,13 +212,22 @@ function DataGrid<T>({
     }
   }, [table, rowSelection])
 
-  const renderHtmlTableRow = useCallback((visibleColumns: string[], row: ItemData): string => {
+  const renderHtmlTableRow = useCallback((visibleColumns: string[], row: any): string => {
     return `<tr>${visibleColumns.map(key => `<td>${renderValue(row[key])}</td>`).join('')}</tr>`
-  }, []
+  }, [])
+
+  function handleDragEnd(evt: DragEndEvent) {
+    onRowMove?.(evt)
+  }
+
+  const sensors = useSensors(
+    useSensor(MouseSensor, {}),
+    useSensor(TouchSensor, {}),
+    useSensor(KeyboardSensor, {})
   )
 
   const handleHtmlExport = useCallback(() => {
-    const visibleColumns = columns.filter(col => columnVisibility[col.accessorKey] !== false)
+    const visibleColumns = columns.filter((col: any) => columnVisibility[col.accessorKey] !== false)
     const exportWinHtml = `<!DOCTYPE html>
             <html>
                 <head>
@@ -200,7 +245,7 @@ function DataGrid<T>({
                             </tr>
                         </thead>
                         <tbody>
-                            ${data.data.map(row => renderHtmlTableRow(visibleColumns.map(col => col.accessorKey), row)).join('')}
+                            ${data.data.map(row => renderHtmlTableRow(visibleColumns.map((col: any) => col.accessorKey), row)).join('')}
                         </tbody>
                     </table>
                 </body>
@@ -234,75 +279,74 @@ function DataGrid<T>({
         </Col>
       </AntdRow>
 
-      <div className={`${styles.tableWrapper}`}>
-        <div className={`${styles.tableSmall}`}>
-          <div className={`${styles.tableContainer}`}>
-            <div className={`${styles.tableContent}`}>
-              <table style={{width: table.getCenterTotalSize()}}>
-                <thead className={`ant-table-thead ${styles.thead}`}>
-                  {table.getHeaderGroups().map(headerGroup => (
-                    <tr key={headerGroup.id} className={styles.tr}>
-                      {headerGroup.headers.map(header => (
-                        <th
-                          key={header.id}
-                          className={`${header.column.getCanSort() ? styles.tableColumnHasSorters : ''} ${hasFilters ? styles.hasFilter : ''}`}
-                          style={{width: header.getSize()}}
-                        >
-                          <div className={styles.tableColumnSorters} onClick={header.column.getToggleSortingHandler()}>
-                            <span className={styles.tableColumnTitle}>
-                              {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                            </span>
-                            {header.column.getCanSort() && (
-                              <span className={styles.tableColumnSorter}>
-                                <span className={styles.tableColumnSorterInner}>
-                                  <CaretUpFilled className={`${styles.tableColumnSorterUp} ${header.column.getIsSorted() === 'asc' ? styles.active : ''}`}/>
-                                  <CaretDownFilled className={`${styles.tableColumnSorterDown} ${header.column.getIsSorted() === 'desc' ? styles.active : ''}`}/>
-                                </span>
+      <DndContext
+        collisionDetection={closestCenter}
+        modifiers={[restrictToVerticalAxis]}
+        onDragEnd={handleDragEnd}
+        sensors={sensors}
+      >
+        <div className={styles.tableWrapper}>
+          <div className={styles.tableSmall}>
+            <div className={styles.tableContainer}>
+              <div className={styles.tableContent}>
+                <table style={{width: table.getCenterTotalSize()}}>
+                  <thead className={`ant-table-thead ${styles.thead}`}>
+                    {table.getHeaderGroups().map(headerGroup => (
+                      <tr key={headerGroup.id} className={styles.tr}>
+                        {headerGroup.headers.map(header => (
+                          <th
+                            key={header.id}
+                            className={`${header.column.getCanSort() ? styles.tableColumnHasSorters : ''} ${hasFilters ? styles.hasFilter : ''}`}
+                            style={{width: header.getSize()}}
+                          >
+                            <div className={styles.tableColumnSorters} onClick={header.column.getToggleSortingHandler()}>
+                              <span className={styles.tableColumnTitle}>
+                                {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                               </span>
-                            )}
-                          </div>
-                          {hasFilters && header.column.getCanFilter() ? <ColumnFilter column={header.column} onSubmit={() => handleFilterSubmit(header.id)}/> : null}
-                          <div
-                            className={`${styles.resizer} ${header.column.getIsResizing() ? styles.isResizing : ''}`}
-                            style={{transform: COLUMN_RESIZE_MODE === 'onEnd' && header.column.getIsResizing() ? `translateX(${table.getState().columnSizingInfo.deltaOffset}px)` : ''}}
-                            onMouseDown={header.getResizeHandler()}
-                            onTouchStart={header.getResizeHandler()}
-                          />
-                        </th>
-                      ))}
-                    </tr>
-                  ))}
-                </thead>
-
-                <tbody className={styles.tbody} style={{height: height ? (height - HEADER_FOOTER_HEIGHT) : undefined}}>
-                  {table.getRowModel().rows.map(row => {
-                    const rowContent = (
-                      <tr
-                        key={row.id}
-                        className={`${styles.tr} ${row.getIsSelected() ? styles.selected : ''}`}
-                        onClick={evt => handleRowSelection(row, evt)}
-                        onDoubleClick={() => onRowDoubleClick(row)}
-                      >
-                        {row.getVisibleCells().map(cell => (
-                          <td key={cell.id} style={{width: cell.column.getSize()}}>
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                          </td>
+                              {header.column.getCanSort() && (
+                                <span className={styles.tableColumnSorter}>
+                                  <span className={styles.tableColumnSorterInner}>
+                                    <CaretUpFilled className={`${styles.tableColumnSorterUp} ${header.column.getIsSorted() === 'asc' ? styles.active : ''}`}/>
+                                    <CaretDownFilled className={`${styles.tableColumnSorterDown} ${header.column.getIsSorted() === 'desc' ? styles.active : ''}`}/>
+                                  </span>
+                                </span>
+                              )}
+                            </div>
+                            {hasFilters && header.column.getCanFilter() ? <ColumnFilter column={header.column} onSubmit={() => handleFilterSubmit(header.id)}/> : null}
+                            <div
+                              className={`${styles.resizer} ${header.column.getIsResizing() ? styles.isResizing : ''}`}
+                              style={{transform: COLUMN_RESIZE_MODE === 'onEnd' && header.column.getIsResizing() ? `translateX(${table.getState().columnSizingInfo.deltaOffset}px)` : ''}}
+                              onMouseDown={header.getResizeHandler()}
+                              onTouchStart={header.getResizeHandler()}
+                            />
+                          </th>
                         ))}
                       </tr>
-                    )
+                    ))}
+                  </thead>
 
-                    return getRowContextMenu ? (
-                      <Dropdown key={row.id} menu={{items: getRowContextMenu(row)}} trigger={['contextMenu']}>
-                        {rowContent}
-                      </Dropdown>
-                    ) : rowContent
-                  })}
-                </tbody>
-              </table>
+                  <tbody className={styles.tbody} style={{height: height ? (height - HEADER_FOOTER_HEIGHT) : undefined}}>
+                    <SortableContext
+                      items={dataIds}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      {table.getRowModel().rows.map(row => (
+                        <DraggableRow
+                          key={row.id}
+                          row={row}
+                          getRowContextMenu={getRowContextMenu}
+                          onRowClick={handleRowSelection}
+                          onRowDoubleClick={onRowDoubleClick}
+                        />
+                      ))}
+                    </SortableContext>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </DndContext>
 
       <div className={styles.pagination}>
         <Pagination
@@ -322,5 +366,3 @@ function DataGrid<T>({
     </Spin>
   )
 }
-
-export default DataGrid

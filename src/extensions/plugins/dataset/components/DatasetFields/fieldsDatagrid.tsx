@@ -5,15 +5,17 @@ import i18n from 'src/i18n'
 import appConfig from 'src/config'
 import {FieldType} from 'src/types'
 import {NamedColumn} from 'src/types/bi'
-import EditableCell from 'src/components/datagrid/EditableCell'
-import SelectableCell from 'src/components/datagrid/SelectableCell'
-import EditableNumberCell from 'src/components/datagrid/EditableNumberCell'
-import CheckboxCell from 'src/components/datagrid/CheckboxCell'
+import {
+  CheckboxCell,
+  ClickableCell,
+  EditableCell,
+  EditableNumberCell,
+  SelectableCell
+} from 'src/components/DataGrid'
 import {AggregateType, Column} from 'src/types/bi'
 import {getFormatOptions} from 'src/bi/util'
 import FieldTypeIcon from 'src/components/app/FieldTypeIcon'
 import FieldName, {TagType} from 'src/components/app/FieldName'
-import ClickableCell from 'src/components/datagrid/ClickableCell'
 
 interface GetColumnsProps {
     ownColumns: Record<string, Column>

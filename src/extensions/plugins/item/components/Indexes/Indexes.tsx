@@ -6,7 +6,11 @@ import {useTranslation} from 'react-i18next'
 
 import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME} from 'src/config/constants'
 import {Index, ItemSpec} from 'src/types/schema'
-import DataGrid, {DataWithPagination, RequestParams} from 'src/components/datagrid/DataGrid'
+import {
+  type DataWithPagination,
+  type RequestParams,
+  DataGrid
+} from 'src/components/DataGrid'
 import appConfig from 'src/config'
 import {getInitialData, processLocal} from 'src/util/datagrid'
 import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design/icons'
@@ -171,6 +175,7 @@ export function Indexes({data: dataWrapper, buffer, onBufferChange}: CustomCompo
         toolbar={renderToolbar()}
         version={version}
         title={t('Indexes')}
+        getRowId={originalRow => originalRow.name}
         getRowContextMenu={getRowContextMenu}
         onRequest={handleRequest}
         onRowDoubleClick={handleRowDoubleClick}

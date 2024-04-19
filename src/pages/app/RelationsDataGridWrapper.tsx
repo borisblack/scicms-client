@@ -5,7 +5,7 @@ import {Button, Modal, notification, Space} from 'antd'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
 import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined, SelectOutlined} from '@ant-design/icons'
 import appConfig from 'src/config'
-import DataGrid, {RequestParams} from 'src/components/datagrid/DataGrid'
+import {type RequestParams, DataGrid} from 'src/components/DataGrid'
 import {findAllRelated, getColumns, getHiddenColumns, getInitialData} from 'src/util/datagrid'
 import {Attribute, ItemData, ItemDataWrapper, RelType} from 'src/types/schema'
 import {ID_ATTR_NAME, SOURCE_ATTR_NAME, TARGET_ATTR_NAME} from 'src/config/constants'
@@ -49,7 +49,7 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
     ]),
     [itemMap, relAttribute.target, relAttribute.intermediate]
   )
-  const [data, setData] = useState(getInitialData())
+  const [data, setData] = useState(getInitialData<ItemData>())
   const columns = useMemo(() => getColumns(itemMap, target, openItem), [itemMap, target])
   const isOneToMany = useMemo(() => relAttribute.relType === RelType.oneToMany, [relAttribute.relType])
   const acl = useAcl(item, itemData)
@@ -325,6 +325,7 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
         }}
         toolbar={renderToolbar()}
         title={t(target.displayPluralName)}
+        getRowId={originalRow => originalRow.id}
         getRowContextMenu={getRowContextMenu}
         onRequest={handleRequest}
         onRowDoubleClick={row => openTarget(row.original.id)}

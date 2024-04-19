@@ -255,6 +255,7 @@ const ru = {
     'Months after now (truncated to day)': 'Месяцев после текущего времени (с округлением до дня)',
     'Months before now': 'Месяцев до текущего времени',
     'Months before now (truncated to day)': 'Месяцев до текущего времени (с округлением до дня)',
+    'Move': 'Переместить',
     'minutes': 'минут',
     'months': 'месяцев',
     'Name': 'Наименование',

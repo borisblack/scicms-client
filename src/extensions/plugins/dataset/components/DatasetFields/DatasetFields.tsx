@@ -8,7 +8,11 @@ import {DeleteTwoTone, PlusCircleOutlined} from '@ant-design/icons'
 
 import {Split} from 'src/components/Split'
 import {DATASET_ITEM_NAME} from 'src/config/constants'
-import DataGrid, {DataWithPagination, RequestParams} from 'src/components/datagrid/DataGrid'
+import {
+  type DataWithPagination,
+  type RequestParams,
+  DataGrid
+} from 'src/components/DataGrid'
 import appConfig from 'src/config'
 import {getInitialData, processLocal} from 'src/util/datagrid'
 import {Column, Dataset, DatasetSpec} from 'src/types/bi'

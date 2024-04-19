@@ -10,7 +10,7 @@ import {PageHeader} from '@ant-design/pro-layout'
 import appConfig from 'src/config'
 import {IBuffer} from 'src/types'
 import {ItemData, ItemDataWrapper} from 'src/types/schema'
-import DataGrid, {RequestParams} from '../../components/datagrid/DataGrid'
+import {type RequestParams, DataGrid} from '../../components/DataGrid'
 import * as ACL from 'src/util/acl'
 import {findAll, getColumns, getHiddenColumns, getInitialData} from 'src/util/datagrid'
 import {ExtRequestParams} from 'src/services/query'
@@ -37,7 +37,7 @@ function DefaultNavTab({data: dataWrapper}: Props) {
   const mutationManager = useMutationManager()
   const {t} = useTranslation()
   const [loading, setLoading] = useState(false)
-  const [data, setData] = useState(getInitialData())
+  const [data, setData] = useState(getInitialData<ItemData>())
   const [version, setVersion] = useState<number>(0)
   const showAllLocalesRef = useRef<boolean>(false)
   const headerRef = useRef<HTMLDivElement>(null)
@@ -250,6 +250,7 @@ function DefaultNavTab({data: dataWrapper}: Props) {
           version={version}
           toolbar={item.localized && <Checkbox onChange={handleLocalizationsCheckBoxChange}>{t('All Locales')}</Checkbox>}
           title={t(item.displayPluralName)}
+          getRowId={originalRow => originalRow.id}
           getRowContextMenu={getRowContextMenu}
           onRequest={handleRequest}
           onRowDoubleClick={handleRowDoubleClick}

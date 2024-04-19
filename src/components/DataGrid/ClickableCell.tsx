@@ -6,7 +6,7 @@ interface ClickableCellProps {
     onClick: (value: any) => void
 }
 
-export default function ClickableCell({value, onClick}: ClickableCellProps) {
+export function ClickableCell({value, onClick}: ClickableCellProps) {
   const {t} = useTranslation()
 
   function handleClick() {

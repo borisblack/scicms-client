@@ -255,6 +255,7 @@ const en = {
     'Months after now (truncated to day)': 'Months after now (truncated to day)',
     'Months before now': 'Months before now',
     'Months before now (truncated to day)': 'Months before now (truncated to day)',
+    'Move': 'Move',
     'minutes': 'minutes',
     'months': 'months',
     'Name': 'Name',

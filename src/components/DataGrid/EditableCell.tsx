@@ -1,18 +1,15 @@
-import {InputNumber} from 'antd'
-import {FocusEvent, KeyboardEvent, useEffect, useRef, useState} from 'react'
+import {Input, InputRef} from 'antd'
+import {ChangeEvent, FocusEvent, KeyboardEvent, useEffect, useRef, useState} from 'react'
 
 interface Props {
-    value?: string | number | null
-    min?: string | number
-    max?: string | number
-    step?: string | number
-    onChange: (value: string | number | null) => void
+    value: any
+    onChange: (value: any) => void
 }
 
-export default function EditableNumberCell({value, min, max, step, onChange}: Props) {
+export function EditableCell({value, onChange}: Props) {
   const [innerValue, setInnerValue] = useState(value)
   const [editing, setEditing] = useState(false)
-  const editInput = useRef<HTMLInputElement>(null)
+  const editInput = useRef<InputRef>(null)
 
   useEffect(() => {
     setInnerValue(value)
@@ -23,8 +20,8 @@ export default function EditableNumberCell({value, min, max, step, onChange}: Pr
     setTimeout(() => editInput.current?.select(), 100)
   }
 
-  function handleChange(v: string | number | null) {
-    setInnerValue(v)
+  function handleChange(evt: ChangeEvent<HTMLInputElement>) {
+    setInnerValue(evt.target.value)
   }
 
   function handleKeyUp(evt: KeyboardEvent<HTMLInputElement>) {
@@ -36,8 +33,7 @@ export default function EditableNumberCell({value, min, max, step, onChange}: Pr
 
     if (evt.key === 'Enter') {
       setEditing(false)
-      const v = (evt.target as HTMLInputElement).value
-      onChange(v ? Number(v) : null)
+      onChange((evt.target as HTMLInputElement).value)
     }
   }
 
@@ -46,13 +42,10 @@ export default function EditableNumberCell({value, min, max, step, onChange}: Pr
   }
 
   return editing ? (
-    <InputNumber
+    <Input
       ref={editInput}
       size="small"
       value={innerValue}
-      min={min}
-      max={max}
-      step={step}
       onBlur={handleBlur}
       onChange={handleChange}
       onKeyUp={handleKeyUp}

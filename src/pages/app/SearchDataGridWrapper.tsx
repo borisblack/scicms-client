@@ -4,7 +4,7 @@ import {Row} from '@tanstack/react-table'
 import {Checkbox, notification} from 'antd'
 
 import appConfig from 'src/config'
-import DataGrid, {RequestParams} from 'src/components/datagrid/DataGrid'
+import {RequestParams, DataGrid} from 'src/components/DataGrid'
 import {findAll, getColumns, getHiddenColumns, getInitialData} from 'src/util/datagrid'
 import {Item, ItemData} from 'src/types/schema'
 import {ExtRequestParams, ItemFiltersInput} from 'src/services/query'
@@ -26,7 +26,7 @@ export default function SearchDataGridWrapper({item, notHiddenColumns = [], extr
   const {open: openItem} = useItemOperations()
   const {t} = useTranslation()
   const [loading, setLoading] = useState<boolean>(false)
-  const [data, setData] = useState(getInitialData())
+  const [data, setData] = useState(getInitialData<ItemData>())
   const [version, setVersion] = useState<number>(0)
   const showAllLocalesRef = useRef<boolean>(false)
 
@@ -71,6 +71,7 @@ export default function SearchDataGridWrapper({item, notHiddenColumns = [], extr
       }}
       toolbar={item.localized && <Checkbox onChange={handleLocalizationsCheckBoxChange}>{t('All Locales')}</Checkbox>}
       title={t(item.displayPluralName)}
+      getRowId={originalRow => originalRow.id}
       onRequest={handleRequest}
       onRowDoubleClick={handleRowDoubleClick}
     />

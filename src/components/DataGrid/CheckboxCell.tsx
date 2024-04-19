@@ -8,7 +8,7 @@ interface Props {
     onChange: (value: boolean) => void
 }
 
-export default function CheckboxCell({value, disabled, onChange}: Props) {
+export function CheckboxCell({value, disabled, onChange}: Props) {
   const checkboxInput = useRef<HTMLInputElement>(null)
 
   function handleChange(e: CheckboxChangeEvent) {

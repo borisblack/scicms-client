@@ -6,7 +6,11 @@ import {useTranslation} from 'react-i18next'
 
 import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME} from 'src/config/constants'
 import {Attribute, ItemSpec} from 'src/types/schema'
-import DataGrid, {DataWithPagination, RequestParams} from 'src/components/datagrid/DataGrid'
+import {
+  type DataWithPagination,
+  type RequestParams,
+  DataGrid
+} from 'src/components/DataGrid'
 import appConfig from 'src/config'
 import {getInitialData, processLocal} from 'src/util/datagrid'
 import AttributeForm from './AttributeForm'
@@ -16,8 +20,11 @@ import {useItemAcl, useRegistry} from 'src/util/hooks'
 import {getAttributeColumns, getHiddenAttributeColumns} from './attributeColumns'
 import {NamedAttribute} from './types'
 import {CustomComponentContext} from 'src/extensions/plugins/types'
+import {DragEndEvent} from '@dnd-kit/core'
+import {arrayMove} from '@dnd-kit/sortable'
 
 const EDIT_MODAL_WIDTH = 800
+const DEFAULT_PAGE_SIZE = 100
 
 export function Attributes({data: dataWrapper, buffer, onBufferChange}: CustomComponentContext) {
   const {item, data} = dataWrapper
@@ -161,6 +168,24 @@ export function Attributes({data: dataWrapper, buffer, onBufferChange}: CustomCo
     return items
   }, [t, acl.canWrite, openRow, deleteRow])
 
+  function handleRowMove(evt: DragEndEvent) {
+    const {active, over} = evt
+    if (active && over && active.id !== over.id) {
+      const oldIndex = namedAttributes.findIndex(na => na.name === active.id)
+      const newIndex = namedAttributes.findIndex(na => na.name === over.id)
+      const newNamedAttributes = arrayMove(namedAttributes, oldIndex, newIndex) // this is just a splice util
+      newNamedAttributes.forEach((na, i) => na.sortOrder = i + 1)
+      handleNamedAttributesChange(newNamedAttributes)
+      setFilteredData({
+        data: newNamedAttributes,
+        pagination: {
+          page: 1,
+          pageSize: DEFAULT_PAGE_SIZE,
+          total: namedAttributes.length
+        }})
+    }
+  }
+
   return (
     <>
       <DataGrid
@@ -168,14 +193,16 @@ export function Attributes({data: dataWrapper, buffer, onBufferChange}: CustomCo
         data={filteredData}
         initialState={{
           hiddenColumns: hiddenColumns,
-          pageSize: appConfig.query.defaultPageSize
+          pageSize: DEFAULT_PAGE_SIZE
         }}
         toolbar={renderToolbar()}
         title={t('Attributes')}
         version={version}
+        getRowId={originalRow => originalRow.name}
         getRowContextMenu={getRowContextMenu}
         onRequest={handleRequest}
         onRowDoubleClick={handleRowDoubleClick}
+        onRowMove={acl.canWrite ? handleRowMove : undefined}
       />
       <Modal
         title={t('Attribute')}
