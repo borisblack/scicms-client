@@ -204,6 +204,7 @@ const en = {
     'Join type': 'Join type',
     'Joined table field': 'Joined table field',
     'Key column': 'Key column',
+    'Keyed': 'Keyed',
     'Label': 'Label',
     'Label field': 'Label field',
     'Labels': 'Labels',

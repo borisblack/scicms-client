@@ -48,6 +48,7 @@ interface DataGridProps<T> {
     toolbar?: ReactNode
     title?: string
     height?: number
+    rowDndEnabled?: boolean
     getRowId: (originalRow: T, index: number, parent?: Row<T>) => string
     getRowContextMenu?: (row: Row<T>) => MenuProps['items']
     onRequest: (params: RequestParams) => void
@@ -81,6 +82,7 @@ interface RequestPagination {
 
 const COLUMN_RESIZE_MODE: ColumnResizeMode = 'onChange'
 const HEADER_FOOTER_HEIGHT = 184
+const DRAG_HANDLE_COLUMN_ID = 'drag-handle'
 
 export function DataGrid<T>({
   loading = false,
@@ -98,7 +100,7 @@ export function DataGrid<T>({
   onRowMove
 }: DataGridProps<T>) {
   const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>(() => {
-    const initialColumnVisibility: ColumnVisibility = {}
+    const initialColumnVisibility: ColumnVisibility = {DRAG_HANDLE_COLUMN_ID: !!onRowMove}
     initialState.hiddenColumns.forEach(it => {
       initialColumnVisibility[it] = false
     })
@@ -109,20 +111,15 @@ export function DataGrid<T>({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [rowSelection, setRowSelection] = useState({})
   const {t} = useTranslation()
-  const columns = useMemo(() => {
-    if (!onRowMove)
-      return propColumns
-
-    return [
-      {
-        id: 'drag-handle',
-        header: '',
-        cell: ({row}: any) => <RowDragHandleCell rowId={row.id}/>,
-        size: 40
-      },
-      ...(propColumns.map(col => ({...col, enableSorting: false, enableColumnFilter: false})))
-    ]
-  }, [propColumns])
+  const columns: ColumnDef<T>[] = useMemo(() => ([
+    {
+      id: DRAG_HANDLE_COLUMN_ID,
+      header: '',
+      cell: ({row}: any) => <RowDragHandleCell rowId={row.id}/>,
+      size: 40
+    },
+    ...(propColumns.map(col => ({...col, enableSorting: false, enableColumnFilter: false})))
+  ]), [propColumns])
   const hasFilters = useMemo(() => columns.some(col => col.enableColumnFilter), [columns])
 
   const dataIds = useMemo<UniqueIdentifier[]>(

@@ -204,6 +204,7 @@ const ru = {
     'Join type': 'Тип соединения',
     'Joined table field': 'Поле таблицы соединения',
     'Key column': 'Ключевой столбец',
+    'Keyed': 'Ключевой',
     'Label': 'Обозначение',
     'Label field': 'Поле обозначения',
     'Labels': 'Метки',

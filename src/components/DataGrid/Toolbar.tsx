@@ -53,16 +53,18 @@ function Toolbar({table, hasFilters, onRefresh, onClearFilters, onHtmlExport}: P
       <Tooltip title={t('Settings')}>
         <Popover
           content={
-            table.getAllLeafColumns().map(column => (
-              <div key={column.id}>
-                <Checkbox
-                  checked={column.getIsVisible()}
-                  onChange={column.getToggleVisibilityHandler()}
-                >
-                  {column.columnDef.header as string}
-                </Checkbox>
-              </div>
-            ))
+            table.getAllLeafColumns()
+              .filter(column => column.id !== 'drag-handle')
+              .map(column => (
+                <div key={column.id}>
+                  <Checkbox
+                    checked={column.getIsVisible()}
+                    onChange={column.getToggleVisibilityHandler()}
+                  >
+                    {column.columnDef.header as string}
+                  </Checkbox>
+                </div>
+              ))
           }
           placement='leftTop'
           trigger='click'

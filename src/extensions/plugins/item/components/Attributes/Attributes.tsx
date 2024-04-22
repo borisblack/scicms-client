@@ -21,9 +21,19 @@ import {NamedAttribute} from './types'
 import {CustomComponentContext} from 'src/extensions/plugins/types'
 import {DragEndEvent} from '@dnd-kit/core'
 import {arrayMove} from '@dnd-kit/sortable'
+import {sortAttributes} from 'src/util/schema'
 
 const EDIT_MODAL_WIDTH = 800
 const DEFAULT_PAGE_SIZE = 100
+
+const getInitialAttributesData: () => DataWithPagination<NamedAttribute> = () => ({
+  data: [],
+  pagination: {
+    page: 1,
+    pageSize: DEFAULT_PAGE_SIZE,
+    total: 0
+  }
+})
 
 export function Attributes({data: dataWrapper, buffer, onBufferChange}: CustomComponentContext) {
   const {item, data} = dataWrapper
@@ -40,32 +50,22 @@ export function Attributes({data: dataWrapper, buffer, onBufferChange}: CustomCo
   const spec: ItemSpec = useMemo(() => buffer.spec ?? data?.spec ?? {}, [buffer.spec, data?.spec])
 
   const initialNamedAttributes = useMemo((): NamedAttribute[] => {
-    const attributes = spec.attributes ?? {}
-    let namedAttributes = Object.keys(attributes)
-      .map(attrName => ({name: attrName, ...attributes[attrName]}))
-
-    if (item.name !== ITEM_TEMPLATE_ITEM_NAME && namedAttributes.length > 0 && !isNew) {
-      const excludedAttrNameSet = new Set()
-      for (const itemTemplateName of data.includeTemplates) {
-        const itemTemplate = itemTemplates[itemTemplateName]
-        for (const excludedAttrName in itemTemplate.spec.attributes)
-          excludedAttrNameSet.add(excludedAttrName)
-      }
-      namedAttributes = namedAttributes.filter(it => !excludedAttrNameSet.has(it.name))
-    }
+    const attributes = sortAttributes(spec.attributes ?? {})
+    const includeTemplates: string[] = data?.includeTemplates ?? []
+    const excludedAttrNames = new Set(
+      includeTemplates
+        .map(templateName => itemTemplates[templateName])
+        .flatMap(template => Object.keys(template.spec.attributes))
+    )
+    const namedAttributes = Object.keys(attributes)
+      .map((attrName, i) => ({name: attrName, sortOrder: i+1, ...attributes[attrName]}))
+      .filter(attr => !excludedAttrNames.has(attr.name))
 
     return namedAttributes
 
-  }, [data?.includeTemplates, isNew, item.name, itemTemplates, spec.attributes])
+  }, [data?.includeTemplates, itemTemplates, spec.attributes])
   const [namedAttributes, setNamedAttributes] = useState<NamedAttribute[]>(initialNamedAttributes)
-  const [filteredData, setFilteredData] = useState<DataWithPagination<NamedAttribute>>({
-    data: [],
-    pagination: {
-      page: 1,
-      pageSize: DEFAULT_PAGE_SIZE,
-      total: 0
-    }
-  })
+  const [filteredData, setFilteredData] = useState<DataWithPagination<NamedAttribute>>(getInitialAttributesData())
   const [selectedAttribute, setSelectedAttribute] = useState<NamedAttribute | null>(null)
   const [isEditModalVisible, setEditModalVisible] = useState<boolean>(false)
   const [attributeForm] = Form.useForm()
@@ -87,7 +87,6 @@ export function Attributes({data: dataWrapper, buffer, onBufferChange}: CustomCo
   }, [onBufferChange])
 
   const handleRequest = useCallback(async (params: RequestParams) => {
-    console.log(params)
     setFilteredData(processLocal(namedAttributes, params))
   }, [namedAttributes])
 
@@ -175,7 +174,7 @@ export function Attributes({data: dataWrapper, buffer, onBufferChange}: CustomCo
     return items
   }, [t, acl.canWrite, openRow, deleteRow])
 
-  function handleRowMove(evt: DragEndEvent) {
+  const handleRowMove = useCallback((evt: DragEndEvent) => {
     const {active, over} = evt
     if (active && over && active.id !== over.id) {
       const oldIndex = namedAttributes.findIndex(na => na.name === active.id)
@@ -191,7 +190,7 @@ export function Attributes({data: dataWrapper, buffer, onBufferChange}: CustomCo
           total: namedAttributes.length
         }})
     }
-  }
+  }, [])
 
   return (
     <>
@@ -205,11 +204,12 @@ export function Attributes({data: dataWrapper, buffer, onBufferChange}: CustomCo
         toolbar={renderToolbar()}
         title={t('Attributes')}
         version={version}
+        rowDndEnabled={acl.canWrite}
         getRowId={originalRow => originalRow.name}
         getRowContextMenu={getRowContextMenu}
         onRequest={handleRequest}
         onRowDoubleClick={handleRowDoubleClick}
-        onRowMove={/*acl.canWrite ?*/ handleRowMove /*: undefined*/}
+        onRowMove={handleRowMove}
       />
       <Modal
         title={t('Attribute')}
