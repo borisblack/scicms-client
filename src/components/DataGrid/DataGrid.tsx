@@ -99,8 +99,9 @@ export function DataGrid<T>({
   onRowDoubleClick = () => {},
   onRowMove
 }: DataGridProps<T>) {
+  const isRowDndEnabled = useMemo(() => !!onRowMove, [onRowMove])
   const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>(() => {
-    const initialColumnVisibility: ColumnVisibility = {DRAG_HANDLE_COLUMN_ID: !!onRowMove}
+    const initialColumnVisibility: ColumnVisibility = {DRAG_HANDLE_COLUMN_ID: isRowDndEnabled}
     initialState.hiddenColumns.forEach(it => {
       initialColumnVisibility[it] = false
     })
@@ -112,7 +113,6 @@ export function DataGrid<T>({
   const [rowSelection, setRowSelection] = useState({})
   const {t} = useTranslation()
   const columns: ColumnDef<T>[] = useMemo(() => {
-    const isRowDndEnabled = !!onRowMove
     if (!isRowDndEnabled)
       return propColumns
 
