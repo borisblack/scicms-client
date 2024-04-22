@@ -125,7 +125,7 @@ export function DataGrid<T>({
       },
       ...(propColumns.map(col => ({...col, enableSorting: false, enableColumnFilter: false})))
     ]
-  }, [onRowMove, propColumns])
+  }, [isRowDndEnabled, propColumns])
   const hasFilters = useMemo(() => columns.some(col => col.enableColumnFilter), [columns])
 
   const dataIds = useMemo<UniqueIdentifier[]>(
