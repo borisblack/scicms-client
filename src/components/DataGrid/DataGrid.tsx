@@ -111,15 +111,21 @@ export function DataGrid<T>({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [rowSelection, setRowSelection] = useState({})
   const {t} = useTranslation()
-  const columns: ColumnDef<T>[] = useMemo(() => ([
-    {
-      id: DRAG_HANDLE_COLUMN_ID,
-      header: '',
-      cell: ({row}: any) => <RowDragHandleCell rowId={row.id}/>,
-      size: 40
-    },
-    ...(propColumns.map(col => ({...col, enableSorting: false, enableColumnFilter: false})))
-  ]), [propColumns])
+  const columns: ColumnDef<T>[] = useMemo(() => {
+    const isRowDndEnabled = !!onRowMove
+    if (!isRowDndEnabled)
+      return propColumns
+
+    return [
+      {
+        id: DRAG_HANDLE_COLUMN_ID,
+        header: '',
+        cell: ({row}: any) => <RowDragHandleCell rowId={row.id}/>,
+        size: 40
+      },
+      ...(propColumns.map(col => ({...col, enableSorting: false, enableColumnFilter: false})))
+    ]
+  }, [onRowMove, propColumns])
   const hasFilters = useMemo(() => columns.some(col => col.enableColumnFilter), [columns])
 
   const dataIds = useMemo<UniqueIdentifier[]>(
