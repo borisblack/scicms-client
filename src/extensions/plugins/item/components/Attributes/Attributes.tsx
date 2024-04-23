@@ -45,7 +45,8 @@ export function Attributes({data: dataWrapper, buffer, onBufferChange}: CustomCo
   const {t} = useTranslation()
   const [version, setVersion] = useState<number>(0)
   const acl = useItemAcl(item, data)
-  const columns = useMemo(() => getAttributeColumns(data?.core ?? false), [data?.core])
+  const isCoreItem = useMemo(() => data?.core ?? false, [data?.core])
+  const columns = useMemo(() => getAttributeColumns(isCoreItem), [isCoreItem])
   const hiddenColumns = useMemo(() => getHiddenAttributeColumns(), [])
   const spec: ItemSpec = useMemo(() => buffer.spec ?? data?.spec ?? {}, [buffer.spec, data?.spec])
 
@@ -209,7 +210,7 @@ export function Attributes({data: dataWrapper, buffer, onBufferChange}: CustomCo
         getRowContextMenu={getRowContextMenu}
         onRequest={handleRequest}
         onRowDoubleClick={handleRowDoubleClick}
-        onRowMove={handleRowMove}
+        onRowMove={isCoreItem ? undefined : handleRowMove}
       />
       <Modal
         title={t('Attribute')}
