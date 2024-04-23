@@ -103,6 +103,8 @@ const ru = {
     'Default Begin': 'Начало по умолчанию',
     'Default End': 'Окончание по умолчанию',
     'Default Filters': 'Фильтры по умолчанию',
+    'Default Sort Attribute': 'Атрибут сортировки по умолчанию',
+    'Default Sort Order': 'Порядок сортировки по умолчанию',
     'Default Value': 'Знач. по умолчанию',
     'Default zoom': 'Зум по умолчанию',
     'Delete': 'Удалить',

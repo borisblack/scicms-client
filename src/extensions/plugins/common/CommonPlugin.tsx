@@ -8,6 +8,7 @@ const LOCALE_ATTRIBUTE_FIELD_ID = 'locale'
 
 export class CommonPlugin extends Plugin {
   override onLoad(): void {
+    // Attribute fields
     this.addAttributeField({
       id: ICON_ATTRIBUTE_FIELD_ID,
       supports: (itemName, attrName, attribute) =>

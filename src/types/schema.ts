@@ -116,6 +116,8 @@ export interface Item extends ItemTemplate {
     query: string | null
     cacheTtl: number | null
     titleAttribute: string
+    defaultSortAttribute: string | null
+    defaultSortOrder: string | null
     includeTemplates: string[]
     description: string | null
     icon: string | null
@@ -147,6 +149,8 @@ interface ItemMetadata extends ItemTemplateMetadata{
     query: string | null
     cacheTtl: number | null
     titleAttribute: string
+    defaultSortAttribute: string | null
+    defaultSortOrder: string | null
     description: string | null
     icon: string | null
     readOnly: boolean | null

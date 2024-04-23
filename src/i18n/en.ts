@@ -103,6 +103,8 @@ const en = {
     'Default Begin': 'Default Begin',
     'Default End': 'Default End',
     'Default Filters': 'Default Filters',
+    'Default Sort Attribute': 'Default Sort Attribute',
+    'Default Sort Order': 'Default Sort Order',
     'Default Value': 'Default Value',
     'Default zoom': 'Default zoom',
     'Delete': 'Delete',

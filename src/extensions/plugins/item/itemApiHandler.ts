@@ -62,6 +62,8 @@ const mapItem = (item: Item): ItemModel => ({
     query: item.query,
     cacheTtl: item.cacheTtl,
     titleAttribute: item.titleAttribute,
+    defaultSortAttribute: item.defaultSortAttribute,
+    defaultSortOrder: item.defaultSortOrder,
     description: item.description,
     readOnly: item.readOnly,
     icon: item.icon,

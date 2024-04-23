@@ -1,5 +1,7 @@
-import {ITEM_ITEM_NAME} from 'src/config/constants'
+import {DEFAULT_SORT_ORDER_ATTR_NAME, ITEM_ITEM_NAME} from 'src/config/constants'
+import {FieldType} from 'src/types'
 import {Plugin} from '../Plugin'
+import {DefaultSortOrderAttributeField} from './attributeFields'
 import {Attributes, Indexes} from './components'
 import {handleItemApiOperation} from './itemApiHandler'
 
@@ -7,6 +9,7 @@ const ITEM_ATTRIBUTES_COMPONENT_ID = 'itemAttributes'
 const ITEM_TEMPLATE_ATTRIBUTES_COMPONENT_ID = 'itemTemplateAttributes'
 const ITEM_INDEXES_COMPONENT_ID = 'itemIndexes'
 const ITEM_TEMPLATE_INDEXES_COMPONENT_ID = 'itemTemplateIndexes'
+const DEFAULT_SORT_ORDER_ATTRIBUTE_FIELD_ID = 'defaultSortOrder'
 
 export class ItemPlugin extends Plugin {
   override onLoad() {
@@ -45,6 +48,14 @@ export class ItemPlugin extends Plugin {
       title: 'Indexes',
       icon: 'HolderOutlined',
       render: ({context}) => <Indexes key={ITEM_TEMPLATE_INDEXES_COMPONENT_ID} {...context}/>
+    })
+
+    // Attribute fields
+    this.addAttributeField({
+      id: DEFAULT_SORT_ORDER_ATTRIBUTE_FIELD_ID,
+      supports: (itemName, attrName, attribute) =>
+        attrName === DEFAULT_SORT_ORDER_ATTR_NAME && itemName === ITEM_ITEM_NAME && attribute.type === FieldType.string,
+      render: ({context}) => <DefaultSortOrderAttributeField {...context}/>
     })
 
     // API middleware
