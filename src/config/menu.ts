@@ -23,6 +23,8 @@ const menuConfig: MenuConfig = {
     icon: 'CrownOutlined',
     roles: [ROLE_ADMIN],
     children: [{
+      itemName: 'property'
+    }, {
       key: 'security',
       label: 'Security',
       icon: 'LockOutlined',

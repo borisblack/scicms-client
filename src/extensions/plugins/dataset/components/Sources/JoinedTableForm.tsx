@@ -65,7 +65,7 @@ export default function JoinedTableForm(props: JoinedTableFormProps) {
         <Col span={9}>
           <span className={styles.tableHeader} title={mainTable.name}>
             <TableOutlined className="green"/>
-                        &nbsp;&nbsp;
+              &nbsp;&nbsp;
             <Text strong ellipsis>{mainTable.name}</Text>
           </span>
         </Col>
@@ -84,7 +84,7 @@ export default function JoinedTableForm(props: JoinedTableFormProps) {
         <Col span={9} style={{textAlign: 'right'}}>
           <span className={styles.tableHeader} title={joinedTable.name}>
             <TableOutlined className="green"/>
-                        &nbsp;&nbsp;
+              &nbsp;&nbsp;
             <Text strong ellipsis>{joinedTable.name}</Text>
           </span>
         </Col>
@@ -123,7 +123,7 @@ export default function JoinedTableForm(props: JoinedTableFormProps) {
                           label: (
                             <span className="text-ellipsis">
                               <FieldTypeIcon fieldType={mainTable.columns[col].type}/>
-                                                            &nbsp;&nbsp;
+                              &nbsp;&nbsp;
                               {col}
                             </span>
                           )

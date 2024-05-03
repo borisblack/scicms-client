@@ -53,8 +53,7 @@ export class ItemPlugin extends Plugin {
     // Attribute fields
     this.addAttributeField({
       id: DEFAULT_SORT_ORDER_ATTRIBUTE_FIELD_ID,
-      supports: (itemName, attrName, attribute) =>
-        attrName === DEFAULT_SORT_ORDER_ATTR_NAME && itemName === ITEM_ITEM_NAME && attribute.type === FieldType.string,
+      mountPoint: `${ITEM_ITEM_NAME}.${DEFAULT_SORT_ORDER_ATTR_NAME}`,
       render: ({context}) => <DefaultSortOrderAttributeField {...context}/>
     })
 

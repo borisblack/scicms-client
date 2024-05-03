@@ -8,8 +8,7 @@ export class MediaPlugin extends Plugin {
   override onLoad(): void {
     this.addAttributeField({
       id: MEDIA_FILE_ATTRIBUTE_FIELD_ID,
-      supports: (itemName, attrName) =>
-        attrName === FILENAME_ATTR_NAME && itemName === MEDIA_ITEM_NAME,
+      mountPoint: `${MEDIA_ITEM_NAME}.${FILENAME_ATTR_NAME}`,
       render: ({context}) => <MediaFileAttributeField {...context}/>
     })
   }

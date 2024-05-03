@@ -148,7 +148,7 @@ export default function FieldForm({field, allFields, canEdit}: ColumnFormProps) 
                       label: (
                         <span className="text-ellipsis">
                           <FieldTypeIcon fieldType={ownField.type}/>
-                                                    &nbsp;&nbsp;
+                            &nbsp;&nbsp;
                           <FieldName name={f}/>
                         </span>
                       ),

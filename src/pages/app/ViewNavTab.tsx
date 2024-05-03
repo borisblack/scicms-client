@@ -307,7 +307,7 @@ function ViewNavTab({data: dataWrapper}: Props) {
   const filterVisibleAttributeNames = useCallback((attributes: {[name: string]: Attribute}): string[] => Object.keys(attributes).filter(attrName => {
     const attr = attributes[attrName]
     return !attr.private
-      && !attr.fieldHidden
+      /*&& !attr.fieldHidden*/
       && (attr.type !== FieldType.relation || (attr.relType !== RelType.oneToMany && attr.relType !== RelType.manyToMany))
       && (item.versioned || (attrName !== CONFIG_ID_ATTR_NAME && attrName !== MAJOR_REV_ATTR_NAME && attrName !== MINOR_REV_ATTR_NAME && attrName !== CURRENT_ATTR_NAME))
       && (item.localized || attrName !== LOCALE_ATTR_NAME)
@@ -320,18 +320,25 @@ function ViewNavTab({data: dataWrapper}: Props) {
           const attr = attributes[attrName]
           const {fieldWidth} = attr
           const span = (fieldWidth == null || fieldWidth <= 0 || fieldWidth > ANTD_GRID_COLS) ? appConfig.ui.form.fieldWidth : fieldWidth
-          return (
+          const attributeContent = (
+            <AttributeFieldWrapper
+              key={attrName}
+              data={dataWrapper}
+              form={form}
+              attrName={attrName}
+              attribute={attr}
+              value={data ? data[attrName] : null}
+              canAdmin={acl.canAdmin}
+              setLoading={setLoading}
+              onChange={(value: any) => handleFieldChange(attrName, value)}
+            />
+          )
+          
+          return attr.fieldHidden ? (
+            attributeContent
+          ) : (
             <Col span={span} key={attrName}>
-              <AttributeFieldWrapper
-                data={dataWrapper}
-                form={form}
-                attrName={attrName}
-                attribute={attr}
-                value={data ? data[attrName] : null}
-                canAdmin={acl.canAdmin}
-                setLoading={setLoading}
-                onChange={(value: any) => handleFieldChange(attrName, value)}
-              />
+              {attributeContent}
             </Col>
           )
         })}
@@ -403,26 +410,28 @@ function ViewNavTab({data: dataWrapper}: Props) {
     const {attributes} = item.spec
     const visibleAttributeNames = filterVisibleAttributeNames(attributes)
 
+    /* eslint-disable */
     const exportWinHtml = `<!DOCTYPE html>
-            <html>
-                <head>
-                    <title>${t(item.displayName)}</title>
-                    <style>
-                        ${exportWinStyle}
-                    </style>
-                </head>
-                <body>
-                    <h2>${t(item.displayName)}</h2>
-                    <table>
-                        <tbody>
-                            ${visibleAttributeNames.map(attrName => {
-    const attribute = attributes[attrName]
-    return `<tr><td style="font-weight: 600">${t(attribute.displayName)}</td><td>${renderValue(data[attrName])}</td></tr>`
-  }).join('')}
-                        </tbody>
-                    </table>
-                </body>
-            </html>`
+      <html>
+          <head>
+              <title>${t(item.displayName)}</title>
+              <style>
+                  ${exportWinStyle}
+              </style>
+          </head>
+          <body>
+              <h2>${t(item.displayName)}</h2>
+              <table>
+                <tbody>
+                    ${visibleAttributeNames.map(attrName => {
+                      const attribute = attributes[attrName]
+                      return `<tr><td style="font-weight: 600">${t(attribute.displayName)}</td><td>${renderValue(data[attrName])}</td></tr>`
+                    }).join('')}
+                </tbody>
+              </table>
+          </body>
+      </html>`
+    /* eslint-enable */
 
     // const exportWinUrl = URL.createObjectURL(new Blob([exportWinHtml], { type: "text/html" }))
     const exportWin = window.open('', 'Export HTML', exportWinFeatures) as Window

@@ -8,6 +8,7 @@ import {
   ApiOperation,
   CustomAttributeField,
   CustomAttributeFieldContext,
+  CustomAttributeFieldMountPoint,
   CustomComponent,
   CustomComponentContext,
   CustomRenderer,
@@ -20,7 +21,23 @@ interface Prioritized {
 
 const DEFAULT_PRIORITY = 10
 
-const prioritySorter = (a: Prioritized, b: Prioritized) => (a.priority ?? DEFAULT_PRIORITY) - (b.priority ?? DEFAULT_PRIORITY)
+const prioritySorter = (a: Prioritized, b: Prioritized) =>
+  (a.priority ?? DEFAULT_PRIORITY) - (b.priority ?? DEFAULT_PRIORITY)
+
+const attributeFieldSorter = (a: CustomAttributeField, b: CustomAttributeField) => {
+  const aMountPoint = a.mountPoint
+  const bMountPoint = b.mountPoint
+  if (aMountPoint === bMountPoint)
+    return 0
+
+  if (aMountPoint === '*')
+    return 1
+
+  if (bMountPoint === '*')
+    return -1
+
+  return aMountPoint < bMountPoint ? 1 : -1
+}
 
 export class PluginEngine {
   private isLoaded: boolean = false
@@ -54,6 +71,7 @@ export class PluginEngine {
 
     // Attribute fields
     this.attributeFields = this.plugins.flatMap(p => p.attributeFields)
+      .sort(attributeFieldSorter)
 
     // API middleware
     const apiMiddlewares: ApiMiddleware[] = this.plugins.flatMap(p => p.apiMiddlewares)
@@ -116,14 +134,19 @@ export class PluginEngine {
   }
 
   // Attribute fields
-  hasAttributeField = (itemName: string, attrName: string, attribute: Attribute): boolean =>
-    this.getAttributeField(itemName, attrName, attribute) != null
+  hasAttributeField = (itemName: string, attrName: string): boolean =>
+    this.getAttributeField(itemName, attrName) != null
   
-  getAttributeField = (itemName: string, attrName: string, attribute: Attribute): CustomAttributeField | undefined =>
-    this.attributeFields.find(af => af.supports(itemName, attrName, attribute))
+  getAttributeField = (itemName: string, attrName: string): CustomAttributeField | undefined =>
+    this.attributeFields.find(af => {
+      const separatorIndex = af.mountPoint.indexOf('.')
+      const fieldItemName = af.mountPoint.substring(0, separatorIndex)
+      const fieldAttrName = af.mountPoint.substring(separatorIndex + 1)
+      return fieldAttrName === attrName && (fieldItemName === itemName || fieldItemName === '*')
+    })
   
   renderAttributeField(context: CustomAttributeFieldContext, defaultRender: FC<CustomAttributeFieldContext>): ReactElement | null {
-    const attributeField = this.getAttributeField(context.data.item.name, context.attrName, context.attribute)
+    const attributeField = this.getAttributeField(context.data.item.name, context.attrName)
   
     return <>{attributeField ? attributeField.render({context}) : defaultRender(context)}</>
   }

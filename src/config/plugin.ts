@@ -12,6 +12,7 @@ import {RolePlugin} from 'src/extensions/plugins/role/RolePlugin'
 import {GroupMemberPlugin} from 'src/extensions/plugins/groupMember/GroupMemberPlugin'
 import {AccessPlugin} from 'src/extensions/plugins/access/AccessPlugin'
 import {MediaPlugin} from 'src/extensions/plugins/media/MediaPlugin'
+import {PropertyPlugin} from 'src/extensions/plugins/property/PropertyPlugin'
 
 interface PluginConfig {
     plugins: Plugin[]
@@ -30,6 +31,7 @@ const pluginConfig: PluginConfig = {
     new LifecyclePlugin(),
     new MediaPlugin(),
     new ProjectPlugin(),
+    new PropertyPlugin(),
     new RolePlugin(),
     new UserPlugin(),
     new CommonPlugin()

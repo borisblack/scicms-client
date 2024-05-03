@@ -8,6 +8,7 @@ export const ANTD_GRID_COLS = 24
 export const UTC = 'UTC'
 export const LOWERCASE_NO_WHITESPACE_PATTERN = /^[a-z]\w*$/
 export const LETTER_NO_WHITESPACE_PATTERN = /^[a-zA-Z]\w*$/
+export const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 export const LETTER_NO_WHITESPACE_MESSAGE = 'String must start with a letter and contain no whitespaces'
 export const LOWERCASE_NO_WHITESPACE_MESSAGE = 'String must start with a lowercase letter and contain no whitespaces'
 export const LUXON_DATE_FORMAT_STRING: string = 'dd.LL.yyyy'
@@ -53,6 +54,7 @@ export const ITEM_TEMPLATE_ITEM_NAME = 'itemTemplate'
 export const LIFECYCLE_ITEM_NAME = 'lifecycle'
 export const MEDIA_ITEM_NAME = 'media'
 export const PERMISSION_ITEM_NAME = 'permission'
+export const PROPERTY_ITEM_NAME = 'property'
 export const ROLE_ITEM_NAME = 'role'
 export const USER_ITEM_NAME = 'user'
 

@@ -4,7 +4,7 @@ import {FormInstance} from 'antd'
 import {AttributeFieldProps} from 'src/pages/app/attributeFields'
 import {ItemMap} from 'src/services/item'
 import {IBuffer, UserInfo} from 'src/types'
-import {Attribute, Item, ItemData, ItemDataWrapper} from 'src/types/schema'
+import {Item, ItemData, ItemDataWrapper} from 'src/types/schema'
 
 /**
  * Render mount points:
@@ -91,9 +91,16 @@ export interface CustomComponentContext {
   onBufferChange: (buffer: IBuffer) => void
 }
 
+/**
+ * Custom attribute mount points (ascending priority):
+ * *.<attributeName>
+ * <itemName>.<attributeName>
+ */
+export type CustomAttributeFieldMountPoint = string
+
 export interface CustomAttributeField {
   id: string
-  supports: (itemName: string, attrName: string, attribute: Attribute) => boolean
+  mountPoint: CustomAttributeFieldMountPoint
   render: ({context}: CustomAttributeFieldProps) => ReactNode
 }
 

@@ -5,7 +5,7 @@ import {Form, FormRule, Input} from 'antd'
 import {AttributeFieldProps} from './index'
 import {FieldType} from 'src/types'
 import styles from './AttributeField.module.css'
-import {MAJOR_REV_ATTR_NAME, STATE_ATTR_NAME} from 'src/config/constants'
+import {MAJOR_REV_ATTR_NAME, STATE_ATTR_NAME, UUID_PATTERN} from 'src/config/constants'
 import {regExpRule} from 'src/util/form'
 import {generateKey} from 'src/util/mdi'
 
@@ -55,7 +55,7 @@ const StringAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrN
 
     switch (attribute.type) {
       case FieldType.uuid:
-        rules.push(regExpRule(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/, 'String must contain UUID'))
+        rules.push(regExpRule(UUID_PATTERN, 'String must contain UUID'))
         break
       case FieldType.email:
         rules.push({type: 'email'})

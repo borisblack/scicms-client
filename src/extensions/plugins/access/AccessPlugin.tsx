@@ -8,8 +8,7 @@ export class AccessPlugin extends Plugin {
   override onLoad(): void {
     this.addAttributeField({
       id: ACCESS_MASK_ATTRIBUTE_FIELD_ID,
-      supports: (itemName, attrName) =>
-        attrName === MASK_ATTR_NAME && itemName === ACCESS_ITEM_NAME,
+      mountPoint: `${ACCESS_ITEM_NAME}.${MASK_ATTR_NAME}`,
       render: ({context}) => <AccessMaskAttributeField {...context}/>
     })
   }

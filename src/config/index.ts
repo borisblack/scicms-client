@@ -46,6 +46,7 @@ interface AppConfig {
         form: {
             fieldWidth: number
             textAreaRows: number
+            editorHeight: string
         }
         notificationDuration: number
         notificationPlacement?: 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight'
@@ -89,7 +90,8 @@ const appConfig: AppConfig = {
     },
     form: {
       fieldWidth: 6,
-      textAreaRows: 4
+      textAreaRows: 4,
+      editorHeight: '100px'
     },
     notificationDuration: 10,
     notificationPlacement: 'topRight',

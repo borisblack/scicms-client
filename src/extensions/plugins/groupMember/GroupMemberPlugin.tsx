@@ -8,7 +8,7 @@ export class GroupMemberPlugin extends Plugin {
   override onLoad(): void {
     this.addAttributeField({
       id: GROUP_MEMBER_USERNAME_ATTRIBUTE_FIELD_ID,
-      supports: (itemName, attrName) => attrName === USERNAME_ATTR_NAME && itemName === GROUP_MEMBER_ITEM_NAME,
+      mountPoint: `${GROUP_MEMBER_ITEM_NAME}.${USERNAME_ATTR_NAME}`,
       render: ({context}) => <StringRelationAttributeField {...context} target={USER_ITEM_NAME}/>
     })
   }

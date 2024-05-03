@@ -7,7 +7,7 @@ import './Editor.css'
 
 export interface EditorProps {
     value?: string
-    mode: EditorMode
+    mode?: EditorMode
     height?: string
     lineNumbers?: boolean
     canEdit: boolean
@@ -20,13 +20,14 @@ const FontSizeTheme = EditorView.theme({
   }
 })
 
-function getExtensions(mode: EditorMode): Extension[] {
+function getExtensions(mode: EditorMode | undefined): Extension[] {
   switch (mode) {
     case EditorMode.SQL:
       return [sql({dialect: StandardSQL})]
     case EditorMode.JAVASCRIPT:
-    default:
       return [javascript({jsx: true})]
+    default:
+      return []
   }
 }
 

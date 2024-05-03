@@ -1,0 +1,30 @@
+.expandable-mask {
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.45);
+}
+
+.expandable-mask_expanded {
+    position: fixed;
+    inset: 0; 
+}
+
+.expandable {
+    position: relative;
+}
+
+.expandable_expanded {
+    width: 80%;
+    margin: 24px auto;
+}
+
+.expandable__button {
+    z-index: 1;
+    position: absolute;
+    opacity: 0;
+    top: 4px;
+    right: 4px;
+}
+
+.expandable__button:hover {
+    opacity: 1;
+}
