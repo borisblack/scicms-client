@@ -28,7 +28,7 @@ export const TextPropertyValue: FC<PropertyValueProps> = ({type, value, canEdit,
         <Editor
           value={value ?? undefined}
           height={height}
-          lineNumbers
+          lineNumbers={false}
           canEdit={canEdit}
           onChange={onChange}
         />

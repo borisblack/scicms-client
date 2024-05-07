@@ -15,7 +15,6 @@ import {
   DatasetFiltersInput,
   DateTimeAggregateType,
   IDash,
-  ISelector,
   LogicalOp,
   PositiveLogicalOp,
   QueryBlock,
@@ -30,7 +29,7 @@ import {
 import i18n from 'src/i18n'
 import appConfig from 'src/config'
 import biConfig from 'src/config/bi'
-import {assign, extract, extractSessionData} from 'src/util'
+import {extractSessionData} from 'src/util'
 import FieldTypeIcon from 'src/components/app/FieldTypeIcon'
 
 const {dash: dashConfig, dateTime: dateTimeConfig, fractionDigits, percentFractionDigits} = biConfig
@@ -644,12 +643,12 @@ function guessType(value: string | number | boolean): FieldType {
 
 export function extractSessionFilters(dashboardId: string, dashId: string) {
   const sessionData = extractSessionData()
-  return extract(sessionData, ['dashboards', dashboardId, 'dashes', dashId, 'filters'])
+  return _.get(sessionData, ['dashboards', dashboardId, 'dashes', dashId, 'filters'])
 }
 
 export function saveSessionFilters(dashboardId: string, dashId: string, filters: QueryBlock) {
   const newSessionData = extractSessionData()
-  assign(newSessionData, ['dashboards', dashboardId, 'dashes', dashId, 'filters'], filters)
+  _.set(newSessionData, ['dashboards', dashboardId, 'dashes', dashId, 'filters'], filters)
   localStorage.setItem('sessionData', JSON.stringify(newSessionData))
 }
 

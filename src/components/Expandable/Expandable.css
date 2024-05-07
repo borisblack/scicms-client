@@ -22,7 +22,7 @@
     position: absolute;
     opacity: 0;
     top: 4px;
-    right: 4px;
+    right: 12px;
 }
 
 .expandable__button:hover {

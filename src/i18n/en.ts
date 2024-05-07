@@ -363,6 +363,7 @@ const en = {
     'SciCMS Admin': 'SciCMS Admin',
     'SciCMS BI': 'SciCMS BI',
     'SciSolutions': 'SciSolutions',
+    'Scope': 'Scope',
     'Seconds after now': 'Seconds after now',
     'Seconds before now': 'Seconds before now',
     'Security': 'Security',

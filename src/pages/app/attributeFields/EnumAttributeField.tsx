@@ -7,7 +7,6 @@ import {generateKey} from 'src/util/mdi'
 import styles from './AttributeField.module.css'
 
 const FormItem = Form.Item
-const {Option: SelectOption} = Select
 
 const EnumAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrName, attribute, value}) => {
   if (attribute.type !== FieldType.enum || !attribute.enumSet)
@@ -33,9 +32,11 @@ const EnumAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrNam
       initialValue={value ?? attribute.defaultValue}
       rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
     >
-      <Select id={`${uniqueKey}#${attrName}`} {...additionalProps}>
-        {attribute.enumSet.map(it => <SelectOption key={it} value={it}>{it}</SelectOption>)}
-      </Select>
+      <Select
+        id={`${uniqueKey}#${attrName}`}
+        options={attribute.enumSet.map(es => ({label: es, value: es}))}
+        {...additionalProps}
+      />
     </FormItem>
   )
 }

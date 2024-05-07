@@ -1,6 +1,10 @@
+import _ from 'lodash'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import type {TypedUseSelectorHook} from 'react-redux'
 import {useDispatch, useSelector} from 'react-redux'
+import {useTranslation} from 'react-i18next'
+import {notification} from 'antd'
+
 import type {AppDispatch, RootState} from 'src/store'
 import PermissionManager, {Acl} from 'src/services/permission'
 import {UserInfo, ViewType} from 'src/types'
@@ -18,14 +22,16 @@ import {
   selectLifecycles,
   selectLoading as selectRegistryLoading,
   selectLocales,
-  selectPermissions
+  selectPermissions,
+  selectProperties
 } from 'src/features/registry/registrySlice'
 import QueryManager from 'src/services/query'
 import MutationManager from 'src/services/mutation'
-import {useTranslation} from 'react-i18next'
-import {notification} from 'antd'
 import {useMDIContext} from '../components/MDITabs/hooks'
 import {createMDITab, generateKeyById} from './mdi'
+import menuConfig from 'src/config/menu'
+import appConfig from 'src/config'
+import biConfig from 'src/config/bi'
 
 export const useAppDispatch: () => AppDispatch = useDispatch
 
@@ -88,6 +94,7 @@ export function useRegistry(): UseRegistry {
   const permissions = useAppSelector(selectPermissions)
   const lifecycles = useAppSelector(selectLifecycles)
   const locales = useAppSelector(selectLocales)
+  const properties = useAppSelector(selectProperties)
 
   const initializeIfNeeded = useCallback(async (me: UserInfo) => {
     await dispatch(doInitializeIfNeeded(me))
@@ -97,7 +104,19 @@ export function useRegistry(): UseRegistry {
     dispatch(resetRegistry())
   }, [dispatch])
 
-  return {loading, isInitialized, coreConfig, items, itemTemplates, permissions, lifecycles, locales, initializeIfNeeded, reset}
+  return {
+    loading,
+    isInitialized,
+    coreConfig,
+    items,
+    itemTemplates,
+    permissions,
+    lifecycles,
+    properties,
+    locales,
+    initializeIfNeeded,
+    reset
+  }
 }
 
 export function useAcl(item: Item, data?: ItemData | null): Acl {
@@ -209,6 +228,25 @@ export function useItemOperations() {
   }, [ctx])
 
   return {create, open, close}
+}
+
+const biPathPattern = /^bi\.(.+)$/
+
+export function useProperty(path: string): any {
+  const {properties} = useRegistry()
+
+  const getConfig = useCallback(() => {
+    if (path === 'menu')
+      return menuConfig
+
+    const biPathMatches = path.match(biPathPattern)
+    if (biPathMatches)
+      return _.get(biConfig, biPathMatches[1])
+
+    return _.get(appConfig, path)
+  }, [path])
+
+  return properties[path]?.value ?? getConfig()
 }
 
 interface UseModalProps {

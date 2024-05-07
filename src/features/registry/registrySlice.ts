@@ -10,6 +10,7 @@ import {CoreConfig, fetchCoreConfig} from 'src/services/core-config'
 import i18n from 'src/i18n'
 import {fetchLocales} from 'src/services/locale'
 import {fetchLifecycles, LifecycleMap} from 'src/services/lifecycle'
+import {fetchProperties, PropertyMap} from 'src/services/property'
 
 export interface RegistryState {
     isInitialized: boolean
@@ -19,6 +20,7 @@ export interface RegistryState {
     items: ItemMap
     permissions: PermissionMap
     lifecycles: LifecycleMap
+    properties: PropertyMap
     locales: Locale[]
 }
 
@@ -29,6 +31,7 @@ const initialState: RegistryState = {
   items: {},
   permissions: {},
   lifecycles: {},
+  properties: {},
   locales: []
 }
 
@@ -40,6 +43,7 @@ const initializeIfNeeded = createAsyncThunk(
     fetchItems(),
     fetchPermissions(me),
     fetchLifecycles(),
+    fetchProperties(),
     fetchLocales()
   ]), {
     condition: (credentials, {getState}) => shouldInitialize(getState() as {registry: RegistryState})
@@ -71,7 +75,8 @@ const registrySlice = createSlice({
         state.items = response[2]
         state.permissions = response[3]
         state.lifecycles = response[4]
-        state.locales = response[5]
+        state.properties = response[5]
+        state.locales = response[6]
 
         state.isInitialized = true
         state.loading = false
@@ -102,6 +107,8 @@ export const selectItems = (state: RootState) => state.registry.items
 export const selectPermissions = (state: RootState) => state.registry.permissions
 
 export const selectLifecycles = (state: RootState) => state.registry.lifecycles
+
+export const selectProperties = (state: RootState) => state.registry.properties
 
 export const selectLocales = (state: RootState) => state.registry.locales
 

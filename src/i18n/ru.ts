@@ -363,6 +363,7 @@ const ru = {
     'SciCMS Admin': 'SciCMS Admin',
     'SciCMS BI': 'SciCMS BI',
     'SciSolutions': 'SciSolutions',
+    'Scope': 'Область действия',
     'Seconds after now': 'Секунд после текущего времени',
     'Seconds before now': 'Секунд до текущего времени',
     'Security': 'Безопасность',

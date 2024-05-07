@@ -269,6 +269,25 @@ export interface Locale extends DefaultItemTemplate {
     displayName: string | null
 }
 
+export type PropertyType =
+  FieldType.uuid | FieldType.string | FieldType.text | FieldType.email |
+  FieldType.int | FieldType.long | FieldType.float | FieldType.double | FieldType.decimal |
+  FieldType.date | FieldType.time | FieldType.datetime | FieldType.timestamp |
+  FieldType.bool |
+  FieldType.array | FieldType.json
+
+export enum PropertyScope {
+  client = 'client',
+  server = 'server'
+}
+
+export interface Property extends DefaultItemTemplate {
+  name: string
+  type: PropertyType
+  value: string | null
+  scope: PropertyScope | null
+}
+
 export interface ItemData extends DefaultItemTemplate {
     [name: string]: any
 }

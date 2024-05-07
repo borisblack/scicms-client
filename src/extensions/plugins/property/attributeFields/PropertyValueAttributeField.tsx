@@ -1,5 +1,4 @@
 import type {FC} from 'react'
-import {useEffect} from 'react'
 import {Form, Input} from 'antd'
 import {useTranslation} from 'react-i18next'
 

@@ -42,6 +42,7 @@ interface AppConfig {
     ui: {
         dataGrid: {
             colWidth: number
+            maxTextLength: number
         }
         form: {
             fieldWidth: number
@@ -86,7 +87,8 @@ const appConfig: AppConfig = {
   },
   ui: {
     dataGrid: {
-      colWidth: 140
+      colWidth: 140,
+      maxTextLength: 160
     },
     form: {
       fieldWidth: 6,

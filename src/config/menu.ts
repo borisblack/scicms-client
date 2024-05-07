@@ -1,6 +1,6 @@
 import {ROLE_ADMIN, ROLE_ANALYST, ROLE_DESIGNER, ROLE_PROJECT_MANAGER, ROLE_STANDARD_CONTROL, ROLE_USER} from './constants'
 
-interface MenuConfig {
+export interface MenuConfig {
     items: (SubMenu | MenuItem)[]
 }
 

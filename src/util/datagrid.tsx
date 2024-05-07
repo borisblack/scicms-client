@@ -72,13 +72,14 @@ const renderCell = (
         )
       }
       return value
-    case FieldType.text:
     case FieldType.uuid:
     case FieldType.email:
     case FieldType.password:
     case FieldType.sequence:
     case FieldType.enum:
       return value
+    case FieldType.text:
+      return value ? _.truncate(value, {length: appConfig.ui.dataGrid.maxTextLength}) : value
     case FieldType.int:
       if (item.name === ACCESS_ITEM_NAME && attrName === MASK_ATTR_NAME && value != null) {
         const r = getBit(value, 0) ? 'R' : '-'
@@ -97,7 +98,7 @@ const renderCell = (
       return value
     case FieldType.json:
     case FieldType.array:
-      return value ? JSON.stringify(value) : null
+      return value ? _.truncate(JSON.stringify(value), {length: appConfig.ui.dataGrid.maxTextLength}) : null
     case FieldType.bool:
       return <div className="text-centered"><Checkbox checked={value} /></div>
     case FieldType.date:
