@@ -1,3 +1,11 @@
 .ant-form-vertical .ant-form-item-label {
     padding: 0;
 }
+
+.attribute-field-editor-wrapper {
+    margin-top: -32px;
+}
+
+.attribute-field-editor {
+    border: 1px solid #ccc;
+}

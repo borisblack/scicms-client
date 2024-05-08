@@ -1,47 +1,76 @@
-import {AttributeFieldProps} from './index'
 import {Form, Input} from 'antd'
-import {FC, useCallback, useMemo} from 'react'
+import {FC, useCallback, useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
+
+import {AttributeFieldProps} from '.'
 import {FieldType} from 'src/types'
 import appConfig from 'src/config'
 import {generateKey} from 'src/util/mdi'
+import {useItemAcl} from 'src/util/hooks'
+import {Expandable} from 'src/components/Expandable/Expandable'
+import Editor from 'src/components/Editor/Editor'
+import {EditorMode} from 'src/components/Editor/constants'
 import styles from './AttributeField.module.css'
 
-const FormItem = Form.Item
-const {TextArea} = Input
+const EXPANDED_EDITOR_HEIGHT = '90vh'
 
-const JsonAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrName, attribute, value}) => {
+const FormItem = Form.Item
+const {editorHeight} = appConfig.ui.form
+
+const JsonAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, form, attrName, attribute, value}) => {
   if (attribute.type !== FieldType.json && attribute.type !== FieldType.array)
     throw new Error('Illegal attribute')
 
   const uniqueKey = generateKey(dataWrapper)
+  const {item, data} = dataWrapper
   const {t} = useTranslation()
-  const isDisabled = useMemo(() => attribute.keyed || attribute.readOnly, [attribute.keyed, attribute.readOnly])
-  const additionalProps = useMemo((): any => {
-    const additionalProps: any = {}
-    if (isDisabled)
-      additionalProps.disabled = true
+  const [height, setHeight] = useState(editorHeight)
+  const acl = useItemAcl(item, data)
+  const canEdit = useMemo(
+    () => acl.canWrite && !attribute.keyed && !attribute.readOnly,
+    [acl.canWrite, attribute.keyed, attribute.readOnly]
+  )
 
-    return additionalProps
-  }, [isDisabled])
+  const parsedValue = useMemo(() => (typeof value == 'object' && value != null) ? JSON.stringify(value) : value, [value])
 
-  const parseValue = useCallback((val: any) => val == null ? null : JSON.stringify(val), [])
+  const handleChange = useCallback((val: string | null | undefined) => {
+    form.setFieldValue(attrName, val)
+  }, [attrName, form])
+
+  function toggleExpanded(expanded: boolean) {
+    setHeight(expanded ? EXPANDED_EDITOR_HEIGHT : editorHeight)
+  }
 
   return (
-    <FormItem
-      className={styles.formItem}
-      name={attrName}
-      label={t(attribute.displayName)}
-      hidden={attribute.fieldHidden}
-      initialValue={parseValue(value) ?? attribute.defaultValue}
-      rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
-    >
-      <TextArea
-        id={`${uniqueKey}#${attrName}`}
-        rows={appConfig.ui.form.textAreaRows}
-        {...additionalProps}
-      />
-    </FormItem>
+    <>
+      <FormItem
+        className={styles.formItem}
+        name={attrName}
+        label={t(attribute.displayName)}
+        hidden={attribute.fieldHidden}
+        initialValue={parsedValue ?? attribute.defaultValue}
+        rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
+      >
+        <Input id={`${uniqueKey}#${attrName}`} hidden/>
+      </FormItem>
+
+      {!attribute.fieldHidden && (
+        <div className="attribute-field-editor-wrapper">
+          <Expandable onToggle={toggleExpanded}>
+            <div className="attribute-field-editor">
+              <Editor
+                value={parsedValue ?? undefined}
+                mode={EditorMode.JAVASCRIPT}
+                height={height}
+                lineNumbers={false}
+                canEdit={canEdit}
+                onChange={handleChange}
+              />
+            </div>
+          </Expandable>
+        </div>
+      )}
+    </>
   )
 }
 

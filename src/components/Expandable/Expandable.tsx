@@ -1,9 +1,9 @@
 import {PropsWithChildren, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Button} from 'antd'
+import {FullscreenExitOutlined, FullscreenOutlined} from '@ant-design/icons'
 
 import './Expandable.css'
-import {FullscreenExitOutlined, FullscreenOutlined} from '@ant-design/icons'
 
 interface ExpandableProps {
   initialExpanded?: boolean
@@ -27,6 +27,7 @@ export function Expandable({initialExpanded, children, onToggle}: PropsWithChild
           icon={expanded ? <FullscreenExitOutlined/> : <FullscreenOutlined/>}
           type="text"
           size="middle"
+          disabled={false}
           title={t(expanded ? 'Collapse' : 'Expand')}
           onClick={toggleExpanded}
         />

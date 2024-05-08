@@ -183,6 +183,13 @@ export const getAttributeColumns = (core: boolean): ColumnDef<NamedAttribute, an
           enableSorting: true,
           enableColumnFilter: true
         }) as ColumnDef<NamedAttribute, string>,
+        columnHelper.accessor('format', {
+          header: i18n.t('Format'),
+          cell: info => info.getValue(),
+          size: appConfig.ui.dataGrid.colWidth,
+          enableSorting: true,
+          enableColumnFilter: true
+        }) as ColumnDef<NamedAttribute, string>,
         columnHelper.accessor('length', {
           header: i18n.t('Length'),
           cell: info => info.getValue(),

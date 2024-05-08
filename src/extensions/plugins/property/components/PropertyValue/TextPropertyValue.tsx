@@ -6,7 +6,7 @@ import {FieldType} from 'src/types'
 import Editor from 'src/components/Editor'
 import appConfig from 'src/config'
 import {Expandable} from 'src/components/Expandable/Expandable'
-import './PropertyValueEditor.css'
+import './PropertyValue.css'
 
 const {editorHeight} = appConfig.ui.form
 

@@ -5,6 +5,7 @@ import {useTranslation} from 'react-i18next'
 import {PropertyValue} from '../components'
 import {CustomAttributeFieldContext} from '../../types'
 import {useItemAcl} from 'src/util/hooks'
+import './PropertyValueAttributeField.css'
 import styles from 'src/pages/app/attributeFields/AttributeField.module.css'
 
 const FormItem = Form.Item
@@ -34,7 +35,7 @@ export const PropertyValueAttributeField: FC<CustomAttributeFieldContext> = ({da
         <Input hidden/>
       </FormItem>
 
-      <div style={{marginTop: -32}}>
+      <div className="property-value-attribute-field-wrapper">
         <PropertyValue
           type={propertyType}
           value={propertyValue ?? attribute.defaultValue}

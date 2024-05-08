@@ -7,7 +7,7 @@ import appConfig from 'src/config'
 import Editor from 'src/components/Editor'
 import {EditorMode} from 'src/components/Editor/constants'
 import {Expandable} from 'src/components/Expandable/Expandable'
-import './PropertyValueEditor.css'
+import './PropertyValue.css'
 
 const {editorHeight} = appConfig.ui.form
 
@@ -30,7 +30,7 @@ export const JsonPropertyValue: FC<PropertyValueProps> = ({type, value, canEdit,
           value={value ?? undefined}
           mode={EditorMode.JAVASCRIPT}
           height={height}
-          lineNumbers
+          lineNumbers={false}
           canEdit={canEdit}
           onChange={onChange}
         />

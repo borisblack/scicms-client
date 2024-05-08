@@ -211,6 +211,7 @@ export interface Attribute {
     private: boolean
     readOnly: boolean
     pattern?: string
+    format?: string
     length?: number
     precision?: number
     scale?: number

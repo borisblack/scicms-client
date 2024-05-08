@@ -440,6 +440,17 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
             </>
           )}
 
+          {attrType === FieldType.text && (
+            <FormItem
+              className={styles.formItem}
+              name="format"
+              label={t('Format')}
+              initialValue={attribute?.format}
+            >
+              <Input style={{maxWidth: 300}} maxLength={50} />
+            </FormItem>
+          )}
+
           {attrType === FieldType.decimal && (
             <>
               <FormItem
