@@ -4,9 +4,9 @@ import {useState} from 'react'
 import type {PropertyValueProps} from './types'
 import {FieldType} from 'src/types'
 import appConfig from 'src/config'
-import Editor from 'src/components/Editor'
-import {EditorMode} from 'src/components/Editor/constants'
-import {Expandable} from 'src/components/Expandable/Expandable'
+import Editor from 'src/uiKit/Editor'
+import {EditorMode} from 'src/uiKit/Editor/constants'
+import {Expandable} from 'src/uiKit/Expandable/Expandable'
 import './PropertyValue.css'
 
 const {editorHeight} = appConfig.ui.form

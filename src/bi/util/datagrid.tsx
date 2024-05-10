@@ -9,7 +9,7 @@ import appConfig from 'src/config'
 import {
   type DataWithPagination,
   type RequestParams
-} from 'src/components/DataGrid'
+} from 'src/uiKit/DataGrid'
 import {
   LUXON_DATE_FORMAT_STRING,
   LUXON_DATE_HOURS_FORMAT_STRING,

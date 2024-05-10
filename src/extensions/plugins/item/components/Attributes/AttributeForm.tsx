@@ -12,7 +12,7 @@ import * as SequenceService from 'src/services/sequence'
 import {NamedAttribute} from './types'
 import {useRegistry} from 'src/util/hooks'
 import styles from './Attributes.module.css'
-import FieldTypeIcon from 'src/components/app/FieldTypeIcon'
+import FieldTypeIcon from 'src/components/FieldTypeIcon'
 
 interface Props {
   form: FormInstance

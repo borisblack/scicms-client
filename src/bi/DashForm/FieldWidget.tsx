@@ -4,8 +4,8 @@ import {Button} from 'antd'
 import {CloseOutlined, SortAscendingOutlined, SortDescendingOutlined} from '@ant-design/icons'
 
 import {NamedColumn} from 'src/types/bi'
-import FieldTypeIcon from 'src/components/app/FieldTypeIcon'
-import FieldName from 'src/components/app/FieldName'
+import FieldTypeIcon from 'src/components/FieldTypeIcon'
+import FieldName from 'src/components/FieldName'
 import styles from './FieldWidget.module.css'
 
 interface FieldWidgetProps {

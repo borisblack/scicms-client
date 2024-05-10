@@ -1,8 +1,8 @@
 import {useTranslation} from 'react-i18next'
 import React, {useMemo} from 'react'
 import {Tabs} from 'antd'
-import Colors from '../components/Colors'
-import IconsSuspense from '../components/icons/IconsSuspense'
+import Colors from '../uiKit/Colors'
+import IconsSuspense from '../uiKit/icons/IconsSuspense'
 
 interface Props {
     height?: number | string

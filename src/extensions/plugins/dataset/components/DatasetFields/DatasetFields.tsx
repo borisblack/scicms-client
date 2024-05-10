@@ -6,13 +6,13 @@ import {Button, Space, Typography} from 'antd'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
 import {DeleteTwoTone, PlusCircleOutlined} from '@ant-design/icons'
 
-import {Split} from 'src/components/Split'
+import {Split} from 'src/uiKit/Split'
 import {DATASET_ITEM_NAME} from 'src/config/constants'
 import {
   type DataWithPagination,
   type RequestParams,
   DataGrid
-} from 'src/components/DataGrid'
+} from 'src/uiKit/DataGrid'
 import appConfig from 'src/config'
 import {getInitialData, processLocal} from 'src/util/datagrid'
 import {Column, Dataset, DatasetSpec} from 'src/types/bi'

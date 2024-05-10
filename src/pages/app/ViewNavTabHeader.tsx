@@ -31,7 +31,7 @@ import {
   MINOR_REV_ATTR_NAME
 } from 'src/config/constants'
 import {useAuth, useItemOperations, useMutationManager, useRegistry} from 'src/util/hooks'
-import {useMDIContext} from '../../components/MDITabs/hooks'
+import {useMDIContext} from '../../uiKit/MDITabs/hooks'
 import {getTitle} from 'src/util/mdi'
 import {pluginEngine} from 'src/extensions/plugins'
 import {ApiMiddlewareContext, ApiOperation} from 'src/extensions/plugins/types'

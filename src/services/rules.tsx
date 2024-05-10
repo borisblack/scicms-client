@@ -2,7 +2,7 @@ import {getParser} from '../extensions/functions'
 import {notifyErrorThrottled} from '../util'
 import i18n from '../i18n'
 import {CSSProperties, ReactNode} from 'react'
-import IconSuspense from '../components/icons/IconSuspense'
+import IconSuspense from '../uiKit/icons/IconSuspense'
 
 export interface FieldRule {
     condition?: string

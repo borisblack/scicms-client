@@ -9,7 +9,7 @@ import {ColumnType, Dataset, IDash, ISelector, SelectorLink, SelectorLinkType} f
 import {useBI} from '../util/hooks'
 import {requiredFieldRule} from 'src/util/form'
 import {datasetFieldTypeOptions, queryOpList, queryOpTitles} from '../util'
-import FieldTypeIcon from 'src/components/app/FieldTypeIcon'
+import FieldTypeIcon from 'src/components/FieldTypeIcon'
 import styles from './SelectorForm.module.css'
 import SelectorLinkTypeLabel from './SelectorLinkTypeLabel'
 

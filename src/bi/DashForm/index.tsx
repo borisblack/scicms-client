@@ -24,11 +24,11 @@ import DashFilters from '../DashFilters'
 import {Dash, getDash, getDashIds} from 'src/extensions/dashes'
 import biConfig from 'src/config/bi'
 import {useBI} from '../util/hooks'
-import {Split} from 'src/components/Split'
+import {Split} from 'src/uiKit/Split'
 import appConfig from 'src/config'
 import FieldList from './FieldList'
 import DashAxes from './DashAxes'
-import IconSuspense from 'src/components/icons/IconSuspense'
+import IconSuspense from 'src/uiKit/icons/IconSuspense'
 import styles from './DashForm.module.css'
 
 interface DashFormProps {

@@ -1,4 +1,4 @@
-import {MDIObservable} from 'src/components/MDITabs'
+import {MDIObservable} from 'src/uiKit/MDITabs'
 
 const defaultObservable = (): MDIObservable<any> => ({
   onUpdate: [],

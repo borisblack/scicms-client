@@ -9,7 +9,7 @@ import {
   type DataWithPagination,
   type RequestParams,
   DataGrid
-} from 'src/components/DataGrid'
+} from 'src/uiKit/DataGrid'
 import {getColumns, getHiddenColumns, getInitialData, loadData} from 'src/bi/util/datagrid'
 import appConfig from 'src/config'
 import {Column, Dataset, ExecutionStatisticInfo} from 'src/types/bi'

@@ -11,11 +11,11 @@ import {
   EditableCell,
   EditableNumberCell,
   SelectableCell
-} from 'src/components/DataGrid'
+} from 'src/uiKit/DataGrid'
 import {AggregateType, Column} from 'src/types/bi'
 import {getFormatOptions} from 'src/bi/util'
-import FieldTypeIcon from 'src/components/app/FieldTypeIcon'
-import FieldName, {TagType} from 'src/components/app/FieldName'
+import FieldTypeIcon from 'src/components/FieldTypeIcon'
+import FieldName, {TagType} from 'src/components/FieldName'
 
 interface GetColumnsProps {
     ownColumns: Record<string, Column>

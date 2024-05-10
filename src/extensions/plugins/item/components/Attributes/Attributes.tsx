@@ -10,7 +10,7 @@ import {
   type DataWithPagination,
   type RequestParams,
   DataGrid
-} from 'src/components/DataGrid'
+} from 'src/uiKit/DataGrid'
 import {processLocal} from 'src/util/datagrid'
 import AttributeForm from './AttributeForm'
 import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design/icons'

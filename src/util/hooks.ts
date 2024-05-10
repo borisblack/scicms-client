@@ -27,7 +27,7 @@ import {
 } from 'src/features/registry/registrySlice'
 import QueryManager from 'src/services/query'
 import MutationManager from 'src/services/mutation'
-import {useMDIContext} from '../components/MDITabs/hooks'
+import {useMDIContext} from '../uiKit/MDITabs/hooks'
 import {createMDITab, generateKeyById} from './mdi'
 import menuConfig from 'src/config/menu'
 import appConfig from 'src/config'

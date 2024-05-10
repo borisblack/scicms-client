@@ -15,7 +15,7 @@ import {
   SyncOutlined
 } from '@ant-design/icons'
 
-import FullScreen from 'src/components/FullScreen'
+import FullScreen from 'src/uiKit/FullScreen'
 import * as DatasetService from 'src/services/dataset'
 import {getActualFilters, printQueryBlock, toDatasetFiltersInput, toSingleDatasetFiltersInput, toSingleSelectorFiltersInput} from '../util'
 import {Dash, getDash} from 'src/extensions/dashes'

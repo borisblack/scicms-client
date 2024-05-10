@@ -3,7 +3,7 @@ import {Row} from '@tanstack/react-table'
 import {Button, notification, Space} from 'antd'
 
 import appConfig from 'src/config'
-import {type RequestParams, DataGrid} from 'src/components/DataGrid'
+import {type RequestParams, DataGrid} from 'src/uiKit/DataGrid'
 import {findAll, getColumns, getHiddenColumns, getInitialData} from 'src/util/datagrid'
 import {ItemData, ItemDataWrapper} from 'src/types/schema'
 import {useTranslation} from 'react-i18next'

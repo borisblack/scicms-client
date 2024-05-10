@@ -6,8 +6,8 @@ import {ViewType} from '../types'
 import {Item, ItemData, ItemDataWrapper} from '../types/schema'
 import {ID_ATTR_NAME} from '../config/constants'
 import i18n from '../i18n'
-import {MDITabObservable} from '../components/MDITabs'
-import IconSuspense from '../components/icons/IconSuspense'
+import {MDITabObservable} from '../uiKit/MDITabs'
+import IconSuspense from '../uiKit/icons/IconSuspense'
 
 const tempIds: Record<string, number> = {}
 

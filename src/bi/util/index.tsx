@@ -30,7 +30,7 @@ import i18n from 'src/i18n'
 import appConfig from 'src/config'
 import biConfig from 'src/config/bi'
 import {extractSessionData} from 'src/util'
-import FieldTypeIcon from 'src/components/app/FieldTypeIcon'
+import FieldTypeIcon from 'src/components/FieldTypeIcon'
 
 const {dash: dashConfig, dateTime: dateTimeConfig, fractionDigits, percentFractionDigits} = biConfig
 const dateTimeRegExp = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.000)?(Z|([-+]00:00))?$/

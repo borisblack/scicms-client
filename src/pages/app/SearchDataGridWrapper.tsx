@@ -4,7 +4,7 @@ import {Row} from '@tanstack/react-table'
 import {Checkbox, notification} from 'antd'
 
 import appConfig from 'src/config'
-import {RequestParams, DataGrid} from 'src/components/DataGrid'
+import {RequestParams, DataGrid} from 'src/uiKit/DataGrid'
 import {findAll, getColumns, getHiddenColumns, getInitialData} from 'src/util/datagrid'
 import {Item, ItemData} from 'src/types/schema'
 import {ExtRequestParams, ItemFiltersInput} from 'src/services/query'

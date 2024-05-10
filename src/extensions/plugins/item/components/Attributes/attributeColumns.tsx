@@ -7,8 +7,8 @@ import {FieldType} from 'src/types'
 import {RelType} from 'src/types/schema'
 import {NamedAttribute} from './types'
 import {ReactNode} from 'react'
-import FieldTypeIcon from 'src/components/app/FieldTypeIcon'
-import FieldName, {TagType} from 'src/components/app/FieldName'
+import FieldTypeIcon from 'src/components/FieldTypeIcon'
+import FieldName, {TagType} from 'src/components/FieldName'
 
 const renderAttribute = (attribute: NamedAttribute, tag?: TagType): ReactNode => (
   <span className="text-ellipsis">
