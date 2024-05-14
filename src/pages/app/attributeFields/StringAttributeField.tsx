@@ -1,11 +1,12 @@
-import {FC, useCallback, useMemo} from 'react'
+import type {FC} from 'react'
+import {useCallback, useMemo} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Form, FormRule, Input} from 'antd'
 
 import {AttributeFieldProps} from './index'
 import {FieldType} from 'src/types'
 import styles from './AttributeField.module.css'
-import {MAJOR_REV_ATTR_NAME, STATE_ATTR_NAME, UUID_PATTERN} from 'src/config/constants'
+import {ITEM_ITEM_NAME, MAJOR_REV_ATTR_NAME, NAME_ATTR_NAME, STATE_ATTR_NAME, UUID_PATTERN} from 'src/config/constants'
 import {regExpRule} from 'src/util/form'
 import {generateKey} from 'src/util/mdi'
 
@@ -16,12 +17,16 @@ const StringAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrN
         && attribute.type !== FieldType.email && attribute.type !== FieldType.sequence)
     throw new Error('Illegal attribute')
 
-  const {item} = dataWrapper
+  const {item, data} = dataWrapper
+  const isNew = useMemo(() => !data?.id, [data?.id])
   const uniqueKey = generateKey(dataWrapper)
   const {t} = useTranslation()
 
   const isEnabled = useCallback((): boolean => {
     if (attribute.keyed || attribute.readOnly)
+      return false
+
+    if (item.name === ITEM_ITEM_NAME && attrName === NAME_ATTR_NAME && !isNew)
       return false
 
     if (attribute.type === FieldType.sequence)
@@ -37,7 +42,7 @@ const StringAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrN
     }
 
     return attrName !== STATE_ATTR_NAME
-  }, [attrName, attribute.keyed, attribute.readOnly, attribute.type, item.manualVersioning, item.versioned])
+  }, [attrName, attribute.keyed, attribute.readOnly, attribute.type, item.manualVersioning, item.name, item.versioned, isNew])
 
   const additionalProps = useMemo((): any => {
     const additionalProps: any = {}

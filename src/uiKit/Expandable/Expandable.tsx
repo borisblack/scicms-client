@@ -1,4 +1,4 @@
-import {PropsWithChildren, useState} from 'react'
+import {KeyboardEvent, PropsWithChildren, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Button} from 'antd'
 import {FullscreenExitOutlined, FullscreenOutlined} from '@ant-design/icons'
@@ -14,6 +14,13 @@ export function Expandable({initialExpanded, children, onToggle}: PropsWithChild
   const {t} = useTranslation()
   const [expanded, setExpanded] = useState(initialExpanded)
 
+  function handleKeyUp(evt: KeyboardEvent<HTMLInputElement>) {
+    if (evt.key === 'Escape' && expanded) {
+      toggleExpanded()
+      return
+    }
+  }
+
   function toggleExpanded() {
     setExpanded(!expanded)
     onToggle?.(!expanded)
@@ -21,7 +28,10 @@ export function Expandable({initialExpanded, children, onToggle}: PropsWithChild
 
   return (
     <div className={`expandable-mask ${expanded ? 'expandable-mask_expanded' : ''}`}>
-      <div className={`expandable ${expanded ? 'expandable_expanded' : ''}`}>
+      <div
+        className={`expandable ${expanded ? 'expandable_expanded' : ''}`}
+        onKeyUp={handleKeyUp}
+      >
         <Button
           className="expandable__button"
           icon={expanded ? <FullscreenExitOutlined/> : <FullscreenOutlined/>}
