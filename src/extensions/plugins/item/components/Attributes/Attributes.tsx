@@ -191,7 +191,7 @@ export function Attributes({data: dataWrapper, buffer, onBufferChange}: CustomCo
           total: namedAttributes.length
         }})
     }
-  }, [])
+  }, [namedAttributes, handleNamedAttributesChange])
 
   return (
     <>
