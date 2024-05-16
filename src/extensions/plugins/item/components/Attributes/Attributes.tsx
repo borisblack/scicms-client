@@ -196,6 +196,7 @@ export function Attributes({data: dataWrapper, buffer, onBufferChange}: CustomCo
   return (
     <>
       <DataGrid
+        key={acl.canWrite ? 'writable' : 'readOnly'} // need recreate for correctness of moving rows functionality
         columns={columns}
         data={filteredData}
         initialState={{
@@ -210,7 +211,7 @@ export function Attributes({data: dataWrapper, buffer, onBufferChange}: CustomCo
         getRowContextMenu={getRowContextMenu}
         onRequest={handleRequest}
         onRowDoubleClick={handleRowDoubleClick}
-        onRowMove={isCoreItem ? undefined : handleRowMove}
+        onRowMove={acl.canWrite ? handleRowMove : undefined}
       />
       <Modal
         title={t('Attribute')}

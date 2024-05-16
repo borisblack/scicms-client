@@ -167,15 +167,16 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
             />
           </FormItem>
 
-          {/* <FormItem
+          <FormItem
             className={styles.formItem}
             name="sortOrder"
             label={t('Sort Order')}
             initialValue={attribute?.sortOrder}
             rules={[{type: 'number', min: 0}]}
+            hidden
           >
             <InputNumber style={{width: 150}} min={0} />
-          </FormItem> */}
+          </FormItem>
 
           {!isCollectionRelation && (
             <FormItem
