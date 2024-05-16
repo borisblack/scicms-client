@@ -92,8 +92,8 @@ const appConfig: AppConfig = {
     },
     form: {
       fieldWidth: 6,
-      textAreaRows: 4,
-      editorHeight: '100px'
+      textAreaRows: 5,
+      editorHeight: '110px'
     },
     notificationDuration: 10,
     notificationPlacement: 'topRight',

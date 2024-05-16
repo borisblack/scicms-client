@@ -4,11 +4,9 @@ import {useState} from 'react'
 import type {PropertyValueProps} from './types'
 import {FieldType} from 'src/types'
 import Editor from 'src/uiKit/Editor'
-import appConfig from 'src/config'
 import {Expandable} from 'src/uiKit/Expandable/Expandable'
+import {useProperty} from 'src/util/hooks'
 import './PropertyValue.css'
-
-const {editorHeight} = appConfig.ui.form
 
 const EXPANDED_EDITOR_HEIGHT = '90vh'
 
@@ -16,6 +14,7 @@ export const TextPropertyValue: FC<PropertyValueProps> = ({type, value, canEdit,
   if (type !== FieldType.text)
     throw new Error('Illegal type.')
 
+  const editorHeight = useProperty('ui.form.editorHeight') as string
   const [height, setHeight] = useState(editorHeight)
 
   function toggleExpanded(expanded: boolean) {

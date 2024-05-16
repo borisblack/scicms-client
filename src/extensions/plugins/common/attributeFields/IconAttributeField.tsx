@@ -66,6 +66,7 @@ export const IconAttributeField: FC<CustomAttributeFieldContext> = ({data: dataW
                 type="link"
                 style={{width: SUFFIX_BUTTON_WIDTH}}
                 icon={<CloseCircleOutlined/>}
+                danger
                 onClick={handleClear}
               />
             </Tooltip>

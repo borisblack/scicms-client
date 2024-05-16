@@ -4,9 +4,8 @@ import {useTranslation} from 'react-i18next'
 
 import {AttributeFieldProps} from '.'
 import {FieldType} from 'src/types'
-import appConfig from 'src/config'
 import {generateKey} from 'src/util/mdi'
-import {useItemAcl} from 'src/util/hooks'
+import {useItemAcl, useProperty} from 'src/util/hooks'
 import {Expandable} from 'src/uiKit/Expandable/Expandable'
 import Editor from 'src/uiKit/Editor/Editor'
 import {EditorMode} from 'src/uiKit/Editor/constants'
@@ -15,7 +14,6 @@ import styles from './AttributeField.module.css'
 const EXPANDED_EDITOR_HEIGHT = '90vh'
 
 const FormItem = Form.Item
-const {editorHeight} = appConfig.ui.form
 
 const JsonAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, form, attrName, attribute, value}) => {
   if (attribute.type !== FieldType.json && attribute.type !== FieldType.array)
@@ -24,6 +22,7 @@ const JsonAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, form, a
   const uniqueKey = generateKey(dataWrapper)
   const {item, data} = dataWrapper
   const {t} = useTranslation()
+  const editorHeight = useProperty('ui.form.editorHeight') as string
   const [height, setHeight] = useState(editorHeight)
   const acl = useItemAcl(item, data)
   const canEdit = useMemo(
