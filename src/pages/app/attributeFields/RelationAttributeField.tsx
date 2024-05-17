@@ -24,7 +24,7 @@ import {
   STATE_ATTR_NAME,
   USER_ITEM_NAME
 } from 'src/config/constants'
-import {useItemOperations, useQueryManager, useRegistry} from 'src/util/hooks'
+import {useItemAcl, useItemOperations, useQueryManager, useRegistry} from 'src/util/hooks'
 import SearchDataGridWrapper from '../SearchDataGridWrapper'
 import {generateKey} from 'src/util/mdi'
 import styles from './AttributeField.module.css'
@@ -68,7 +68,7 @@ function getDefaultPermission(itemName: string): string {
   return DEFAULT_PERMISSION_ID
 }
 
-const RelationAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, form, attrName, attribute, value, canAdmin}) => {
+const RelationAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, form, attrName, attribute, value}) => {
   if (attribute.type !== FieldType.relation || attribute.relType === RelType.oneToMany || attribute.relType === RelType.manyToMany)
     throw new Error('Illegal attribute')
 
@@ -76,16 +76,20 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, for
   if (!target)
     throw new Error('Target is undefined')
 
-  const {item} = dataWrapper
-  const isNew = dataWrapper.data?.id == null
+  const {item, data} = dataWrapper
+  const isNew = data?.id == null
   const uniqueKey = generateKey(dataWrapper)
   const {items: itemMap} = useRegistry()
   const {open: openItem} = useItemOperations()
+  const acl = useItemAcl(item, data)
   const {t} = useTranslation()
   const queryManager = useQueryManager()
   const [loading, setLoading] = useState<boolean>(false)
   const [isRelationModalVisible, setRelationModalVisible] = useState<boolean>(false)
-  const isDisabled = useMemo(() => attribute.keyed || attribute.readOnly || ((attrName === LIFECYCLE_ATTR_NAME || attrName === PERMISSION_ATTR_NAME) && !canAdmin), [attrName, attribute.keyed, attribute.readOnly, canAdmin])
+  const isDisabled = useMemo(
+    () => attribute.keyed || attribute.readOnly || ((attrName === LIFECYCLE_ATTR_NAME || attrName === PERMISSION_ATTR_NAME) && !acl.canAdmin),
+    [attrName, attribute.keyed, attribute.readOnly, acl.canAdmin]
+  )
   const additionalProps = useMemo((): any => {
     const additionalProps: any = {}
     if (isDisabled)

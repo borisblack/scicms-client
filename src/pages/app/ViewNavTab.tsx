@@ -328,7 +328,6 @@ function ViewNavTab({data: dataWrapper}: Props) {
               attrName={attrName}
               attribute={attr}
               value={data ? data[attrName] : null}
-              canAdmin={acl.canAdmin}
               setLoading={setLoading}
               onChange={(value: any) => handleFieldChange(attrName, value)}
             />

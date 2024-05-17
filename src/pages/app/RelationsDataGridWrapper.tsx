@@ -28,6 +28,7 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
   const {me} = useAuth()
   const {items: itemMap, permissions: permissionMap} = useRegistry()
   const {create: createItem, open: openItem, close: closeItem} = useItemOperations()
+  const isNew = !itemData?.id
 
   if (!relAttribute.target || (relAttribute.relType !== RelType.oneToMany && relAttribute.relType !== RelType.manyToMany))
     throw Error('Illegal attribute')
@@ -193,8 +194,18 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
   }, [relAttribute.relType, intermediate, mutationManager, sourceAttrName, itemData?.id, targetAttrName])
 
   const openTarget = useCallback(async (id: string) => {
-    const cb = isOneToMany ? refresh : processExistingManyToManyRelation
-    await openItem(target, id, undefined, cb, cb)
+    const updateFn = isOneToMany ? refresh : processExistingManyToManyRelation
+    const closeFn = async (closedData: ItemDataWrapper, remove?: boolean) => {
+      if (!remove)
+        return
+
+      if (isOneToMany)
+        refresh()
+      else
+        await processExistingManyToManyRelation(closedData, remove)
+    }
+
+    await openItem(target, id, undefined, updateFn, closeFn)
   }, [openItem, target, isOneToMany, processExistingManyToManyRelation])
 
   const deleteTarget = useCallback(async (id: string, purge: boolean = false) => {
@@ -227,7 +238,7 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
     setLoading(true)
     try {
       const intermediatesToDelete =
-                await queryManager.findAllBy(intermediate, {[targetAttrName]: {id: {eq: targetId}}} as unknown as ItemFiltersInput<ItemData>) // must be only one!
+        await queryManager.findAllBy(intermediate, {[targetAttrName]: {id: {eq: targetId}}} as unknown as ItemFiltersInput<ItemData>) // must be only one!
 
       for (const intermediateToDelete of intermediatesToDelete) {
         await mutationManager.remove(intermediate, intermediateToDelete.id, appConfig.mutation.deletingStrategy)
@@ -297,7 +308,7 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
   }, [t, permissionMap, me, relAttribute.readOnly, openTarget, isOneToMany, target.versioned, deleteTarget, deleteIntermediate])
 
   const renderToolbar = useCallback(() => {
-    if (/*!acl.canWrite || */relAttribute.readOnly)
+    if ((!acl.canWrite && !isNew) || relAttribute.readOnly)
       return null
 
     const targetPermissionId = target.permission.data?.id

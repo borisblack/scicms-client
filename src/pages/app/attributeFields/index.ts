@@ -8,7 +8,6 @@ export interface AttributeFieldProps {
     attrName: string
     attribute: Attribute
     value: any
-    canAdmin: boolean
     setLoading: (loading: boolean) => void
     onChange: (value: any) => void
 }
