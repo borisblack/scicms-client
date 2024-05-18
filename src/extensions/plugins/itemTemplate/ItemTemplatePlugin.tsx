@@ -4,12 +4,12 @@ import {handleItemTemplateApiOperation} from './itemTemplateApiHandler'
 
 export class ItemTemplatePlugin extends Plugin {
   override onLoad(): void {
-    this.addApiMiddleware({
-      id: 'itemTemplateMiddleware',
-      itemName: ITEM_TEMPLATE_ITEM_NAME,
-      priority: 10,
-      handle: handleItemTemplateApiOperation
-    })
+    // this.addApiMiddleware({
+    //   id: 'itemTemplateMiddleware',
+    //   itemName: ITEM_TEMPLATE_ITEM_NAME,
+    //   priority: 10,
+    //   handle: handleItemTemplateApiOperation
+    // })
   }
 
   override onUnload(): void {

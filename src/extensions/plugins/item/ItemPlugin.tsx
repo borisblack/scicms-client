@@ -58,12 +58,12 @@ export class ItemPlugin extends Plugin {
     })
 
     // API middleware
-    this.addApiMiddleware({
-      id: 'itemMiddleware',
-      itemName: ITEM_ITEM_NAME,
-      priority: 10,
-      handle: handleItemApiOperation
-    })
+    // this.addApiMiddleware({
+    //   id: 'itemMiddleware',
+    //   itemName: ITEM_ITEM_NAME,
+    //   priority: 10,
+    //   handle: handleItemApiOperation
+    // })
   }
 
   override onUnload() {
