@@ -180,6 +180,7 @@ const en = {
     'Hours after now': 'Hours after now',
     'Hours before now': 'Hours before now',
     'hours': 'hours',
+    'ID Attribute': 'ID Attribute',
     'Icon': 'Icon',
     'Icons': 'Icons',
     'Identities': 'Identities',

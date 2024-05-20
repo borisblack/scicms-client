@@ -180,6 +180,7 @@ const ru = {
     'Hours after now': 'Часов после текущего времени',
     'Hours before now': 'Часов до текущего времени',
     'hours': 'часов',
+    'ID Attribute': 'Ключевой атрибут',
     'Icon': 'Значок',
     'Icons': 'Значки',
     'Identities': 'Субъекты',
