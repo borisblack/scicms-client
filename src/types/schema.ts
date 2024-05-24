@@ -115,6 +115,7 @@ export interface Item extends ItemTemplate {
     tableName: string | null
     query: string | null
     cacheTtl: number | null
+    idAttribute: string
     titleAttribute: string
     defaultSortAttribute: string | null
     defaultSortOrder: string | null

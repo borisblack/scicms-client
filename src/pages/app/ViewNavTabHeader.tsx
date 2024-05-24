@@ -84,7 +84,7 @@ export default function ViewNavTabHeader({
 
     setLoading(true)
     try {
-      const id = data?.id as string
+      const id = data?.[item.idAttribute] as string
       const doLock = async () => await mutationManager.lock(item, id)
       let locked: FlaggedResponse
       if (pluginEngine.hasApiMiddleware(item.name)) {
@@ -120,7 +120,7 @@ export default function ViewNavTabHeader({
 
     setLoading(true)
     try {
-      const id = data?.id as string
+      const id = data?.[item.idAttribute] as string
       const doUnlock = async () => await mutationManager.unlock(item, id)
       let unlocked
       if (pluginEngine.hasApiMiddleware(item.name)) {
@@ -159,7 +159,7 @@ export default function ViewNavTabHeader({
 
     setLoading(true)
     try {
-      const id = data?.id as string
+      const id = data?.[item.idAttribute] as string
       const doDelete = async () => await mutationManager.remove(item, id, appConfig.mutation.deletingStrategy)
       let deleted: ItemData
       if (pluginEngine.hasApiMiddleware(item.name)) {
@@ -192,7 +192,7 @@ export default function ViewNavTabHeader({
 
     setLoading(true)
     try {
-      const id = data?.id as string
+      const id = data?.[item.idAttribute] as string
       const doPurge = async () => await mutationManager.purge(item, id, appConfig.mutation.deletingStrategy)
       let purged: ResponseCollection<ItemData>
       if (pluginEngine.hasApiMiddleware(item.name)) {
@@ -225,7 +225,7 @@ export default function ViewNavTabHeader({
 
     setLoading(true)
     try {
-      const id = data?.id as string
+      const id = data?.[item.idAttribute] as string
       const doPromote = async () => await mutationManager.promote(item, id, state)
       let promoted: ItemData
       if (pluginEngine.hasApiMiddleware(item.name)) {
@@ -290,7 +290,7 @@ export default function ViewNavTabHeader({
 
     return {
       id: {
-        ne: data?.id as string
+        ne: data?.[item.idAttribute] as string
       },
       configId: {
         eq: data?.configId as string
@@ -360,7 +360,7 @@ export default function ViewNavTabHeader({
   }
 
   async function handleVersionSelect(selectedItemData: ItemData) {
-    await openItem(item, selectedItemData.id)
+    await openItem(item, selectedItemData[item.idAttribute])
     setVersionsModalVisible(false)
   }
 

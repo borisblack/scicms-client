@@ -139,9 +139,9 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, for
   }, [])
 
   function handleRelationSelect(itemData: ItemData) {
-    setCurrentId(itemData.id)
+    setCurrentId(itemData[targetItem.idAttribute])
     form.setFieldValue(attrName, itemData[targetItem.titleAttribute])
-    form.setFieldValue(`${attrName}.id`, itemData.id)
+    form.setFieldValue(`${attrName}.id`, itemData[targetItem.idAttribute])
 
     setRelationModalVisible(false)
   }

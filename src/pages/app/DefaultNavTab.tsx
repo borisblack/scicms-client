@@ -121,7 +121,7 @@ function DefaultNavTab({data: dataWrapper}: Props) {
     setLoading(false)
   }, [item, openItem])
 
-  const handleRowDoubleClick = useCallback((row: Row<ItemData>) => handleView(row.original.id), [handleView])
+  const handleRowDoubleClick = useCallback((row: Row<ItemData>) => handleView(row.original[item.idAttribute]), [handleView, item.idAttribute])
 
   const logoutIfNeed = useCallback(() => {
     if (!isSystemItem)
@@ -158,14 +158,14 @@ function DefaultNavTab({data: dataWrapper}: Props) {
     } finally {
       setLoading(false)
     }
-  }, [closeItem, item, logoutIfNeed, mutationManager, me, itemMap, buffer])
+  }, [closeItem, item, logoutIfNeed, mutationManager, me, itemMap, buffer, t])
 
   const getRowContextMenu = useCallback((row: Row<ItemData>) => {
     const items: ItemType[] = [{
       key: 'open',
       label: t('Open'),
       icon: <FolderOpenOutlined />,
-      onClick: () => handleView(row.original.id)
+      onClick: () => handleView(row.original[item.idAttribute])
     }]
 
     const rowPermissionId = row.original.permission?.data?.id
@@ -180,11 +180,11 @@ function DefaultNavTab({data: dataWrapper}: Props) {
           children: [{
             key: 'delete',
             label: t('Current Version'),
-            onClick: () => handleDelete(row.original.id)
+            onClick: () => handleDelete(row.original[item.idAttribute])
           }, {
             key: 'purge',
             label: t('All Versions'),
-            onClick: () => handleDelete(row.original.id, true)
+            onClick: () => handleDelete(row.original[item.idAttribute], true)
           }]
         })
       } else {
@@ -192,13 +192,13 @@ function DefaultNavTab({data: dataWrapper}: Props) {
           key: 'delete',
           label: t('Delete'),
           icon: <DeleteTwoTone twoToneColor="#eb2f96" />,
-          onClick: () => handleDelete(row.original.id)
+          onClick: () => handleDelete(row.original[item.idAttribute])
         })
       }
     }
 
     return items
-  }, [t, me, permissionMap, handleView, item.versioned, handleDelete])
+  }, [t, me, permissionMap, handleView,item.idAttribute, item.versioned, handleDelete])
 
   const handleCreate = useCallback(() => {
     createItem(item, undefined, undefined, refresh, refresh)
@@ -250,7 +250,7 @@ function DefaultNavTab({data: dataWrapper}: Props) {
           version={version}
           toolbar={item.localized && <Checkbox onChange={handleLocalizationsCheckBoxChange}>{t('All Locales')}</Checkbox>}
           title={t(item.displayPluralName)}
-          getRowId={originalRow => originalRow.id}
+          getRowId={originalRow => originalRow[item.idAttribute]}
           getRowContextMenu={getRowContextMenu}
           onRequest={handleRequest}
           onRowDoubleClick={handleRowDoubleClick}

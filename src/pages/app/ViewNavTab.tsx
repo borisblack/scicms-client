@@ -214,7 +214,7 @@ function ViewNavTab({data: dataWrapper}: Props) {
 
     setLoading(true)
     try {
-      const doCreateVersion = async () => await mutationManager.createVersion(item, data.id, values, majorRev, locale, appConfig.mutation.copyCollectionRelations)
+      const doCreateVersion = async () => await mutationManager.createVersion(item, data[item.idAttribute], values, majorRev, locale, appConfig.mutation.copyCollectionRelations)
       let createdVersion: ItemData
       if (pluginEngine.hasApiMiddleware(item.name)) {
         const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values}
@@ -249,7 +249,7 @@ function ViewNavTab({data: dataWrapper}: Props) {
 
     setLoading(true)
     try {
-      const doCreateLocalization = async () => await mutationManager.createLocalization(item, data.id, values, locale, appConfig.mutation.copyCollectionRelations)
+      const doCreateLocalization = async () => await mutationManager.createLocalization(item, data[item.idAttribute], values, locale, appConfig.mutation.copyCollectionRelations)
       let createdLocalization: ItemData
       if (pluginEngine.hasApiMiddleware(item.name)) {
         const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values}
@@ -281,7 +281,7 @@ function ViewNavTab({data: dataWrapper}: Props) {
 
     setLoading(true)
     try {
-      const doUpdate = async () => await mutationManager.update(item, data.id, values)
+      const doUpdate = async () => await mutationManager.update(item, data[item.idAttribute], values)
       let updated: ItemData
       if (pluginEngine.hasApiMiddleware(item.name)) {
         const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values}

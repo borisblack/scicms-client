@@ -96,7 +96,7 @@ export default function OneToManyDataGridWrapper({data: dataWrapper, itemName, t
       key: 'open',
       label: t('Open'),
       icon: <FolderOpenOutlined/>,
-      onClick: () => openTarget(row.original.id)
+      onClick: () => openTarget(row.original[targetItem.idAttribute])
     }]
 
     const rowPermissionId = row.original.permission?.data?.id
@@ -111,11 +111,11 @@ export default function OneToManyDataGridWrapper({data: dataWrapper, itemName, t
           children: [{
             key: 'delete',
             label: t('Current Version'),
-            onClick: () => deleteTarget(row.original.id)
+            onClick: () => deleteTarget(row.original[targetItem.idAttribute])
           }, {
             key: 'purge',
             label: t('All Versions'),
-            onClick: () => deleteTarget(row.original.id, true)
+            onClick: () => deleteTarget(row.original[targetItem.idAttribute], true)
           }]
         })
       } else {
@@ -123,13 +123,13 @@ export default function OneToManyDataGridWrapper({data: dataWrapper, itemName, t
           key: 'delete',
           label: t('Delete'),
           icon: <DeleteTwoTone twoToneColor="#eb2f96"/>,
-          onClick: () => deleteTarget(row.original.id)
+          onClick: () => deleteTarget(row.original[targetItem.idAttribute])
         })
       }
     }
 
     return items
-  }, [t, permissionMap, me, openTarget, targetItem.versioned, deleteTarget])
+  }, [t, permissionMap, me, openTarget, targetItem.idAttribute, targetItem.versioned, deleteTarget])
 
   const renderToolbar = useCallback(() => {
     // if (!acl.canWrite)
@@ -159,7 +159,7 @@ export default function OneToManyDataGridWrapper({data: dataWrapper, itemName, t
         }}
         toolbar={renderToolbar()}
         title={t(targetItem.displayPluralName)}
-        getRowId={originalRow => originalRow.id}
+        getRowId={originalRow => originalRow[targetItem.idAttribute]}
         getRowContextMenu={getRowContextMenu}
         onRequest={handleRequest}
         onRowDoubleClick={row => openTarget(row.original.id)}

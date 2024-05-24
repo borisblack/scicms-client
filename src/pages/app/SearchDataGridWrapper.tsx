@@ -71,7 +71,7 @@ export default function SearchDataGridWrapper({item, notHiddenColumns = [], extr
       }}
       toolbar={item.localized && <Checkbox onChange={handleLocalizationsCheckBoxChange}>{t('All Locales')}</Checkbox>}
       title={t(item.displayPluralName)}
-      getRowId={originalRow => originalRow.id}
+      getRowId={originalRow => originalRow[item.idAttribute]}
       onRequest={handleRequest}
       onRowDoubleClick={handleRowDoubleClick}
     />

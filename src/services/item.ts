@@ -27,6 +27,7 @@ const FIND_ALL_QUERY = gql`
         }
         tableName
         query
+        idAttribute
         titleAttribute
         includeTemplates
         description

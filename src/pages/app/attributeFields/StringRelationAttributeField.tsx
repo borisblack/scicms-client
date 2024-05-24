@@ -66,7 +66,7 @@ const StringRelationAttributeField: FC<StringRelationAttributeFieldProps> = ({da
       if (found.length !== 1)
         return Promise.reject(`Illegal state. Found ${found.length} records`)
 
-      await openItem(targetItem, found[0].id)
+      await openItem(targetItem, found[0][targetItem.idAttribute])
     } catch (e: any) {
       console.error(e.message)
       notification.error({
