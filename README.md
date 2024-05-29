@@ -6,6 +6,8 @@ Client web application for [SciCMS Core](https://github.com/borisblack/scicms-co
 
 In the project directory, you can run:
 
+### `yarn start-rewired`
+
 ### `yarn start`
 
 Runs the app in the development mode.\
