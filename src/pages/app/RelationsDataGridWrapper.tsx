@@ -264,12 +264,12 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
       key: 'open',
       label: t('Open'),
       icon: <FolderOpenOutlined/>,
-      onClick: () => openTarget(row.original.id)
+      onClick: () => openTarget(row.original[target.idAttribute])
     }]
 
     const rowPermissionId = row.original.permission?.data?.id
     const rowPermission = rowPermissionId ? permissionMap[rowPermissionId] : null
-    const canDelete = !!rowPermission && ACL.canDelete(me, rowPermission) && !relAttribute.readOnly
+    const canDelete = acl.canWrite && !!rowPermission && ACL.canDelete(me, rowPermission) && !relAttribute.readOnly
     if (canDelete) {
       if (isOneToMany) {
         if (target.versioned) {
@@ -280,11 +280,11 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
             children: [{
               key: 'delete',
               label: t('Current Version'),
-              onClick: () => deleteTarget(row.original[item.idAttribute])
+              onClick: () => deleteTarget(row.original[target.idAttribute])
             }, {
               key: 'purge',
               label: t('All Versions'),
-              onClick: () => deleteTarget(row.original[item.idAttribute], true)
+              onClick: () => deleteTarget(row.original[target.idAttribute], true)
             }]
           })
         } else {
@@ -292,7 +292,7 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
             key: 'delete',
             label: t('Delete'),
             icon: <DeleteTwoTone twoToneColor="#eb2f96"/>,
-            onClick: () => deleteTarget(row.original[item.idAttribute])
+            onClick: () => deleteTarget(row.original[target.idAttribute])
           })
         }
       } else { // manyToMany
@@ -306,7 +306,7 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
     }
 
     return items
-  }, [t, permissionMap, me, item.idAttribute, relAttribute.readOnly, openTarget, isOneToMany, target.versioned, deleteTarget, deleteIntermediate])
+  }, [t, permissionMap, me, item.idAttribute, relAttribute.readOnly, openTarget, isOneToMany, target.versioned, acl.canWrite, deleteTarget, deleteIntermediate])
 
   const renderToolbar = useCallback(() => {
     if ((!acl.canWrite && !isNew) || relAttribute.readOnly)
