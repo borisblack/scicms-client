@@ -323,14 +323,14 @@ export default class QueryManager {
     `
 
   async findAllRelated(
-    itemName: string,
+    item: Item,
     itemId: string,
     relAttrName: string,
     target: Item,
     {sorting, filters, pagination}: ExtRequestParams,
     extraFiltersInput?: ItemFiltersInput<ItemData>
   ): Promise<ResponseCollection<any>> {
-    const query = gql(this.buildFindAllRelatedQuery(itemName, relAttrName, target))
+    const query = gql(this.buildFindAllRelatedQuery(item, relAttrName, target))
     const {page, pageSize} = pagination
     const variables = {
       id: itemId,
@@ -345,39 +345,44 @@ export default class QueryManager {
       throw new Error(i18n.t('An error occurred while executing the request.'))
     }
 
-    return res.data[itemName].data[relAttrName]
+    return res.data[item.name].data[relAttrName]
   }
 
-  private buildFindAllRelatedQuery = (itemName: string, relationAttrName: string, target: Item) => `
-        query find${_.upperFirst(itemName)}${_.upperFirst(relationAttrName)}(
-            $id: ID!
-            $sort: [String]
-            $filters: ${_.upperFirst(target.name)}FiltersInput
-            $pagination: PaginationInput
-        ) {
-            ${itemName}(id: $id) {
-                data {
-                    ${relationAttrName}(
-                        sort: $sort
-                        filters: $filters
-                        pagination: $pagination
-                    ) {
-                        data {
-                            ${this.itemManager.listNonCollectionAttributes(target).join('\n')}
-                        }
-                        meta {
-                            pagination {
-                                page
-                                pageCount
-                                pageSize
-                                total
-                            }
-                        }
-                    }
+  private buildFindAllRelatedQuery = (item: Item, relationAttrName: string, target: Item) => {
+    const relationAttribute = item.spec.attributes[relationAttrName]
+    const referencedBy = relationAttribute.mappedBy ? target.spec.attributes[relationAttribute.mappedBy].referencedBy : null
+    return `
+      query find${_.upperFirst(item.name)}${_.upperFirst(relationAttrName)}(
+        $id: ID!
+        $sort: [String]
+        $filters: ${_.upperFirst(target.name)}FiltersInput
+        $pagination: PaginationInput
+      ) {
+        ${item.name}(id: $id) {
+          data {
+            ${referencedBy || item.idAttribute}
+            ${relationAttrName}(
+              sort: $sort
+              filters: $filters
+              pagination: $pagination
+            ) {
+              data {
+                ${this.itemManager.listNonCollectionAttributes(target).join('\n')}
+              }
+              meta {
+                pagination {
+                  page
+                  pageCount
+                  pageSize
+                  total
                 }
+              }
             }
+          }
         }
+      }
     `
+  }
 
   private buildItemFiltersInput = (item: Item, filters: ColumnFiltersState): ItemFiltersInput<ItemData> => {
     const {attributes} = item.spec

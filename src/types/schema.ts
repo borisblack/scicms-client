@@ -204,6 +204,7 @@ export interface Attribute {
     intermediate?: string
     mappedBy?: string
     inversedBy?: string
+    referencedBy?: string
     required: boolean
     defaultValue?: string
     keyed: boolean

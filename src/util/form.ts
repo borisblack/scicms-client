@@ -84,7 +84,7 @@ async function parseValue(item: Item, attrName: string, attribute: Attribute, da
     case FieldType.json:
       return _.isString(value) ? JSON.parse(value) : value
     case FieldType.relation:
-      return values[`${attrName}.id`]
+      return values[`${attrName}.${attribute.referencedBy || item.idAttribute}`]
     default:
       return value
   }

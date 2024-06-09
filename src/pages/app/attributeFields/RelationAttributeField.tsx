@@ -100,6 +100,7 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, for
 
   const [currentId, setCurrentId] = useState(value?.data?.id)
   const targetItem = itemMap[target]
+  const referencedBy = useMemo(() => `${attribute.referencedBy || item.idAttribute}`, [attribute.referencedBy, item.idAttribute])
   const initialData = useMemo(() => (value?.data ?? {id: attribute.defaultValue}), [attribute.defaultValue, value?.data])
   const extraFiltersInput: ItemFiltersInput<ItemData> = useMemo(() => {
     if (attrName === LIFECYCLE_ATTR_NAME) {
@@ -141,7 +142,7 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, for
   function handleRelationSelect(itemData: ItemData) {
     setCurrentId(itemData[targetItem.idAttribute])
     form.setFieldValue(attrName, itemData[targetItem.titleAttribute])
-    form.setFieldValue(`${attrName}.id`, itemData[targetItem.idAttribute])
+    form.setFieldValue(`${attrName}.${referencedBy}`, itemData[referencedBy])
 
     setRelationModalVisible(false)
   }
@@ -161,7 +162,7 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, for
   function handleClear() {
     setCurrentId(null)
     form.setFieldValue(attrName, null)
-    form.setFieldValue(`${attrName}.id`, null)
+    form.setFieldValue(`${attrName}.${referencedBy}`, null)
     if (attrName === LIFECYCLE_ATTR_NAME)
       form.setFieldValue(STATE_ATTR_NAME, null)
   }
@@ -204,8 +205,8 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, for
           {...additionalProps}
         />
       </FormItem>
-      <FormItem hidden name={`${attrName}.id`} initialValue={initialData.id}>
-        <Input id={`${uniqueKey}#${attrName}.id`}/>
+      <FormItem hidden name={`${attrName}.${referencedBy}`} initialValue={initialData[referencedBy]}>
+        <Input id={`${uniqueKey}#${attrName}.${referencedBy}`}/>
       </FormItem>
       <Modal
         title={t(attribute.displayName)}

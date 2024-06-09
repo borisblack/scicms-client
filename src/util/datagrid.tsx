@@ -181,7 +181,8 @@ export async function findAllRelated(
   extraFiltersInput?: ItemFiltersInput<ItemData>
 ): Promise<DataWithPagination<any>> {
   const queryManager = new QueryManager(items)
-  const responseCollection = await queryManager.findAllRelated(itemName, itemId, relAttrName, target, params, extraFiltersInput)
+  const item = items[itemName]
+  const responseCollection = await queryManager.findAllRelated(item, itemId, relAttrName, target, params, extraFiltersInput)
   const {page, pageSize, total} = responseCollection.meta.pagination
   return {
     data: responseCollection.data,
