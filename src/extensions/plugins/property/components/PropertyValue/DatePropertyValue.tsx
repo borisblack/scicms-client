@@ -4,15 +4,16 @@ import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import {DatePicker} from 'antd'
 
-import appConfig from 'src/config'
 import {FieldType} from 'src/types'
 import {PropertyValueProps} from './types'
+import {useAppProperties} from 'src/util/hooks'
 
 dayjs.extend(utc)
 
-const {momentDisplayDateFormatString} = appConfig.dateTime
-
 export const DatePropertyValue: FC<PropertyValueProps> = ({type, value, canEdit, onChange}) => {
+  const appProps = useAppProperties()
+  const {momentDisplayDateFormatString} = appProps.dateTime
+
   if (type !== FieldType.date)
     throw new Error('Illegal type')
 

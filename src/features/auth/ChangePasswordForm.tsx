@@ -34,7 +34,7 @@ export default function ChangePasswordForm() {
         dependencies={['newPassword']}
         // hasFeedback
         rules={[
-          requiredFieldRule('Please confirm new password'),
+          requiredFieldRule(true, 'Please confirm new password'),
           ({ getFieldValue }) => ({
             validator(_, value) {
               if (!value || getFieldValue('newPassword') === value) {

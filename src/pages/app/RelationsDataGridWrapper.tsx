@@ -4,7 +4,6 @@ import {Row} from '@tanstack/react-table'
 import {Button, Modal, notification, Space} from 'antd'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
 import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined, SelectOutlined} from '@ant-design/icons'
-import appConfig from 'src/config'
 import {type RequestParams, DataGrid} from 'src/uiKit/DataGrid'
 import {findAllRelated, getColumns, getHiddenColumns, getInitialData} from 'src/util/datagrid'
 import {Attribute, ItemData, ItemDataWrapper, RelType} from 'src/types/schema'
@@ -13,7 +12,7 @@ import MutationManager from 'src/services/mutation'
 import QueryManager, {ItemFiltersInput} from 'src/services/query'
 import SearchDataGridWrapper from './SearchDataGridWrapper'
 import * as ACL from 'src/util/acl'
-import {useAcl, useAuth, useItemOperations, useRegistry} from 'src/util/hooks'
+import {useAcl, useAppProperties, useAuth, useItemOperations, useRegistry} from 'src/util/hooks'
 
 interface Props {
     data: ItemDataWrapper
@@ -24,6 +23,10 @@ interface Props {
 const SELECTION_MODAL_WIDTH = 800
 
 export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName, relAttribute}: Props) {
+  const appProps = useAppProperties()
+  const {defaultPageSize} = appProps.query
+  const {luxonDisplayDateFormatString, luxonDisplayTimeFormatString, luxonDisplayDateTimeFormatString} = appProps.dateTime
+  const {maxTextLength, colWidth: defaultColWidth} = appProps.ui.dataGrid
   const {item, data: itemData} = dataWrapper
   const {me} = useAuth()
   const {items: itemMap, permissions: permissionMap} = useRegistry()
@@ -51,8 +54,17 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
     ]),
     [itemMap, relAttribute.target, relAttribute.intermediate]
   )
-  const [data, setData] = useState(getInitialData<ItemData>())
-  const columns = useMemo(() => getColumns(itemMap, target, openItem), [itemMap, target])
+  const [data, setData] = useState(getInitialData<ItemData>(defaultPageSize))
+  const columns = useMemo(() => getColumns({
+    items: itemMap,
+    item: target,
+    maxTextLength,
+    defaultColWidth,
+    luxonDisplayDateFormatString,
+    luxonDisplayTimeFormatString,
+    luxonDisplayDateTimeFormatString,
+    onOpenItem: openItem
+  }), [defaultColWidth, itemMap, luxonDisplayDateFormatString, luxonDisplayDateTimeFormatString, luxonDisplayTimeFormatString, maxTextLength, target])
   const isOneToMany = useMemo(() => relAttribute.relType === RelType.oneToMany, [relAttribute.relType])
   const acl = useAcl(item, itemData)
 
@@ -119,7 +131,7 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
       try {
         const intermediatesToDelete = await queryManager.findAllBy(intermediate, {[targetAttrName]: {id: {eq: updatedId}}} as unknown as ItemFiltersInput<ItemData>) // must be only one
         for (const intermediateToDelete of intermediatesToDelete) {
-          await mutationManager.remove(intermediate, intermediateToDelete[intermediate.idAttribute], appConfig.mutation.deletingStrategy)
+          await mutationManager.remove(intermediate, intermediateToDelete[intermediate.idAttribute], appProps.mutation.deletingStrategy)
         }
         createdIds.current.delete(updatedId)
         refresh()
@@ -226,9 +238,9 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
     setLoading(true)
     try {
       if (purge)
-        await mutationManager.purge(target, id, appConfig.mutation.deletingStrategy)
+        await mutationManager.purge(target, id, appProps.mutation.deletingStrategy)
       else
-        await mutationManager.remove(target, id, appConfig.mutation.deletingStrategy)
+        await mutationManager.remove(target, id, appProps.mutation.deletingStrategy)
 
       closeItem(target.name, id)
       refresh()
@@ -255,7 +267,7 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
         await queryManager.findAllBy(intermediate, {[targetAttrName]: {[target.idAttribute]: {eq: targetId}}} as unknown as ItemFiltersInput<ItemData>) // must be only one!
 
       for (const intermediateToDelete of intermediatesToDelete) {
-        await mutationManager.remove(intermediate, intermediateToDelete[intermediate.idAttribute], appConfig.mutation.deletingStrategy)
+        await mutationManager.remove(intermediate, intermediateToDelete[intermediate.idAttribute], appProps.mutation.deletingStrategy)
         closeItem(target.name, targetId)
       }
 
@@ -319,7 +331,7 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
     }
 
     return items
-  },[t, permissionMap, me, item.idAttribute, target.idAttribute, relAttribute.readOnly, openTarget, isOneToMany, target.versioned, acl.canWrite, deleteTarget, deleteIntermediate])
+  },[t, permissionMap, me, target.idAttribute, relAttribute.readOnly, openTarget, isOneToMany, target.versioned, acl.canWrite, deleteTarget, deleteIntermediate])
 
   const renderToolbar = useCallback(() => {
     if ((!acl.canWrite && !isNew) || relAttribute.readOnly)
@@ -346,7 +358,7 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
         version={version}
         initialState={{
           hiddenColumns: hiddenColumnsMemoized,
-          pageSize: appConfig.query.defaultPageSize
+          pageSize: appProps.query.defaultPageSize
         }}
         toolbar={renderToolbar()}
         title={t(target.displayPluralName)}

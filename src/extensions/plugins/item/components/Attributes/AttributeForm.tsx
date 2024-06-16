@@ -1,16 +1,15 @@
 import _ from 'lodash'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 import {AutoComplete, Checkbox, Col, Form, FormInstance, Input, InputNumber, notification, Row, Select} from 'antd'
 import {useTranslation} from 'react-i18next'
 
 import {FieldType} from 'src/types/'
 import {RelType} from 'src/types/schema'
-import appConfig from 'src/config'
-import {regExpRule} from 'src/util/form'
+import {regExpRule, requiredFieldRule} from 'src/util/form'
 import {LOWERCASE_NO_WHITESPACE_PATTERN} from 'src/config/constants'
 import * as SequenceService from 'src/services/sequence'
 import {NamedAttribute} from './types'
-import {useRegistry} from 'src/util/hooks'
+import {useAppProperties, useRegistry} from 'src/util/hooks'
 import styles from './Attributes.module.css'
 import FieldTypeIcon from 'src/components/FieldTypeIcon'
 
@@ -36,16 +35,50 @@ const {TextArea} = Input
 export default function AttributeForm({form, attribute, canEdit, onFormFinish}: Props) {
   const {items: itemMap} = useRegistry()
   const {t} = useTranslation()
+  const appProps = useAppProperties()
   const [attrType, setAttrType] = useState<FieldType | undefined>(attribute?.type)
   const [relType, setRelType] = useState<RelType | undefined>(attribute?.relType)
   const [target, setTarget] = useState<string | undefined>(attribute?.target)
   const [seqNameOptions, setSeqNameOptions] = useState<OptionType[]>([])
   const [targetOptions, setTargetOptions] = useState<OptionType[]>([])
   const [intermediateOptions, setIntermediateOptions] = useState<OptionType[]>([])
-  const [mappedByOptions, setMappedByOptions] = useState<OptionType[]>([])
-  const [inversedByOptions, setInversedByOptions] = useState<OptionType[]>([])
   const itemNames = useMemo(() => Object.keys(itemMap), [itemMap])
   const isCollectionRelation = attrType === FieldType.relation && (relType === RelType.oneToMany || relType === RelType.manyToMany)
+  const allTargetAttributes = useMemo(() => target ? itemMap[target].spec.attributes : {}, [target, itemMap])
+  const targetRelationAttrNames = useMemo(() => Object.keys(allTargetAttributes).filter(key => {
+    const targetAttribute = allTargetAttributes[key]
+    return targetAttribute.type === FieldType.relation || targetAttribute.relType === RelType.oneToOne
+  }), [allTargetAttributes])
+
+  const inversedByOptions = useMemo(
+    () => targetRelationAttrNames
+      .filter(attrName => {
+        const targetRelAttr = allTargetAttributes[attrName]
+        return targetRelAttr.relType === RelType.oneToOne || targetRelAttr.relType === RelType.manyToOne || targetRelAttr.relType === RelType.manyToMany
+      })
+      .map(uniqueAttrName => ({label: uniqueAttrName, value: uniqueAttrName})),
+    [allTargetAttributes, targetRelationAttrNames]
+  )
+
+  const mappedByOptions = useMemo(
+    () => targetRelationAttrNames
+      .filter(attrName => {
+        const targetRelAttr = allTargetAttributes[attrName]
+        return targetRelAttr.relType === RelType.oneToOne || targetRelAttr.relType === RelType.oneToMany || targetRelAttr.relType === RelType.manyToMany
+      })
+      .map(uniqueAttrName => ({label: uniqueAttrName, value: uniqueAttrName})),
+    [allTargetAttributes, targetRelationAttrNames]
+  )
+
+  const referencedByOptions = useMemo(
+    () => Object.keys(allTargetAttributes)
+      .filter(attrName => {
+        const targetRelAttr = allTargetAttributes[attrName]
+        return targetRelAttr.keyed || targetRelAttr.unique
+      })
+      .map(uniqueAttrName => ({label: uniqueAttrName, value: uniqueAttrName})),
+    [allTargetAttributes]
+  )
 
   useEffect(() => {
     form.resetFields()
@@ -85,46 +118,6 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
     const regExp = new RegExp(value, 'i')
     const intermediates = itemNames.filter(it => it.match(regExp))
     setIntermediateOptions(intermediates.map(it => ({label: it, value: it})))
-  }, DEBOUNCE_WAIT_INTERVAL)
-
-  const getTargetRelationAttributes = useCallback(() => {
-    if (!target)
-      return []
-
-    const allTargetAttributes = itemMap[target].spec.attributes
-    if (relType === RelType.oneToOne || relType === RelType.oneToMany) {
-      return Object.keys(allTargetAttributes).filter(key => {
-        const targetAttribute = allTargetAttributes[key]
-        return targetAttribute.relType === RelType.manyToOne || targetAttribute.relType === RelType.manyToMany
-      })
-    } else {
-      return Object.keys(allTargetAttributes).filter(key => {
-        const targetAttribute = allTargetAttributes[key]
-        return targetAttribute.relType === RelType.oneToOne || targetAttribute.relType === RelType.oneToMany
-      })
-    }
-  }, [itemMap, relType, target])
-
-  const handleMappedBySearch = _.debounce((value: string) => {
-    setMappedByOptions([])
-    if (!target || value.length < MIN_SEARCH_LENGTH)
-      return
-
-    const targetAttributes = getTargetRelationAttributes()
-    const regExp = new RegExp(value, 'i')
-    const mappedByList = targetAttributes.filter(it => it.match(regExp))
-    setMappedByOptions(mappedByList.map(it => ({label: it, value: it})))
-  }, DEBOUNCE_WAIT_INTERVAL)
-
-  const handleInversedBySearch = _.debounce((value: string) => {
-    setInversedByOptions([])
-    if (!target || value.length < MIN_SEARCH_LENGTH)
-      return
-
-    const targetAttributes = getTargetRelationAttributes()
-    const regExp = new RegExp(value, 'i')
-    const inversedByList = targetAttributes.filter(it => it.match(regExp))
-    setInversedByOptions(inversedByList.map(it => ({label: it, value: it})))
   }, DEBOUNCE_WAIT_INTERVAL)
 
   return (
@@ -230,16 +223,14 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
             </>
           )}
 
-          {attribute?.keyed && (
-            <FormItem
-              className={styles.formItem}
-              name="keyed"
-              valuePropName="checked"
-              initialValue={attribute?.keyed}
-            >
-              <Checkbox disabled>{t('Keyed')}</Checkbox>
-            </FormItem>
-          )}
+          <FormItem
+            className={styles.formItem}
+            name="keyed"
+            valuePropName="checked"
+            initialValue={attribute?.keyed}
+          >
+            <Checkbox disabled>{t('Keyed')}</Checkbox>
+          </FormItem>
 
           {!isCollectionRelation && (
             <>
@@ -313,7 +304,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
               initialValue={attribute?.enumSet?.join('\n')}
               rules={[{required: true, message: t('Required field')}]}
             >
-              <TextArea style={{maxWidth: 180}} rows={appConfig.ui.form.textAreaRows} />
+              <TextArea style={{maxWidth: 180}} rows={appProps.ui.form.textAreaRows} />
             </FormItem>
           )}
 
@@ -383,33 +374,51 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
 
               {target && (
                 <>
-                  <FormItem
-                    className={styles.formItem}
-                    name="mappedBy"
-                    label={t('Mapped By')}
-                    initialValue={attribute?.mappedBy}
-                  >
-                    <AutoComplete
-                      options={mappedByOptions}
-                      style={{width: 300}}
-                      onSearch={handleMappedBySearch}
-                      placeholder={t('Mapped By')}
-                    />
-                  </FormItem>
+                  {relType !== RelType.manyToOne && (
+                    <FormItem
+                      className={styles.formItem}
+                      name="mappedBy"
+                      label={t('Mapped By')}
+                      initialValue={attribute?.mappedBy}
+                      rules={[requiredFieldRule(relType === RelType.oneToMany)]}
+                    >
+                      <Select
+                        options={mappedByOptions}
+                        style={{width: 300}}
+                        placeholder={t('Mapped By')}
+                      />
+                    </FormItem>
+                  )}
 
-                  <FormItem
-                    className={styles.formItem}
-                    name="inversedBy"
-                    label={t('Inversed By')}
-                    initialValue={attribute?.inversedBy}
-                  >
-                    <AutoComplete
-                      options={inversedByOptions}
-                      style={{width: 300}}
-                      onSearch={handleInversedBySearch}
-                      placeholder={t('Inversed By')}
-                    />
-                  </FormItem>
+                  {relType !== RelType.oneToMany && (
+                    <FormItem
+                      className={styles.formItem}
+                      name="inversedBy"
+                      label={t('Inversed By')}
+                      initialValue={attribute?.inversedBy}
+                    >
+                      <Select
+                        options={inversedByOptions}
+                        style={{width: 300}}
+                        placeholder={t('Inversed By')}
+                      />
+                    </FormItem>
+                  )}
+
+                  {(relType === RelType.manyToOne || relType === RelType.oneToOne) && (
+                    <FormItem
+                      className={styles.formItem}
+                      name="referencedBy"
+                      label={t('Referenced By')}
+                      initialValue={attribute?.referencedBy}
+                    >
+                      <Select
+                        options={referencedByOptions}
+                        style={{width: 300}}
+                        placeholder={t('Referenced By')}
+                      />
+                    </FormItem>
+                  )}
                 </>
               )}
             </>

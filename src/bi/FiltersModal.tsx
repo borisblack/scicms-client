@@ -10,6 +10,7 @@ import {
 } from './util'
 import DashFilters from './DashFilters'
 import {Dataset, IDash, QueryBlock} from '../types/bi'
+import {useAppProperties} from 'src/util/hooks'
 
 interface FiltersModalProps {
   dash: IDash
@@ -27,6 +28,8 @@ export interface FiltersFormValues {
 
 export default function FiltersModal({dash, dashboardId, dataset, filters, open, onChange, onClose}: FiltersModalProps) {
   const {t} = useTranslation()
+  const appProps = useAppProperties()
+  const {timeZone} = appProps.dateTime
   const [form] = Form.useForm()
 
   // Uncomment when using one form for multiple items
@@ -35,7 +38,7 @@ export default function FiltersModal({dash, dashboardId, dataset, filters, open,
   // }, [filters])
 
   async function handleFormFinish(values: FiltersFormValues) {
-    const newFilters = fromFormQueryBlock(dataset, values.filters)
+    const newFilters = fromFormQueryBlock(dataset, timeZone, values.filters)
     saveSessionFilters(dashboardId, dash.id, newFilters)
     onChange(newFilters)
     onClose()
@@ -85,7 +88,7 @@ export default function FiltersModal({dash, dashboardId, dataset, filters, open,
         <DashFilters
           namePrefix={['filters']}
           dataset={dataset}
-          initialBlock={toFormQueryBlock(dataset, filters)}
+          initialBlock={toFormQueryBlock(dataset, timeZone, filters)}
         />
       </Form>
     </Drawer>

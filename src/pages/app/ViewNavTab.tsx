@@ -6,7 +6,6 @@ import {Attribute, ItemData, ItemDataWrapper, RelType} from 'src/types/schema'
 import {useTranslation} from 'react-i18next'
 import AttributeFieldWrapper from './AttributeFieldWrapper'
 import {filterValues, parseValues} from 'src/util/form'
-import appConfig from 'src/config'
 import ViewNavTabHeader from './ViewNavTabHeader'
 import {
   ANTD_GRID_COLS,
@@ -21,13 +20,14 @@ import {
 } from 'src/config/constants'
 import RelationsDataGridWrapper from './RelationsDataGridWrapper'
 import {exportWinFeatures, exportWinStyle, renderValue} from 'src/util/export'
-import {useAuth, useFormAcl, useMutationManager, useQueryManager, useRegistry} from 'src/util/hooks'
+import {useAppProperties, useAuth, useFormAcl, useMutationManager, useQueryManager, useRegistry} from 'src/util/hooks'
 import {useMDIContext} from 'src/uiKit/MDITabs/hooks'
 import {generateKey} from 'src/util/mdi'
 import IconSuspense from 'src/uiKit/icons/IconSuspense'
 import {sortAttributes} from 'src/util/schema'
 import {ApiMiddlewareContext, ApiOperation, CustomComponentContext, CustomRendererContext} from 'src/extensions/plugins/types'
 import {pluginEngine} from 'src/extensions/plugins'
+import {clientConfig} from 'src/config'
 
 interface Props {
   data: ItemDataWrapper
@@ -43,6 +43,7 @@ function ViewNavTab({data: dataWrapper}: Props) {
   const isNew = !data?.id
   const isSystemItem = item.name === ITEM_TEMPLATE_ITEM_NAME || item.name === ITEM_ITEM_NAME
   const {t} = useTranslation()
+  const appProps = useAppProperties()
   const [loading, setLoading] = useState<boolean>(false)
   const [isLockedByMe, setLockedByMe] = useState<boolean>(!!me?.id && data?.lockedBy?.data?.id === me.id)
   const [viewState, setViewState] = useState<ViewState>(isNew ? ViewState.CREATE : (isLockedByMe ? (item.versioned ? ViewState.CREATE_VERSION : ViewState.UPDATE) : ViewState.VIEW))
@@ -134,7 +135,7 @@ function ViewNavTab({data: dataWrapper}: Props) {
 
     let parsedValues: ItemData
     try {
-      parsedValues = await parseValues(item, data, {...values, ...buffer})
+      parsedValues = await parseValues({item, data, values: {...values, ...buffer}, timezone: appProps.dateTime.timeZone})
       if (DEBUG)
         console.log('Parsed values', parsedValues)
     } catch (e: any) {
@@ -214,7 +215,7 @@ function ViewNavTab({data: dataWrapper}: Props) {
 
     setLoading(true)
     try {
-      const doCreateVersion = async () => await mutationManager.createVersion(item, data[item.idAttribute], values, majorRev, locale, appConfig.mutation.copyCollectionRelations)
+      const doCreateVersion = async () => await mutationManager.createVersion(item, data[item.idAttribute], values, majorRev, locale, appProps.mutation.copyCollectionRelations)
       let createdVersion: ItemData
       if (pluginEngine.hasApiMiddleware(item.name)) {
         const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values}
@@ -249,7 +250,7 @@ function ViewNavTab({data: dataWrapper}: Props) {
 
     setLoading(true)
     try {
-      const doCreateLocalization = async () => await mutationManager.createLocalization(item, data[item.idAttribute], values, locale, appConfig.mutation.copyCollectionRelations)
+      const doCreateLocalization = async () => await mutationManager.createLocalization(item, data[item.idAttribute], values, locale, appProps.mutation.copyCollectionRelations)
       let createdLocalization: ItemData
       if (pluginEngine.hasApiMiddleware(item.name)) {
         const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values}
@@ -319,7 +320,7 @@ function ViewNavTab({data: dataWrapper}: Props) {
         .map(attrName => {
           const attr = attributes[attrName]
           const {fieldWidth} = attr
-          const span = (fieldWidth == null || fieldWidth <= 0 || fieldWidth > ANTD_GRID_COLS) ? appConfig.ui.form.fieldWidth : fieldWidth
+          const span = (fieldWidth == null || fieldWidth <= 0 || fieldWidth > ANTD_GRID_COLS) ? appProps.ui.form.fieldWidth : fieldWidth
           const attributeContent = (
             <AttributeFieldWrapper
               key={attrName}
@@ -374,8 +375,8 @@ function ViewNavTab({data: dataWrapper}: Props) {
         notification.error({
           message: t('Localization search error'),
           description: e.message,
-          duration: appConfig.ui.notificationDuration,
-          placement: appConfig.ui.notificationPlacement
+          duration: clientConfig.notification.duration,
+          placement: clientConfig.notification.placement
         })
       } finally {
         setLoading(false)

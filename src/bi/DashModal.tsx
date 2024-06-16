@@ -6,7 +6,7 @@ import {fromFormQueryBlock, generateQueryBlock} from './util'
 import DashForm, {DashFormValues} from './DashForm'
 import {Column, Dashboard, Dataset, IDash, NamedColumn} from '../types/bi'
 import {useTranslation} from 'react-i18next'
-import {useModal} from '../util/hooks'
+import {useAppProperties, useModal} from '../util/hooks'
 import DashFieldModal from './DashFieldModal'
 
 interface DashFormModalProps {
@@ -19,7 +19,14 @@ interface DashFormModalProps {
   onClose: () => void
 }
 
-const mapDashValues = (dash: IDash, values: DashFormValues, dataset?: Dataset): IDash => ({
+interface MapDashValuesParams {
+  dash: IDash
+  values: DashFormValues
+  dataset?: Dataset  
+  timezone: string
+}
+
+const mapDashValues = ({dash, values, dataset, timezone}: MapDashValuesParams): IDash => ({
   ...dash,
   name: values.name,
   dataset: values.dataset,
@@ -29,13 +36,15 @@ const mapDashValues = (dash: IDash, values: DashFormValues, dataset?: Dataset): 
   optValues: values.optValues,
   relatedDashboardId: values.relatedDashboardId,
   refreshIntervalSeconds: values.refreshIntervalSeconds,
-  defaultFilters: dataset == null ? generateQueryBlock() : fromFormQueryBlock(dataset, values.defaultFilters)
+  defaultFilters: dataset == null ? generateQueryBlock() : fromFormQueryBlock(dataset, timezone, values.defaultFilters)
 })
 
 let customFieldCounter: number = 0
 
 export default function DashModal({dash, datasetMap, dashboards, canEdit, open, onChange, onClose}: DashFormModalProps) {
   const {t} = useTranslation()
+  const appProps = useAppProperties()
+  const {timeZone} = appProps.dateTime
   const [form] = Form.useForm()
   const [selectedDataset, setSelectedDataset] = useState<Dataset | undefined>(datasetMap[dash.dataset ?? ''])
   const allFields = useMemo(() => ({...selectedDataset?.spec.columns ?? {}, ...dash.fields}), [selectedDataset?.spec.columns, dash.fields])
@@ -59,7 +68,7 @@ export default function DashModal({dash, datasetMap, dashboards, canEdit, open, 
     if (dataset == null)
       return
 
-    onChange(mapDashValues(dash, values, dataset))
+    onChange(mapDashValues({dash, values, dataset, timezone: timeZone}))
     onClose()
   }
 

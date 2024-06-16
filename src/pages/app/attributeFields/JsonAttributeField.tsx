@@ -5,7 +5,7 @@ import {useTranslation} from 'react-i18next'
 import {AttributeFieldProps} from '.'
 import {FieldType} from 'src/types'
 import {generateKey} from 'src/util/mdi'
-import {useItemAcl, useProperty} from 'src/util/hooks'
+import {useAppProperties, useItemAcl} from 'src/util/hooks'
 import {Expandable} from 'src/uiKit/Expandable/Expandable'
 import Editor from 'src/uiKit/Editor/Editor'
 import {EditorMode} from 'src/uiKit/Editor/constants'
@@ -22,7 +22,8 @@ const JsonAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, form, a
   const uniqueKey = generateKey(dataWrapper)
   const {item, data} = dataWrapper
   const {t} = useTranslation()
-  const editorHeight = useProperty('ui.form.editorHeight') as string
+  const appProps = useAppProperties()
+  const {editorHeight} = appProps.ui.form
   const [height, setHeight] = useState(editorHeight)
   const acl = useItemAcl(item, data)
   const canEdit = useMemo(

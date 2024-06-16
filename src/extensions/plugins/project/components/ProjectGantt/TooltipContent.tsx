@@ -4,8 +4,8 @@ import {DateTime} from 'luxon'
 
 import styles from './TooltipContent.module.css'
 import {useTranslation} from 'react-i18next'
-import appConfig from '../../../../../config'
-import {UTC} from '../../../../../config/constants'
+import {UTC} from 'src/config/constants'
+import {useAppProperties} from 'src/util/hooks'
 
 interface TooltipContentProps {
     task: GanttTask
@@ -13,14 +13,14 @@ interface TooltipContentProps {
     fontFamily: string
 }
 
-const {luxonDisplayDateTimeFormatString} = appConfig.dateTime
-
 const TooltipContent: FC<TooltipContentProps> = ({ task, fontSize, fontFamily }) => {
   const style = {
     fontSize,
     fontFamily
   }
   const {t} = useTranslation()
+  const appProps = useAppProperties()
+  const {luxonDisplayDateTimeFormatString} = appProps.dateTime
   const start = DateTime.fromJSDate(task.start, {zone: UTC})
   const end = DateTime.fromJSDate(task.end, {zone: UTC})
 

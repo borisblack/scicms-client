@@ -15,7 +15,7 @@ import {processLocal} from 'src/util/datagrid'
 import AttributeForm from './AttributeForm'
 import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design/icons'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
-import {useItemAcl, useRegistry} from 'src/util/hooks'
+import {useAppProperties, useItemAcl, useRegistry} from 'src/util/hooks'
 import {getAttributeColumns, getHiddenAttributeColumns} from './attributeColumns'
 import {NamedAttribute} from './types'
 import {CustomComponentContext} from 'src/extensions/plugins/types'
@@ -43,10 +43,13 @@ export function Attributes({data: dataWrapper, buffer, onBufferChange}: CustomCo
   const {itemTemplates} = useRegistry()
   const isNew = !data?.id
   const {t} = useTranslation()
+  const appProps = useAppProperties()
+  const defaultColWidth = appProps.ui.dataGrid.colWidth
+  const {minPageSize, maxPageSize} = appProps.query
   const [version, setVersion] = useState<number>(0)
   const acl = useItemAcl(item, data)
   const isCoreItem = useMemo(() => data?.core ?? false, [data?.core])
-  const columns = useMemo(() => getAttributeColumns(isCoreItem), [isCoreItem])
+  const columns = useMemo(() => getAttributeColumns(isCoreItem, defaultColWidth), [isCoreItem, defaultColWidth])
   const hiddenColumns = useMemo(() => getHiddenAttributeColumns(), [])
   const spec: ItemSpec = useMemo(() => buffer.spec ?? data?.spec ?? {}, [buffer.spec, data?.spec])
 
@@ -88,8 +91,8 @@ export function Attributes({data: dataWrapper, buffer, onBufferChange}: CustomCo
   }, [onBufferChange])
 
   const handleRequest = useCallback(async (params: RequestParams) => {
-    setFilteredData(processLocal(namedAttributes, params))
-  }, [namedAttributes])
+    setFilteredData(processLocal({data: namedAttributes, params, minPageSize, maxPageSize}))
+  }, [namedAttributes, minPageSize, maxPageSize])
 
   const openRow = useCallback((row: Row<NamedAttribute>) => {
     setSelectedAttribute(row.original)

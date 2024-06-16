@@ -4,18 +4,20 @@ import {useTranslation} from 'react-i18next'
 import dayjs, {Dayjs} from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import {AttributeFieldProps} from '.'
-import appConfig from 'src/config'
 import {FieldType} from 'src/types'
 import styles from './AttributeField.module.css'
 import {UTC} from 'src/config/constants'
 import {generateKey} from 'src/util/mdi'
+import {useAppProperties} from 'src/util/hooks'
 
 dayjs.extend(timezone)
 
 const FormItem = Form.Item
-const {momentDisplayDateTimeFormatString} = appConfig.dateTime
 
 const DateTimeAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, form, attrName, attribute, value}) => {
+  const appProps = useAppProperties()
+  const {momentDisplayDateTimeFormatString} = appProps.dateTime
+
   if (attribute.type !== FieldType.datetime && attribute.type !== FieldType.timestamp)
     throw new Error('Illegal attribute')
 

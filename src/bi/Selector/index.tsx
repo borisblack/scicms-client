@@ -5,7 +5,7 @@ import {ClearOutlined, DeleteOutlined, EditOutlined, SettingOutlined} from '@ant
 import {PageHeader} from '@ant-design/pro-layout'
 
 import {Dataset, IDash, ISelector} from 'src/types/bi'
-import {useModal} from 'src/util/hooks'
+import {useAppProperties, useModal} from 'src/util/hooks'
 import SelectorModal from '../SelectorModal'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
 import styles from './Selector.module.css'
@@ -26,6 +26,8 @@ interface SelectorProps {
 
 export default function Selector({selector, height, datasetMap, dashes, canEdit, readOnly, onLockChange, onChange, onDelete}: SelectorProps) {
   const {t} = useTranslation()
+  const appProps = useAppProperties()
+  const {timeZone} = appProps.dateTime
   const [selectorValueForm] = Form.useForm()
   const {show: showSelectorModal, close: closeSelectorModal, modalProps: selectorModalProps} = useModal()
 
@@ -40,7 +42,7 @@ export default function Selector({selector, height, datasetMap, dashes, canEdit,
   }
 
   function handleSelectorValueFormFinish(values: SelectorValueFormValues) {
-    const filter = fromFormSelectorFilter(values.selectorFilter)
+    const filter = fromFormSelectorFilter(values.selectorFilter, timeZone)
     onChange({
       ...selector,
       value: filter.value
@@ -113,7 +115,7 @@ export default function Selector({selector, height, datasetMap, dashes, canEdit,
         form={selectorValueForm}
         size="small"
         layout="vertical"
-        initialValues={{selectorFilter: toFormSelectorFilter(selector)}}
+        initialValues={{selectorFilter: toFormSelectorFilter(selector, timeZone)}}
         onFinish={handleSelectorValueFormFinish}
       >
         <SelectorValue

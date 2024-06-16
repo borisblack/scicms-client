@@ -8,13 +8,14 @@ import timezone from 'dayjs/plugin/timezone'
 import type {PropertyValueProps} from './types'
 import {FieldType} from 'src/types'
 import {MOMENT_ISO_TIME_FORMAT_STRING, UTC} from 'src/config/constants'
-import appConfig from 'src/config'
+import {useAppProperties} from 'src/util/hooks'
 
 dayjs.extend(timezone)
 
-const {momentDisplayTimeFormatString} = appConfig.dateTime
-
 export const TimePropertyValue: FC<PropertyValueProps> = ({type, value, canEdit, onChange}) => {
+  const appProps = useAppProperties()
+  const {momentDisplayTimeFormatString} = appProps.dateTime
+
   if (type !== FieldType.time)
     throw new Error('Illegal type.')
 

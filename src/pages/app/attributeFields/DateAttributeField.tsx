@@ -3,18 +3,20 @@ import {useTranslation} from 'react-i18next'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import {DatePicker, Form} from 'antd'
-import appConfig from 'src/config'
 import {FieldType} from 'src/types'
 import {AttributeFieldProps} from '.'
 import {generateKey} from 'src/util/mdi'
 import styles from './AttributeField.module.css'
+import {useAppProperties} from 'src/util/hooks'
 
 dayjs.extend(utc)
 
 const FormItem = Form.Item
-const {momentDisplayDateFormatString} = appConfig.dateTime
 
 const DateAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrName, attribute, value}) => {
+  const appProps = useAppProperties()
+  const {momentDisplayDateFormatString} = appProps.dateTime
+
   if (attribute.type !== FieldType.date)
     throw new Error('Illegal attribute')
 

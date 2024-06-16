@@ -6,7 +6,6 @@ import {DateTime} from 'luxon'
 
 import {FieldType} from '../types'
 import {Attribute, Item, ItemData, Media, RelType} from '../types/schema'
-import appConfig from '../config'
 import {DataWithPagination, RequestParams} from '../uiKit/DataGrid'
 import QueryManager, {ExtRequestParams, ItemFiltersInput} from '../services/query'
 import {ACCESS_ITEM_NAME, FILENAME_ATTR_NAME, MASK_ATTR_NAME, MEDIA_ITEM_NAME, UTC} from '../config/constants'
@@ -16,22 +15,63 @@ import {download} from '../services/media'
 import {ItemMap} from '../services/item'
 import {sortAttributes} from './schema'
 
+interface GetColumnsParams {
+  items: ItemMap
+  item: Item
+  defaultColWidth: number
+  maxTextLength: number
+  luxonDisplayDateFormatString: string
+  luxonDisplayTimeFormatString: string
+  luxonDisplayDateTimeFormatString: string
+  onOpenItem: (item: Item, id: string) => void
+}
+
+interface RenderCellParams {
+  items: ItemMap
+  item: Item
+  data: ItemData
+  attrName: string
+  attribute: Attribute
+  value: any
+  maxTextLength: number
+  luxonDisplayDateFormatString: string
+  luxonDisplayTimeFormatString: string
+  luxonDisplayDateTimeFormatString: string
+  onOpenItem: (item: Item, id: string) => void
+}
+
+interface ProcessLocalParams {
+  data: any[]
+  params: RequestParams
+  minPageSize: number
+  maxPageSize: number
+}
+
+interface PaginateLocalParams {
+  data: any[]
+  page: number
+  pageSize: number
+  minPageSize: number
+  maxPageSize: number
+}
+
 const {Link} = Typography
-const {luxonDisplayDateFormatString, luxonDisplayTimeFormatString, luxonDisplayDateTimeFormatString} = appConfig.dateTime
 const columnHelper = createColumnHelper<any>()
 
-export function getInitialData<T>(): DataWithPagination<T>{
+export function getInitialData<T>(pageSize: number): DataWithPagination<T>{
   return {
     data: [],
     pagination: {
       page: 1,
-      pageSize: appConfig.query.defaultPageSize,
+      pageSize,
       total: 0
     }
   }
 }
 
-export function getColumns(items: ItemMap, item: Item, onOpenItem: (item: Item, id: string) => void): ColumnDef<ItemData, any>[] {
+export function getColumns({
+  items, item, defaultColWidth, maxTextLength, luxonDisplayDateFormatString, luxonDisplayTimeFormatString, luxonDisplayDateTimeFormatString, onOpenItem
+}: GetColumnsParams): ColumnDef<ItemData, any>[] {
   const columns: ColumnDef<ItemData, any>[] = []
   const {attributes} = item.spec
   const sortedAttributes = sortAttributes(attributes)
@@ -41,8 +81,20 @@ export function getColumns(items: ItemMap, item: Item, onOpenItem: (item: Item, 
 
     const column = columnHelper.accessor(attrName, {
       header: i18n.t(attr.displayName) as string,
-      cell: info => renderCell(items, item, info.row.original, attrName, attr, info.getValue(), onOpenItem),
-      size: attr.colWidth ?? appConfig.ui.dataGrid.colWidth,
+      cell: info => renderCell({
+        items,
+        item,
+        data: info.row.original,
+        attrName,
+        attribute: attr,
+        value: info.getValue(),
+        maxTextLength,
+        luxonDisplayDateFormatString,
+        luxonDisplayTimeFormatString,
+        luxonDisplayDateTimeFormatString,
+        onOpenItem
+      }),
+      size: attr.colWidth ?? defaultColWidth,
       enableSorting: attr.type !== FieldType.text && attr.type !== FieldType.json && attr.type !== FieldType.array,
       enableColumnFilter: item.name !== ACCESS_ITEM_NAME || attrName !== MASK_ATTR_NAME
     })
@@ -53,15 +105,9 @@ export function getColumns(items: ItemMap, item: Item, onOpenItem: (item: Item, 
   return columns
 }
 
-const renderCell = (
-  items: ItemMap,
-  item: Item,
-  data: ItemData,
-  attrName: string,
-  attribute: Attribute,
-  value: any,
-  onOpenItem: (item: Item, id: string) => void
-): ReactElement | string | null => {
+const renderCell = ({
+  items, item, data, attrName, attribute, value, maxTextLength, luxonDisplayDateFormatString, luxonDisplayTimeFormatString, luxonDisplayDateTimeFormatString, onOpenItem
+}: RenderCellParams): ReactElement | string | null => {
   switch (attribute.type) {
     case FieldType.string:
       if (item.name === MEDIA_ITEM_NAME && attrName === FILENAME_ATTR_NAME && value != null) {
@@ -79,7 +125,7 @@ const renderCell = (
     case FieldType.enum:
       return value
     case FieldType.text:
-      return value ? _.truncate(value, {length: appConfig.ui.dataGrid.maxTextLength}) : value
+      return value ? _.truncate(value, {length: maxTextLength}) : value
     case FieldType.int:
       if (item.name === ACCESS_ITEM_NAME && attrName === MASK_ATTR_NAME && value != null) {
         const r = getBit(value, 0) ? 'R' : '-'
@@ -98,7 +144,7 @@ const renderCell = (
       return value
     case FieldType.json:
     case FieldType.array:
-      return value ? _.truncate(JSON.stringify(value), {length: appConfig.ui.dataGrid.maxTextLength}) : null
+      return value ? _.truncate(JSON.stringify(value), {length: maxTextLength}) : null
     case FieldType.bool:
       return <div className="text-centered"><Checkbox checked={value} /></div>
     case FieldType.date:
@@ -190,13 +236,13 @@ export async function findAllRelated(
   }
 }
 
-export function processLocal(data: any[], params: RequestParams): DataWithPagination<any> {
+export function processLocal({data, params, minPageSize, maxPageSize}: ProcessLocalParams): DataWithPagination<any> {
   const {sorting, filters, pagination} = params
   const {page, pageSize} = pagination
   const filtered = filterLocal(data, filters)
   const sorted = sortLocal(filtered, sorting)
 
-  return paginateLocal(sorted, page, pageSize)
+  return paginateLocal({data: sorted, page: page as number, pageSize: pageSize as number, minPageSize, maxPageSize})
 }
 
 function filterLocal(data: any[], filters: ColumnFiltersState): any[] {
@@ -277,8 +323,8 @@ function sortLocal(data: any[], sorting: SortingState): any[] {
   }
 }
 
-function paginateLocal(data: any[], page: number = 1, pageSize: number = appConfig.query.defaultPageSize): DataWithPagination<any> {
-  if (page < 1 && (pageSize < appConfig.query.minPageSize || pageSize > appConfig.query.maxPageSize))
+function paginateLocal({data, page, pageSize, minPageSize, maxPageSize}: PaginateLocalParams): DataWithPagination<any> {
+  if (page < 1 && (pageSize < minPageSize || pageSize > maxPageSize))
     throw new Error('Illegal argument')
 
   const total = data.length

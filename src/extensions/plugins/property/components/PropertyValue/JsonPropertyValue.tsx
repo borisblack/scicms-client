@@ -6,7 +6,7 @@ import {FieldType} from 'src/types'
 import Editor from 'src/uiKit/Editor'
 import {EditorMode} from 'src/uiKit/Editor/constants'
 import {Expandable} from 'src/uiKit/Expandable/Expandable'
-import {useProperty} from 'src/util/hooks'
+import {useAppProperties} from 'src/util/hooks'
 import './PropertyValue.css'
 
 const EXPANDED_EDITOR_HEIGHT = '90vh'
@@ -15,7 +15,8 @@ export const JsonPropertyValue: FC<PropertyValueProps> = ({type, value, canEdit,
   if (type !== FieldType.json && type !== FieldType.array)
     throw new Error('Illegal type.')
 
-  const editorHeight = useProperty('ui.form.editorHeight') as string
+  const appProps = useAppProperties()
+  const {editorHeight} = appProps.ui.form
   const [height, setHeight] = useState(editorHeight)
 
   function toggleExpanded(expanded: boolean) {

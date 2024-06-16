@@ -10,7 +10,6 @@ import * as DashboardService from 'src/services/dashboard'
 import {ViewType} from 'src/types'
 import {ItemDataWrapper} from 'src/types/schema'
 import {Dashboard, DashboardCategory, DashboardExtra} from 'src/types/bi'
-import biConfig from 'src/config/bi'
 import * as DashboardCategoryService from 'src/services/dashboard-category'
 import {DASHBOARD_ITEM_NAME, EMPTY_ARRAY} from 'src/config/constants'
 import MDITabs from 'src/uiKit/MDITabs'
@@ -20,17 +19,19 @@ import {useNewMDIContextRedux} from 'src/features/mdi/hooks'
 import IconSuspense from 'src/uiKit/icons/IconSuspense'
 import './Bi.css'
 import Navbar from 'src/features/registry/Navbar'
+import {useBiProperties} from 'src/bi/util/hooks'
 
 const {Content} = Layout
 
 function Bi() {
   const {t} = useTranslation()
   const {me, isExpired} = useAuth()
-  const {isInitialized, items: itemMap, initializeIfNeeded, reset: resetRegistry} = useRegistry()
+  const {isInitialized, items: itemMap, initializeIfNeeded} = useRegistry()
   const mdiContext = useNewMDIContextRedux<ItemDataWrapper>(EMPTY_ARRAY)
   const [dashboardMap, setDashboardMap] = useState<Record<string, Dashboard>>({})
   const [dashboardCategoryMap, setDashboardCategoryMap] = useState<Record<string, DashboardCategory>>({})
   const [loading, setLoading] = useState<boolean>(false)
+  const biProps = useBiProperties()
   const dashboardItem = itemMap[DASHBOARD_ITEM_NAME]
 
   useEffect(() => {
@@ -62,7 +63,7 @@ function Bi() {
         const dashboardsById: Record<string, Dashboard> = _.mapKeys(dashboardList, dashboard => dashboard.id)
         setDashboardMap(dashboardsById)
 
-        if (biConfig.openFirstDashboard) {
+        if (biProps.openFirstDashboard) {
           const publicData =
                         dashboardList.filter(dashboard => dashboard.isPublic /*&& dashboard.categories.data.length === 0*/)
 

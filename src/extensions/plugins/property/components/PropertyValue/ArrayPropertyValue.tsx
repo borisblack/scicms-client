@@ -3,12 +3,13 @@ import {useCallback, useMemo} from 'react'
 import {Input} from 'antd'
 
 import {FieldType} from 'src/types'
-import appConfig from 'src/config'
 import {PropertyValueProps} from './types'
+import {useAppProperties} from 'src/util/hooks'
 
 const {TextArea} = Input
 
 export const ArrayPropertyValue: FC<PropertyValueProps> = ({type, value, canEdit, onChange}) => {
+  const appProps = useAppProperties()
   if (type !== FieldType.array)
     throw new Error('Illegal type.')
 
@@ -31,7 +32,7 @@ export const ArrayPropertyValue: FC<PropertyValueProps> = ({type, value, canEdit
   return (
     <TextArea
       value={parsedValue}
-      rows={appConfig.ui.form.textAreaRows}
+      rows={appProps.ui.form.textAreaRows}
       disabled={!canEdit}
       onChange={handleChange}
     />

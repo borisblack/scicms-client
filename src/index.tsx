@@ -17,8 +17,8 @@ import {store} from './store'
 import reportWebVitals from './reportWebVitals'
 import {apolloClient} from './services'
 import i18n from './i18n'
-import config from './config'
 import routes from './routes'
+import {clientConfig} from './config'
 import 'antd/dist/reset.css'
 import './index.css'
 
@@ -30,7 +30,7 @@ root.render(
     <ApolloProvider client={apolloClient}>
       <I18nextProvider i18n={i18n}>
         <DndProvider backend={HTML5Backend}>
-          <ConfigProvider locale={config.antdLocale}>
+          <ConfigProvider locale={clientConfig.antdLocale}>
             <RouterProvider router={router}/>
           </ConfigProvider>
         </DndProvider>

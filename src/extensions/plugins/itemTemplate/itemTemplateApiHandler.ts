@@ -3,7 +3,6 @@ import {FlaggedResponse, ItemData, ItemTemplate, ItemTemplateModel} from 'src/ty
 import axios from 'axios'
 import {extractAxiosErrorMessage} from 'src/services'
 import QueryManager from 'src/services/query'
-import appConfig from 'src/config'
 import {ApiMiddlewareContext, ApiOperation} from '../types'
 
 export async function handleItemTemplateApiOperation(operation: ApiOperation, context: ApiMiddlewareContext, next: () => any) {
@@ -45,7 +44,7 @@ async function apply({items, item, values}: ApiMiddlewareContext): Promise<ItemD
 }
 
 const mapItemTemplate = (item: ItemTemplate): ItemTemplateModel => ({
-  coreVersion: appConfig.coreVersion,
+  coreVersion: 'v1',
   kind: ITEM_TEMPLATE_MODEL_KIND,
   metadata: {
     name: item.name,

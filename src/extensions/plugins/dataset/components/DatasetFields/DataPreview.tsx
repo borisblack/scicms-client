@@ -11,9 +11,8 @@ import {
   DataGrid
 } from 'src/uiKit/DataGrid'
 import {getColumns, getHiddenColumns, getInitialData, loadData} from 'src/bi/util/datagrid'
-import appConfig from 'src/config'
 import {Column, Dataset, ExecutionStatisticInfo} from 'src/types/bi'
-import {usePrevious} from 'src/util/hooks'
+import {useAppProperties, usePrevious} from 'src/util/hooks'
 import ExecutionStatisticModal from 'src/bi/ExecutionStatisticModal'
 
 interface DataPreviewProps {
@@ -28,10 +27,20 @@ export default function DataPreview(props: DataPreviewProps) {
   const {dataset, allFields, height} = props
   const prevProps = usePrevious(props)
   const {t} = useTranslation()
-  const columnsMemoized = useMemo(() => getColumns(allFields), [allFields])
+  const appProps = useAppProperties()
+  const {defaultPageSize} = appProps.query
+  const {luxonDisplayDateFormatString, luxonDisplayTimeFormatString, luxonDisplayDateTimeFormatString} = appProps.dateTime
+  const {colWidth: defaultColWidth} = appProps.ui.dataGrid
+  const columnsMemoized = useMemo(() => getColumns({
+    actualFields: allFields,
+    defaultColWidth,
+    luxonDisplayDateFormatString,
+    luxonDisplayTimeFormatString,
+    luxonDisplayDateTimeFormatString
+  }), [allFields, defaultColWidth, luxonDisplayDateFormatString, luxonDisplayDateTimeFormatString, luxonDisplayTimeFormatString])
   const hiddenColumnsMemoized = useMemo(() => getHiddenColumns(allFields), [allFields])
   const [loading, setLoading] = useState<boolean>(false)
-  const [data, setData] = useState<DataWithPagination<any>>(getInitialData())
+  const [data, setData] = useState<DataWithPagination<any>>(getInitialData(defaultPageSize))
   const [version, setVersion] = useState<number>(0)
   const [statistic, setStatistic] = useState<ExecutionStatisticInfo>()
   const [openStatisticModal, setOpenStatisticModal] = useState<boolean>(false)
@@ -97,7 +106,7 @@ export default function DataPreview(props: DataPreviewProps) {
         version={version}
         initialState={{
           hiddenColumns: hiddenColumnsMemoized,
-          pageSize: appConfig.query.defaultPageSize
+          pageSize: appProps.query.defaultPageSize
         }}
         height={height}
         toolbar={renderToolbar()}

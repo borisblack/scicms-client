@@ -11,11 +11,10 @@ import 'react-resizable/css/styles.css'
 import {DASHBOARD_ITEM_NAME, EMPTY_ARRAY} from 'src/config/constants'
 import {Dashboard, DashboardExtra, DashboardItemType, DashboardLayoutItem, IDash, IDashboardSpec, ISelector, IText, QueryOp} from 'src/types/bi'
 import {generateQueryBlock, printSingleQueryFilter} from '../util'
-import biConfig from 'src/config/bi'
 import DashWrapper from '../DashWrapper'
 import {useAcl} from 'src/util/hooks'
 import {generateKey} from 'src/util/mdi'
-import {useBI, useSelectors} from '../util/hooks'
+import {useBIData, useBiProperties, useSelectors} from '../util/hooks'
 import Text from '../Text'
 import Selector from '../Selector'
 import './DashboardSpec.css'
@@ -39,37 +38,18 @@ const initialSpec: () => IDashboardSpec = () => ({
 })
 let seqNum = 0
 
-const createLayoutItem = (type: DashboardItemType): DashboardLayoutItem => ({
-  id: uuidv4(),
-  type,
-  x: 0,
-  y: 0,
-  w: biConfig.cols / 2,
-  h: getDefaultLayoutItemHeight(type)
-})
-
-function getDefaultLayoutItemHeight(type: DashboardItemType) {
-  switch (type) {
-    case DashboardItemType.DASH:
-      return biConfig.defaultDashHeight
-    case DashboardItemType.SELECTOR:
-      return biConfig.defaultSelectorHeight
-    case DashboardItemType.TEXT:
-      return biConfig.defaultTextHeight
-    default:
-      return DEFAULT_LAYOUT_ITEM_HEIGHT
-  }
-}
-
 function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: DashboardSpecProps) {
   const {item, data, extra} = dataWrapper
   if (item.name !== DASHBOARD_ITEM_NAME)
     throw new Error('Illegal argument')
 
+  const biProps = useBiProperties()
+  const {dateFormatString, timeFormatString, dateTimeFormatString} = biProps.dateTime
+  const {rowHeight, fractionDigits, cols: defaultCols, defaultDashHeight, defaultSelectorHeight, defaultSelectorType, defaultTextHeight, defaultDashType, defaultRefreshIntervalSeconds} = biProps
   const uniqueKey = generateKey(dataWrapper)
   const {t} = useTranslation()
   const acl = useAcl(item, data)
-  const {datasets, dashboards} = useBI({withDatasets: true, withDashboards: true})
+  const {datasets, dashboards} = useBIData({withDatasets: true, withDashboards: true})
   const datasetMap = useMemo(() => _.mapKeys(datasets, ds => ds.name), [datasets])
   const spec: IDashboardSpec = useMemo(() => buffer.spec ?? data?.spec ?? initialSpec(), [buffer.spec, data?.spec])
   const dashboardLayout: DashboardLayoutItem[] = useMemo(() => spec.layout ?? spec.dashes.map(dash => ({
@@ -101,16 +81,38 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
   if (isNew)
     return null
 
+  const createLayoutItem = (type: DashboardItemType): DashboardLayoutItem => ({
+    id: uuidv4(),
+    type,
+    x: 0,
+    y: 0,
+    w: defaultCols / 2,
+    h: getDefaultLayoutItemHeight(type)
+  })
+  
+  function getDefaultLayoutItemHeight(type: DashboardItemType) {
+    switch (type) {
+      case DashboardItemType.DASH:
+        return defaultDashHeight
+      case DashboardItemType.SELECTOR:
+        return defaultSelectorHeight
+      case DashboardItemType.TEXT:
+        return defaultTextHeight
+      default:
+        return DEFAULT_LAYOUT_ITEM_HEIGHT
+    }
+  }
+
   function handleDashAdd() {
     const newLayoutItem = createLayoutItem(DashboardItemType.DASH)
     const newDash: IDash = {
       id: newLayoutItem.id,
       name: `${t('Dash')} ${(++seqNum).toString()}`,
-      type: biConfig.defaultDashType,
+      type: defaultDashType,
       fields: {},
       optValues: {},
       defaultFilters: generateQueryBlock(),
-      refreshIntervalSeconds: biConfig.defaultRefreshIntervalSeconds
+      refreshIntervalSeconds: defaultRefreshIntervalSeconds
     }
 
     const newSpec: IDashboardSpec = {
@@ -157,7 +159,7 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
     const newSelector: ISelector = {
       id: newLayoutItem.id,
       name: `${t('Selector')} ${(++seqNum).toString()}`,
-      type: biConfig.defaultSelectorType,
+      type: defaultSelectorType,
       field: '',
       op: QueryOp.$eq,
       links: []
@@ -360,7 +362,18 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
   return (
     <>
       {extra && extra.queryFilter && (
-        <Alert style={{marginBottom: 16}} message={t('Filtered')} description={printSingleQueryFilter(extra.queryFilter)} type="warning"/>
+        <Alert
+          style={{marginBottom: 16}}
+          message={t('Filtered')}
+          description={printSingleQueryFilter({
+            queryFilter: extra.queryFilter,
+            dateFormatString,
+            timeFormatString,
+            dateTimeFormatString,
+            fractionDigits
+          })}
+          type="warning"
+        />
       )}
 
       {!readOnly && (
@@ -394,8 +407,8 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
         <ReactGridLayout
           className={styles.layout}
           layout={dashboardLayout.map(layoutItem => ({...layoutItem, i: layoutItem.id}))}
-          cols={biConfig.cols}
-          rowHeight={biConfig.rowHeight}
+          cols={defaultCols}
+          rowHeight={rowHeight}
           draggableCancel=".no-drag"
           isDraggable={isGridEditable}
           isDroppable={isGridEditable}

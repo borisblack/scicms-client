@@ -1,12 +1,11 @@
 import {ColumnDef, createColumnHelper} from '@tanstack/react-table'
 import {Checkbox} from 'antd'
 import i18n from 'src/i18n'
-import appConfig from 'src/config'
 import {NamedIndex} from './types'
 
 const columnHelper = createColumnHelper<NamedIndex>()
 
-export const getIndexColumns = (): ColumnDef<NamedIndex, any>[] =>
+export const getIndexColumns = (defaultColWidth: number): ColumnDef<NamedIndex, any>[] =>
   [
         columnHelper.accessor('name', {
           header: i18n.t('Name'),
@@ -23,7 +22,7 @@ export const getIndexColumns = (): ColumnDef<NamedIndex, any>[] =>
         columnHelper.accessor('unique', {
           header: i18n.t('Unique'),
           cell: info => <Checkbox checked={info.getValue()}/>,
-          size: appConfig.ui.dataGrid.colWidth,
+          size: defaultColWidth,
           enableSorting: true
         }) as ColumnDef<NamedIndex, boolean>
   ]

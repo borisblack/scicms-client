@@ -4,18 +4,20 @@ import {Checkbox, Form, TimePicker} from 'antd'
 import dayjs, {Dayjs} from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import {AttributeFieldProps} from './index'
-import appConfig from 'src/config'
 import {FieldType} from 'src/types'
 import {MOMENT_ISO_TIME_FORMAT_STRING, UTC} from 'src/config/constants'
 import {generateKey} from 'src/util/mdi'
 import styles from './AttributeField.module.css'
+import {useAppProperties} from 'src/util/hooks'
 
 dayjs.extend(timezone)
 
 const FormItem = Form.Item
-const {momentDisplayTimeFormatString} = appConfig.dateTime
 
 const TimeAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, form, attrName, attribute, value}) => {
+  const appProps = useAppProperties()
+  const {momentDisplayTimeFormatString} = appProps.dateTime
+
   if (attribute.type !== FieldType.time)
     throw new Error('Illegal attribute')
 

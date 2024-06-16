@@ -10,8 +10,7 @@ import {DATASET_ITEM_NAME, MAIN_DATASOURCE_NAME} from 'src/config/constants'
 import {Pagination as IPagination} from 'src/types'
 import {Dataset, DatasetSources, DatasetSpec, Table} from 'src/types/bi'
 import {loadDatasourceTables} from 'src/services/datasource'
-import appConfig from 'src/config'
-import {useAcl} from 'src/util/hooks'
+import {useAcl, useAppProperties} from 'src/util/hooks'
 import TableItem from './TableItem'
 import SourcesDesigner from './SourcesDesigner'
 import FieldTypeIcon from 'src/components/FieldTypeIcon'
@@ -30,12 +29,6 @@ const DEBOUNCE_WAIT_INTERVAL = 500
 const {Search} = Input
 const {Text} = Typography
 
-const splitConfig = appConfig.ui.split
-const defaultPagination: IPagination = {
-  pageSize: appConfig.query.defaultPageSize,
-  total: 0
-}
-
 const initialSources: DatasetSources = {
   mainTable: null,
   joinedTables: []
@@ -48,6 +41,7 @@ export function Sources({form, data: dataWrapper, buffer, onBufferChange}: Custo
     throw new Error('Illegal argument')
 
   const {t} = useTranslation()
+  const appProps = useAppProperties()
   const acl = useAcl(item, data)
   const datasource = Form.useWatch('datasource', form as FormInstance)
   const spec: DatasetSpec = useMemo(() => buffer.spec ?? {}, [buffer])
@@ -56,6 +50,11 @@ export function Sources({form, data: dataWrapper, buffer, onBufferChange}: Custo
   const [tables, setTables] = useState<Table[]>([])
   const [schema, setSchema] = useState<string>()
   const [q, setQ] = useState<string>()
+  const splitConfig = appProps.ui.split
+  const defaultPagination: IPagination = {
+    pageSize: appProps.query.defaultPageSize,
+    total: 0
+  }
   const [pagination, setPagination] = useState<IPagination>(defaultPagination)
   const editorValue = useMemo(() => buffer.tableName ? `SELECT * FROM ${buffer.tableName}` : (buffer.query ?? ''), [buffer.query, buffer.tableName])
   const useDesigner: boolean = useMemo(() => spec.useDesigner ?? false /*!editorValue*/, [/*editorValue,*/ spec.useDesigner])
@@ -180,7 +179,7 @@ export function Sources({form, data: dataWrapper, buffer, onBufferChange}: Custo
           <div className={styles.pagination}>
             <Pagination
               current={pagination.page}
-              defaultPageSize={appConfig.query.defaultPageSize}
+              defaultPageSize={appProps.query.defaultPageSize}
               pageSize={pagination.pageSize}
               pageSizeOptions={['10', '20', '50', '100']}
               showSizeChanger

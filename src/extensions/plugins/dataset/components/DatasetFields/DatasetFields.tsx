@@ -13,12 +13,11 @@ import {
   type RequestParams,
   DataGrid
 } from 'src/uiKit/DataGrid'
-import appConfig from 'src/config'
 import {getInitialData, processLocal} from 'src/util/datagrid'
 import {Column, Dataset, DatasetSpec} from 'src/types/bi'
 import {NamedColumn} from 'src/types/bi'
 import {getColumns} from './fieldsDatagrid'
-import {useAcl} from 'src/util/hooks'
+import {useAcl, useAppProperties} from 'src/util/hooks'
 import DataPreview from './DataPreview'
 import DatasetFieldModal from './DatasetFieldModal'
 import {CustomComponentContext} from 'src/extensions/plugins/types'
@@ -27,7 +26,6 @@ const MIN_TOP_PANE_SIZE = 400
 const MIN_BOTTOM_PANE_SIZE = 400
 
 const {Title} = Typography
-const splitConfig = appConfig.ui.split
 
 const toNamedFields = (fields: Record<string, Column>): NamedColumn[] =>
   Object.keys(fields).map(colName => ({name: colName, ...fields[colName]}))
@@ -41,12 +39,15 @@ export function DatasetFields({data: dataWrapper, buffer, onBufferChange}: Custo
     throw new Error('Illegal argument')
 
   const {t} = useTranslation()
+  const appProps = useAppProperties()
+  const splitConfig = appProps.ui.split
+  const {defaultPageSize, minPageSize, maxPageSize} = appProps.query
   const acl = useAcl(item, data)
   const spec: DatasetSpec = useMemo(() => buffer.spec ?? {}, [buffer])
   const allFields = useMemo(() => spec.columns ?? {}, [spec])
   const ownFields = useMemo(() => _.pickBy(allFields, col => !col.custom), [allFields])
   const [namedFields, setNamedFields] = useState(toNamedFields(allFields))
-  const [filteredData, setFilteredData] = useState<DataWithPagination<NamedColumn>>(getInitialData())
+  const [filteredData, setFilteredData] = useState<DataWithPagination<NamedColumn>>(getInitialData(defaultPageSize))
   const [version, setVersion] = useState<number>(0)
   const [openFieldModal, setOpenFieldModal] = useState<boolean>(false)
   const [currentField, setCurrentField] = useState<NamedColumn | undefined>()
@@ -69,7 +70,7 @@ export function DatasetFields({data: dataWrapper, buffer, onBufferChange}: Custo
 
   const handleRequest = (params: RequestParams) => {
     setFilteredData(
-      processLocal(namedFields, params)
+      processLocal({data: namedFields, params, minPageSize, maxPageSize})
     )
   }
 
@@ -189,6 +190,7 @@ export function DatasetFields({data: dataWrapper, buffer, onBufferChange}: Custo
   const gridColumns = getColumns({
     ownColumns: ownFields,
     canEdit: acl.canWrite,
+    defaultColWidth: appProps.ui.dataGrid.colWidth,
     onClick: handleFieldEdit,
     onChange: handleFieldChange
   })
@@ -210,7 +212,7 @@ export function DatasetFields({data: dataWrapper, buffer, onBufferChange}: Custo
             data={filteredData}
             initialState={{
               hiddenColumns: [],
-              pageSize: appConfig.query.defaultPageSize
+              pageSize: appProps.query.defaultPageSize
             }}
             title={t('Fields')}
             height={MIN_TOP_PANE_SIZE}

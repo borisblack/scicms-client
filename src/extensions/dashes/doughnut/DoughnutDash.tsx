@@ -7,10 +7,8 @@ import {v4 as uuidv4} from 'uuid'
 import {DashEventHandler, DashRenderContext} from '..'
 import {defaultDashColors, columnType, formatValue, toPercent} from 'src/bi/util'
 import {LegendPosition} from '../util'
-import biConfig from 'src/config/bi'
 import * as RulesService from 'src/services/rules'
-import {FieldType} from 'src/types'
-import {useBI} from 'src/bi/util/hooks'
+import {useBIData, useBiProperties} from 'src/bi/util/hooks'
 import {handleDashClick} from '../util/antdPlot'
 
 export interface DoughnutDashOptions {
@@ -23,12 +21,8 @@ export interface DoughnutDashOptions {
     rules?: string
 }
 
-const {locale, fractionDigits, percentFractionDigits, dash: dashConfig} = biConfig
-const legendConfig = dashConfig?.all?.legend
-const statisticConfig = dashConfig?.doughnut?.statistic
-
 export default function DoughnutDash({dataset, dash, data, onDashClick}: DashRenderContext) {
-  const {openDashboard} = useBI()
+  const {openDashboard} = useBIData()
   const optValues = dash.optValues as DoughnutDashOptions
   const {relatedDashboardId} = dash
   const {
@@ -42,7 +36,13 @@ export default function DoughnutDash({dataset, dash, data, onDashClick}: DashRen
   const colorField = Array.isArray(optValues.colorField) ? optValues.colorField[0] : optValues.colorField
   const fieldRules = useMemo(() => RulesService.parseRules(rules), [rules])
   const seriesData = colorField ? _.uniqBy(data, colorField) : []
-  const seriesColors = colorField ? RulesService.getSeriesColors(fieldRules, colorField, seriesData, defaultDashColors(seriesData.length)) : []
+  const biProps = useBiProperties()
+  const {colors10, colors20} = biProps.dash.all
+  const {dateFormatString, timeFormatString, dateTimeFormatString} = biProps.dateTime
+  const {fractionDigits, percentFractionDigits, locale} = biProps
+  const legendConfig = biProps.dash.all.legend
+  const statisticConfig = biProps.dash.doughnut?.statistic
+  const seriesColors = colorField ? RulesService.getSeriesColors(fieldRules, colorField, seriesData, defaultDashColors(seriesData.length, colors10, colors20)) : []
 
   if (!angleField)
     return <Alert message="angleField attribute not specified" type="error"/>
@@ -84,8 +84,8 @@ export default function DoughnutDash({dataset, dash, data, onDashClick}: DashRen
     label: {
       type: 'inner',
       offset: '-50%',
-      content: ({ percent }) => `${toPercent(percent)}%`,
-      style: dashConfig?.doughnut?.labelStyle
+      content: ({ percent }) => `${toPercent(percent, percentFractionDigits)}%`,
+      style: biProps.dash.doughnut?.labelStyle
     },
     statistic,
     interactions: [{
@@ -97,11 +97,11 @@ export default function DoughnutDash({dataset, dash, data, onDashClick}: DashRen
     meta: {
       [angleField]: {
         alias: angleColumn.alias || angleField,
-        formatter: (value: any) => formatValue(value, columnType(angleColumn))
+        formatter: (value: any) => formatValue({value, type: columnType(angleColumn), dateFormatString, timeFormatString, dateTimeFormatString, fractionDigits})
       },
       [colorField]: {
         alias: colorColumn.alias || colorField,
-        formatter: (value: any) => formatValue(value, columnType(colorColumn))
+        formatter: (value: any) => formatValue({value, type: columnType(colorColumn), dateFormatString, timeFormatString, dateTimeFormatString, fractionDigits})
       }
     },
     color: seriesColors,

@@ -9,7 +9,7 @@ import {FieldType} from 'src/types'
 import {generateKey} from 'src/util/mdi'
 import {Expandable} from 'src/uiKit/Expandable/Expandable'
 import Editor from 'src/uiKit/Editor'
-import {useItemAcl, useProperty} from 'src/util/hooks'
+import {useAppProperties, useItemAcl} from 'src/util/hooks'
 import {EditorMode} from 'src/uiKit/Editor/constants'
 import styles from './AttributeField.module.css'
 
@@ -25,7 +25,8 @@ const TextAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, form, a
   const uniqueKey = generateKey(dataWrapper)
   const {item, data} = dataWrapper
   const {t} = useTranslation()
-  const editorHeight = useProperty('ui.form.editorHeight') as string
+  const appProps = useAppProperties()
+  const {editorHeight} = appProps.ui.form
   const [height, setHeight] = useState(editorHeight)
   const acl = useItemAcl(item, data)
   const canEdit = useMemo(

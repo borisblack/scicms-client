@@ -5,7 +5,6 @@ import {ITEM_ITEM_NAME, ITEM_MODEL_KIND, MAIN_DATASOURCE_NAME} from 'src/config/
 import QueryManager from 'src/services/query'
 import {extractAxiosErrorMessage} from 'src/services'
 import {FlaggedResponse, Item, ItemData, ItemModel} from 'src/types/schema'
-import appConfig from 'src/config'
 import {ApiMiddlewareContext, ApiOperation} from '../types'
 
 export async function handleItemApiOperation(operation: ApiOperation, context: ApiMiddlewareContext, next: () => any) {
@@ -48,7 +47,7 @@ async function apply({items, item, values}: ApiMiddlewareContext): Promise<ItemD
 }
 
 const mapItem = (item: Item): ItemModel => ({
-  coreVersion: appConfig.coreVersion,
+  coreVersion: 'v1',
   kind: ITEM_MODEL_KIND,
   includeTemplates: item.includeTemplates,
   metadata: {

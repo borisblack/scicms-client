@@ -4,14 +4,15 @@ import {useTranslation} from 'react-i18next'
 import {Form, Input} from 'antd'
 import {AttributeFieldProps} from '.'
 import {FieldType} from 'src/types'
-import appConfig from 'src/config'
 import {generateKey} from 'src/util/mdi'
 import styles from './AttributeField.module.css'
+import {useAppProperties} from 'src/util/hooks'
 
 const FormItem = Form.Item
 const {TextArea} = Input
 
 const ArrayAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrName, attribute, value}) => {
+  const appProps = useAppProperties()
   if (attribute.type !== FieldType.array)
     throw new Error('Illegal attribute')
 
@@ -54,7 +55,7 @@ const ArrayAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrNa
     >
       <TextArea
         id={`${uniqueKey}#${attrName}`}
-        rows={appConfig.ui.form.textAreaRows}
+        rows={appProps.ui.form.textAreaRows}
         {...additionalProps}
       />
     </FormItem>

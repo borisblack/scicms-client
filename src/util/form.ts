@@ -15,13 +15,10 @@ import {
   STATE_ATTR_NAME,
   UTC
 } from '../config/constants'
-import appConfig from '../config'
 import {tryParseJson} from './index'
 import {FormRule} from 'antd'
 import util from 'util'
 import i18n from '../i18n'
-
-const {timeZone} = appConfig.dateTime
 
 interface FilteredItemData {
     majorRev?: string
@@ -29,12 +26,28 @@ interface FilteredItemData {
     state?: string | null
 }
 
+interface ParseValuesParams {
+  item: Item
+  data: ItemData | null | undefined
+  values: any
+  timezone: string
+}
+
+interface ParseValueParams {
+  item: Item
+  attrName: string
+  attribute: Attribute
+  data: ItemData | null | undefined
+  values: any
+  timezone: string
+}
+
 const regExpMessages: Record<string, string> = {
   [LETTER_NO_WHITESPACE_PATTERN.toString()]: LETTER_NO_WHITESPACE_MESSAGE,
   [LOWERCASE_NO_WHITESPACE_PATTERN.toString()]: LOWERCASE_NO_WHITESPACE_MESSAGE
 }
 
-export async function parseValues(item: Item, data: ItemData | null | undefined, values: any): Promise<ItemData> {
+export async function parseValues({item, data, values, timezone}: ParseValuesParams): Promise<ItemData> {
   const hiddenFields = Object.entries(item.spec.attributes)
     .filter(([attrName, attr]) => attr.fieldHidden && !attr.readOnly)
     .map(([attrName, attr]) => attrName)
@@ -62,13 +75,13 @@ export async function parseValues(item: Item, data: ItemData | null | undefined,
     if (value === undefined && attribute.type !== FieldType.media)
       continue
 
-    parsedValues[key] = await parseValue(item, key, attribute, data, values)
+    parsedValues[key] = await parseValue({item, attrName: key, attribute, data, values, timezone})
   }
 
   return parsedValues as ItemData
 }
 
-async function parseValue(item: Item, attrName: string, attribute: Attribute, data: ItemData | null | undefined, values: any): Promise<any> {
+async function parseValue({item, attrName, attribute, data, values, timezone}: ParseValueParams): Promise<any> {
   const value = values[attrName]
   switch (attribute.type) {
     case FieldType.date:
@@ -76,7 +89,7 @@ async function parseValue(item: Item, attrName: string, attribute: Attribute, da
     case FieldType.time:
       return parseTime(attrName, values)
     case FieldType.datetime:
-      return parseDateTime(attrName, values)
+      return parseDateTime(attrName, values, timezone)
     case FieldType.media:
       return await parseMedia(attrName, data, values)
     case FieldType.array:
@@ -101,7 +114,7 @@ function parseTime(attrName: string, values: any): string | null {
   return dt.toISOTime()
 }
 
-function parseDateTime(attrName: string, values: any): string | null {
+function parseDateTime(attrName: string, values: any, timezone: string): string | null {
   const value = values[attrName]
   if (!value)
     return null
@@ -109,7 +122,7 @@ function parseDateTime(attrName: string, values: any): string | null {
   const isChanged = values[`${attrName}.changed`]
   const iso = (value as Dayjs).toISOString()
   const dt = isChanged ? DateTime.fromISO(iso) : DateTime.fromISO(iso, {zone: UTC})
-  return dt.setZone(timeZone, {keepLocalTime: true}).toISO()
+  return dt.setZone(timezone, {keepLocalTime: true}).toISO()
 }
 
 async function parseMedia(attrName: string, data: ItemData | null | undefined, values: any): Promise<string | null> {
@@ -141,8 +154,8 @@ export function filterValues(values: FilteredItemData): ItemData {
   return filteredValues as ItemData
 }
 
-export const requiredFieldRule = (message?: string) => ({
-  required: true,
+export const requiredFieldRule = (required: boolean = true, message?: string) => ({
+  required,
   message: i18n.t(message ?? 'Required field')
 })
 

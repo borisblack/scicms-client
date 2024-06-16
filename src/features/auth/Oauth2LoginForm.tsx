@@ -44,7 +44,7 @@ function Oauth2LoginForm({oauth2Providers, onLogin}: Oauth2LoginFormProps) {
         <FormItem
           name="provider"
           initialValue={localStorage.getItem(OAUTH_PROVIDER_KEY) || undefined}
-          rules={[requiredFieldRule('Select provider')]}
+          rules={[requiredFieldRule(true, 'Select provider')]}
         >
           <Select
             placeholder={t('OAuth2 Provider')}

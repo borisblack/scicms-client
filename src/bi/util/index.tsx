@@ -27,12 +27,69 @@ import {
   TemporalUnit
 } from 'src/types/bi'
 import i18n from 'src/i18n'
-import appConfig from 'src/config'
-import biConfig from 'src/config/bi'
 import {extractSessionData} from 'src/util'
 import FieldTypeIcon from 'src/components/FieldTypeIcon'
 
-const {dash: dashConfig, dateTime: dateTimeConfig, fractionDigits, percentFractionDigits} = biConfig
+interface FormatParams {
+  dateFormatString: string
+  timeFormatString: string
+  dateTimeFormatString: string
+}
+
+interface FormatTemporalDisplayParams extends FormatParams {
+  temporal: string | null
+  temporalType: TemporalType
+}
+
+interface FormatValueParams extends FormatParams {
+  value: any
+  type: FieldType
+  fractionDigits: number
+}
+
+interface PrintQueryFilterParams extends FormatParams {
+  dataset: Dataset
+  filter: QueryFilter
+  timezone: string
+}
+
+interface PrintSingleQueryFilterParams extends FormatParams {
+  queryFilter: QueryFilter
+  fractionDigits: number
+}
+
+interface PrintQueryBlockParams extends FormatParams {
+  dataset: Dataset
+  queryBlock: QueryBlock
+  timezone: string
+}
+
+interface FormatTemporalIsoParams {
+  temporal: Dayjs | null
+  temporalType: TemporalType
+  timezone: string
+}
+
+interface ProcessDatasetQueryFiltersParams {
+  dataset: Dataset
+  queryFilters: QueryFilter[]
+  toForm: boolean
+  timezone: string
+}
+
+interface ProcessQueryFilterParams {
+  type: ColumnType
+  filter: QueryFilter
+  toForm: boolean
+  timezone: string
+}
+
+interface ParseFilterValueParams {
+  type: FieldType
+  filter: QueryFilter | SelectorFilter
+  timezone: string
+}
+
 const dateTimeRegExp = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.000)?(Z|([-+]00:00))?$/
 const dateRegExp = /^\d{4}-\d{2}-\d{2}$/
 const timeRegExp = /^\d{2}:\d{2}:\d{2}(\.000)?(Z|([-+]00:00))?$/
@@ -237,7 +294,7 @@ export function intervalFromPeriod(period: TemporalPeriod, unit: TemporalUnit, v
   throw new Error('Illegal argument')
 }
 
-export const formatTemporalIso = (temporal: Dayjs | null, temporalType: TemporalType): string | null => {
+export const formatTemporalIso = ({temporal, temporalType, timezone}: FormatTemporalIsoParams): string | null => {
   if (!temporal)
     return null
 
@@ -248,38 +305,38 @@ export const formatTemporalIso = (temporal: Dayjs | null, temporalType: Temporal
   if (temporalType === FieldType.time)
     return dt.toISOTime()
 
-  return dt.setZone(appConfig.dateTime.timeZone, {keepLocalTime: true}).toISO()
+  return dt.setZone(timezone, {keepLocalTime: true}).toISO()
 }
 
-export const formatTemporalDisplay = (temporal: string | null, temporalType: TemporalType): string => {
+const formatTemporalDisplay = ({temporal, temporalType, dateFormatString, timeFormatString, dateTimeFormatString}: FormatTemporalDisplayParams): string => {
   if (temporal == null)
     return ''
 
   const dt = dayjs(temporal)
   if (temporalType === FieldType.date)
-    return dt.format(dateTimeConfig.dateFormatString)
+    return dt.format(dateFormatString)
   else if (temporalType === FieldType.time)
-    return dt.format(dateTimeConfig.timeFormatString)
+    return dt.format(timeFormatString)
   else
-    return dt.format((dt.hour() === 0 && dt.minute() === 0) ? dateTimeConfig.dateFormatString : dateTimeConfig.dateTimeFormatString)
+    return dt.format((dt.hour() === 0 && dt.minute() === 0) ? dateFormatString : dateTimeFormatString)
 }
 
 export const columnType = (column: Column): FieldType =>
   (column.type === FieldType.datetime || column.type === FieldType.timestamp) ? (column.format ?? FieldType.datetime) : column.type
 
-export const formatValue = (value: any, type: FieldType) => {
+export const formatValue = ({value, type, dateFormatString, timeFormatString, dateTimeFormatString, fractionDigits}: FormatValueParams) => {
   if (!value)
     return value
 
   switch (type) {
     case FieldType.date:
-      return dayjs(value).format(dateTimeConfig.dateFormatString)
+      return dayjs(value).format(dateFormatString)
     case FieldType.time:
-      return dayjs(value).format(dateTimeConfig.timeFormatString)
+      return dayjs(value).format(timeFormatString)
     case FieldType.datetime:
     case FieldType.timestamp:
       const dt = dayjs(value)
-      return dt.format((dt.hour() === 0 && dt.minute() === 0) ? dateTimeConfig.dateFormatString : dateTimeConfig.dateTimeFormatString)
+      return dt.format((dt.hour() === 0 && dt.minute() === 0) ? dateFormatString : dateTimeFormatString)
     case FieldType.int:
     case FieldType.long:
     case FieldType.sequence:
@@ -296,54 +353,53 @@ export const formatValue = (value: any, type: FieldType) => {
 const separateDigitGroups = (value: number | string) =>
   `${value}`.replace(/\d{1,3}(?=(\d{3})+(?:\.\d+)?$)/g, s => `${s} `)
 
-export function toPercent(value: number): string {
+export function toPercent(value: number, percentFractionDigits: number): string {
   const percent = value * 100
   return _.isInteger(percent) ? percent.toString() : percent.toFixed(percentFractionDigits)
 }
 
-export function defaultDashColor(): string | undefined {
-  const colors = defaultDashColors()
+export function defaultDashColor(colors10: string[], colors20: string[]): string | undefined {
+  const colors = defaultDashColors(0, colors10, colors20)
   return (colors == null || colors.length === 0) ? undefined : colors[0]
 }
 
-export function defaultDashColors(cnt: number = 0): string[] | undefined {
-  const allDashConfig = dashConfig?.all ?? {}
-  const colors = (cnt <= 10) ? (allDashConfig.colors10 ?? allDashConfig.colors20) : (allDashConfig.colors20 ?? allDashConfig.colors10)
+export function defaultDashColors(cnt: number, colors10: string[], colors20: string[]): string[] | undefined {
+  const colors = (cnt <= 10) ? (colors10 ?? colors20) : (colors20 ?? colors10)
   if (colors == null)
     return undefined
 
   return colors.length === 0 ? undefined : colors
 }
 
-export function toFormQueryBlock(dataset: Dataset, queryBlock?: QueryBlock): QueryBlock {
+export function toFormQueryBlock(dataset: Dataset, timezone: string, queryBlock?: QueryBlock): QueryBlock {
   if (queryBlock == null)
     return generateQueryBlock()
 
   const formQueryBlock = _.cloneDeep(queryBlock)
-  processDatasetQueryFilters(dataset, formQueryBlock.filters, true)
+  processDatasetQueryFilters({dataset, queryFilters: formQueryBlock.filters, toForm: true, timezone})
 
   for (let i = 0; i < formQueryBlock.blocks.length; i++) {
-    formQueryBlock.blocks[i] = toFormQueryBlock(dataset, formQueryBlock.blocks[i])
+    formQueryBlock.blocks[i] = toFormQueryBlock(dataset, timezone, formQueryBlock.blocks[i])
   }
 
   return formQueryBlock
 }
 
-export function fromFormQueryBlock(dataset: Dataset, formQueryBlock?: QueryBlock): QueryBlock {
+export function fromFormQueryBlock(dataset: Dataset, timezone: string, formQueryBlock?: QueryBlock): QueryBlock {
   if (formQueryBlock == null)
     return generateQueryBlock()
 
   const queryBlock = _.cloneDeep(formQueryBlock)
-  processDatasetQueryFilters(dataset, queryBlock.filters, false)
+  processDatasetQueryFilters({dataset, queryFilters: queryBlock.filters, toForm: false, timezone})
 
   for (let i = 0; i < queryBlock.blocks.length; i++) {
-    queryBlock.blocks[i] = fromFormQueryBlock(dataset, queryBlock.blocks[i])
+    queryBlock.blocks[i] = fromFormQueryBlock(dataset, timezone, queryBlock.blocks[i])
   }
 
   return queryBlock
 }
 
-function processDatasetQueryFilters(dataset: Dataset, queryFilters: QueryFilter[], toForm: boolean) {
+function processDatasetQueryFilters({dataset, queryFilters, toForm, timezone}: ProcessDatasetQueryFiltersParams) {
   const columns = dataset.spec?.columns ?? {}
   for (const filter of queryFilters) {
     const {columnName, op} = filter
@@ -357,11 +413,11 @@ function processDatasetQueryFilters(dataset: Dataset, queryFilters: QueryFilter[
     }
 
     const {type} = column
-    processQueryFilter(type, filter, toForm)
+    processQueryFilter({type, filter, toForm, timezone})
   }
 }
 
-function processQueryFilter(type: ColumnType, filter: QueryFilter, toForm: boolean) {
+function processQueryFilter({type, filter, toForm, timezone}: ProcessQueryFilterParams) {
   const {op} = filter
   if (op === QueryOp.$null || op === QueryOp.$notNull) {
     filter.value = null
@@ -375,35 +431,35 @@ function processQueryFilter(type: ColumnType, filter: QueryFilter, toForm: boole
   const extra = filter.extra ?? {}
   if (op === QueryOp.$eq || op === QueryOp.$ne || op === QueryOp.$gt || op === QueryOp.$gte || op === QueryOp.$lt || op === QueryOp.$lte) {
     if (filter.value != null && !extra.isManual)
-      filter.value = toForm ? dayjs(filter.value) : formatTemporalIso(filter.value as Dayjs, temporalType)
+      filter.value = toForm ? dayjs(filter.value) : formatTemporalIso({temporal: filter.value as Dayjs, temporalType, timezone})
 
     return
   }
 
   if (op === QueryOp.$between) {
     if (extra.left != null && !extra.isManualLeft)
-      extra.left = toForm ? dayjs(extra.left) : formatTemporalIso(extra.left as Dayjs, temporalType)
+      extra.left = toForm ? dayjs(extra.left) : formatTemporalIso({temporal: extra.left as Dayjs, temporalType, timezone})
 
     if (extra.right != null && !extra.isManualRight)
-      extra.right = toForm ? dayjs(extra.right) : formatTemporalIso(extra.right as Dayjs, temporalType)
+      extra.right = toForm ? dayjs(extra.right) : formatTemporalIso({temporal: extra.right as Dayjs, temporalType, timezone})
   }
 }
 
-export function toFormSelectorFilter(selectorFilter: SelectorFilter): SelectorFilter {
+export function toFormSelectorFilter(selectorFilter: SelectorFilter, timezone: string): SelectorFilter {
   const formSelectorFilter = _.cloneDeep(selectorFilter)
-  processSelectorFilter(formSelectorFilter, true)
+  processSelectorFilter(formSelectorFilter, true, timezone)
 
   return formSelectorFilter
 }
 
-export function fromFormSelectorFilter(formSelectorFilter: SelectorFilter): SelectorFilter {
+export function fromFormSelectorFilter(formSelectorFilter: SelectorFilter, timezone: string): SelectorFilter {
   const selectorFilter = _.cloneDeep(formSelectorFilter)
-  processSelectorFilter(selectorFilter, false)
+  processSelectorFilter(selectorFilter, false, timezone)
 
   return selectorFilter
 }
 
-function processSelectorFilter(filter: SelectorFilter, toForm: boolean) {
+function processSelectorFilter(filter: SelectorFilter, toForm: boolean, timezone: string) {
   const {type, op} = filter
   if (op === QueryOp.$null || op === QueryOp.$notNull) {
     filter.value = null
@@ -417,21 +473,21 @@ function processSelectorFilter(filter: SelectorFilter, toForm: boolean) {
   const extra = filter.extra ?? {}
   if (op === QueryOp.$eq || op === QueryOp.$ne || op === QueryOp.$gt || op === QueryOp.$gte || op === QueryOp.$lt || op === QueryOp.$lte) {
     if (filter.value != null && !extra.isManual)
-      filter.value = toForm ? dayjs(filter.value) : formatTemporalIso(filter.value as Dayjs, temporalType)
+      filter.value = toForm ? dayjs(filter.value) : formatTemporalIso({temporal: filter.value as Dayjs, temporalType, timezone})
 
     return
   }
 
   if (op === QueryOp.$between) {
     if (extra.left != null && !extra.isManualLeft)
-      extra.left = toForm ? dayjs(extra.left) : formatTemporalIso(extra.left as Dayjs, temporalType)
+      extra.left = toForm ? dayjs(extra.left) : formatTemporalIso({temporal: extra.left as Dayjs, temporalType, timezone})
 
     if (extra.right != null && !extra.isManualRight)
-      extra.right = toForm ? dayjs(extra.right) : formatTemporalIso(extra.right as Dayjs, temporalType)
+      extra.right = toForm ? dayjs(extra.right) : formatTemporalIso({temporal: extra.right as Dayjs, temporalType, timezone})
   }
 }
 
-export function toDatasetFiltersInput(dataset: Dataset, queryBlock: QueryBlock): DatasetFiltersInput<any> {
+export function toDatasetFiltersInput(dataset: Dataset, queryBlock: QueryBlock, timezone: string): DatasetFiltersInput<any> {
   const datasetFiltersInput: DatasetFiltersInput<any> = {}
   datasetFiltersInput.$and = []
   const colFilters = _.groupBy(queryBlock.filters, f => f.columnName)
@@ -442,10 +498,10 @@ export function toDatasetFiltersInput(dataset: Dataset, queryBlock: QueryBlock):
       const opFiltersList = opFilters[op]
       while (opFiltersList.length > 1) {
         const filter = opFiltersList.pop() as QueryFilter
-        datasetFiltersInput.$and.push({[col]: {[op]: toDatasetFilterInputValue(dataset, filter)}})
+        datasetFiltersInput.$and.push({[col]: {[op]: toDatasetFilterInputValue(dataset, filter, timezone)}})
       }
       const filterInput = (datasetFiltersInput[col] ?? {}) as {[op: string]: any}
-      filterInput[op] = toDatasetFilterInputValue(dataset, opFiltersList[0])
+      filterInput[op] = toDatasetFilterInputValue(dataset, opFiltersList[0], timezone)
       datasetFiltersInput[col] = filterInput as PrimitiveFilterInput<any>
     }
   }
@@ -453,43 +509,43 @@ export function toDatasetFiltersInput(dataset: Dataset, queryBlock: QueryBlock):
   for (const nestedBlock of queryBlock.blocks) {
     if (nestedBlock.logicalOp === LogicalOp.$or) {
       const orFiltersInput: DatasetFiltersInput<any> = {}
-      orFiltersInput.$or = [toDatasetFiltersInput(dataset, nestedBlock)]
+      orFiltersInput.$or = [toDatasetFiltersInput(dataset, nestedBlock, timezone)]
       datasetFiltersInput.$and.push(orFiltersInput)
     } else {
-      datasetFiltersInput.$and.push(toDatasetFiltersInput(dataset, nestedBlock))
+      datasetFiltersInput.$and.push(toDatasetFiltersInput(dataset, nestedBlock, timezone))
     }
   }
 
   return datasetFiltersInput
 }
 
-export const toSingleDatasetFiltersInput = (dataset: Dataset, queryFilter: QueryFilter): DatasetFiltersInput<any> => ({
+export const toSingleDatasetFiltersInput = (dataset: Dataset, queryFilter: QueryFilter, timezone: string): DatasetFiltersInput<any> => ({
   [queryFilter.columnName]: {
-    [queryFilter.op]: toDatasetFilterInputValue(dataset, queryFilter)
+    [queryFilter.op]: toDatasetFilterInputValue(dataset, queryFilter, timezone)
   }
 })
 
-export const toSingleSelectorFiltersInput = (selectorFilter: SelectorFilter): DatasetFiltersInput<any> => ({
+export const toSingleSelectorFiltersInput = (selectorFilter: SelectorFilter, timezone: string): DatasetFiltersInput<any> => ({
   [selectorFilter.field]: {
-    [selectorFilter.op]: toSelectorFilterInputValue(selectorFilter)
+    [selectorFilter.op]: toSelectorFilterInputValue(selectorFilter, timezone)
   }
 })
 
-function toDatasetFilterInputValue(dataset: Dataset, filter: QueryFilter): any {
+function toDatasetFilterInputValue(dataset: Dataset, filter: QueryFilter, timezone: string): any {
   const {columnName} = filter
   const columns = dataset.spec?.columns ?? {}
   const column = columns[columnName]
   if (column == null)
     throw new Error(`Column '${columnName}' not found in dataset '${dataset.name}'`)
 
-  return parseFilterValue(column.type, filter)
+  return parseFilterValue({type: column.type, filter, timezone})
 }
 
-function toSelectorFilterInputValue(filter: SelectorFilter): any {
-  return parseFilterValue(filter.type, filter)
+function toSelectorFilterInputValue(filter: SelectorFilter, timezone: string): any {
+  return parseFilterValue({type: filter.type, filter, timezone})
 }
 
-function parseFilterValue(type: FieldType, filter: QueryFilter | SelectorFilter): any {
+function parseFilterValue({type, filter, timezone}: ParseFilterValueParams): any {
   const {op, value} = filter
   if (op === QueryOp.$null || op === QueryOp.$notNull)
     return true
@@ -506,7 +562,7 @@ function parseFilterValue(type: FieldType, filter: QueryFilter | SelectorFilter)
         const temporalType = type as TemporalType
         const temporalUnit = extra.unit as TemporalUnit
         const temporalValue = extra.value as number
-        return intervalFromPeriod(period, temporalUnit, temporalValue).map(t => formatTemporalIso(t, temporalType))
+        return intervalFromPeriod(period, temporalUnit, temporalValue).map(t => formatTemporalIso({temporal: t, temporalType, timezone}))
       }
     } else {
       return [left, right]
@@ -540,7 +596,7 @@ function parseManualFilterValue(value?: string): any {
   }
 }
 
-export function printQueryBlock(dataset: Dataset, queryBlock: QueryBlock): string | undefined {
+export function printQueryBlock({dataset, queryBlock, dateFormatString, timeFormatString, dateTimeFormatString, timezone}: PrintQueryBlockParams): string | undefined {
   let buf: string[]  = []
   const logicalOpTitle = logicalOpTitles[queryBlock.logicalOp ?? LogicalOp.$and]
   for (const queryFilter of queryBlock.filters) {
@@ -550,11 +606,11 @@ export function printQueryBlock(dataset: Dataset, queryBlock: QueryBlock): strin
     if (buf.length > 0)
       buf.push(logicalOpTitle)
 
-    buf.push(printQueryFilter(dataset, queryFilter))
+    buf.push(printQueryFilter({dataset, filter: queryFilter, dateFormatString, timeFormatString, dateTimeFormatString, timezone}))
   }
 
   for (const nestedQueryBlock of queryBlock.blocks) {
-    const nestedQueryBlockContent = printQueryBlock(dataset, nestedQueryBlock)
+    const nestedQueryBlockContent = printQueryBlock({dataset, queryBlock: nestedQueryBlock, dateFormatString, timeFormatString, dateTimeFormatString, timezone})
     if (nestedQueryBlockContent == null)
       continue
 
@@ -567,7 +623,7 @@ export function printQueryBlock(dataset: Dataset, queryBlock: QueryBlock): strin
   return buf.length === 0 ? undefined : buf.join(' ')
 }
 
-function printQueryFilter(dataset: Dataset, filter: QueryFilter): string {
+function printQueryFilter({dataset, filter, dateFormatString, timeFormatString, dateTimeFormatString, timezone}: PrintQueryFilterParams): string {
   const {columnName, op} = filter
   const columns = dataset.spec?.columns ?? {}
   const column = columns[columnName]
@@ -579,7 +635,7 @@ function printQueryFilter(dataset: Dataset, filter: QueryFilter): string {
   if (op === QueryOp.$null || op === QueryOp.$notNull)
     return `${columnAlias} ${opTitle}`
 
-  const filterValue = parseFilterValue(column.type, filter)
+  const filterValue = parseFilterValue({type: column.type, filter, timezone})
   if (op === QueryOp.$between) {
     if (!isTemporal(column.type))
       return `${columnAlias} ${opTitle} (${filterValue[0]} ${i18n.t('and')} ${filterValue[1]})`
@@ -587,8 +643,8 @@ function printQueryFilter(dataset: Dataset, filter: QueryFilter): string {
     const temporalType = columnType(column) as TemporalType
     const period = filter.extra?.period ?? TemporalPeriod.ARBITRARY
     if (period === TemporalPeriod.ARBITRARY) {
-      const left = formatTemporalDisplay(filterValue[0], temporalType)
-      const right = formatTemporalDisplay(filterValue[1], temporalType)
+      const left = formatTemporalDisplay({temporal: filterValue[0], temporalType, dateFormatString, timeFormatString, dateTimeFormatString})
+      const right = formatTemporalDisplay({temporal: filterValue[1], temporalType, dateFormatString, timeFormatString, dateTimeFormatString})
       return `${columnAlias} ${opTitle} (${left} ${i18n.t('and')} ${right})`
     } else {
       return `${columnAlias} ${i18n.t('for')} ${temporalPeriodTitles[period]}`
@@ -598,11 +654,11 @@ function printQueryFilter(dataset: Dataset, filter: QueryFilter): string {
   if (op === QueryOp.$in || op === QueryOp.$notIn)
     return `${columnAlias} ${opTitle} (${(filterValue as any[]).join(', ')})`
 
-  return `${columnAlias} ${opTitle} ${isTemporal(column.type) ? formatTemporalDisplay(filterValue, columnType(column) as TemporalType) : filterValue}`
+  return `${columnAlias} ${opTitle} ${isTemporal(column.type) ? formatTemporalDisplay({temporal: filterValue, temporalType: columnType(column) as TemporalType, dateFormatString, timeFormatString, dateTimeFormatString}) : filterValue}`
 }
 
-export const printSingleQueryFilter = (queryFilter: QueryFilter): string =>
-  `${queryFilter.columnName} ${queryOpTitles[queryFilter.op]} ${formatValue(queryFilter.value, guessType(queryFilter.value))}`
+export const printSingleQueryFilter = ({queryFilter, dateFormatString, timeFormatString, dateTimeFormatString, fractionDigits}: PrintSingleQueryFilterParams): string =>
+  `${queryFilter.columnName} ${queryOpTitles[queryFilter.op]} ${formatValue({value: queryFilter.value, type: guessType(queryFilter.value), dateFormatString, timeFormatString, dateTimeFormatString, fractionDigits})}`
 
 export function getCustomFunctionsInfo(): string[] {
   const buf: string[] = []

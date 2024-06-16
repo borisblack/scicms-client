@@ -49,7 +49,7 @@ export async function login(credentials: { username: string, password: string })
 
   try {
     const res = await axios.post('/api/auth/local', {
-      identifier: encodeURI(username),
+      username: encodeURI(username),
       password: encodeURI(password)
     })
 

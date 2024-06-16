@@ -1,8 +1,8 @@
 import _ from 'lodash'
 import {notification} from 'antd'
 
-import appConfig from '../config'
 import i18n from '../i18n'
+import {clientConfig} from 'src/config'
 
 export function tryParseJson(value: any): boolean {
   try {
@@ -26,7 +26,7 @@ export const notifyErrorThrottled =
       (message: string, description: string) => {
         notification.error({message, description})
       },
-      appConfig.ui.notificationDuration * 1000,
+      clientConfig.notification.duration * 1000,
       {trailing: false}
     )
 

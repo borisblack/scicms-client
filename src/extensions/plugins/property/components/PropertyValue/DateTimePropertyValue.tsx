@@ -5,16 +5,17 @@ import type {Dayjs} from 'dayjs'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 
-import appConfig from 'src/config'
 import {FieldType} from 'src/types'
 import {UTC} from 'src/config/constants'
 import {PropertyValueProps} from './types'
+import {useAppProperties} from 'src/util/hooks'
 
 dayjs.extend(timezone)
 
-const {momentDisplayDateTimeFormatString} = appConfig.dateTime
-
 export const DateTimePropertyValue: FC<PropertyValueProps> = ({type, value, canEdit, onChange}) => {
+  const appProps = useAppProperties()
+  const {momentDisplayDateTimeFormatString} = appProps.dateTime
+
   if (type !== FieldType.datetime && type !== FieldType.timestamp)
     throw new Error('Illegal type.')
 

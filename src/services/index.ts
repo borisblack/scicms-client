@@ -1,10 +1,10 @@
 import axios, {AxiosError, AxiosRequestConfig} from 'axios'
-import config from '../config'
 import {codeMessage} from '../i18n'
 import {ApolloClient, ApolloLink, from, InMemoryCache} from '@apollo/client'
 import {createUploadLink} from 'apollo-upload-client'
 import {GraphQLError} from 'graphql/error'
 import {DateTime} from 'luxon'
+import {clientConfig} from 'src/config'
 
 export const storeJwt = (jwt: string) => { localStorage.setItem('jwt', jwt) }
 
@@ -28,7 +28,7 @@ export const removeExpireAt = () => { localStorage.removeItem('expireAt') }
 
 // Setup Axios
 axios.defaults.headers.common['X-Requested-Width'] = 'XMLHttpRequest'
-axios.defaults.baseURL = config.coreUrl
+axios.defaults.baseURL = clientConfig.coreUrl
 axios.interceptors.request.use((config: AxiosRequestConfig) => {
   const jwt = getJwt()
   if (jwt) {
@@ -66,7 +66,7 @@ export const throwAxiosResponseError = (e: AxiosError) => {
 }
 
 // Setup ApolloClient
-const uploadLink = createUploadLink({uri: `${config.coreUrl}/graphql`})
+const uploadLink = createUploadLink({uri: `${clientConfig.coreUrl}/graphql`})
 
 const authMiddleware = new ApolloLink((operation, forward) => {
   operation.setContext((context: Record<string, any>) => {

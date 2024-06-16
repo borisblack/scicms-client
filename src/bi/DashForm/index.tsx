@@ -1,7 +1,6 @@
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {
-  Checkbox,
   Col,
   Collapse,
   Form,
@@ -14,22 +13,19 @@ import {
   Tooltip,
   Typography
 } from 'antd'
-import {CheckboxChangeEvent} from 'antd/es/checkbox'
-import {ArrowDownOutlined, ArrowUpOutlined, FolderOpenOutlined, QuestionCircleOutlined} from '@ant-design/icons'
-import {DefaultOptionType} from 'rc-select/lib/Select'
+import {FolderOpenOutlined, QuestionCircleOutlined} from '@ant-design/icons'
 
-import {AggregateType, Column, Dashboard, Dataset, IDash, NamedColumn, QueryBlock} from 'src/types/bi'
+import {Column, Dashboard, Dataset, IDash, NamedColumn, QueryBlock} from 'src/types/bi'
 import {generateQueryBlock, getCustomFunctionsInfo, toFormQueryBlock} from '../util'
 import DashFilters from '../DashFilters'
 import {Dash, getDash, getDashIds} from 'src/extensions/dashes'
-import biConfig from 'src/config/bi'
-import {useBI} from '../util/hooks'
+import {useBIData, useBiProperties} from '../util/hooks'
 import {Split} from 'src/uiKit/Split'
-import appConfig from 'src/config'
 import FieldList from './FieldList'
 import DashAxes from './DashAxes'
 import IconSuspense from 'src/uiKit/icons/IconSuspense'
 import styles from './DashForm.module.css'
+import {useAppProperties} from 'src/util/hooks'
 
 interface DashFormProps {
   dash: IDash
@@ -62,14 +58,18 @@ const AXES_PANE_MIN_SIZE = 200
 const {Item: FormItem} = Form
 const {Option: SelectOption} = Select
 const {Link} = Typography
-const splitConfig = appConfig.ui.split
 const dashTypes = getDashIds()
 
 export default function DashForm({dash, dashboards, canEdit, datasetMap, onDatasetChange, onFieldAdd, onFieldOpen, onFieldRemove}: DashFormProps) {
   const form = Form.useFormInstance()
   const {t} = useTranslation()
+  const appProps = useAppProperties()
+  const splitConfig = appProps.ui.split
+  const {timeZone} = appProps.dateTime
   // const prevDash = usePrevious(dash)
-  const {openDataset} = useBI({withDashboards: true})
+  const biProps = useBiProperties()
+  const {minRefreshIntervalSeconds} = biProps
+  const {openDataset} = useBIData({withDashboards: true})
   const [dataset, setDataset] = useState<Dataset | undefined>()
   const datasetColumns: {[name: string]: Column} = useMemo(() => dataset?.spec?.columns ?? {}, [dataset?.spec?.columns])
   const allColNames: string[] = useMemo(() => Object.keys(datasetColumns).sort(), [datasetColumns])
@@ -241,10 +241,10 @@ export default function DashForm({dash, dashboards, canEdit, datasetMap, onDatas
                   initialValue={dash.refreshIntervalSeconds}
                   rules={[
                     {required: true, message: t('Required field')},
-                    {type: 'number', min: biConfig.minRefreshIntervalSeconds}
+                    {type: 'number', min: minRefreshIntervalSeconds}
                   ]}
                 >
-                  <InputNumber style={{width: '100%'}} min={biConfig.minRefreshIntervalSeconds}/>
+                  <InputNumber style={{width: '100%'}} min={minRefreshIntervalSeconds}/>
                 </FormItem>
               </Col>
             </Row>
@@ -293,7 +293,7 @@ export default function DashForm({dash, dashboards, canEdit, datasetMap, onDatas
                   <DashFilters
                     namePrefix={['defaultFilters']}
                     dataset={dataset}
-                    initialBlock={toFormQueryBlock(dataset, dash.defaultFilters)}
+                    initialBlock={toFormQueryBlock(dataset, timeZone, dash.defaultFilters)}
                   />
                 ))
               }]}

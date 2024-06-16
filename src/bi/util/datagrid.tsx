@@ -5,7 +5,6 @@ import {Checkbox} from 'antd'
 import {DateTime} from 'luxon'
 
 import {FieldType, Pagination, PrimitiveFilterInput} from 'src/types'
-import appConfig from 'src/config'
 import {
   type DataWithPagination,
   type RequestParams
@@ -36,33 +35,50 @@ interface DatasetData<T> extends DataWithPagination<T> {
     params?: Record<string, any>
 }
 
-const {luxonDisplayDateFormatString, luxonDisplayTimeFormatString, luxonDisplayDateTimeFormatString} = appConfig.dateTime
+interface GetColumnsParams {
+  actualFields: Record<string, Column>
+  defaultColWidth: number
+  luxonDisplayDateFormatString: string
+  luxonDisplayTimeFormatString: string
+  luxonDisplayDateTimeFormatString: string
+}
+
+interface RenderCellParams {
+  field: Column
+  value: any
+  luxonDisplayDateFormatString: string
+  luxonDisplayTimeFormatString: string
+  luxonDisplayDateTimeFormatString: string
+}
+
 const columnHelper = createColumnHelper<any>()
 
-export const getInitialData = (): DataWithPagination<any> => ({
+export const getInitialData = (pageSize: number): DataWithPagination<any> => ({
   data: [],
   pagination: {
     page: 1,
-    pageSize: appConfig.query.defaultPageSize,
+    pageSize,
     total: 0
   }
 })
 
-export const getColumns = (actualFields: Record<string, Column>): ColumnDef<any, any>[] =>
+export const getColumns = ({
+  actualFields, defaultColWidth, luxonDisplayDateFormatString, luxonDisplayTimeFormatString, luxonDisplayDateTimeFormatString
+}: GetColumnsParams): ColumnDef<any, any>[] =>
   Object.keys(actualFields)
     .filter(fieldName => !actualFields[fieldName].hidden)
     .map(fieldName => {
       const field = actualFields[fieldName]
       return columnHelper.accessor(fieldName, {
         header: field.alias ? i18n.t(field.alias) as string : fieldName,
-        cell: info => renderCell(field, info.getValue()),
-        size: _.isString(field.colWidth) ? parseInt(field.colWidth.replace(/\D/g, '')) : (field.colWidth ?? appConfig.ui.dataGrid.colWidth),
+        cell: info => renderCell({field, value: info.getValue(), luxonDisplayDateFormatString, luxonDisplayTimeFormatString, luxonDisplayDateTimeFormatString}),
+        size: _.isString(field.colWidth) ? parseInt(field.colWidth.replace(/\D/g, '')) : (field.colWidth ?? defaultColWidth),
         enableSorting: field.type !== FieldType.text,
         enableColumnFilter: true
       })
     })
 
-const renderCell = (field: Column, value: any): ReactNode => {
+const renderCell = ({field, value, luxonDisplayDateFormatString, luxonDisplayTimeFormatString, luxonDisplayDateTimeFormatString}: RenderCellParams): ReactNode => {
   switch (field.type) {
     case FieldType.string:
     case FieldType.text:

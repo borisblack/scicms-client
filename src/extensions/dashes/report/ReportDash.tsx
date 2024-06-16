@@ -5,6 +5,7 @@ import {ColumnsType} from 'antd/es/table'
 import {DashRenderContext} from '..'
 import {columnType, formatValue} from 'src/bi/util'
 import * as RulesService from 'src/services/rules'
+import {useBiProperties} from 'src/bi/util/hooks'
 
 interface ReportDashOpts {
     displayedColNames: string[]
@@ -35,8 +36,12 @@ function ReportDash({dataset, dash, height, fullScreen, data}: DashRenderContext
             }
           })
 
+  const biProps = useBiProperties()
+  const {dateFormatString, timeFormatString, dateTimeFormatString} = biProps.dateTime
+  const {fractionDigits} = biProps
+
   function renderCell(colName: string, value: any, record: Record<string, any>): ReactNode {
-    const formattedValue = formatValue(value, columnType(allColumns[colName]))
+    const formattedValue = formatValue({value, type: columnType(allColumns[colName]), dateFormatString, timeFormatString, dateTimeFormatString, fractionDigits})
 
     return RulesService.renderField(cellRules, colName, formattedValue, record)
   }

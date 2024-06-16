@@ -7,7 +7,6 @@ import {ItemType} from 'antd/es/menu/hooks/useItems'
 import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design/icons'
 import {PageHeader} from '@ant-design/pro-layout'
 
-import appConfig from 'src/config'
 import {IBuffer} from 'src/types'
 import {ItemData, ItemDataWrapper} from 'src/types/schema'
 import {type RequestParams, DataGrid} from '../../uiKit/DataGrid'
@@ -15,7 +14,7 @@ import * as ACL from 'src/util/acl'
 import {findAll, getColumns, getHiddenColumns, getInitialData} from 'src/util/datagrid'
 import {ExtRequestParams} from 'src/services/query'
 import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME, MEDIA_ITEM_NAME} from 'src/config/constants'
-import {useAuth, useItemOperations, useMutationManager, useRegistry} from 'src/util/hooks'
+import {useAppProperties, useAuth, useItemOperations, useMutationManager, useRegistry} from 'src/util/hooks'
 import {getTitle} from 'src/util/mdi'
 import IconSuspense from 'src/uiKit/icons/IconSuspense'
 import {useMDIContext} from 'src/uiKit/MDITabs/hooks'
@@ -36,8 +35,12 @@ function DefaultNavTab({data: dataWrapper}: Props) {
   const {create: createItem, open: openItem, close: closeItem} = useItemOperations()
   const mutationManager = useMutationManager()
   const {t} = useTranslation()
+  const appProps = useAppProperties()
+  const {defaultPageSize} = appProps.query
+  const {luxonDisplayDateFormatString, luxonDisplayTimeFormatString, luxonDisplayDateTimeFormatString} = appProps.dateTime
+  const {maxTextLength, colWidth: defaultColWidth} = appProps.ui.dataGrid
   const [loading, setLoading] = useState(false)
-  const [data, setData] = useState(getInitialData<ItemData>())
+  const [data, setData] = useState(getInitialData<ItemData>(defaultPageSize))
   const [version, setVersion] = useState<number>(0)
   const showAllLocalesRef = useRef<boolean>(false)
   const headerRef = useRef<HTMLDivElement>(null)
@@ -46,7 +49,16 @@ function DefaultNavTab({data: dataWrapper}: Props) {
   const [buffer, setBuffer] = useState<IBuffer>({})
   const {item} = dataWrapper
   const isSystemItem = item.name === ITEM_TEMPLATE_ITEM_NAME || item.name === ITEM_ITEM_NAME
-  const columnsMemoized = useMemo(() => getColumns(itemMap, item, openItem), [item, itemMap])
+  const columnsMemoized = useMemo(() => getColumns({
+    items: itemMap,
+    item,
+    maxTextLength,
+    defaultColWidth,
+    luxonDisplayDateFormatString,
+    luxonDisplayTimeFormatString,
+    luxonDisplayDateTimeFormatString,
+    onOpenItem: openItem
+  }), [defaultColWidth, item, itemMap, luxonDisplayDateFormatString, luxonDisplayDateTimeFormatString, luxonDisplayTimeFormatString, maxTextLength])
   const hiddenColumnsMemoized = useMemo(() => getHiddenColumns(item), [item])
   const handleBufferChange = useCallback((bufferChanges: IBuffer) => setBuffer({...buffer, ...bufferChanges}), [buffer])
   const renderContext: CustomRendererContext = useMemo(() => ({
@@ -137,9 +149,9 @@ function DefaultNavTab({data: dataWrapper}: Props) {
     setLoading(true)
     try {
       if (purge) {
-        await mutationManager.purge(item, id, appConfig.mutation.deletingStrategy)
+        await mutationManager.purge(item, id, appProps.mutation.deletingStrategy)
       } else {
-        const doDelete = async () => await mutationManager.remove(item, id, appConfig.mutation.deletingStrategy)
+        const doDelete = async () => await mutationManager.remove(item, id, appProps.mutation.deletingStrategy)
         if (pluginEngine.hasApiMiddleware(item.name)) {
           const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values: {id}}
           await pluginEngine.handleApiMiddleware(item.name, ApiOperation.DELETE, apiMiddlewareContext, doDelete)
@@ -244,7 +256,7 @@ function DefaultNavTab({data: dataWrapper}: Props) {
           data={dataMemoized}
           initialState={{
             hiddenColumns: hiddenColumnsMemoized,
-            pageSize: appConfig.query.defaultPageSize
+            pageSize: appProps.query.defaultPageSize
           }}
           hasFilters={true}
           version={version}

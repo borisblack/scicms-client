@@ -19,7 +19,6 @@ import FullScreen from 'src/uiKit/FullScreen'
 import * as DatasetService from 'src/services/dataset'
 import {getActualFilters, printQueryBlock, toDatasetFiltersInput, toSingleDatasetFiltersInput, toSingleSelectorFiltersInput} from '../util'
 import {Dash, getDash} from 'src/extensions/dashes'
-import biConfig from 'src/config/bi'
 import {
   Column,
   Dashboard,
@@ -34,11 +33,12 @@ import {
 import {ItemType} from 'antd/es/menu/hooks/useItems'
 import FiltersModal from '../FiltersModal'
 import DashModal from '../DashModal'
-import {useModal, usePrevious} from 'src/util/hooks'
+import {useAppProperties, useModal, usePrevious} from 'src/util/hooks'
 import {buildFieldsInput} from '../util/datagrid'
 import ExecutionStatisticModal from '../ExecutionStatisticModal'
 import styles from './DashWrapper.module.css'
 import './DashWrapper.css'
+import {useBiProperties} from '../util/hooks'
 
 export interface DashWrapperProps {
   pageKey: string
@@ -85,6 +85,8 @@ function DashWrapper(props: DashWrapperProps) {
     throw new Error(`Dash [${dash.name}] has no ID`)
 
   const {t} = useTranslation()
+  const appProps = useAppProperties()
+  const {timeZone} = appProps.dateTime
   const [datasetData, setDatasetData] = useState<any[]>([])
   const [fullScreen, setFullScreen] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
@@ -95,7 +97,10 @@ function DashWrapper(props: DashWrapperProps) {
   const {show: showStatisticModal, close: closeStatisticModal, modalProps: statisticModalProps} = useModal()
   const [filters, setFilters] = useState<QueryBlock>(getActualFilters(dashboard.id, dash))
   const prevDefaultFilters = usePrevious(dash.defaultFilters)
-  const dashHeight = biConfig.rowHeight * height - PAGE_HEADER_HEIGHT
+  const biProps = useBiProperties()
+  const {dateFormatString, timeFormatString, dateTimeFormatString} = biProps.dateTime
+  const {rowHeight} = biProps
+  const dashHeight = rowHeight * height - PAGE_HEADER_HEIGHT
 
   useEffect(() => {
     if (!_.isEqual(dash.defaultFilters, prevDefaultFilters))
@@ -123,14 +128,14 @@ function DashWrapper(props: DashWrapperProps) {
     }
 
     const datasetInput: DatasetService.DatasetInput<any> = {
-      filters: toDatasetFiltersInput(dataset, filters)
+      filters: toDatasetFiltersInput(dataset, filters, timeZone)
     }
 
     const extraQueryFilter = extra?.queryFilter
     if (extraQueryFilter != null && extraQueryFilter.columnName in dataset.spec.columns) {
       const datasetFiltersInput = datasetInput.filters as DatasetFiltersInput<any>
       const $and = datasetFiltersInput.$and ?? []
-      $and.push(toSingleDatasetFiltersInput(dataset, extraQueryFilter))
+      $and.push(toSingleDatasetFiltersInput(dataset, extraQueryFilter, timeZone))
       datasetFiltersInput.$and = $and
     }
 
@@ -146,7 +151,7 @@ function DashWrapper(props: DashWrapperProps) {
           return field.type === selectedFilter.type
         })
         .forEach(selectedFilter => {
-          $and.push(toSingleSelectorFiltersInput(selectedFilter))
+          $and.push(toSingleSelectorFiltersInput(selectedFilter, timeZone))
         })
       datasetFiltersInput.$and = $and
     }
@@ -221,7 +226,7 @@ function DashWrapper(props: DashWrapperProps) {
   const renderTitle = () => dash.name + (dash.unit ? `, ${dash.unit}` : '')
 
   const renderSubTitle = () => {
-    const queryBlock = dataset ? printQueryBlock(dataset, filters) : ''
+    const queryBlock = dataset ? printQueryBlock({dataset, queryBlock: filters, dateFormatString, timeFormatString, dateTimeFormatString, timezone: timeZone}) : ''
     return <div className={styles.subTitle} title={queryBlock}>{queryBlock}</div>
   }
 

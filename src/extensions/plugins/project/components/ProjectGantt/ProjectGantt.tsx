@@ -2,16 +2,16 @@ import {lazy, Suspense, useEffect, useState} from 'react'
 import {Spin} from 'antd'
 import {Task as GanttTask, ViewMode} from 'gantt-task-react'
 
-import {useAcl} from 'src/util/hooks'
+import {useAcl, useAppProperties} from 'src/util/hooks'
 import {CustomComponentContext} from 'src/extensions/plugins/types'
 import {getStartEndDateForProject, singletonTaskList} from './helper'
 import ViewSwitcher from './ViewSwitcher'
-import appConfig from 'src/config'
 import TaskListHeader from './TaskListHeader'
 import TooltipContent from './TooltipContent'
 import {fetchAllTasksByFilter} from './taskService'
 import {Project} from './types'
 import {mapToGanttTask, mapToProjectTask} from './taskMapper'
+import {clientConfig} from 'src/config'
 import 'gantt-task-react/dist/index.css'
 import styles from './ProjectGantt.module.css'
 
@@ -36,6 +36,7 @@ function calculateColumnWidth(viewMode: ViewMode) {
 }
 
 export function ProjectGantt({data: dataWrapper}: CustomComponentContext) {
+  const appProps = useAppProperties()
   const {item, data, extra} = dataWrapper
   const {parentId} = extra ?? {}
   const [loading, setLoading] = useState<boolean>(false)
@@ -139,7 +140,7 @@ export function ProjectGantt({data: dataWrapper}: CustomComponentContext) {
             viewMode={viewMode}
             listCellWidth={isChecked ? '155px' : ''}
             columnWidth={columnWidth}
-            locale={appConfig.i18nLng}
+            locale={clientConfig.i18nLng}
             TooltipContent={TooltipContent}
             TaskListHeader={TaskListHeader}
             onDateChange={handleTaskChange}

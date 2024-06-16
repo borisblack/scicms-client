@@ -1,4 +1,4 @@
-import React, {FC, useState} from 'react'
+import {FC, useState} from 'react'
 import {DatePicker, Form, Input, InputNumber, Select, Space, Switch, TimePicker} from 'antd'
 import {FunctionOutlined} from '@ant-design/icons'
 import {useTranslation} from 'react-i18next'
@@ -14,13 +14,12 @@ import {
 } from 'src/bi/util'
 import {FieldType} from 'src/types'
 import {QueryOp, TemporalPeriod, TemporalType} from 'src/types/bi'
-import appConfig from 'src/config'
 import styles from '../DashFilters.module.css'
+import {useAppProperties} from 'src/util/hooks'
 
 const INPUT_WIDTH = 180
 const BETWEEN_INPUT_WIDTH = 140
 const {Item: FormItem} = Form
-const {momentDisplayDateFormatString, momentDisplayTimeFormatString, momentDisplayDateTimeFormatString} = appConfig.dateTime
 
 const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, column, op}) => {
   if (namePrefix.length === 0)
@@ -32,6 +31,8 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
   const fieldName = namePrefix[namePrefix.length - 1]
   const temporalType = columnType(column) as TemporalType
   const {t} = useTranslation()
+  const appProps = useAppProperties()
+  const {momentDisplayDateFormatString, momentDisplayTimeFormatString, momentDisplayDateTimeFormatString} = appProps.dateTime
   const [isManual, setManual] = useState(form.getFieldValue([...namePrefix, 'extra', 'isManual']))
   const [period, setPeriod] = useState(form.getFieldValue([...namePrefix, 'extra', 'period']) ?? TemporalPeriod.ARBITRARY)
   const [isManualLeft, setManualLeft] = useState(form.getFieldValue([...namePrefix, 'extra', 'isManualLeft']))

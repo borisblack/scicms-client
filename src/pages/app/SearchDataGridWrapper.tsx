@@ -3,13 +3,12 @@ import {useTranslation} from 'react-i18next'
 import {Row} from '@tanstack/react-table'
 import {Checkbox, notification} from 'antd'
 
-import appConfig from 'src/config'
 import {RequestParams, DataGrid} from 'src/uiKit/DataGrid'
 import {findAll, getColumns, getHiddenColumns, getInitialData} from 'src/util/datagrid'
 import {Item, ItemData} from 'src/types/schema'
 import {ExtRequestParams, ItemFiltersInput} from 'src/services/query'
 import {CheckboxChangeEvent} from 'antd/es/checkbox'
-import {useItemOperations, useRegistry} from 'src/util/hooks'
+import {useAppProperties, useItemOperations, useRegistry} from 'src/util/hooks'
 
 interface Props {
     item: Item
@@ -25,13 +24,26 @@ export default function SearchDataGridWrapper({item, notHiddenColumns = [], extr
   const {items: itemMap} = useRegistry()
   const {open: openItem} = useItemOperations()
   const {t} = useTranslation()
+  const appProps = useAppProperties()
+  const {defaultPageSize} = appProps.query
+  const {luxonDisplayDateFormatString, luxonDisplayTimeFormatString, luxonDisplayDateTimeFormatString} = appProps.dateTime
+  const {maxTextLength, colWidth: defaultColWidth} = appProps.ui.dataGrid
   const [loading, setLoading] = useState<boolean>(false)
-  const [data, setData] = useState(getInitialData<ItemData>())
+  const [data, setData] = useState(getInitialData<ItemData>(defaultPageSize))
   const [version, setVersion] = useState<number>(0)
   const showAllLocalesRef = useRef<boolean>(false)
 
   const notHiddenColumnSet = useMemo(() => new Set(notHiddenColumns), [notHiddenColumns])
-  const columnsMemoized = useMemo(() => getColumns(itemMap, item, openItem), [item, itemMap])
+  const columnsMemoized = useMemo(() => getColumns({
+    items: itemMap,
+    item,
+    maxTextLength,
+    defaultColWidth,
+    luxonDisplayDateFormatString,
+    luxonDisplayTimeFormatString,
+    luxonDisplayDateTimeFormatString,
+    onOpenItem: openItem
+  }), [defaultColWidth, item, itemMap, luxonDisplayDateFormatString, luxonDisplayDateTimeFormatString, luxonDisplayTimeFormatString, maxTextLength])
   const hiddenColumnsMemoized = useMemo(() => getHiddenColumns(item).filter(it => !notHiddenColumnSet.has(it)), [item, notHiddenColumnSet])
 
   const handleRequest = useCallback(async (params: RequestParams) => {
@@ -67,7 +79,7 @@ export default function SearchDataGridWrapper({item, notHiddenColumns = [], extr
       version={version}
       initialState={{
         hiddenColumns: hiddenColumnsMemoized,
-        pageSize: appConfig.query.defaultPageSize
+        pageSize: appProps.query.defaultPageSize
       }}
       toolbar={item.localized && <Checkbox onChange={handleLocalizationsCheckBoxChange}>{t('All Locales')}</Checkbox>}
       title={t(item.displayPluralName)}

@@ -18,7 +18,6 @@ import {
 
 import {IBuffer, ViewState} from 'src/types'
 import {FlaggedResponse, ItemData, ItemDataWrapper, ResponseCollection} from 'src/types/schema'
-import appConfig from 'src/config'
 import {useTranslation} from 'react-i18next'
 import SearchDataGridWrapper from './SearchDataGridWrapper'
 import {ItemFiltersInput} from 'src/services/query'
@@ -30,7 +29,7 @@ import {
   MAJOR_REV_ATTR_NAME,
   MINOR_REV_ATTR_NAME
 } from 'src/config/constants'
-import {useAuth, useItemOperations, useMutationManager, useRegistry} from 'src/util/hooks'
+import {useAppProperties, useAuth, useItemOperations, useMutationManager, useRegistry} from 'src/util/hooks'
 import {useMDIContext} from '../../uiKit/MDITabs/hooks'
 import {getTitle} from 'src/util/mdi'
 import {pluginEngine} from 'src/extensions/plugins'
@@ -70,6 +69,7 @@ export default function ViewNavTabHeader({
   const isLocked = data?.lockedBy?.data?.id != null
   const Icon = item.icon ? (icons as any)[item.icon] : null
   const {t} = useTranslation()
+  const appProps = useAppProperties()
   const [isVersionsModalVisible, setVersionsModalVisible] = useState(false)
   const [isPromoteModalVisible, setPromoteModalVisible] = useState(false)
   const mutationManager = useMutationManager()
@@ -160,7 +160,7 @@ export default function ViewNavTabHeader({
     setLoading(true)
     try {
       const id = data?.[item.idAttribute] as string
-      const doDelete = async () => await mutationManager.remove(item, id, appConfig.mutation.deletingStrategy)
+      const doDelete = async () => await mutationManager.remove(item, id, appProps.mutation.deletingStrategy)
       let deleted: ItemData
       if (pluginEngine.hasApiMiddleware(item.name)) {
         const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values: {id}}
@@ -193,7 +193,7 @@ export default function ViewNavTabHeader({
     setLoading(true)
     try {
       const id = data?.[item.idAttribute] as string
-      const doPurge = async () => await mutationManager.purge(item, id, appConfig.mutation.deletingStrategy)
+      const doPurge = async () => await mutationManager.purge(item, id, appProps.mutation.deletingStrategy)
       let purged: ResponseCollection<ItemData>
       if (pluginEngine.hasApiMiddleware(item.name)) {
         const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values: {id}}

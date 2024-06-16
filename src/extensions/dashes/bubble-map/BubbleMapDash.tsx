@@ -7,10 +7,9 @@ import L, {LatLngExpression} from 'leaflet'
 import {DashRenderContext} from '../index'
 import * as RulesService from 'src/services/rules'
 import {defaultDashColor, defaultDashColors} from 'src/bi/util'
-import biConfig from 'src/config/bi'
 import {MAX_LAT, MAX_LNG, MIN_LAT, MIN_LNG} from '.'
 import {QueryFilter, QueryOp} from 'src/types/bi'
-import {useBI} from 'src/bi/util/hooks'
+import {useBIData, useBiProperties} from 'src/bi/util/hooks'
 import 'leaflet/dist/leaflet.css'
 
 interface BubbleMapDashOptions {
@@ -25,11 +24,8 @@ interface BubbleMapDashOptions {
     rules?: string
 }
 
-const mapConfig = biConfig.dash.map
-const defaultColor = defaultDashColor()
-
 function BubbleMapDash({fullScreen, dataset, dash, height, data}: DashRenderContext) {
-  const {openDashboard} = useBI()
+  const {openDashboard} = useBIData()
   const {relatedDashboardId} = dash
   const optValues = dash.optValues as BubbleMapDashOptions
   const {
@@ -45,7 +41,11 @@ function BubbleMapDash({fullScreen, dataset, dash, height, data}: DashRenderCont
   const labelField = Array.isArray(optValues.labelField) ? optValues.labelField[0] : optValues.labelField
   const fieldRules = useMemo(() => RulesService.parseRules(rules), [rules])
   const seriesData = useMemo(() => colorField ? _.uniqBy(data, colorField) : [], [colorField, data])
-  const seriesColors = useMemo(() => colorField ? RulesService.getSeriesColors(fieldRules, colorField, seriesData, defaultDashColors(seriesData.length)) : [], [colorField, fieldRules, seriesData])
+  const biProps = useBiProperties()
+  const {colors10, colors20} = biProps.dash.all
+  const mapConfig = biProps.dash.map
+  const defaultColor = defaultDashColor(colors10, colors20)
+  const seriesColors = useMemo(() => colorField ? RulesService.getSeriesColors(fieldRules, colorField, seriesData, defaultDashColors(seriesData.length, colors10, colors20)) : [], [colorField, fieldRules, seriesData])
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstance = useRef<L.Map | null>(null)
   const columns = useMemo(() => ({...(dataset.spec.columns ?? {}), ...dash.fields}), [dash.fields, dataset.spec.columns])

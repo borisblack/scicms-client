@@ -2,9 +2,9 @@ import {useEffect} from 'react'
 import {Checkbox, Form, FormInstance, Input} from 'antd'
 
 import {useTranslation} from 'react-i18next'
-import appConfig from 'src/config'
 import styles from './Indexes.module.css'
 import {NamedIndex} from './types'
+import {useAppProperties} from 'src/util/hooks'
 
 interface Props {
     form: FormInstance
@@ -18,6 +18,7 @@ const {TextArea} = Input
 
 export default function IndexForm({form, index, canEdit, onFormFinish}: Props) {
   const {t} = useTranslation()
+  const appProps = useAppProperties()
 
   useEffect(() => {
     form.resetFields()
@@ -42,7 +43,7 @@ export default function IndexForm({form, index, canEdit, onFormFinish}: Props) {
         initialValue={index?.columns?.join('\n')}
         rules={[{required: true, message: t('Required field')}]}
       >
-        <TextArea style={{maxWidth: 180}} rows={appConfig.ui.form.textAreaRows}/>
+        <TextArea style={{maxWidth: 180}} rows={appProps.ui.form.textAreaRows}/>
       </FormItem>
 
       <FormItem

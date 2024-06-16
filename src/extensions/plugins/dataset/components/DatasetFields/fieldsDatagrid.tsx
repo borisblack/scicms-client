@@ -2,7 +2,6 @@ import {ReactNode} from 'react'
 import {ColumnDef, createColumnHelper} from '@tanstack/react-table'
 import {Tag, Typography} from 'antd'
 import i18n from 'src/i18n'
-import appConfig from 'src/config'
 import {FieldType} from 'src/types'
 import {NamedColumn} from 'src/types/bi'
 import {
@@ -20,6 +19,7 @@ import FieldName, {TagType} from 'src/components/FieldName'
 interface GetColumnsProps {
     ownColumns: Record<string, Column>
     canEdit: boolean
+    defaultColWidth: number
     onClick: (fieldName: string) => void
     onChange: (value: NamedColumn, prevName: string) => void
 }
@@ -38,7 +38,7 @@ const renderField = (field: NamedColumn, tag?: TagType): ReactNode => (
   </span>
 )
 
-export function getColumns({ownColumns, canEdit, onChange, onClick}: GetColumnsProps): ColumnDef<NamedColumn, any>[] {
+export function getColumns({ownColumns, canEdit, defaultColWidth, onChange, onClick}: GetColumnsProps): ColumnDef<NamedColumn, any>[] {
   return [
         columnHelper.accessor('name', {
           header: i18n.t('Name'),
@@ -77,7 +77,7 @@ export function getColumns({ownColumns, canEdit, onChange, onClick}: GetColumnsP
               sourceField ? renderField({...sourceField, name: source as string}) : null
             )
           },
-          size: appConfig.ui.dataGrid.colWidth,
+          size: defaultColWidth,
           enableSorting: true
         }) as ColumnDef<NamedColumn, FieldType>,
         columnHelper.accessor('hidden', {
@@ -145,7 +145,7 @@ export function getColumns({ownColumns, canEdit, onChange, onClick}: GetColumnsP
 
             return info.getValue()
           },
-          size: appConfig.ui.dataGrid.colWidth,
+          size: defaultColWidth,
           enableSorting: true
         }) as ColumnDef<NamedColumn, string>,
         columnHelper.accessor('alias', {

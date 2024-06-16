@@ -6,10 +6,12 @@ import * as DashboardService from 'src/services/dashboard'
 import * as DashboardCategoryService from 'src/services/dashboard-category'
 import {useItemOperations, useRegistry} from 'src/util/hooks'
 import {DASHBOARD_ITEM_NAME, DATASET_ITEM_NAME} from 'src/config/constants'
-import {Dashboard, DashboardCategory, Dataset, IDash, ISelector, QueryFilter, SelectorLinkType} from 'src/types/bi'
+import {Dashboard, DashboardCategory, Dataset, ISelector, QueryFilter, SelectorLinkType} from 'src/types/bi'
 import {SelectorFilter} from '../../types/bi'
+import {BiConfig} from 'src/config/bi'
+import {getBiProperties} from 'src/config/util'
 
-interface UseBIProps {
+interface UseBIDataProps {
     withDatasets?: boolean
     withDashboards?: boolean
     withDashboardCategories?: boolean
@@ -23,6 +25,15 @@ interface UseBIResult {
     openDashboard: (id: string, queryFilter?: QueryFilter) => void
 }
 
+interface UseSelectorsProps {
+  selectors: ISelector[]
+  onSelectorChange: (selector: ISelector) => void
+}
+
+interface UseSelectorsResult {
+  selectedDashFilters: Record<string, SelectorFilter[]>
+  selectDashValue: (id: string, value: any) => void
+}
 
 const defaultUseBIProps = {
   withDatasets: false,
@@ -30,7 +41,7 @@ const defaultUseBIProps = {
   withDashboardCategories: false
 }
 
-export function useBI({withDatasets, withDashboards, withDashboardCategories}: UseBIProps = defaultUseBIProps): UseBIResult {
+export function useBIData({withDatasets, withDashboards, withDashboardCategories}: UseBIDataProps = defaultUseBIProps): UseBIResult {
   const {items: itemMap} = useRegistry()
   const {open} = useItemOperations()
   const datasetItem = useMemo(() => itemMap[DATASET_ITEM_NAME], [itemMap])
@@ -73,16 +84,6 @@ export function useBI({withDatasets, withDashboards, withDashboardCategories}: U
   return {datasets, dashboards, dashboardCategories, openDataset, openDashboard}
 }
 
-interface UseSelectorsProps {
-    selectors: ISelector[]
-    onSelectorChange: (selector: ISelector) => void
-}
-
-interface UseSelectorsResult {
-    selectedDashFilters: Record<string, SelectorFilter[]>
-    selectDashValue: (id: string, value: any) => void
-}
-
 export function useSelectors({selectors, onSelectorChange}: UseSelectorsProps): UseSelectorsResult {
   const selectedDashFilters = useMemo<Record<string, SelectorFilter[]>>(() => {
     const res: Record<string, SelectorFilter[]> = {}
@@ -120,4 +121,10 @@ export function useSelectors({selectors, onSelectorChange}: UseSelectorsProps): 
     selectedDashFilters,
     selectDashValue
   }
+}
+
+export function useBiProperties(): BiConfig {
+  const {properties} = useRegistry()
+
+  return getBiProperties(properties)
 }

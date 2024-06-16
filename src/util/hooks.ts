@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import type {TypedUseSelectorHook} from 'react-redux'
 import {useDispatch, useSelector} from 'react-redux'
@@ -29,9 +28,9 @@ import QueryManager from 'src/services/query'
 import MutationManager from 'src/services/mutation'
 import {useMDIContext} from '../uiKit/MDITabs/hooks'
 import {createMDITab, generateKeyById} from './mdi'
-import menuConfig from 'src/config/menu'
-import appConfig from 'src/config'
-import biConfig from 'src/config/bi'
+import {getAppProperties, getProperty} from 'src/config/util'
+import {AppConfig, PropertyKey} from 'src/config'
+import {MenuConfig} from 'src/config/menu'
 
 export const useAppDispatch: () => AppDispatch = useDispatch
 
@@ -230,23 +229,10 @@ export function useItemOperations() {
   return {create, open, close}
 }
 
-const biPathPattern = /^bi\.(.+)$/
-
 export function useProperty(path: string): any {
   const {properties} = useRegistry()
 
-  const getConfig = useCallback(() => {
-    if (path === 'menu')
-      return menuConfig
-
-    const biPathMatches = path.match(biPathPattern)
-    if (biPathMatches)
-      return _.get(biConfig, biPathMatches[1])
-
-    return _.get(appConfig, path)
-  }, [path])
-
-  return properties[path]?.value ?? getConfig()
+  return getProperty(path, properties)
 }
 
 interface UseModalProps {
@@ -278,3 +264,11 @@ export function useModal({defaultVisible}: UseModalProps = {}): UseModal {
     close: handleClose
   }
 }
+
+export function useAppProperties(): AppConfig {
+  const {properties} = useRegistry()
+
+  return getAppProperties(properties)
+}
+
+export const useMenuProperties = (): MenuConfig => useProperty(PropertyKey.MENU)

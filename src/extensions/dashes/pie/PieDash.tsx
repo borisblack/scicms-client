@@ -7,9 +7,8 @@ import {v4 as uuidv4} from 'uuid'
 import {DashEventHandler, DashRenderContext} from '..'
 import {defaultDashColors, columnType, formatValue, toPercent} from 'src/bi/util'
 import {LegendPosition} from '../util'
-import biConfig from 'src/config/bi'
 import * as RulesService from 'src/services/rules'
-import {useBI} from 'src/bi/util/hooks'
+import {useBIData, useBiProperties} from 'src/bi/util/hooks'
 import {handleDashClick} from '../util/antdPlot'
 
 interface PieDashOptions {
@@ -21,11 +20,8 @@ interface PieDashOptions {
     rules?: string
 }
 
-const {locale, percentFractionDigits, dash: dashConfig} = biConfig
-const legendConfig = dashConfig?.all?.legend
-
 export default function PieDash({dataset, dash, data, onDashClick}: DashRenderContext) {
-  const {openDashboard} = useBI()
+  const {openDashboard} = useBIData()
   const optValues = dash.optValues as PieDashOptions
   const {relatedDashboardId} = dash
   const {
@@ -38,7 +34,12 @@ export default function PieDash({dataset, dash, data, onDashClick}: DashRenderCo
   const colorField = Array.isArray(optValues.colorField) ? optValues.colorField[0] : optValues.colorField
   const fieldRules = useMemo(() => RulesService.parseRules(rules), [rules])
   const seriesData = colorField ? _.uniqBy(data, colorField) : []
-  const seriesColors = colorField ? RulesService.getSeriesColors(fieldRules, colorField, seriesData, defaultDashColors(seriesData.length)) : []
+  const biProps = useBiProperties()
+  const {colors10, colors20} = biProps.dash.all
+  const {dateFormatString, timeFormatString, dateTimeFormatString} = biProps.dateTime
+  const {dash: dashConfig, locale, fractionDigits, percentFractionDigits} = biProps
+  const legendConfig = dashConfig.all.legend
+  const seriesColors = colorField ? RulesService.getSeriesColors(fieldRules, colorField, seriesData, defaultDashColors(seriesData.length, colors10, colors20)) : []
 
   if (!angleField)
     return <Alert message="angleField attribute not specified" type="error"/>
@@ -78,7 +79,7 @@ export default function PieDash({dataset, dash, data, onDashClick}: DashRenderCo
     label: {
       type: 'inner',
       offset: '-30%',
-      content: ({ percent }) => `${toPercent(percent)}%`,
+      content: ({ percent }) => `${toPercent(percent, percentFractionDigits)}%`,
       style: dashConfig?.pie?.labelStyle
     },
     interactions: [{
@@ -90,11 +91,11 @@ export default function PieDash({dataset, dash, data, onDashClick}: DashRenderCo
     meta: {
       [angleField]: {
         alias: angleColumn.alias || angleField,
-        formatter: (value: any) => formatValue(value, columnType(angleColumn))
+        formatter: (value: any) => formatValue({value, type: columnType(angleColumn), dateFormatString, timeFormatString, dateTimeFormatString, fractionDigits})
       },
       [colorField]: {
         alias: colorColumn.alias || colorField,
-        formatter: (value: any) => formatValue(value, columnType(colorColumn))
+        formatter: (value: any) => formatValue({value, type: columnType(colorColumn), dateFormatString, timeFormatString, dateTimeFormatString, fractionDigits})
       }
     },
     color: seriesColors,

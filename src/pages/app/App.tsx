@@ -2,7 +2,7 @@ import {ReactNode, useEffect} from 'react'
 import {Navigate} from 'react-router-dom'
 import {Layout} from 'antd'
 
-import {useAuth, useProperty, useRegistry} from 'src/util/hooks'
+import {useAuth, useMenuProperties, useRegistry} from 'src/util/hooks'
 import Navbar from 'src/features/registry/Navbar'
 import {ViewType} from 'src/types'
 import {ItemDataWrapper} from 'src/types/schema'
@@ -14,7 +14,6 @@ import {useNewMDIContextRedux} from 'src/features/mdi/hooks'
 import {EMPTY_ARRAY} from 'src/config/constants'
 import {toAntdMenuItems} from 'src/features/registry/util'
 import './App.css'
-import {MenuConfig} from 'src/config/menu'
 
 const {Content} = Layout
 
@@ -22,7 +21,7 @@ function App() {
   const {me, isExpired} = useAuth()
   const {isInitialized, initializeIfNeeded, items} = useRegistry()
   const mdiContext = useNewMDIContextRedux<ItemDataWrapper>(EMPTY_ARRAY)
-  const menuItems = (useProperty('menu') as MenuConfig).items
+  const menuItems = useMenuProperties().items
 
   useEffect(() => {
     if (me) {

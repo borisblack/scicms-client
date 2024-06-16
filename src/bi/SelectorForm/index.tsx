@@ -6,7 +6,7 @@ import {DeleteOutlined, FolderOpenOutlined, PlusCircleOutlined} from '@ant-desig
 import {DefaultOptionType} from 'rc-select/lib/Select'
 
 import {ColumnType, Dataset, IDash, ISelector, SelectorLink, SelectorLinkType} from 'src/types/bi'
-import {useBI} from '../util/hooks'
+import {useBIData} from '../util/hooks'
 import {requiredFieldRule} from 'src/util/form'
 import {datasetFieldTypeOptions, queryOpList, queryOpTitles} from '../util'
 import FieldTypeIcon from 'src/components/FieldTypeIcon'
@@ -28,7 +28,7 @@ const {Link, Title} = Typography
 export default function SelectorForm({selector, datasetMap, dashes, canEdit}: SelectorFormProps) {
   const form = Form.useFormInstance()
   const {t} = useTranslation()
-  const {openDataset} = useBI({withDashboards: true})
+  const {openDataset} = useBIData({withDashboards: true})
   const datasetName = Form.useWatch('dataset', form)
   const dataset: Dataset | undefined = useMemo(() => datasetName ? datasetMap[datasetName] : undefined, [datasetName, datasetMap])
   const fieldOptions: DefaultOptionType[] = useMemo(() => {

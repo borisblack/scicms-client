@@ -1,9 +1,9 @@
 import i18n from 'i18next'
 import {initReactI18next} from 'react-i18next'
 
-import config from '../config'
 import ru from './ru'
 import en from './en'
+import {clientConfig} from 'src/config'
 
 const _codeMessage: any = {
   200: 'Server successfully returned the requested data',
@@ -32,8 +32,8 @@ i18n
       en,
       ru
     },
-    lng: config.i18nLng,
-    fallbackLng: config.i18nLng,
+    lng: clientConfig.i18nLng,
+    fallbackLng: clientConfig.i18nLng,
     interpolation: {
       escapeValue: false
     },

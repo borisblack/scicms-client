@@ -11,12 +11,11 @@ import {
   type RequestParams,
   DataGrid
 } from 'src/uiKit/DataGrid'
-import appConfig from 'src/config'
 import {getInitialData, processLocal} from 'src/util/datagrid'
 import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design/icons'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
 import IndexForm from './IndexForm'
-import {useItemAcl, useRegistry} from 'src/util/hooks'
+import {useAppProperties, useItemAcl, useRegistry} from 'src/util/hooks'
 import {getHiddenIndexColumns, getIndexColumns} from './indexColumns'
 import {NamedIndex} from './types'
 import {CustomComponentContext} from 'src/extensions/plugins/types'
@@ -29,9 +28,12 @@ export function Indexes({data: dataWrapper, buffer, onBufferChange}: CustomCompo
   const {itemTemplates} = useRegistry()
   const isNew = !data?.id
   const {t} = useTranslation()
+  const appProps = useAppProperties()
+  const defaultColWidth = appProps.ui.dataGrid.colWidth
+  const {defaultPageSize, minPageSize, maxPageSize} = appProps.query
   const [version, setVersion] = useState<number>(0)
   const acl = useItemAcl(item, data)
-  const columns = useMemo(() => getIndexColumns(), [])
+  const columns = useMemo(() => getIndexColumns(defaultColWidth), [defaultColWidth])
   const hiddenColumns = useMemo(() => getHiddenIndexColumns(), [])
   const spec: ItemSpec = useMemo(() => buffer.spec ?? data?.spec ?? {}, [buffer.spec, data?.spec])
 
@@ -54,7 +56,7 @@ export function Indexes({data: dataWrapper, buffer, onBufferChange}: CustomCompo
 
   }, [data?.includeTemplates, isNew, item.name, itemTemplates, spec.indexes])
   const [namedIndexes, setNamedIndexes] = useState<NamedIndex[]>(initialNamedIndexes)
-  const [filteredData, setFilteredData] = useState<DataWithPagination<NamedIndex>>(getInitialData())
+  const [filteredData, setFilteredData] = useState<DataWithPagination<NamedIndex>>(getInitialData(defaultPageSize))
   const [selectedIndex, setSelectedIndex] = useState<NamedIndex | null>(null)
   const [isEditModalVisible, setEditModalVisible] = useState<boolean>(false)
   const [indexForm] = Form.useForm()
@@ -76,8 +78,8 @@ export function Indexes({data: dataWrapper, buffer, onBufferChange}: CustomCompo
   }, [onBufferChange])
 
   const handleRequest = useCallback(async (params: RequestParams) => {
-    setFilteredData(processLocal(namedIndexes, params))
-  }, [namedIndexes])
+    setFilteredData(processLocal({data: namedIndexes, params, minPageSize, maxPageSize}))
+  }, [namedIndexes, minPageSize, maxPageSize])
 
   const openRow = useCallback((row: Row<NamedIndex>) => {
     setSelectedIndex(row.original)
@@ -170,7 +172,7 @@ export function Indexes({data: dataWrapper, buffer, onBufferChange}: CustomCompo
         data={filteredData}
         initialState={{
           hiddenColumns: hiddenColumns,
-          pageSize: appConfig.query.defaultPageSize
+          pageSize: appProps.query.defaultPageSize
         }}
         toolbar={renderToolbar()}
         version={version}

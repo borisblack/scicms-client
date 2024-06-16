@@ -16,11 +16,18 @@ import {DeletingStrategy} from '../types'
 // LuxonSettings.defaultZone = UTC
 // dayjs.tz.setDefault(UTC)
 
-interface AppConfig {
+interface ClientConfig {
+  i18nLng: string
+  coreUrl: string
+  antdLocale: Locale
+  notification: {
+    duration: number
+    placement?: 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight'
+  }
+}
+
+export interface AppConfig {
     coreVersion: string
-    coreUrl: string
-    i18nLng: string
-    antdLocale: Locale
     dateTime: {
         timeZone: string
         luxonDisplayDateFormatString: string
@@ -49,8 +56,6 @@ interface AppConfig {
             textAreaRows: number
             editorHeight: string
         }
-        notificationDuration: number
-        notificationPlacement?: 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight'
         split: {
             defaultSplitterColors: {
                 color: string
@@ -62,11 +67,44 @@ interface AppConfig {
     }
 }
 
-const appConfig: AppConfig = {
-  coreVersion: 'v1',
+export enum PropertyKey {
+  CORE_VERSION = 'coreVersion',
+  DATE_TIME_TIME_ZONE = 'dateTime.timeZone',
+  DATE_TIME_LUXON_DISPLAY_DATE_FORMAT_STRING = 'dateTime.luxonDisplayDateFormatString',
+  DATE_TIME_LUXON_DISPLAY_TIME_FORMAT_STRING = 'dateTime.luxonDisplayTimeFormatString',
+  DATE_TIME_LUXON_DISPLAY_DATE_TIME_FORMAT_STRING = 'dateTime.luxonDisplayDateTimeFormatString',
+  DATE_TIME_MOMENT_DISPLAY_DATE_FORMAT_STRING = 'dateTime.momentDisplayDateFormatString',
+  DATE_TIME_MOMENT_DISPLAY_TIME_FORMAT_STRING = 'dateTime.momentDisplayTimeFormatString',
+  DATE_TIME_MOMENT_DISPLAY_DATE_TIME_FORMAT_STRING = 'dateTime.momentDisplayDateTimeFormatString',
+  MENU = 'menu',
+  MUTATION_COPY_COLLECTION_RELATIONS = 'mutation.copyCollectionRelations',
+  MUTATION_DELETING_STRATEGY = 'mutation.deletingStrategy',
+  QUERY_MIN_PAGE_SIZE = 'query.minPageSize',
+  QUERY_DEFAULT_PAGE_SIZE = 'query.defaultPageSize',
+  QUERY_MAX_PAGE_SIZE = 'query.maxPageSize',
+  SPLIT_DEFAULT_SPLITTER_COLORS_COLOR = 'split.defaultSplitterColors.color',
+  SPLIT_DEFAULT_SPLITTER_COLORS_DRAG = 'split.defaultSplitterColors.drag',
+  SPLIT_DEFAULT_SPLITTER_COLORS_HOVER = 'split.defaultSplitterColors.hover',
+  SPLIT_SPLITTER_SIZE = 'split.splitterSize',
+  UI_DATAGRID_COL_WIDTH = 'ui.dataGrid.colWidth',
+  UI_DATAGRID_MAX_TEXT_LENGTH = 'ui.dataGrid.maxTextLength',
+  UI_FORM_EDITOR_HEIGHT = 'ui.form.editorHeight',
+  UI_FORM_FIELD_WIDTH = 'ui.form.fieldWidth',
+  UI_FORM_TEXT_AREA_ROWS = 'ui.form.textAreaRows'
+}
+
+export const clientConfig: ClientConfig = {
   coreUrl: process.env.REACT_APP_CORE_URL ?? DEFAULT_CORE_URL,
   i18nLng: 'ru',
   antdLocale: ruRU,
+  notification: {
+    duration: 10,
+    placement: 'topRight'
+  }
+}
+
+export const appConfig: AppConfig = {
+  coreVersion: 'v1',
   dateTime: {
     timeZone: 'Asia/Krasnoyarsk',
     luxonDisplayDateFormatString: LUXON_DATE_FORMAT_STRING,
@@ -95,8 +133,6 @@ const appConfig: AppConfig = {
       textAreaRows: 5,
       editorHeight: '110px'
     },
-    notificationDuration: 10,
-    notificationPlacement: 'topRight',
     split: {
       defaultSplitterColors: {
         color: '#dddddd',
@@ -108,11 +144,9 @@ const appConfig: AppConfig = {
   }
 }
 
-dayjs.locale(appConfig.i18nLng)
+dayjs.locale(clientConfig.i18nLng)
 
 notification.config({
-  placement: appConfig.ui.notificationPlacement,
-  duration: appConfig.ui.notificationDuration
+  placement: clientConfig.notification.placement,
+  duration: clientConfig.notification.duration
 })
-
-export default appConfig

@@ -7,9 +7,8 @@ import {v4 as uuidv4} from 'uuid'
 import {DashEventHandler, DashRenderContext} from '..'
 import {defaultDashColor, defaultDashColors, columnType, formatValue, isTemporal} from 'src/bi/util'
 import {LegendPosition} from '../util'
-import biConfig from 'src/config/bi'
 import * as RulesService from 'src/services/rules'
-import {useBI} from 'src/bi/util/hooks'
+import {useBIData, useBiProperties} from 'src/bi/util/hooks'
 import {handleDashClick} from '../util/antdPlot'
 
 interface ScatterDashOptions {
@@ -22,12 +21,8 @@ interface ScatterDashOptions {
     rules?: string
 }
 
-const {dash: dashConfig, locale} = biConfig
-const axisLabelStyle = dashConfig?.all?.axisLabelStyle
-const legendConfig = dashConfig?.all?.legend
-
 export default function ScatterDash({dataset, dash, data, onDashClick}: DashRenderContext) {
-  const {openDashboard} = useBI()
+  const {openDashboard} = useBIData()
   const optValues = dash.optValues as ScatterDashOptions
   const {relatedDashboardId} = dash
   const {
@@ -41,8 +36,14 @@ export default function ScatterDash({dataset, dash, data, onDashClick}: DashRend
   const colorField = Array.isArray(optValues.colorField) ? optValues.colorField[0] : optValues.colorField
   const fieldRules = useMemo(() => RulesService.parseRules(rules), [rules])
   const seriesData = colorField ? _.uniqBy(data, colorField) : []
-  const seriesColors = colorField ? RulesService.getSeriesColors(fieldRules, colorField, seriesData, defaultDashColors(seriesData.length)) : []
-  const defaultColor = defaultDashColor()
+  const biProps = useBiProperties()
+  const {colors10, colors20} = biProps.dash.all
+  const {dateFormatString, timeFormatString, dateTimeFormatString} = biProps.dateTime
+  const {dash: dashConfig, locale, fractionDigits} = biProps
+  const axisLabelStyle = dashConfig.all.axisLabelStyle
+  const legendConfig = dashConfig.all.legend
+  const seriesColors = colorField ? RulesService.getSeriesColors(fieldRules, colorField, seriesData, defaultDashColors(seriesData.length, colors10, colors20)) : []
+  const defaultColor = defaultDashColor(colors10, colors20)
 
   if (!xField)
     return <Alert message="xField attribute not specified" type="error"/>
@@ -114,11 +115,11 @@ export default function ScatterDash({dataset, dash, data, onDashClick}: DashRend
     meta: {
       [xField]: {
         alias: xColumn.alias || xField,
-        formatter: (value: any) => formatValue(value, columnType(xColumn))
+        formatter: (value: any) => formatValue({value, type: columnType(xColumn), dateFormatString, timeFormatString, dateTimeFormatString, fractionDigits})
       },
       [yField]: {
         alias: yColumn.alias || yField,
-        formatter: (value: any) => formatValue(value, columnType(yColumn))
+        formatter: (value: any) => formatValue({value, type: columnType(yColumn), dateFormatString, timeFormatString, dateTimeFormatString, fractionDigits})
       }
     },
     color: colorField ? seriesColors : (record => (RulesService.getFieldColor(fieldRules, record) ?? (defaultColor as string))),
