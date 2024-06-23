@@ -42,6 +42,7 @@ const en = {
     'Cache TTL (min)': 'Cache TTL (min)',
     'Cancellation error': 'Cancellation error',
     'Cannot lock item': 'Cannot lock item',
+    'Cannot resolve type. Eihther Source or Formula field must be set.': 'Cannot resolve type. Eihther Source or Formula field must be set.',
     'Cannot unlock item': 'Cannot unlock item',
     'Cancel': 'Cancel',
     'Categories': 'Categories',

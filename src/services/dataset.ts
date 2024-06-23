@@ -3,7 +3,7 @@ import qs from 'qs'
 import {gql} from '@apollo/client'
 import i18n from '../i18n'
 import {apolloClient, extractAxiosErrorMessage, extractGraphQLErrorMessages} from '.'
-import {FieldType, Pagination, PaginationInput} from '../types'
+import {Pagination, PaginationInput} from '../types'
 import {AggregateType, Dataset, DatasetFiltersInput} from '../types/bi'
 
 export interface DatasetInput<T> {
@@ -18,7 +18,6 @@ export interface DatasetInput<T> {
 
 export interface DatasetFieldInput {
     name: string
-    type: FieldType
     custom: boolean
     source?: string
     formula?: string

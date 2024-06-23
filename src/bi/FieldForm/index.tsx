@@ -94,6 +94,8 @@ export default function FieldForm({field, allFields, canEdit}: ColumnFormProps) 
       form.setFieldValue('formula', undefined)
       setFormula('')
     } else if (newActiveKey === 'formula') {
+      form.setFieldValue('type', FieldType.decimal)
+      setFieldType(FieldType.decimal)
       form.setFieldValue('source', undefined)
       setSource(undefined)
       form.setFieldValue('aggregate', undefined)
@@ -121,10 +123,10 @@ export default function FieldForm({field, allFields, canEdit}: ColumnFormProps) 
       <Form.Item
         name="type"
         label={t('Type')}
-        rules={[requiredFieldRule()]}
+        rules={[{required: true, message: t('Cannot resolve type. Eihther Source or Formula field must be set.')}]}
       >
         <Select
-          disabled={!canEdit || !field.custom || !!source}
+          disabled
           options={datasetFieldTypeOptions}
         />
       </Form.Item>

@@ -171,8 +171,7 @@ function DashWrapper(props: DashWrapperProps) {
       else
         fieldNamesToFetch.add(axisValue)
 
-      const fieldsToFetch: Record<string, Column>
-                = _.pickBy(allFields, (field, fieldName) => fieldNamesToFetch.has(fieldName))
+      const fieldsToFetch: Record<string, Column> = _.pickBy(allFields, (field, fieldName) => fieldNamesToFetch.has(fieldName))
 
       datasetInput.fields = buildFieldsInput(fieldsToFetch)
     }

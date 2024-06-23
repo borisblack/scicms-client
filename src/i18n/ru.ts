@@ -42,6 +42,7 @@ const ru = {
     'Cache TTL (min)': 'TTL кэша (мин)',
     'Cancellation error': 'Ошибка отмены',
     'Cannot lock item': 'Не удалось заблокировать запись',
+    'Cannot resolve type. Eihther Source or Formula field must be set.': 'Невозможно определить тип. Должно быть задано поле Источник или Формула.',
     'Cannot unlock item': 'Не удалось разблокировать запись',
     'Cancel': 'Отмена',
     'Categories': 'Категории',

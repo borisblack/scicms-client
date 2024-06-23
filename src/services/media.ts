@@ -118,7 +118,7 @@ export async function uploadDataMultiple(input: UploadInput[]): Promise<MediaInf
     data.append('files', it.file)
     data.append('labels', it.label || '')
     data.append('descriptions', it.description || '')
-    data.append('permission', it.permission || '')
+    data.append('permissions', it.permission || '')
   })
 
   try {
