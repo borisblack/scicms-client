@@ -267,7 +267,7 @@ const ru = {
     'Move': 'Переместить',
     'minutes': 'минут',
     'months': 'месяцев',
-    'Name': 'Наименование',
+    'Name': 'Имя',
     'Name is not unique': 'Имя не уникально',
     'New password': 'Новый пароль',
     'No': 'Нет',

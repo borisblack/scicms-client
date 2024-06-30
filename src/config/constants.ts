@@ -24,6 +24,7 @@ export const LUXON_DATE_HOURS_FORMAT_STRING: string = 'dd.LL.yyyy HH'
 export const LUXON_STD_DATE_HOURS_FORMAT_STRING: string = 'yyyy-LL-dd HH'
 export const MOMENT_ISO_TIME_FORMAT_STRING: string = 'HH:mm:ssZ'
 export const DEFAULT_CORE_URL = 'http://localhost:8079'
+export const DEFAULT_I18N_LNG = 'en-US'
 
 export const ROLE_ADMIN: string = 'ROLE_ADMIN'
 export const ROLE_DESIGNER: string = 'ROLE_DESIGNER'

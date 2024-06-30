@@ -29,8 +29,8 @@ i18n
   .use(initReactI18next)
   .init({
     resources: {
-      en,
-      ru
+      'en-US': en,
+      'ru-RU': ru
     },
     lng: clientConfig.i18nLng,
     fallbackLng: clientConfig.i18nLng,

@@ -1,5 +1,6 @@
 import {FieldType} from 'src/types'
 import {ColumnType} from 'src/types/bi'
+import {clientConfig} from '.'
 
 export interface BiConfig {
     cols: number
@@ -118,7 +119,7 @@ const biConfig: BiConfig = {
   defaultTextHeight: 1,
   defaultPageSize: 100,
   defaultRefreshIntervalSeconds: 300,
-  locale: 'ru-RU',
+  locale: clientConfig.i18nLng,
   maxPageSize: 1000,
   minRefreshIntervalSeconds: 5,
   openFirstDashboard: true,

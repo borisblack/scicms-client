@@ -1,12 +1,14 @@
 import dayjs from 'dayjs'
 import {notification} from 'antd'
 import {Locale} from 'antd/lib/locale'
+import enUS from 'antd/locale/en_US'
 import ruRU from 'antd/locale/ru_RU'
 // import {Settings as LuxonSettings} from 'luxon'
 import 'dayjs/locale/ru'
 
 import {
   DEFAULT_CORE_URL,
+  DEFAULT_I18N_LNG,
   LUXON_DATE_FORMAT_STRING,
   LUXON_DATETIME_FORMAT_STRING,
   LUXON_TIME_FORMAT_STRING
@@ -93,10 +95,16 @@ export enum PropertyKey {
   UI_FORM_TEXT_AREA_ROWS = 'ui.form.textAreaRows'
 }
 
+const antdLocales: Record<string, Locale> = {
+  'en-US': enUS,
+  'ru-RU': ruRU
+}
+
+const i18nLng = process.env.REACT_APP_I18N_LNG ?? DEFAULT_I18N_LNG
 export const clientConfig: ClientConfig = {
   coreUrl: process.env.REACT_APP_CORE_URL ?? DEFAULT_CORE_URL,
-  i18nLng: 'ru',
-  antdLocale: ruRU,
+  i18nLng,
+  antdLocale: antdLocales[i18nLng] ?? ruRU,
   notification: {
     duration: 10,
     placement: 'topRight'

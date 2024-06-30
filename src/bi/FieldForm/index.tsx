@@ -79,6 +79,7 @@ export default function FieldForm({field, allFields, canEdit}: ColumnFormProps) 
   }
 
   function handleFormulaChange(newFormula: string | undefined) {
+    // TODO: Infer type from expression
     form.setFieldValue('formula', newFormula)
   }
 
@@ -94,6 +95,7 @@ export default function FieldForm({field, allFields, canEdit}: ColumnFormProps) 
       form.setFieldValue('formula', undefined)
       setFormula('')
     } else if (newActiveKey === 'formula') {
+      // TODO: Infer type from expression
       form.setFieldValue('type', FieldType.decimal)
       setFieldType(FieldType.decimal)
       form.setFieldValue('source', undefined)
