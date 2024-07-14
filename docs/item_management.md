@@ -11,6 +11,11 @@ For example, to create a `book` Item in the edit form, we need to fill in the fi
 
 ![Creating an Item](img/item_creating.png "Creating an Item")
 
+Each Item has an optional parameter **Cache TTL (min)** - cache lifetime in minutes.
+If it is not set, then the default value is 10 minutes (configurable parameter, for more details see [SciCMS Core documentation](https://github.com/borisblack/scicms-core/blob/main/docs/data_model.md "Data model").
+If the cache value is less than or equal to 0, then Item records are not cached.
+The cache works only for read operations. When an Item is changed/deleted, the cache is updated.
+
 After clicking the **Save** button, we need re-enter the application (a corresponding dialog box with a suggestion will be displayed).
 
 To view and edit an Item, double-click on the selected line in the list tab.
@@ -69,6 +74,51 @@ Each attribute has the following fields to configure visibility, location, and s
 - `sortOrder` - the order in which the attribute appears in the form/table.
 
 For any attribute of any Item, we can define your own form component (for more details, see the [Extensions](/docs/extensions.md) section).
+
+## Relationships
+
+There are four types of relations: `oneToOne`, `manyToOne`, `oneToMany` and `manyToMany`. This type is specified in the `relType` field of the attribute.
+The second required parameter of the `relation` type attribute is `target` - the name of the Item with which the relation is made.
+
+### OneToOne relationship
+
+This type of relationship implies that there is a single record in another table that is referenced by the record of the current Item (an attribute with the `relation` type of the current Item stores the identifier of the record of the second Item).
+In this case, the current Item is the "owner" of the relationship. The Items that make up the `oneToOne` relationship can belong to different datasources.
+The relation attribute of the first Item refers to the attribute of the second Item, which is specified in its **ID Attribute** parameter (default - `id`).
+This behavior can be overridden by setting the `referencedBy` field in the relation attribute.
+For more information about relationships, see [SciCMS Core documentation](https://github.com/borisblack/scicms-core/blob/main/docs/data_model.md "Data model").
+
+The `oneToOne` relationship can be bidirectional.
+Then the second Item also contains a virtual relation to the current one (without a physical table column, since it is not the "owner" of the relationship) with an additional `mappedBy` parameter.
+This parameter contains the name of the owner Item attribute that the relationship is based on.
+In bidirectional relationship, the owning Item must also contain an additional parameter (called `inversedBy`) on its side.
+Similar to `mappedBy`, this parameter contains the name of the attribute of the opposite Item that the relationship is based on.
+
+### manyToOne relationship
+
+A `manyToOne` relationship implies that there is a record in another table that is referenced by the current Item's records.
+The `manyToOne` relationship is always "owning", i.e. stores the record identifier of the second Item in its attribute column.
+The Items that make up the `manyToOne` and `oneToMany` relationships may belong to different datasources.
+Also, similar to `oneToOne`, we can override the identifier of the opposite Item by adding the `referencedBy` field to the relation attribute.
+
+### oneToMany relationship
+
+The `manyToOne` relationship can be bidirectional.
+Then the second Item will contain a virtual relation of type `oneToMany` to the list of records of the current Item with an additional parameter `mappedBy`.
+This parameter contains the name of the owner Item attribute on which the `manyToOne` relationship is built.
+In bidirectional relationship, the owning Item must also contain an additional parameter (called `inversedBy`) on its side.
+Similar to `mappedBy`, this parameter contains the name of the attribute of the opposite Item on which the `oneToMany` relationship is built.
+
+### manyToMany relationship
+
+The `manyToMany` relationship implies that the current Item's records can be referenced by the second Item's records.
+The reverse is also true: records of the second Item can be referenced by records of the current Item.
+To model such a relationship in a relational DBMS, it is necessary to have an intermediate table that stores links of the tables of the first and second Items to each other.
+Based on this requirement, before implementing the `manyToMany` relationship, we need to create an intermediate Item with two attributes `source` and `target` of type `relation` and the value `relType` = `manyToOne` (one for each of the main Items).
+We can then create `manyToMany` relations in each of the primary Items by specifying an `intermediate` property of the relation attribute.
+If the current Item is located (in an intermediate Item) in the `source` position, then the name of the attribute of the opposite Item is located in the `inversedBy` property, if in the `target` position - then in the `mappedBy` property.
+
+The Items that make up the `manyToMany` relationship cannot belong to different datasources. This limitation is due to the presence of an intermediate Item.
 
 ## Versioning
 
@@ -182,3 +232,22 @@ After saving the menu and refreshing the page, it should look like this:
 When we select the **Library/Books** item, a list of Items with a standard set of operations will open.
 
 Setting up access control for Items is described in the [Security](security.md) section.
+
+## Datasources
+
+The architecture of SciCMS involves storing metadata (all information necessary for the operation of the system) in the main relational database (built-in datasource `main`).
+To improve performance and provide scalability in a cloud environment, metadata is cached via [Redis](https://redis.io).
+
+The remaining data can be stored both in the main and in any other database.
+The system allows you to connect an unlimited number of databases dynamically during operation.
+In this case, actual connections are opened only at the time of access to the database, without wasting resources on idle connections.
+When idle for a long time (configurable parameter), connections are closed, freeing up system resources (for more details, see [SciCMS Core documentation](https://github.com/borisblack/scicms-core/blob/main/docs/data_model.md " Data model")).
+
+The menu item for managing datasources is **Administration/Storage/Datasources**.
+In the editing form, the username and password can be specified directly or using environment variables (as in the example below).
+
+![Creating a datasource](img/datasource_creation.png "Creating a datasource")
+
+Despite the fact that the password cannot be read through the external API, in the SciCMS database the credentials of the data sources are stored in pure form (since they are used when opening connections).
+Therefore, it is recommended to use the second method (environment variables).
+Once created, the datasource can be selected when creating any Item.

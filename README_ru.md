@@ -191,6 +191,6 @@ const menuConfig: MenuConfig = {
 
 [Жизненный цикл сущностей](docs/ru/lifecycle.md)
 
-[Расширения](docs/ru/extensions.md)
-
 [Инструменты аналитики](docs/ru/analytics.md)
+
+[Расширения](docs/ru/extensions.md)

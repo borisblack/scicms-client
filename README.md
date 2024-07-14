@@ -191,6 +191,6 @@ When we select the **Library/Books** item, a list of Items with a standard set o
 
 [Items lifecycle](docs/ru/lifecycle.md)
 
-[Extensions](docs/extensions.md)
-
 [Analytics tools](docs/analytics.md)
+
+[Extensions](docs/extensions.md)

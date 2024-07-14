@@ -62,12 +62,8 @@ export interface CustomRendererContext {
  * <itemName>.tabs.end
  */
 export type CustomComponentMountPoint = CustomRendererMountPoint |
-  'view.header' |
-  'view.footer' |
-  'view.content' |
   'view.content.form.begin' |
   'view.content.form.end' |
-  'tabs.content' |
   'tabs.begin' |
   'tabs.end'
 
