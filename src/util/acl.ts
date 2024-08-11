@@ -1,7 +1,8 @@
-import dayjs from 'dayjs'
+import {DateTime} from 'luxon'
 import {UserInfo} from '../types'
 import {Permission} from '../types/schema'
 import {getBit} from '.'
+import {UTC} from 'src/config/constants'
 
 function hasAccess(user: UserInfo | null, permission: Permission, bit: number): boolean {
   if (user == null)
@@ -19,10 +20,10 @@ function hasAccess(user: UserInfo | null, permission: Permission, bit: number): 
       if ((!identity.principal && !hasRole(user, identity.name)))
         return false
 
-      const beginDate = dayjs(acc.beginDate)
-      const endDate = acc.endDate == null ? null : dayjs(acc.endDate)
-      const now = dayjs()
-      return beginDate.isBefore(now) && (endDate == null || endDate.isAfter(now))
+      const beginDate = DateTime.fromISO(acc.beginDate, {zone: UTC})
+      const endDate = acc.endDate == null ? null : DateTime.fromISO(acc.endDate, {zone: UTC})
+      const now = DateTime.now().setZone(UTC, {keepLocalTime: true})
+      return beginDate <= now && (endDate == null || endDate > now)
     })
     .sort((a, b) => {
       let res = (a.sortOrder ?? Number.MAX_VALUE) - (b.sortOrder ?? Number.MAX_VALUE)
