@@ -219,6 +219,7 @@ export interface Attribute {
     scale?: number
     minRange?: number
     maxRange?: number
+    accept?: string
     colHidden?: boolean
     colWidth?: number
     fieldHidden?: boolean

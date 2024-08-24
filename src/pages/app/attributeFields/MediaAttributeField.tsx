@@ -110,6 +110,7 @@ const MediaAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, form, 
           id={`${uniqueKey}#${attrName}`}
           name="files"
           maxCount={1}
+          accept={attribute.accept}
           defaultFileList={getInitialUploadFileList()}
           fileList={fileList}
           beforeUpload={beforeUpload}
