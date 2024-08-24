@@ -9,7 +9,7 @@ import {generateKey} from 'src/util/mdi'
 const FormItem = Form.Item
 const {Password} = Input
 
-const PasswordAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrName, attribute, value}) => {
+const PasswordAttributeField: FC<AttributeFieldProps> = ({form, data: dataWrapper, attrName, attribute, value}) => {
   if (attribute.type !== FieldType.password)
     throw new Error('Illegal attribute')
 
@@ -23,6 +23,7 @@ const PasswordAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, att
 
     return additionalProps
   }, [isDisabled])
+  const password = Form.useWatch(attrName, form)
 
   return (
     <>
@@ -51,7 +52,7 @@ const PasswordAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, att
           // hasFeedback
           rules={[
             {
-              required: true,
+              required: Boolean(password),
               message: t('Please confirm password')
             },
             ({ getFieldValue }) => ({
