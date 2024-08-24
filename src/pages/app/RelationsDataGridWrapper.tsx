@@ -7,7 +7,7 @@ import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined, SelectOutlined} f
 import {type RequestParams, DataGrid} from 'src/uiKit/DataGrid'
 import {findAllRelated, getColumns, getHiddenColumns, getInitialData} from 'src/util/datagrid'
 import {Attribute, ItemData, ItemDataWrapper, RelType} from 'src/types/schema'
-import {ID_ATTR_NAME, SOURCE_ATTR_NAME, TARGET_ATTR_NAME} from 'src/config/constants'
+import {ID_ATTR_NAME, ITEM_ITEM_NAME, SOURCE_ATTR_NAME, TARGET_ATTR_NAME} from 'src/config/constants'
 import MutationManager from 'src/services/mutation'
 import QueryManager, {ItemFiltersInput} from 'src/services/query'
 import SearchDataGridWrapper from './SearchDataGridWrapper'
@@ -93,6 +93,13 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
     sourceAttribute?.referencedBy || item.idAttribute,
     targetAttribute?.referencedBy || target.idAttribute
   ], [sourceAttribute?.referencedBy, targetAttribute?.referencedBy, item.idAttribute, target.idAttribute])
+
+  const canEdit = useMemo(() => (
+    (
+      acl.canWrite ||
+      (acl.canAdmin && item.name === ITEM_ITEM_NAME && (relAttrName === 'allowedLifecycles' || relAttrName === 'allowedPermissions'))
+    ) && !relAttribute.readOnly
+  ), [acl.canAdmin, acl.canWrite, relAttribute.readOnly, item.name, relAttrName])
 
   const handleRequest = useCallback(async (params: RequestParams) => {
     if (!itemId)
@@ -282,7 +289,7 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
     } finally {
       setLoading(false)
     }
-  }, [closeItem, intermediate, mutationManager, queryManager, t, targetAttrName, target.idAttribute, target.name])
+  }, [intermediate, queryManager, targetAttrName, target.idAttribute, target.name, mutationManager, appProps.mutation.deletingStrategy, closeItem, t])
 
   const getRowContextMenu = useCallback((row: Row<ItemData>) => {
     const items: ItemType[] = [{
@@ -294,7 +301,7 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
 
     const rowPermissionId = row.original.permission?.data?.id
     const rowPermission = rowPermissionId ? permissionMap[rowPermissionId] : null
-    const canDelete = acl.canWrite && !!rowPermission && ACL.canDelete(me, rowPermission) && !relAttribute.readOnly
+    const canDelete = canEdit && !!rowPermission && ACL.canDelete(me, rowPermission)
     if (canDelete) {
       if (isOneToMany) {
         if (target.versioned) {
@@ -331,10 +338,10 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
     }
 
     return items
-  },[t, permissionMap, me, target.idAttribute, relAttribute.readOnly, openTarget, isOneToMany, target.versioned, acl.canWrite, deleteTarget, deleteIntermediate])
+  },[t, permissionMap, me, target.idAttribute, openTarget, isOneToMany, target.versioned, canEdit, deleteTarget, deleteIntermediate])
 
-  const renderToolbar = useCallback(() => {
-    if ((!acl.canWrite && !isNew) || relAttribute.readOnly)
+  const renderToolbar = useCallback(() => {    
+    if (isNew || !canEdit)
       return null
 
     const targetPermissionId = target.permission.data?.id
@@ -347,7 +354,7 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
         {canCreateTarget && <Button type="primary" size="small" icon={<PlusCircleOutlined/>} onClick={handleCreate}>{t('Add')}</Button>}
       </Space>
     )
-  }, [handleCreate, isOneToMany, me, permissionMap, relAttribute.readOnly, t, target.permission.data?.id, acl.canWrite, isNew])
+  }, [handleCreate, isOneToMany, me, permissionMap, t, target.permission.data?.id, canEdit, isNew])
 
   return (
     <>
