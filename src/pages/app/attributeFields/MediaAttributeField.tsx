@@ -52,8 +52,9 @@ const MediaAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, form, 
   }
 
   async function handleDownload() {
+    console.log(value)
     if (!mediaData)
-      throw Error('Illegal state')
+      return
 
     const {id, filename} = mediaData
     setLoading(true)

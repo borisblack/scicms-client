@@ -199,6 +199,7 @@ const ru = {
     'Invalid filter format': 'Неверный формат фильтра',
     'Invalid username and/or password': 'Неверно имя пользователя и/или пароль',
     'Inversed By': 'Inversed By',
+    'Is File': 'Файл',
     'Item cannot be locked': 'Запись не может быть заблокирована',
     'Item cannot be promoted': 'Запись не может быть перемещена',
     'Item cannot be unlocked': 'Запись не может быть разблокирована',

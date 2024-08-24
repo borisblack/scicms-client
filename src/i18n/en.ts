@@ -199,6 +199,7 @@ const en = {
     'Invalid filter format': 'Invalid filter format',
     'Invalid username and/or password': 'Invalid username and/or password',
     'Inversed By': 'Inversed By',
+    'Is File': 'Is File',
     'Item cannot be locked': 'Item cannot be locked',
     'Item cannot be promoted': 'Item cannot be promoted',
     'Item cannot be unlocked': 'Item cannot be unlocked',

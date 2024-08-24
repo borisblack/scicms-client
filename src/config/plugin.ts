@@ -4,6 +4,7 @@ import {Plugin} from '../extensions/plugins/Plugin'
 import {ItemPlugin} from 'src/extensions/plugins/item/ItemPlugin'
 import {DashboardPlugin} from 'src/extensions/plugins/dashboard/DashboardPlugin'
 import {DatasetPlugin} from 'src/extensions/plugins/dataset/DatasetPlugin'
+import {DatasourcePlugin} from 'src/extensions/plugins/datasource/DatasourcePlugin'
 import {LifecyclePlugin} from 'src/extensions/plugins/lifecycle/LifecyclePlugin'
 import {ProjectPlugin} from 'src/extensions/plugins/project/ProjectPlugin'
 import {CommonPlugin} from 'src/extensions/plugins/common/CommonPlugin'
@@ -23,6 +24,7 @@ const pluginConfig: PluginConfig = {
     new AccessPlugin(),
     new DashboardPlugin(),
     new DatasetPlugin(),
+    new DatasourcePlugin(),
     new ItemPlugin(),
     new LifecyclePlugin(),
     new MediaPlugin(),
