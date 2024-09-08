@@ -122,8 +122,9 @@ const renderCell = ({
     case FieldType.email:
     case FieldType.password:
     case FieldType.sequence:
-    case FieldType.enum:
       return value
+    case FieldType.enum:
+      return i18n.t(value)
     case FieldType.text:
       return value ? _.truncate(value, {length: maxTextLength}) : value
     case FieldType.int:

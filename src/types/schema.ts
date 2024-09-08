@@ -23,12 +23,20 @@ interface IntermediateItemTemplate {
 
 export interface Datasource extends DefaultItemTemplate {
     name: string
-    connectionString: string
-    username: string
-    password: string
+    sourceType: DatasourceType
+    connectionString: string | null
+    username: string | null
+    password: string | null
     maxPoolSize: number | null
     minIdle: number | null
+    media: Media | null
     params: Record<string, any>
+}
+
+export enum DatasourceType {
+    DATABASE = 'DATABASE',
+    EXCEL = 'EXCEL',
+    CSV = 'CSV'
 }
 
 export interface Lifecycle extends DefaultItemTemplate {

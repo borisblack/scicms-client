@@ -34,7 +34,7 @@ const EnumAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrNam
     >
       <Select
         id={`${uniqueKey}#${attrName}`}
-        options={attribute.enumSet.map(es => ({label: es, value: es}))}
+        options={attribute.enumSet.map(entry => ({label: t(entry), value: entry}))}
         {...additionalProps}
       />
     </FormItem>

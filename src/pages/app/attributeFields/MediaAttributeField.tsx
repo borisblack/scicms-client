@@ -52,7 +52,6 @@ const MediaAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, form, 
   }
 
   async function handleDownload() {
-    console.log(value)
     if (!mediaData)
       return
 
