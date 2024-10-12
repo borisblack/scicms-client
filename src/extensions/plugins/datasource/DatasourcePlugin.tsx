@@ -57,7 +57,7 @@ export class DatasourcePlugin extends Plugin {
       render: ({context}) => <DatasourceMediaAttributeField {...context}/>
     })
 
-    // Components
+    // Custom components
     this.addComponent({
       id: DATASOURCE_PARAMS_COMPONENT_ID,
       mountPoint: 'datasource.tabs.begin',
