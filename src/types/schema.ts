@@ -35,7 +35,7 @@ export interface Datasource extends DefaultItemTemplate {
 
 export enum DatasourceType {
     DATABASE = 'DATABASE',
-    EXCEL = 'EXCEL',
+    SPREADSHEET = 'SPREADSHEET',
     CSV = 'CSV'
 }
 

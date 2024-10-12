@@ -8,6 +8,7 @@ import {
   DatasourcePasswordAttributeField,
   UsernameAttributeField
 } from './attributeFields'
+import {DatasourceParams} from './components'
 
 const CONNECTION_STRING_ATTRIBUTE_FIELD_ID = 'connectionString'
 const USERNAME_ATTRIBUTE_FIELD_ID = 'username'
@@ -15,6 +16,7 @@ const PASSWORD_ATTRIBUTE_FIELD_ID = 'password'
 const MAX_POOL_SIZE_ATTRIBUTE_FIELD_ID = 'maxPoolSize'
 const MIN_IDLE_ATTRIBUTE_FIELD_ID = 'minIdle'
 const MEDIA_ATTRIBUTE_FIELD_ID = 'media'
+const DATASOURCE_PARAMS_COMPONENT_ID = 'datasourceParams'
 
 export class DatasourcePlugin extends Plugin {
   override onLoad() {
@@ -53,6 +55,16 @@ export class DatasourcePlugin extends Plugin {
       id: MEDIA_ATTRIBUTE_FIELD_ID,
       mountPoint: `${DATASOURCE_ITEM_NAME}.${MEDIA_ATTRIBUTE_FIELD_ID}`,
       render: ({context}) => <DatasourceMediaAttributeField {...context}/>
+    })
+
+    // Components
+    this.addComponent({
+      id: DATASOURCE_PARAMS_COMPONENT_ID,
+      mountPoint: 'datasource.tabs.begin',
+      priority: 10,
+      title: 'Parameters',
+      icon: 'SettingOutlined',
+      render: ({context}) => <DatasourceParams key={DATASOURCE_PARAMS_COMPONENT_ID} {...context}/>
     })
   }
 
