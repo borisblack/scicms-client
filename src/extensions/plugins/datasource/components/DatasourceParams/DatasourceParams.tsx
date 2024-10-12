@@ -1,6 +1,6 @@
 import {useEffect, useMemo} from 'react'
 import {useTranslation} from 'react-i18next'
-import {Checkbox, Col, Row, Select, Typography} from 'antd'
+import {Checkbox, Col, Form, FormInstance, Row, Select, Typography} from 'antd'
 import {CheckboxChangeEvent} from 'antd/es/checkbox'
 import {DATASOURCE_ITEM_NAME} from 'src/config/constants'
 import {useAcl} from 'src/util/hooks'
@@ -23,6 +23,7 @@ export function DatasourceParams({form, data: dataWrapper, buffer, onBufferChang
 
   const {t} = useTranslation()
   const acl = useAcl(item, data)
+  const sourceType = Form.useWatch('sourceType', form as FormInstance)
   const params: Record<string, any> = useMemo(() => buffer.params ?? {}, [buffer])
   const delimiter: string = useMemo(() => params.delimiter ?? ',', [params])
   const firstLineIsAHeading: boolean = useMemo(() => params.firstLineIsAHeading ?? true, [params])
@@ -53,11 +54,11 @@ export function DatasourceParams({form, data: dataWrapper, buffer, onBufferChang
     })
 
   const hasAvailableParams = () =>
-    data?.sourceType === DatasourceType.SPREADSHEET || data?.sourceType === DatasourceType.CSV
+    sourceType === DatasourceType.SPREADSHEET || sourceType === DatasourceType.CSV
 
   return (
     <Row>
-      {data?.sourceType === DatasourceType.CSV && (
+      {sourceType === DatasourceType.CSV && (
         <Col span={24} style={{marginBottom: 16}}>
           <Text>{`${t('Delimiter')}:`}</Text>
           &nbsp;&nbsp;
@@ -71,7 +72,7 @@ export function DatasourceParams({form, data: dataWrapper, buffer, onBufferChang
         </Col>
       )}
 
-      {(data?.sourceType === DatasourceType.SPREADSHEET || data?.sourceType === DatasourceType.CSV) && (
+      {(sourceType === DatasourceType.SPREADSHEET || sourceType === DatasourceType.CSV) && (
         <Col span={24}>
           <Checkbox
             disabled={!acl.canWrite}
