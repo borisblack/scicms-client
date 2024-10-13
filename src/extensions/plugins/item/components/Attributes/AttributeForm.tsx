@@ -229,7 +229,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
             valuePropName="checked"
             initialValue={attribute?.keyed}
           >
-            <Checkbox disabled>{t('Keyed')}</Checkbox>
+            <Checkbox /*disabled*/>{t('Keyed')}</Checkbox>
           </FormItem>
 
           {!isCollectionRelation && (
