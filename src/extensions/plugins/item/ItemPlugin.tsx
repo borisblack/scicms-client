@@ -1,15 +1,14 @@
-import {DEFAULT_SORT_ORDER_ATTR_NAME, ITEM_ITEM_NAME} from 'src/config/constants'
-import {FieldType} from 'src/types'
+import {DEFAULT_SORT_ORDER_ATTR_NAME, INCLUDE_TEMPLATES_ATTR_NAME, ITEM_ITEM_NAME} from 'src/config/constants'
 import {Plugin} from '../Plugin'
-import {DefaultSortOrderAttributeField} from './attributeFields'
+import {DefaultSortOrderAttributeField, IncludeTemplatesAttributeField} from './attributeFields'
 import {Attributes, Indexes} from './components'
-import {handleItemApiOperation} from './itemApiHandler'
 
 const ITEM_ATTRIBUTES_COMPONENT_ID = 'itemAttributes'
 const ITEM_TEMPLATE_ATTRIBUTES_COMPONENT_ID = 'itemTemplateAttributes'
 const ITEM_INDEXES_COMPONENT_ID = 'itemIndexes'
 const ITEM_TEMPLATE_INDEXES_COMPONENT_ID = 'itemTemplateIndexes'
 const DEFAULT_SORT_ORDER_ATTRIBUTE_FIELD_ID = 'defaultSortOrder'
+const INCLUDE_TEMPLATES_ATTRIBUTE_FIELD_ID = 'includeTemplates'
 
 export class ItemPlugin extends Plugin {
   override onLoad() {
@@ -55,6 +54,12 @@ export class ItemPlugin extends Plugin {
       id: DEFAULT_SORT_ORDER_ATTRIBUTE_FIELD_ID,
       mountPoint: `${ITEM_ITEM_NAME}.${DEFAULT_SORT_ORDER_ATTR_NAME}`,
       render: ({context}) => <DefaultSortOrderAttributeField {...context}/>
+    })
+
+    this.addAttributeField({
+      id: INCLUDE_TEMPLATES_ATTRIBUTE_FIELD_ID,
+      mountPoint: `${ITEM_ITEM_NAME}.${INCLUDE_TEMPLATES_ATTR_NAME}`,
+      render: ({context}) => <IncludeTemplatesAttributeField {...context}/>
     })
 
     // API middleware

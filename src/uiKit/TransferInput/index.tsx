@@ -3,11 +3,11 @@ import {CSSProperties, ReactNode} from 'react'
 import {RenderResult, TransferItem} from 'antd/es/transfer'
 
 interface Props<RecordType extends TransferItem> {
-    dataSource?: RecordType[]
+    dataSource: RecordType[]
     listStyle?: CSSProperties
-    titles: ReactNode[]
+    titles?: ReactNode[]
     value?: string[]
-    render?: (item: RecordType) => RenderResult
+    render: (item: RecordType) => RenderResult
     onChange?: (targetKeys: string[]) => void
 }
 
