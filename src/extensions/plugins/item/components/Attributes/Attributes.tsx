@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import {useCallback, useMemo, useState} from 'react'
+import {useCallback, useMemo, useRef, useState} from 'react'
 import {Row} from '@tanstack/react-table'
 import {Button, Form, Modal, Space} from 'antd'
 import {useTranslation} from 'react-i18next'
@@ -13,15 +13,16 @@ import {
 } from 'src/uiKit/DataGrid'
 import {processLocal} from 'src/util/datagrid'
 import AttributeForm from './AttributeForm'
-import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design/icons'
+import {CopyOutlined, DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design/icons'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
-import {useAppProperties, useItemAcl, useRegistry} from 'src/util/hooks'
+import {useAppProperties, useItemAcl, useModal, useRegistry} from 'src/util/hooks'
 import {getAttributeColumns, getHiddenAttributeColumns} from './attributeColumns'
 import {NamedAttribute} from './types'
 import {CustomComponentContext} from 'src/extensions/plugins/types'
 import {DragEndEvent} from '@dnd-kit/core'
 import {arrayMove} from '@dnd-kit/sortable'
 import {sortAttributes} from 'src/util/schema'
+import TemplateAttributesSelection from './TemplateAttributesSelection'
 
 const EDIT_MODAL_WIDTH = 800
 const DEFAULT_PAGE_SIZE = 100
@@ -35,7 +36,7 @@ const getInitialAttributesData: () => DataWithPagination<NamedAttribute> = () =>
   }
 })
 
-export function Attributes({data: dataWrapper, buffer, onBufferChange}: CustomComponentContext) {
+export function Attributes({data: dataWrapper, form, buffer, onBufferChange}: CustomComponentContext) {
   const {item, data} = dataWrapper
   if (item.name !== ITEM_TEMPLATE_ITEM_NAME && item.name !== ITEM_ITEM_NAME)
     throw new Error('Illegal argument')
@@ -52,12 +53,12 @@ export function Attributes({data: dataWrapper, buffer, onBufferChange}: CustomCo
   const columns = useMemo(() => getAttributeColumns(isCoreItem, defaultColWidth), [isCoreItem, defaultColWidth])
   const hiddenColumns = useMemo(() => getHiddenAttributeColumns(), [])
   const spec: ItemSpec = useMemo(() => buffer.spec ?? data?.spec ?? {}, [buffer.spec, data?.spec])
+  const includeTemplates: string[] | undefined = Form.useWatch('includeTemplates', form)
 
   const initialNamedAttributes = useMemo((): NamedAttribute[] => {
     const attributes = sortAttributes(spec.attributes ?? {})
-    const includeTemplates: string[] = data?.includeTemplates ?? []
     const excludedAttrNames = new Set(
-      includeTemplates
+      (includeTemplates ?? [])
         .map(templateName => itemTemplates[templateName])
         .flatMap(template => Object.keys(template.spec.attributes))
     )
@@ -67,10 +68,12 @@ export function Attributes({data: dataWrapper, buffer, onBufferChange}: CustomCo
 
     return namedAttributes
 
-  }, [data?.includeTemplates, itemTemplates, spec.attributes])
+  }, [itemTemplates, includeTemplates, spec.attributes])
   const [namedAttributes, setNamedAttributes] = useState<NamedAttribute[]>(initialNamedAttributes)
   const [filteredData, setFilteredData] = useState<DataWithPagination<NamedAttribute>>(getInitialAttributesData())
   const [selectedAttribute, setSelectedAttribute] = useState<NamedAttribute | null>(null)
+  const {show: showTemplateAttributesModal, close: closeTemplateAttributesModal, modalProps: templateAttributesModalProps} = useModal()
+  const templateAttributes = useRef<NamedAttribute[]>([])
   const [isEditModalVisible, setEditModalVisible] = useState<boolean>(false)
   const [attributeForm] = Form.useForm()
 
@@ -148,10 +151,19 @@ export function Attributes({data: dataWrapper, buffer, onBufferChange}: CustomCo
   const renderToolbar = useCallback(() => {
     return (
       <Space>
-        {acl.canWrite && <Button type="primary" size="small" icon={<PlusCircleOutlined/>} onClick={handleCreate}>{t('Add')}</Button>}
+        {acl.canWrite && (
+          <Button type="primary" size="small" icon={<PlusCircleOutlined/>} title={t('Add attribute')} onClick={handleCreate}>
+            {t('Add')}
+          </Button>
+        )}
+        {acl.canWrite && (
+          <Button size="small" icon={<CopyOutlined/>} title={t('Select attributes from template')} onClick={showTemplateAttributesModal}>
+            {t('From template')}
+          </Button>
+        )}
       </Space>
     )
-  }, [acl.canWrite, handleCreate, t])
+  }, [acl.canWrite, handleCreate, showTemplateAttributesModal, t])
 
   const deleteRow = useCallback((row: Row<NamedAttribute>) => {
     handleNamedAttributesChange(namedAttributes.filter(it => it.name !== row.original.name))
@@ -196,6 +208,12 @@ export function Attributes({data: dataWrapper, buffer, onBufferChange}: CustomCo
     }
   }, [namedAttributes, handleNamedAttributesChange])
 
+  function applyTemplateAttributes() {
+    handleNamedAttributesChange([...namedAttributes, ...templateAttributes.current])
+    closeTemplateAttributesModal()
+    refresh()
+  }
+
   return (
     <>
       <DataGrid
@@ -216,6 +234,20 @@ export function Attributes({data: dataWrapper, buffer, onBufferChange}: CustomCo
         onRowDoubleClick={handleRowDoubleClick}
         onRowMove={acl.canWrite ? handleRowMove : undefined}
       />
+      <Modal
+        {...templateAttributesModalProps}
+        title={t('Template attributes')}
+        onOk={applyTemplateAttributes}
+        onCancel={closeTemplateAttributesModal}
+      >
+        <TemplateAttributesSelection
+          includeTemplates={includeTemplates ?? []}
+          existingAttributes={namedAttributes}
+          onChange={selectedAttributes => {
+            templateAttributes.current = selectedAttributes
+          }}
+        />
+      </Modal>
       <Modal
         title={t('Attribute')}
         open={isEditModalVisible}
