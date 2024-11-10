@@ -1,35 +1,34 @@
 import _ from 'lodash'
-import {FC, useCallback, useEffect, useMemo, useState} from 'react'
-import {Form, Input} from 'antd'
+import {FC, useMemo} from 'react'
+import {Form, Select} from 'antd'
 import {useTranslation} from 'react-i18next'
 
 import {FieldType} from 'src/types'
 import {INCLUDE_TEMPLATES_ATTR_NAME} from 'src/config/constants'
 import {CustomAttributeFieldContext} from '../../types'
-import TransferInput from 'src/uiKit/TransferInput'
 import {useRegistry} from 'src/util/hooks'
 import {generateKey} from 'src/util/mdi'
+import {requiredFieldRule} from 'src/util/form'
 
 import styles from 'src/pages/app/attributeFields/AttributeField.module.css'
-import './IncludeTemplatesAttributeField.css'
 
 const FormItem = Form.Item
-const {TextArea} = Input
 
-export const IncludeTemplatesAttributeField: FC<CustomAttributeFieldContext> = ({data: dataWrapper, form, attrName, attribute, value, onChange}) => {
+export const IncludeTemplatesAttributeField: FC<CustomAttributeFieldContext> = ({data: dataWrapper, form, attrName, attribute, value}) => {
   if (attrName !== INCLUDE_TEMPLATES_ATTR_NAME || attribute.type !== FieldType.array)
     throw new Error('Illegal attribute')
 
   const {t} = useTranslation()
   const uniqueKey = generateKey(dataWrapper)
   const {itemTemplates} = useRegistry()
-  const defaultIncludeTemplates: string[] | undefined =
-    useMemo(() => parseValue(value) ?? (attribute.defaultValue ? parseValue(JSON.parse(attribute.defaultValue)) : undefined), [attribute.defaultValue, value])
-  const [includeTemplates, setIncludeTemplates] = useState(defaultIncludeTemplates)
+  const isDisabled = useMemo(() => attribute.keyed || attribute.readOnly, [attribute.keyed, attribute.readOnly])
+  const additionalProps = useMemo((): any => {
+    const additionalProps: any = {}
+    if (isDisabled)
+      additionalProps.disabled = true
 
-  useEffect(() => {
-    setIncludeTemplates(defaultIncludeTemplates)
-  }, [dataWrapper, defaultIncludeTemplates])
+    return additionalProps
+  }, [isDisabled])
 
   function parseValue(val: any): string[] | undefined {
     if (val == null)
@@ -48,30 +47,24 @@ export const IncludeTemplatesAttributeField: FC<CustomAttributeFieldContext> = (
     return arr
   }
 
-  function handleChange(targetKeys: string[]) {
-    setIncludeTemplates(targetKeys)
-    form.setFieldValue(attrName, targetKeys)
-  }
-
   return (
     <>
       <FormItem
         className={styles.formItem}
         name={attrName}
         label={t(attribute.displayName)}
-        initialValue={parseValue(value) ?? (attribute.defaultValue ? parseValue(JSON.parse(attribute.defaultValue)) : null)}
+        hidden={attribute.fieldHidden}
+        initialValue={parseValue(value) ?? (attribute.defaultValue ? parseValue(JSON.parse(attribute.defaultValue)) : undefined)}
+        rules={[requiredFieldRule(attribute.required && !attribute.readOnly)]}
       >
-        <TextArea id={`${uniqueKey}#${attrName}`} hidden/>
-      </FormItem>
-
-      <div className="include-templates-wrapper">
-        <TransferInput
-          dataSource={Object.keys(itemTemplates).map(template => ({key: template, title: template, description: template}))}
-          value={includeTemplates}
-          render={item => item.title}
-          onChange={handleChange}
+        <Select
+          id={`${uniqueKey}#${attrName}`}
+          allowClear
+          mode="multiple"
+          options={Object.keys(itemTemplates).map(t => ({value: t, label: t}))}
+          {...additionalProps}
         />
-      </div>
+      </FormItem>
     </>
   )
 }

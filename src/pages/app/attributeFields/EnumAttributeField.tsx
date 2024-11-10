@@ -34,6 +34,7 @@ const EnumAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrNam
     >
       <Select
         id={`${uniqueKey}#${attrName}`}
+        allowClear
         options={attribute.enumSet.map(entry => ({label: t(entry), value: entry}))}
         {...additionalProps}
       />
