@@ -31,7 +31,7 @@ const propertyTypes: PropertyType[] = [
 
 export const PropertyTypeAttributeField: FC<CustomAttributeFieldContext> = ({attrName, attribute, value, form, onChange}) => {
   const {t} = useTranslation()
-  const isDisabled = useMemo(() => attribute.keyed || attribute.readOnly, [attribute.keyed, attribute.readOnly])
+  const isDisabled = useMemo(() => attribute.readOnly, [attribute.readOnly])
   const additionalProps = useMemo((): any => {
     const additionalProps: any = {}
     if (isDisabled)

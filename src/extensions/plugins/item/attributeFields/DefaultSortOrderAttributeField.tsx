@@ -16,7 +16,7 @@ export const DefaultSortOrderAttributeField: FC<CustomAttributeFieldContext> = (
     throw new Error('Illegal attribute')
 
   const {t} = useTranslation()
-  const isDisabled = useMemo(() => attribute.keyed || attribute.readOnly, [attribute.keyed, attribute.readOnly])
+  const isDisabled = useMemo(() => attribute.readOnly, [attribute.readOnly])
   const additionalProps = useMemo((): any => {
     const additionalProps: any = {}
     if (isDisabled)

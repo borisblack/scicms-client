@@ -21,6 +21,7 @@ import {useMDIContext} from 'src/uiKit/MDITabs/hooks'
 import {ApiMiddlewareContext, ApiOperation, CustomComponentContext, CustomRendererContext} from 'src/extensions/plugins/types'
 import {pluginEngine} from 'src/extensions/plugins'
 import styles from './NavTab.module.css'
+import {hasConfigIdAttribute, hasCurrentAttribute, hasGenerationAttribute, hasMajorRevAttribute, hasPermissionAttribute} from 'src/util/schema'
 
 interface Props {
   data: ItemDataWrapper
@@ -49,6 +50,7 @@ function DefaultNavTab({data: dataWrapper}: Props) {
   const [buffer, setBuffer] = useState<IBuffer>({})
   const {item} = dataWrapper
   const isSystemItem = item.name === ITEM_TEMPLATE_ITEM_NAME || item.name === ITEM_ITEM_NAME
+  const canVersion = item.versioned && hasConfigIdAttribute(item) && hasMajorRevAttribute(item) && hasGenerationAttribute(item) && hasCurrentAttribute(item)
   const columnsMemoized = useMemo(() => getColumns({
     items: itemMap,
     item,
@@ -182,9 +184,9 @@ function DefaultNavTab({data: dataWrapper}: Props) {
 
     const rowPermissionId = row.original.permission?.data?.id
     const rowPermission = rowPermissionId ? permissionMap[rowPermissionId] : null
-    const canDelete = !!rowPermission && ACL.canDelete(me, rowPermission)
+    const canDelete = !hasPermissionAttribute(item) || (!!rowPermission && ACL.canDelete(me, rowPermission))
     if (canDelete) {
-      if (item.versioned) {
+      if (canVersion) {
         items.push({
           key: 'delete',
           label: t('Delete'),
@@ -210,7 +212,7 @@ function DefaultNavTab({data: dataWrapper}: Props) {
     }
 
     return items
-  }, [t, me, permissionMap, handleView,item.idAttribute, item.versioned, handleDelete])
+  }, [t, me, permissionMap, handleView, item, canVersion, handleDelete])
 
   const handleCreate = useCallback(() => {
     createItem(item, undefined, undefined, refresh, refresh)

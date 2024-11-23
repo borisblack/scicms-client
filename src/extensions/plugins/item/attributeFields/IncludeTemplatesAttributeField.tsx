@@ -21,7 +21,7 @@ export const IncludeTemplatesAttributeField: FC<CustomAttributeFieldContext> = (
   const {t} = useTranslation()
   const uniqueKey = generateKey(dataWrapper)
   const {itemTemplates} = useRegistry()
-  const isDisabled = useMemo(() => attribute.keyed || attribute.readOnly, [attribute.keyed, attribute.readOnly])
+  const isDisabled = useMemo(() => attribute.readOnly, [attribute.readOnly])
   const additionalProps = useMemo((): any => {
     const additionalProps: any = {}
     if (isDisabled)

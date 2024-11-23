@@ -56,10 +56,10 @@ export function getTitle(data: ItemDataWrapper): string {
   const key = generateKey(data)
   switch (viewType) {
     case ViewType.view:
-      if (itemData?.id) {
+      if (itemData?.[item.idAttribute]) {
         let titleAttrValue = itemData[item.titleAttribute]
         if (!titleAttrValue || item.titleAttribute === ID_ATTR_NAME)
-          titleAttrValue = `${i18n.t(item.displayName)} ${itemData.id.substring(0, 8)}`
+          titleAttrValue = `${i18n.t(item.displayName)} ${itemData[item.idAttribute].substring(0, 8)}`
 
         return titleAttrValue
       }

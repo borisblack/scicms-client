@@ -25,7 +25,7 @@ export const IconAttributeField: FC<CustomAttributeFieldContext> = ({data: dataW
   const {t} = useTranslation()
   const [currentValue, setCurrentValue] = useState(value)
   const [isIconsModalVisible, setIconsModalVisible] = useState<boolean>(false)
-  const isDisabled = useMemo(() => attribute.keyed || attribute.readOnly, [attribute.keyed, attribute.readOnly])
+  const isDisabled = useMemo(() => attribute.readOnly, [attribute.readOnly])
   const additionalProps = useMemo((): any => {
     const additionalProps: any = {}
     if (isDisabled)

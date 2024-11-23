@@ -21,7 +21,7 @@ export const NotLockableAttributeField: FC<CustomAttributeFieldContext> = ({data
   const isNew = !data?.id
   const uniqueKey = generateKey(dataWrapper)
   const isLockable = isNew || (data as Item).spec?.attributes.hasOwnProperty(LOCKED_BY_ATTR_NAME)
-  const isDisabled = useMemo(() => !isLockable || attribute.keyed || attribute.readOnly, [attribute.keyed, attribute.readOnly, isLockable])
+  const isDisabled = useMemo(() => !isLockable || attribute.readOnly, [attribute.readOnly, isLockable])
 
   const additionalProps = useMemo((): any => {
     const additionalProps: any = {}

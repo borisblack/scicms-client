@@ -62,7 +62,7 @@ export async function parseValues({item, data, values, timezone}: ParseValuesPar
       continue
 
     const attribute = attributes[key]
-    if (attribute.keyed || attribute.readOnly || attribute.type === FieldType.sequence)
+    if (attribute.readOnly || attribute.type === FieldType.sequence)
       continue
 
     const value = values[key]

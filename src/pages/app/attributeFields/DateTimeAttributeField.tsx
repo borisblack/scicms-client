@@ -23,7 +23,7 @@ const DateTimeAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, for
 
   const uniqueKey = generateKey(dataWrapper)
   const {t} = useTranslation()
-  const isDisabled = useMemo(() => attribute.keyed || attribute.readOnly, [attribute.keyed, attribute.readOnly])
+  const isDisabled = useMemo(() => attribute.readOnly, [attribute.readOnly])
   const additionalProps = useMemo((): any => {
     const additionalProps: any = {}
     if (isDisabled)

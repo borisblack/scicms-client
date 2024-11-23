@@ -21,7 +21,7 @@ const MediaAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, form, 
   const mediaData = (value?.data ?? attribute.defaultValue) as Media | MediaInfo | null | undefined
   const {t} = useTranslation()
   const [fileList, setFileList] = useState<UploadFile[]>(getInitialUploadFileList())
-  const isDisabled = useMemo(() => attribute.keyed || attribute.readOnly, [attribute.keyed, attribute.readOnly])
+  const isDisabled = useMemo(() => attribute.readOnly, [attribute.readOnly])
   const additionalProps = useMemo((): any => {
     const additionalProps: any = {}
     if (isDisabled)

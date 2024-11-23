@@ -23,7 +23,7 @@ const StringAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrN
   const {t} = useTranslation()
 
   const isEnabled = useCallback((): boolean => {
-    if (attribute.keyed || attribute.readOnly)
+    if (attribute.readOnly)
       return false
 
     if (item.name === ITEM_ITEM_NAME && attrName === NAME_ATTR_NAME && !isNew)
@@ -42,7 +42,7 @@ const StringAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrN
     }
 
     return attrName !== STATE_ATTR_NAME
-  }, [attrName, attribute.keyed, attribute.readOnly, attribute.type, item.manualVersioning, item.name, item.versioned, isNew])
+  }, [attrName, attribute.readOnly, attribute.type, item.manualVersioning, item.name, item.versioned, isNew])
 
   const additionalProps = useMemo((): any => {
     const additionalProps: any = {}

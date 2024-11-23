@@ -87,8 +87,8 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, for
   const [loading, setLoading] = useState<boolean>(false)
   const [isRelationModalVisible, setRelationModalVisible] = useState<boolean>(false)
   const isDisabled = useMemo(
-    () => attribute.keyed || attribute.readOnly || ((attrName === LIFECYCLE_ATTR_NAME || attrName === PERMISSION_ATTR_NAME) && !acl.canAdmin),
-    [attrName, attribute.keyed, attribute.readOnly, acl.canAdmin]
+    () => attribute.readOnly || ((attrName === LIFECYCLE_ATTR_NAME || attrName === PERMISSION_ATTR_NAME) && !acl.canAdmin),
+    [attrName, attribute.readOnly, acl.canAdmin]
   )
   const additionalProps = useMemo((): any => {
     const additionalProps: any = {}

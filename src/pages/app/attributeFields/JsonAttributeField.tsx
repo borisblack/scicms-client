@@ -26,11 +26,7 @@ const JsonAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, form, a
   const {editorHeight} = appProps.ui.form
   const [height, setHeight] = useState(editorHeight)
   const acl = useItemAcl(item, data)
-  const canEdit = useMemo(
-    () => acl.canWrite && !attribute.keyed && !attribute.readOnly,
-    [acl.canWrite, attribute.keyed, attribute.readOnly]
-  )
-
+  const canEdit = useMemo(() => acl.canWrite && !attribute.readOnly, [acl.canWrite, attribute.readOnly])
   const parsedValue = useMemo(() => (typeof value == 'object' && value != null) ? JSON.stringify(value) : value, [value])
 
   const handleChange = useCallback((val: string | null | undefined) => {
