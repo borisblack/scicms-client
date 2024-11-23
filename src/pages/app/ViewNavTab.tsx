@@ -24,7 +24,7 @@ import {useAppProperties, useAuth, useFormAcl, useMutationManager, useQueryManag
 import {useMDIContext} from 'src/uiKit/MDITabs/hooks'
 import {generateKey} from 'src/util/mdi'
 import IconSuspense from 'src/uiKit/icons/IconSuspense'
-import {sortAttributes} from 'src/util/schema'
+import {hasCurrentAttribute, hasGenerationAttribute, hasLocaleAttribute, hasMajorRevAttribute, isItemLockable, sortAttributes} from 'src/util/schema'
 import {ApiMiddlewareContext, ApiOperation, CustomComponentContext, CustomRendererContext} from 'src/extensions/plugins/types'
 import {pluginEngine} from 'src/extensions/plugins'
 import {clientConfig} from 'src/config'
@@ -45,7 +45,8 @@ function ViewNavTab({data: dataWrapper}: Props) {
   const {t} = useTranslation()
   const appProps = useAppProperties()
   const [loading, setLoading] = useState<boolean>(false)
-  const [isLockedByMe, setLockedByMe] = useState<boolean>(!!me?.id && data?.lockedBy?.data?.id === me.id)
+  const isLockable = isItemLockable(item)
+  const [isLockedByMe, setLockedByMe] = useState<boolean>(me?.id != null && (!isLockable || data?.lockedBy?.data?.id === me.id))
   const [viewState, setViewState] = useState<ViewState>(isNew ? ViewState.CREATE : (isLockedByMe ? (item.versioned ? ViewState.CREATE_VERSION : ViewState.UPDATE) : ViewState.VIEW))
   const [buffer, setBuffer] = useState<IBuffer>({})
   const headerRef = useRef<HTMLDivElement>(null)
@@ -189,8 +190,12 @@ function ViewNavTab({data: dataWrapper}: Props) {
       }
       const createdDataWrapper: ItemDataWrapper = {...dataWrapper, data: created}
       ctx.updateActiveTab(createdDataWrapper, generateKey(createdDataWrapper))
-      setLockedByMe(false)
-      setViewState(ViewState.VIEW)
+
+      if (isLockable) {
+        setLockedByMe(false)
+        setViewState(ViewState.VIEW)
+      }
+
       logoutIfNeed()
     } catch (e: any) {
       console.error(e.message)
@@ -207,7 +212,7 @@ function ViewNavTab({data: dataWrapper}: Props) {
     if (!acl.canCreate)
       throw new Error('Cannot edit this item')
 
-    if (!item.versioned)
+    if (!item.versioned || !hasMajorRevAttribute(item) || !hasGenerationAttribute(item) || !hasCurrentAttribute(item))
       throw new Error('Item is not versioned')
 
     if (isNew)
@@ -225,8 +230,12 @@ function ViewNavTab({data: dataWrapper}: Props) {
       }
       const createdVersionDataWrapper: ItemDataWrapper = {...dataWrapper, data: createdVersion}
       ctx.updateActiveTab(createdVersionDataWrapper, generateKey(createdVersionDataWrapper))
-      setLockedByMe(false)
-      setViewState(ViewState.VIEW)
+
+      if (isLockable) {
+        setLockedByMe(false)
+        setViewState(ViewState.VIEW)
+      }
+
     } catch (e: any) {
       console.error(e.message)
       notification.error({
@@ -242,7 +251,7 @@ function ViewNavTab({data: dataWrapper}: Props) {
     if (!acl.canCreate)
       throw new Error('Cannot edit this item')
 
-    if (!item.localized)
+    if (!item.localized || !hasLocaleAttribute(item))
       throw new Error('Item is not localized')
 
     if (isNew)
@@ -260,8 +269,12 @@ function ViewNavTab({data: dataWrapper}: Props) {
       }
       const createdLocalizationDataWrapper: ItemDataWrapper = {...dataWrapper, data: createdLocalization}
       ctx.updateActiveTab(createdLocalizationDataWrapper, generateKey(createdLocalizationDataWrapper))
-      setLockedByMe(false)
-      setViewState(ViewState.VIEW)
+
+      if (isLockable) {
+        setLockedByMe(false)
+        setViewState(ViewState.VIEW)
+      }
+
     } catch (e: any) {
       console.error(e.message)
       notification.error({
@@ -291,8 +304,12 @@ function ViewNavTab({data: dataWrapper}: Props) {
         updated = await doUpdate()
       }
       ctx.updateActiveTab({...dataWrapper, data: updated})
-      setLockedByMe(false)
-      setViewState(ViewState.VIEW)
+
+      if (isLockable) {
+        setLockedByMe(false)
+        setViewState(ViewState.VIEW)
+      }
+
       logoutIfNeed()
     } catch (e: any) {
       console.error(e.message)
@@ -522,6 +539,19 @@ function ViewNavTab({data: dataWrapper}: Props) {
 
   const hasHeaderPlugins = pluginEngine.hasRenderers('view.header', `${item.name}.view.header`)
   const hasContentPlugins = pluginEngine.hasRenderers('view.content', `${item.name}.view.content`)
+  const collapseAttrItems = [{
+    key: 'mainAttributes',
+    label: t('Main attributes'),
+    children: renderAttributes(ownAttributes)
+  }]
+  if (item.includeTemplates.length > 0) {
+    collapseAttrItems.push({
+      key: 'additionalAttributes',
+      label: t('Additional attributes'),
+      children: renderAttributes(templateAttributes)
+    })
+  }
+
   return (
     <Spin spinning={loading}>
       {pluginEngine.hasComponents('view.header') && pluginEngine.renderComponents('view.header', customComponentContext)}
@@ -562,15 +592,7 @@ function ViewNavTab({data: dataWrapper}: Props) {
           {pluginEngine.hasComponents(`${item.name}.view.content.form.begin`) && pluginEngine.renderComponents(`${item.name}.view.content.form.begin`, customComponentContext)}
           <Collapse
             defaultActiveKey={['mainAttributes']}
-            items={[{
-              key: 'mainAttributes',
-              label: t('Main attributes'),
-              children: renderAttributes(ownAttributes)
-            }, {
-              key: 'additionalAttributes',
-              label: t('Additional attributes'),
-              children: renderAttributes(templateAttributes)
-            }]}
+            items={collapseAttrItems}
           />
           {pluginEngine.hasComponents('view.content.form.end') && pluginEngine.renderComponents('view.content.form.end', customComponentContext)}
           {pluginEngine.hasComponents('view.content.form.end') && pluginEngine.renderComponents('view.content.form.end', customComponentContext)}

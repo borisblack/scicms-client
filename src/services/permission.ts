@@ -6,6 +6,7 @@ import {apolloClient, extractGraphQLErrorMessages} from '.'
 import {UserInfo} from '../types'
 import {Item, ItemData, Permission} from '../types/schema'
 import * as ACL from '../util/acl'
+import {hasPermissionAttribute} from 'src/util/schema'
 
 export type PermissionMap = Record<string, Permission>
 
@@ -128,14 +129,15 @@ export default class PermissionManager {
 
     const itemPermissionId = item.permission.data?.id
     const itemPermission = itemPermissionId ? this.permissions[itemPermissionId] : null
+    const hasItemPermissionAttribute = hasPermissionAttribute(item)
     const canCreate = !!itemPermission && ACL.canCreate(me, itemPermission)
 
     const dataPermissionId = data?.permission?.data?.id
     const dataPermission = dataPermissionId ? this.permissions[dataPermissionId] : null
-    const canRead = !!dataPermission && ACL.canRead(me, dataPermission)
-    const canWrite = !!dataPermission && ACL.canWrite(me, dataPermission)
-    const canDelete = !!dataPermission && ACL.canDelete(me, dataPermission)
-    const canAdmin = !!dataPermission && ACL.canAdmin(me, dataPermission)
+    const canRead = !hasItemPermissionAttribute || (!!dataPermission && ACL.canRead(me, dataPermission))
+    const canWrite = !hasItemPermissionAttribute || (!!dataPermission && ACL.canWrite(me, dataPermission))
+    const canDelete = !hasItemPermissionAttribute || (!!dataPermission && ACL.canDelete(me, dataPermission))
+    const canAdmin = !hasItemPermissionAttribute || (!!dataPermission && ACL.canAdmin(me, dataPermission))
 
     return {canCreate, canRead, canWrite, canDelete, canAdmin}
   }

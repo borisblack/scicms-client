@@ -35,6 +35,7 @@ import {getTitle} from 'src/util/mdi'
 import {pluginEngine} from 'src/extensions/plugins'
 import {ApiMiddlewareContext, ApiOperation} from 'src/extensions/plugins/types'
 import styles from './NavTab.module.css'
+import {hasConfigIdAttribute, hasCurrentAttribute, hasGenerationAttribute, hasLifecycleAttribute, hasMajorRevAttribute, isItemLockable} from 'src/util/schema'
 
 interface Props {
     data: ItemDataWrapper
@@ -61,6 +62,9 @@ export default function ViewNavTabHeader({
   setLoading, onHtmlExport, logoutIfNeed
 }: Props) {
   const {item, data} = dataWrapper
+  const canVersion = item.versioned && hasConfigIdAttribute(item) && hasMajorRevAttribute(item) && hasGenerationAttribute(item) && hasCurrentAttribute(item)
+  const canPromote = hasLifecycleAttribute(item) && hasLifecycleAttribute(item)
+  const isLockable = isItemLockable(item)
   const {me} = useAuth()
   const {items: itemMap} = useRegistry()
   const ctx = useMDIContext<ItemDataWrapper>()
@@ -82,6 +86,9 @@ export default function ViewNavTabHeader({
     if (isNew)
       throw new Error('New item cannot be locked')
 
+    if (!isLockable)
+      return
+
     setLoading(true)
     try {
       const id = data?.[item.idAttribute] as string
@@ -102,7 +109,7 @@ export default function ViewNavTabHeader({
         })
 
       setLockedByMe(locked.success)
-      setViewState(item.versioned ? ViewState.CREATE_VERSION : ViewState.UPDATE)
+      setViewState(canVersion ? ViewState.CREATE_VERSION : ViewState.UPDATE)
     } catch (e: any) {
       console.error(e.message)
       notification.error({
@@ -117,6 +124,9 @@ export default function ViewNavTabHeader({
   async function handleCancel(evt: MouseEvent) {
     if (isNew)
       throw new Error('New item cannot be unlocked')
+
+    if (!isLockable)
+      return
 
     setLoading(true)
     try {
@@ -169,7 +179,10 @@ export default function ViewNavTabHeader({
         deleted = await doDelete()
       }
       ctx.updateActiveTab({...dataWrapper, data: deleted.data})
-      setLockedByMe(false)
+
+      if (isLockable)
+        setLockedByMe(false)
+
       ctx.closeActiveTab(true)
       logoutIfNeed()
     } catch (e: any) {
@@ -203,7 +216,10 @@ export default function ViewNavTabHeader({
       }
       const deleted = purged.data.find(it => it.id === id) as ItemData
       ctx.updateActiveTab({...dataWrapper, data: deleted})
-      setLockedByMe(false)
+
+      if (isLockable)
+        setLockedByMe(false)
+
       ctx.closeActiveTab(true)
     } catch (e: any) {
       console.error(e.message)
@@ -217,7 +233,7 @@ export default function ViewNavTabHeader({
   }
 
   async function handlePromote(state: string) {
-    if (!canEdit)
+    if (!canEdit || !canPromote)
       throw new Error('Cannot promote this item')
 
     if (isNew)
@@ -310,26 +326,30 @@ export default function ViewNavTabHeader({
       if (canEdit) {
         if (isLockedByMe /*&& viewState !== ViewState.VIEW*/) {
           extra.push(<Button key="save" type="primary" onClick={handleSave}><SaveOutlined/> {t('Save')}</Button>)
-          extra.push(<Button key="cancel" icon={<LockOutlined/>} onClick={handleCancel}>{t('Cancel')}</Button>)
+
+          if (isLockable)
+            extra.push(<Button key="cancel" icon={<LockOutlined/>} onClick={handleCancel}>{t('Cancel')}</Button>)
         } else if (!isLocked) {
-          extra.push(<Button key="lock" type="primary" icon={<UnlockOutlined/>} onClick={handleLock}>{t('Edit')}</Button>)
+          if (isLockable)
+            extra.push(<Button key="lock" type="primary" icon={<UnlockOutlined/>} onClick={handleLock}>{t('Edit')}</Button>)
         }
       }
 
-      if (item.versioned) {
+      if (canVersion) {
         extra.push(
           <Button key="versions" icon={<DiffOutlined/>} onClick={() => setVersionsModalVisible(true)}>{t('Versions')}</Button>
         )
       }
 
-      if (canEdit && isLockedByMe /*&& viewState !== ViewState.VIEW*/ && data?.lifecycle.data && item.name !== ITEM_ITEM_NAME && item.name !== ITEM_TEMPLATE_ITEM_NAME) {
+
+      if (canEdit && canPromote && isLockedByMe /*&& viewState !== ViewState.VIEW*/ && data?.lifecycle.data && item.name !== ITEM_ITEM_NAME && item.name !== ITEM_TEMPLATE_ITEM_NAME) {
         extra.push(
           <Button key="promote" type="primary" icon={<SubnodeOutlined/>} onClick={() => setPromoteModalVisible(true)}>{t('Promote')}</Button>
         )
       }
 
       if (canDelete && (isLockedByMe || !isLocked)) {
-        if (item.versioned) {
+        if (canVersion) {
           extra.push(
             <Dropdown key="purge" placement="bottomRight" menu={{items: getPurgeMenu()}}>
               <Button type="primary" danger icon={<DownOutlined/>}>{t('Delete')}</Button>

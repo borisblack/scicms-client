@@ -1,6 +1,6 @@
-import {DEFAULT_SORT_ORDER_ATTR_NAME, INCLUDE_TEMPLATES_ATTR_NAME, ITEM_ITEM_NAME} from 'src/config/constants'
+import {DEFAULT_SORT_ORDER_ATTR_NAME, INCLUDE_TEMPLATES_ATTR_NAME, ITEM_ITEM_NAME, NOT_LOCKABLE_ATTR_NAME} from 'src/config/constants'
 import {Plugin} from '../Plugin'
-import {DefaultSortOrderAttributeField, IncludeTemplatesAttributeField} from './attributeFields'
+import {DefaultSortOrderAttributeField, IncludeTemplatesAttributeField, NotLockableAttributeField} from './attributeFields'
 import {Attributes, Indexes} from './components'
 
 const ITEM_ATTRIBUTES_COMPONENT_ID = 'itemAttributes'
@@ -9,6 +9,7 @@ const ITEM_INDEXES_COMPONENT_ID = 'itemIndexes'
 const ITEM_TEMPLATE_INDEXES_COMPONENT_ID = 'itemTemplateIndexes'
 const DEFAULT_SORT_ORDER_ATTRIBUTE_FIELD_ID = 'defaultSortOrder'
 const INCLUDE_TEMPLATES_ATTRIBUTE_FIELD_ID = 'includeTemplates'
+const NOT_LOCKABLE_ATTRIBUTE_FIELD_ID = 'notLockable'
 
 export class ItemPlugin extends Plugin {
   override onLoad() {
@@ -61,6 +62,12 @@ export class ItemPlugin extends Plugin {
       mountPoint: `${ITEM_ITEM_NAME}.${INCLUDE_TEMPLATES_ATTR_NAME}`,
       render: ({context}) => <IncludeTemplatesAttributeField {...context}/>
     })
+
+    // this.addAttributeField({
+    //   id: NOT_LOCKABLE_ATTRIBUTE_FIELD_ID,
+    //   mountPoint: `${ITEM_ITEM_NAME}.${NOT_LOCKABLE_ATTR_NAME}`,
+    //   render: ({context}) => <NotLockableAttributeField {...context}/>
+    // })
 
     // API middleware
     // this.addApiMiddleware({
