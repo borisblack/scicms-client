@@ -1,11 +1,11 @@
-import React, {useEffect} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Button, Drawer, Form, Space, Tooltip} from 'antd'
 import {QuestionCircleOutlined} from '@ant-design/icons'
 
 import {
   fromFormQueryBlock,
-  getCustomFunctionsInfo, saveSessionFilters,
+  getCustomFunctionsInfo,
+  saveSessionFilters,
   toFormQueryBlock
 } from './util'
 import DashFilters from './DashFilters'

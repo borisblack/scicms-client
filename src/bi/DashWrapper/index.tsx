@@ -36,9 +36,9 @@ import DashModal from '../DashModal'
 import {useAppProperties, useModal, usePrevious} from 'src/util/hooks'
 import {buildFieldsInput} from '../util/datagrid'
 import ExecutionStatisticModal from '../ExecutionStatisticModal'
+import {useBiProperties} from '../util/hooks'
 import styles from './DashWrapper.module.css'
 import './DashWrapper.css'
-import {useBiProperties} from '../util/hooks'
 
 export interface DashWrapperProps {
   pageKey: string
@@ -59,6 +59,12 @@ export interface DashWrapperProps {
 }
 
 const PAGE_HEADER_HEIGHT = 80
+
+function mergeCustomizer(objValue: any, srcValue: any) {
+  if (_.isArray(objValue)) {
+    return objValue.concat(srcValue)
+  }
+}
 
 function DashWrapper(props: DashWrapperProps) {
   const {
@@ -97,10 +103,12 @@ function DashWrapper(props: DashWrapperProps) {
   const {show: showStatisticModal, close: closeStatisticModal, modalProps: statisticModalProps} = useModal()
   const [filters, setFilters] = useState<QueryBlock>(getActualFilters(dashboard.id, dash))
   const prevDefaultFilters = usePrevious(dash.defaultFilters)
+  const mergedFilters = useMemo(() => dash.defaultFilters ? _.mergeWith(filters, dash.defaultFilters, mergeCustomizer) : filters, [dash.defaultFilters, filters])
   const biProps = useBiProperties()
   const {dateFormatString, timeFormatString, dateTimeFormatString} = biProps.dateTime
   const {rowHeight} = biProps
   const dashHeight = rowHeight * height - PAGE_HEADER_HEIGHT
+  console.log(dash.defaultFilters, filters, mergedFilters)
 
   useEffect(() => {
     if (!_.isEqual(dash.defaultFilters, prevDefaultFilters))
@@ -112,7 +120,7 @@ function DashWrapper(props: DashWrapperProps) {
   }, [
     dataset,
     dash.sortField,
-    filters,
+    mergedFilters,
     selectedFilters
   ])
 
@@ -128,7 +136,7 @@ function DashWrapper(props: DashWrapperProps) {
     }
 
     const datasetInput: DatasetService.DatasetInput<any> = {
-      filters: toDatasetFiltersInput(dataset, filters, timeZone)
+      filters: toDatasetFiltersInput(dataset, mergedFilters, timeZone)
     }
 
     const extraQueryFilter = extra?.queryFilter
@@ -225,7 +233,7 @@ function DashWrapper(props: DashWrapperProps) {
   const renderTitle = () => dash.name + (dash.unit ? `, ${dash.unit}` : '')
 
   const renderSubTitle = () => {
-    const queryBlock = dataset ? printQueryBlock({dataset, queryBlock: filters, dateFormatString, timeFormatString, dateTimeFormatString, timezone: timeZone}) : ''
+    const queryBlock = dataset ? printQueryBlock({dataset, queryBlock: mergedFilters, dateFormatString, timeFormatString, dateTimeFormatString, timezone: timeZone}) : ''
     return <div className={styles.subTitle} title={queryBlock}>{queryBlock}</div>
   }
 
