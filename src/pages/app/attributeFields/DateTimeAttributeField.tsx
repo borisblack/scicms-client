@@ -26,8 +26,7 @@ const DateTimeAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, for
   const isDisabled = useMemo(() => attribute.readOnly, [attribute.readOnly])
   const additionalProps = useMemo((): any => {
     const additionalProps: any = {}
-    if (isDisabled)
-      additionalProps.disabled = true
+    if (isDisabled) additionalProps.disabled = true
 
     return additionalProps
   }, [isDisabled])
@@ -37,7 +36,7 @@ const DateTimeAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, for
     return evt
   }
 
-  const parseValue = useCallback((val: string | null | undefined) => val == null ? null : dayjs.tz(val, UTC), [])
+  const parseValue = useCallback((val: string | null | undefined) => (val == null ? null : dayjs.tz(val, UTC)), [])
 
   return (
     <>
@@ -53,13 +52,14 @@ const DateTimeAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, for
         <DatePicker
           id={`${uniqueKey}#${attrName}`}
           style={{width: '100%'}}
-          showTime showSecond={false}
+          showTime
+          showSecond={false}
           format={momentDisplayDateTimeFormatString}
           {...additionalProps}
         />
       </FormItem>
       <FormItem name={`${attrName}.changed`} valuePropName="checked" hidden>
-        <Checkbox id={`${uniqueKey}#${attrName}.changed`}/>
+        <Checkbox id={`${uniqueKey}#${attrName}.changed`} />
       </FormItem>
     </>
   )

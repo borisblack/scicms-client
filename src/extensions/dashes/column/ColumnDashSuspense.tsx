@@ -7,7 +7,7 @@ const ColumnDash = lazy(() => import('./ColumnDash'))
 function ColumnDashSuspense(ctx: DashRenderContext) {
   return (
     <Suspense fallback={null}>
-      <ColumnDash {...ctx}/>
+      <ColumnDash {...ctx} />
     </Suspense>
   )
 }

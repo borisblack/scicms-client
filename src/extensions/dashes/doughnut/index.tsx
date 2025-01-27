@@ -11,6 +11,6 @@ export const doughnut: Dash = {
     {name: 'angleField', label: 'Angle field', cardinality: 1, required: true},
     {name: 'colorField', label: 'Color field', cardinality: 1, required: true}
   ],
-  renderOptionsForm: (props) => <DoughnutDashOptionsForm {...props}/>,
-  render: ({context}) => <DoughnutDashSuspense {...context}/>
+  renderOptionsForm: props => <DoughnutDashOptionsForm {...props} />,
+  render: ({context}) => <DoughnutDashSuspense {...context} />
 }

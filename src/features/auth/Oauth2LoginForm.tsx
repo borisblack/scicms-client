@@ -8,12 +8,12 @@ import {usePrevious} from 'src/util/hooks'
 import {requiredFieldRule} from 'src/util/form'
 
 interface Oauth2LoginFormProps {
-    oauth2Providers: Oauth2ProviderConfig[]
-    onLogin: (credentials: {provider: string}) => void
+  oauth2Providers: Oauth2ProviderConfig[]
+  onLogin: (credentials: {provider: string}) => void
 }
 
 interface Oauth2LoginFormValues {
-    provider: string
+  provider: string
 }
 
 const OAUTH_PROVIDER_KEY = 'oauth2Provider'
@@ -26,8 +26,7 @@ function Oauth2LoginForm({oauth2Providers, onLogin}: Oauth2LoginFormProps) {
   const [form] = Form.useForm()
 
   useEffect(() => {
-    if (prevOauth2Providers != null && !_.isEqual(oauth2Providers, prevOauth2Providers))
-      form.resetFields()
+    if (prevOauth2Providers != null && !_.isEqual(oauth2Providers, prevOauth2Providers)) form.resetFields()
   }, [oauth2Providers])
 
   function handleOauth2ProviderSelect(provider: string) {
@@ -57,12 +56,7 @@ function Oauth2LoginForm({oauth2Providers, onLogin}: Oauth2LoginFormProps) {
           />
         </FormItem>
         <FormItem>
-          <Button
-            block
-            type="primary"
-            size="large"
-            onClick={() => form.submit()}
-          >
+          <Button block type="primary" size="large" onClick={() => form.submit()}>
             {t('Login')}
           </Button>
         </FormItem>

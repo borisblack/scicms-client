@@ -29,44 +29,44 @@ interface ClientConfig {
 }
 
 export interface AppConfig {
-    coreVersion: string
-    dateTime: {
-        timeZone: string
-        luxonDisplayDateFormatString: string
-        luxonDisplayTimeFormatString: string
-        luxonDisplayDateTimeFormatString: string
-        momentDisplayDateFormatString: string
-        momentDisplayTimeFormatString: string
-        momentDisplayDateTimeFormatString: string
+  coreVersion: string
+  dateTime: {
+    timeZone: string
+    luxonDisplayDateFormatString: string
+    luxonDisplayTimeFormatString: string
+    luxonDisplayDateTimeFormatString: string
+    momentDisplayDateFormatString: string
+    momentDisplayTimeFormatString: string
+    momentDisplayDateTimeFormatString: string
+  }
+  query: {
+    minPageSize: number
+    defaultPageSize: number
+    maxPageSize: number
+  }
+  mutation: {
+    copyCollectionRelations: boolean
+    deletingStrategy: DeletingStrategy
+  }
+  ui: {
+    dataGrid: {
+      colWidth: number
+      maxTextLength: number
     }
-    query: {
-        minPageSize: number
-        defaultPageSize: number
-        maxPageSize: number
+    form: {
+      fieldWidth: number
+      textAreaRows: number
+      editorHeight: string
     }
-    mutation: {
-        copyCollectionRelations: boolean
-        deletingStrategy: DeletingStrategy
+    split: {
+      defaultSplitterColors: {
+        color: string
+        hover: string
+        drag: string
+      }
+      splitterSize: string
     }
-    ui: {
-        dataGrid: {
-            colWidth: number
-            maxTextLength: number
-        }
-        form: {
-            fieldWidth: number
-            textAreaRows: number
-            editorHeight: string
-        }
-        split: {
-            defaultSplitterColors: {
-                color: string
-                hover: string
-                drag: string
-            }
-            splitterSize: string
-        }
-    }
+  }
 }
 
 export enum PropertyKey {

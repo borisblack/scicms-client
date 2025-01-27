@@ -11,14 +11,17 @@ interface TemplateAttributesSelectionProps {
   onChange: (selectedAttributes: NamedAttribute[]) => void
 }
 
-export default function TemplateAttributesSelection({includeTemplates, existingAttributes, onChange}: TemplateAttributesSelectionProps) {
+export default function TemplateAttributesSelection({
+  includeTemplates,
+  existingAttributes,
+  onChange
+}: TemplateAttributesSelectionProps) {
   const {t} = useTranslation()
   const {itemTemplates} = useRegistry()
   const includeTemplateNames = useMemo(() => new Set(includeTemplates), [includeTemplates])
   const [selectedTemplateName, setSelectedTemplateName] = useState<string | undefined>(() => {
     const availableTemplateNames = Object.keys(itemTemplates).filter(name => !includeTemplateNames.has(name))
-    if (availableTemplateNames.length === 0)
-      return undefined
+    if (availableTemplateNames.length === 0) return undefined
 
     return availableTemplateNames[0]
   })
@@ -37,8 +40,7 @@ export default function TemplateAttributesSelection({includeTemplates, existingA
   }, [existingAttributes, includeTemplates, itemTemplates])
 
   const availableAttributes: NamedAttribute[] = useMemo(() => {
-    if (selectedTemplateName == null)
-      return []
+    if (selectedTemplateName == null) return []
 
     const selectedTemplate = itemTemplates[selectedTemplateName]
     return Object.entries(selectedTemplate.spec.attributes)
@@ -55,8 +57,7 @@ export default function TemplateAttributesSelection({includeTemplates, existingA
 
   function handleSelectedAttributesChange(names: string[]) {
     setSelectedAttributes(names)
-    if (selectedTemplateName == null)
-      return
+    if (selectedTemplateName == null) return
 
     const selectedTemplate = itemTemplates[selectedTemplateName]
     onChange(names.map(name => ({name, ...selectedTemplate.spec.attributes[name]})))
@@ -68,12 +69,10 @@ export default function TemplateAttributesSelection({includeTemplates, existingA
         style={{width: 180, marginBottom: 10}}
         placeholder={t('Select template')}
         size="small"
-        options={
-          Object.entries(itemTemplates)
-            .filter(([name, template]) => !includeTemplateNames.has(name))
-            .filter(([name, template]) => Object.keys(template.spec.attributes).length > 0)
-            .map(([name, template]) => ({value: name, label: name}))
-        }
+        options={Object.entries(itemTemplates)
+          .filter(([name, template]) => !includeTemplateNames.has(name))
+          .filter(([name, template]) => Object.keys(template.spec.attributes).length > 0)
+          .map(([name, template]) => ({value: name, label: name}))}
         value={selectedTemplateName}
         onSelect={handleTemplateSelect}
       />

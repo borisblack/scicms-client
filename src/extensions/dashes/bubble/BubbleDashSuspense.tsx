@@ -7,7 +7,7 @@ const BubbleDash = lazy(() => import('./BubbleDash'))
 function BubbleDashSuspense(ctx: DashRenderContext) {
   return (
     <Suspense fallback={null}>
-      <BubbleDash {...ctx}/>
+      <BubbleDash {...ctx} />
     </Suspense>
   )
 }

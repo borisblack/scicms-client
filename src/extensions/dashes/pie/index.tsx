@@ -11,6 +11,6 @@ export const pie: Dash = {
     {name: 'angleField', label: 'Angle field', cardinality: 1, required: true},
     {name: 'colorField', label: 'Color field', cardinality: 1, required: true}
   ],
-  renderOptionsForm: (props) => <PieDashOptionsForm {...props}/>,
-  render: ({context}) => <PieDashSuspense {...context}/>
+  renderOptionsForm: props => <PieDashOptionsForm {...props} />,
+  render: ({context}) => <PieDashSuspense {...context} />
 }

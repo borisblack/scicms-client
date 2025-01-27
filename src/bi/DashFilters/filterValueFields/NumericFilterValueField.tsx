@@ -10,23 +10,17 @@ import {regExpRule} from 'src/util/form'
 const {Item: FormItem} = Form
 
 const NumericFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, column, op}) => {
-  if (namePrefix.length === 0)
-    throw new Error('Illegal argument')
+  if (namePrefix.length === 0) throw new Error('Illegal argument')
 
-  if (!isNumeric(column.type))
-    throw new Error('Illegal argument')
+  if (!isNumeric(column.type)) throw new Error('Illegal argument')
 
   const fieldName = namePrefix[namePrefix.length - 1]
   const {t} = useTranslation()
 
   const renderBetweenContent = () => (
     <Space>
-      <FormItem
-        className={styles.formItem}
-        name={[fieldName, 'extra', 'left']}
-        rules={[{required: true, message: ''}]}
-      >
-        <InputNumber bordered={false} placeholder={t('Left value')}/>
+      <FormItem className={styles.formItem} name={[fieldName, 'extra', 'left']} rules={[{required: true, message: ''}]}>
+        <InputNumber bordered={false} placeholder={t('Left value')} />
       </FormItem>
 
       <FormItem
@@ -34,7 +28,7 @@ const NumericFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, c
         name={[fieldName, 'extra', 'right']}
         rules={[{required: true, message: ''}]}
       >
-        <InputNumber bordered={false} placeholder={t('Right value')}/>
+        <InputNumber bordered={false} placeholder={t('Right value')} />
       </FormItem>
     </Space>
   )
@@ -45,20 +39,16 @@ const NumericFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, c
       name={[fieldName, 'value']}
       rules={[
         {required: true, message: ''},
-        regExpRule(/^(\d+(\.\d+)?)(\s*,\s*\d+(\.\d+)?)*$/, ''/*'String must contain only comma-separated values'*/)
+        regExpRule(/^(\d+(\.\d+)?)(\s*,\s*\d+(\.\d+)?)*$/, '' /*'String must contain only comma-separated values'*/)
       ]}
     >
-      <Input bordered={false} placeholder={t('Comma separated values')}/>
+      <Input bordered={false} placeholder={t('Comma separated values')} />
     </FormItem>
   )
 
   const renderDefaultContent = () => (
-    <FormItem
-      className={styles.formItem}
-      name={[fieldName, 'value']}
-      rules={[{required: true, message: ''}]}
-    >
-      <InputNumber bordered={false} placeholder={t('Value')}/>
+    <FormItem className={styles.formItem} name={[fieldName, 'value']} rules={[{required: true, message: ''}]}>
+      <InputNumber bordered={false} placeholder={t('Value')} />
     </FormItem>
   )
 

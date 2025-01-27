@@ -21,14 +21,13 @@ export const clearBit = (num: number, i: number) => {
   return num & mask
 }
 
-export const notifyErrorThrottled =
-    _.throttle(
-      (message: string, description: string) => {
-        notification.error({message, description})
-      },
-      clientConfig.notification.duration * 1000,
-      {trailing: false}
-    )
+export const notifyErrorThrottled = _.throttle(
+  (message: string, description: string) => {
+    notification.error({message, description})
+  },
+  clientConfig.notification.duration * 1000,
+  {trailing: false}
+)
 
 export function copyToClipboard(text: string, notify: boolean = true) {
   navigator.clipboard.writeText(text).then(() => {

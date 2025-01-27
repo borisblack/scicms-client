@@ -2,8 +2,8 @@ import styles from './ClickableCell.module.css'
 import {useTranslation} from 'react-i18next'
 
 interface ClickableCellProps {
-    value: any
-    onClick: (value: any) => void
+  value: any
+  onClick: (value: any) => void
 }
 
 export function ClickableCell({value, onClick}: ClickableCellProps) {
@@ -14,11 +14,7 @@ export function ClickableCell({value, onClick}: ClickableCellProps) {
   }
 
   return (
-    <div
-      className={styles.clickableCell}
-      title={t('Edit')}
-      onClick={handleClick}
-    >
+    <div className={styles.clickableCell} title={t('Edit')} onClick={handleClick}>
       {value}
     </div>
   )

@@ -6,7 +6,8 @@ import {useTranslation} from 'react-i18next'
 import {
   DeleteOutlined,
   EditOutlined,
-  ExclamationCircleOutlined, FieldTimeOutlined,
+  ExclamationCircleOutlined,
+  FieldTimeOutlined,
   FilterOutlined,
   FullscreenExitOutlined,
   FullscreenOutlined,
@@ -17,7 +18,13 @@ import {
 
 import FullScreen from 'src/uiKit/FullScreen'
 import * as DatasetService from 'src/services/dataset'
-import {getActualFilters, printQueryBlock, toDatasetFiltersInput, toSingleDatasetFiltersInput, toSingleSelectorFiltersInput} from '../util'
+import {
+  getActualFilters,
+  printQueryBlock,
+  toDatasetFiltersInput,
+  toSingleDatasetFiltersInput,
+  toSingleSelectorFiltersInput
+} from '../util'
 import {Dash, getDash} from 'src/extensions/dashes'
 import {
   Column,
@@ -84,11 +91,9 @@ function DashWrapper(props: DashWrapperProps) {
   } = props
   const dashHandler: Dash | undefined = useMemo(() => getDash(dash.type), [dash.type])
 
-  if (dashHandler == null)
-    throw new Error('Illegal argument')
+  if (dashHandler == null) throw new Error('Illegal argument')
 
-  if (!dash.id)
-    throw new Error(`Dash [${dash.name}] has no ID`)
+  if (!dash.id) throw new Error(`Dash [${dash.name}] has no ID`)
 
   const {t} = useTranslation()
   const appProps = useAppProperties()
@@ -103,26 +108,22 @@ function DashWrapper(props: DashWrapperProps) {
   const {show: showStatisticModal, close: closeStatisticModal, modalProps: statisticModalProps} = useModal()
   const [filters, setFilters] = useState<QueryBlock>(getActualFilters(dashboard.id, dash))
   const prevDefaultFilters = usePrevious(dash.defaultFilters)
-  const mergedFilters = useMemo(() => dash.defaultFilters ? _.mergeWith(filters, dash.defaultFilters, mergeCustomizer) : filters, [dash.defaultFilters, filters])
+  const mergedFilters = useMemo(
+    () => (dash.defaultFilters ? _.mergeWith(filters, dash.defaultFilters, mergeCustomizer) : filters),
+    [dash.defaultFilters, filters]
+  )
   const biProps = useBiProperties()
   const {dateFormatString, timeFormatString, dateTimeFormatString} = biProps.dateTime
   const {rowHeight} = biProps
   const dashHeight = rowHeight * height - PAGE_HEADER_HEIGHT
-  console.log(dash.defaultFilters, filters, mergedFilters)
 
   useEffect(() => {
-    if (!_.isEqual(dash.defaultFilters, prevDefaultFilters))
-      setFilters(getActualFilters(dashboard.id, dash))
+    if (!_.isEqual(dash.defaultFilters, prevDefaultFilters)) setFilters(getActualFilters(dashboard.id, dash))
   }, [dash.defaultFilters])
 
   useEffect(() => {
     fetchDatasetData()
-  }, [
-    dataset,
-    dash.sortField,
-    mergedFilters,
-    selectedFilters
-  ])
+  }, [dataset, dash.sortField, mergedFilters, selectedFilters])
 
   useEffect(() => {
     const interval = setInterval(fetchDatasetData, dash.refreshIntervalSeconds * 1000)
@@ -153,8 +154,7 @@ function DashWrapper(props: DashWrapperProps) {
       selectedFilters
         .filter(selectedFilter => {
           const field = dataset.spec.columns[selectedFilter.field]
-          if (field == null)
-            return false
+          if (field == null) return false
 
           return field.type === selectedFilter.type
         })
@@ -166,26 +166,25 @@ function DashWrapper(props: DashWrapperProps) {
 
     const datasetFields = dataset.spec.columns ?? {}
     const allFields = {...datasetFields, ...dash.fields}
-    const sortFieldNames: string[] = (dash.sortField ? (Array.isArray(dash.sortField) ? dash.sortField : [dash.sortField]) : [])
-      .map(sf => sf.includes(':') ? sf.substring(0, sf.indexOf(':')) : sf)
+    const sortFieldNames: string[] = (
+      dash.sortField ? (Array.isArray(dash.sortField) ? dash.sortField : [dash.sortField]) : []
+    ).map(sf => (sf.includes(':') ? sf.substring(0, sf.indexOf(':')) : sf))
     const fieldNamesToFetch: Set<string> = new Set(sortFieldNames)
     for (const axis of dashHandler.axes) {
       const axisValue: string | string[] | undefined = dash.optValues[axis.name]
-      if (!axisValue)
-        continue
+      if (!axisValue) continue
 
-      if (Array.isArray(axisValue))
-        axisValue.forEach(v => fieldNamesToFetch.add(v))
-      else
-        fieldNamesToFetch.add(axisValue)
+      if (Array.isArray(axisValue)) axisValue.forEach(v => fieldNamesToFetch.add(v))
+      else fieldNamesToFetch.add(axisValue)
 
-      const fieldsToFetch: Record<string, Column> = _.pickBy(allFields, (field, fieldName) => fieldNamesToFetch.has(fieldName))
+      const fieldsToFetch: Record<string, Column> = _.pickBy(allFields, (field, fieldName) =>
+        fieldNamesToFetch.has(fieldName)
+      )
 
       datasetInput.fields = buildFieldsInput(fieldsToFetch)
     }
 
-    if (dash.sortField)
-      datasetInput.sort = Array.isArray(dash.sortField) ? dash.sortField : [dash.sortField]
+    if (dash.sortField) datasetInput.sort = Array.isArray(dash.sortField) ? dash.sortField : [dash.sortField]
 
     let fetchedData: any[] | null = null
     setLoading(true)
@@ -217,15 +216,13 @@ function DashWrapper(props: DashWrapperProps) {
   }
 
   function handleDashModalOpen() {
-    if (!fullScreen)
-      onLockChange(true)
+    if (!fullScreen) onLockChange(true)
 
     showDashModal()
   }
 
   function handleDashModalClose() {
-    if (!fullScreen)
-      onLockChange(false)
+    if (!fullScreen) onLockChange(false)
 
     closeDashModal()
   }
@@ -233,8 +230,22 @@ function DashWrapper(props: DashWrapperProps) {
   const renderTitle = () => dash.name + (dash.unit ? `, ${dash.unit}` : '')
 
   const renderSubTitle = () => {
-    const queryBlock = dataset ? printQueryBlock({dataset, queryBlock: mergedFilters, dateFormatString, timeFormatString, dateTimeFormatString, timezone: timeZone}) : ''
-    return <div className={styles.subTitle} title={queryBlock}>{queryBlock}</div>
+    const queryBlock = dataset
+      ? printQueryBlock({
+          dataset,
+          queryBlock: mergedFilters,
+          dateFormatString,
+          timeFormatString,
+          dateTimeFormatString,
+          timezone: timeZone
+        })
+      : ''
+
+    return (
+      <div className={styles.subTitle} title={queryBlock}>
+        {queryBlock}
+      </div>
+    )
   }
 
   const getSettingsMenuItems = (): ItemType[] => {
@@ -243,7 +254,12 @@ function DashWrapper(props: DashWrapperProps) {
     if (dataset) {
       menuItems.push({
         key: 'filters',
-        label: <Space><FilterOutlined/>{t('Filters')}</Space>,
+        label: (
+          <Space>
+            <FilterOutlined />
+            {t('Filters')}
+          </Space>
+        ),
         onClick: showFiltersModal
       })
     }
@@ -252,21 +268,36 @@ function DashWrapper(props: DashWrapperProps) {
       if (dataset) {
         menuItems.push({
           key: 'statistic',
-          label: <Space><FieldTimeOutlined/>{t('Execution statistic')}</Space>,
+          label: (
+            <Space>
+              <FieldTimeOutlined />
+              {t('Execution statistic')}
+            </Space>
+          ),
           onClick: showStatisticModal
         })
       }
-            
+
       menuItems.push({type: 'divider'})
       menuItems.push({
         key: 'edit',
-        label: <Space><EditOutlined/>{t('Edit')}</Space>,
+        label: (
+          <Space>
+            <EditOutlined />
+            {t('Edit')}
+          </Space>
+        ),
         // disabled: !canEdit,
         onClick: handleDashModalOpen
       })
       menuItems.push({
         key: 'delete',
-        label: <Space><DeleteOutlined className="red"/>{t('Delete')}</Space>,
+        label: (
+          <Space>
+            <DeleteOutlined className="red" />
+            {t('Delete')}
+          </Space>
+        ),
         disabled: !canEdit,
         onClick: () => onDelete()
       })
@@ -285,13 +316,23 @@ function DashWrapper(props: DashWrapperProps) {
       <FullScreen active={fullScreen}>
         <PageHeader
           className={styles.pageHeader}
-          title={(
+          title={
             <span className={styles.title} title={title}>
               {title}
-              {loading && <>&nbsp;&nbsp;<SyncOutlined spin className="blue"/></>}
-              {(!loading && fetchError != null) && <>&nbsp;&nbsp;<ExclamationCircleOutlined className="red" title={fetchError}/></>}
+              {loading && (
+                <>
+                  &nbsp;&nbsp;
+                  <SyncOutlined spin className="blue" />
+                </>
+              )}
+              {!loading && fetchError != null && (
+                <>
+                  &nbsp;&nbsp;
+                  <ExclamationCircleOutlined className="red" title={fetchError} />
+                </>
+              )}
             </span>
-          )}
+          }
           // subTitle={renderSubTitle()}
           footer={renderSubTitle()}
           extra={[
@@ -299,7 +340,7 @@ function DashWrapper(props: DashWrapperProps) {
               key="refresh"
               type="text"
               className={styles.toolbarBtn}
-              icon={<ReloadOutlined/>}
+              icon={<ReloadOutlined />}
               title={t('Refresh')}
               onClick={() => fetchDatasetData()}
               onMouseDown={e => e.stopPropagation()}
@@ -308,7 +349,7 @@ function DashWrapper(props: DashWrapperProps) {
               <Button
                 type="text"
                 className={styles.toolbarBtn}
-                icon={<SettingOutlined/>}
+                icon={<SettingOutlined />}
                 title={t('Settings')}
                 onMouseDown={e => e.stopPropagation()}
               />
@@ -318,7 +359,7 @@ function DashWrapper(props: DashWrapperProps) {
                 key="exitFullScreen"
                 type="text"
                 className={styles.toolbarBtn}
-                icon={<FullscreenExitOutlined/>}
+                icon={<FullscreenExitOutlined />}
                 title={t('Exit full screen')}
                 onClick={() => handleFullScreenChange(false)}
                 onMouseDown={e => e.stopPropagation()}
@@ -328,7 +369,7 @@ function DashWrapper(props: DashWrapperProps) {
                 key="fullScreen"
                 type="text"
                 className={styles.toolbarBtn}
-                icon={<FullscreenOutlined/>}
+                icon={<FullscreenOutlined />}
                 title={t('Full screen')}
                 onClick={() => handleFullScreenChange(true)}
                 onMouseDown={e => e.stopPropagation()}
@@ -341,11 +382,12 @@ function DashWrapper(props: DashWrapperProps) {
           {datasetData.length === 0 ? (
             <Spin spinning={loading}>
               <div className={styles.centerChildContainer} style={{height: fullScreen ? '50vh' : dashHeight}}>
-                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>
+                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
               </div>
             </Spin>
           ) : (
-            dataset && dashHandler.render({
+            dataset &&
+            dashHandler.render({
               context: {
                 fullScreen,
                 data: datasetData,

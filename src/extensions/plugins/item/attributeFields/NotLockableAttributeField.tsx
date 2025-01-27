@@ -12,9 +12,14 @@ import styles from 'src/pages/app/attributeFields/AttributeField.module.css'
 
 const FormItem = Form.Item
 
-export const NotLockableAttributeField: FC<CustomAttributeFieldContext> = ({data: dataWrapper, form, attrName, attribute, value}) => {
-  if (attrName !== NOT_LOCKABLE_ATTR_NAME && attribute.type !== FieldType.bool)
-    throw new Error('Illegal attribute')
+export const NotLockableAttributeField: FC<CustomAttributeFieldContext> = ({
+  data: dataWrapper,
+  form,
+  attrName,
+  attribute,
+  value
+}) => {
+  if (attrName !== NOT_LOCKABLE_ATTR_NAME && attribute.type !== FieldType.bool) throw new Error('Illegal attribute')
 
   const {t} = useTranslation()
   const {data} = dataWrapper
@@ -25,18 +30,15 @@ export const NotLockableAttributeField: FC<CustomAttributeFieldContext> = ({data
 
   const additionalProps = useMemo((): any => {
     const additionalProps: any = {}
-    if (isDisabled)
-      additionalProps.disabled = true
+    if (isDisabled) additionalProps.disabled = true
 
     return additionalProps
   }, [isDisabled])
 
   const parseValue = useCallback((val: boolean | string | number | null | undefined) => {
-    if (val === 1 || val === '1' || val === 'true')
-      return true
+    if (val === 1 || val === '1' || val === 'true') return true
 
-    if (val === 0 ||  val === '0' || val === 'false')
-      return false
+    if (val === 0 || val === '0' || val === 'false') return false
 
     return val
   }, [])
@@ -47,9 +49,11 @@ export const NotLockableAttributeField: FC<CustomAttributeFieldContext> = ({data
       name={attrName}
       hidden={attribute.fieldHidden}
       valuePropName="checked"
-      initialValue={isLockable ? (parseValue(value) ?? parseValue(attribute.defaultValue)) : true}
+      initialValue={isLockable ? parseValue(value) ?? parseValue(attribute.defaultValue) : true}
     >
-      <Checkbox id={`${uniqueKey}#${attrName}`} style={{marginTop: 24}} {...additionalProps}>{t(attribute.displayName)}</Checkbox>
+      <Checkbox id={`${uniqueKey}#${attrName}`} style={{marginTop: 24}} {...additionalProps}>
+        {t(attribute.displayName)}
+      </Checkbox>
     </FormItem>
   )
 }

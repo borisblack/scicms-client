@@ -5,20 +5,16 @@ import {Button, notification, Space, Typography} from 'antd'
 import {FieldTimeOutlined} from '@ant-design/icons'
 import md5 from 'crypto-js/md5'
 
-import {
-  type DataWithPagination,
-  type RequestParams,
-  DataGrid
-} from 'src/uiKit/DataGrid'
+import {type DataWithPagination, type RequestParams, DataGrid} from 'src/uiKit/DataGrid'
 import {getColumns, getHiddenColumns, getInitialData, loadData} from 'src/bi/util/datagrid'
 import {Column, Dataset, ExecutionStatisticInfo} from 'src/types/bi'
 import {useAppProperties, usePrevious} from 'src/util/hooks'
 import ExecutionStatisticModal from 'src/bi/ExecutionStatisticModal'
 
 interface DataPreviewProps {
-    dataset: Dataset
-    allFields: Record<string, Column>
-    height: number
+  dataset: Dataset
+  allFields: Record<string, Column>
+  height: number
 }
 
 const {Title} = Typography
@@ -29,15 +25,26 @@ export default function DataPreview(props: DataPreviewProps) {
   const {t} = useTranslation()
   const appProps = useAppProperties()
   const {defaultPageSize} = appProps.query
-  const {luxonDisplayDateFormatString, luxonDisplayTimeFormatString, luxonDisplayDateTimeFormatString} = appProps.dateTime
+  const {luxonDisplayDateFormatString, luxonDisplayTimeFormatString, luxonDisplayDateTimeFormatString} =
+    appProps.dateTime
   const {colWidth: defaultColWidth} = appProps.ui.dataGrid
-  const columnsMemoized = useMemo(() => getColumns({
-    actualFields: allFields,
-    defaultColWidth,
-    luxonDisplayDateFormatString,
-    luxonDisplayTimeFormatString,
-    luxonDisplayDateTimeFormatString
-  }), [allFields, defaultColWidth, luxonDisplayDateFormatString, luxonDisplayDateTimeFormatString, luxonDisplayTimeFormatString])
+  const columnsMemoized = useMemo(
+    () =>
+      getColumns({
+        actualFields: allFields,
+        defaultColWidth,
+        luxonDisplayDateFormatString,
+        luxonDisplayTimeFormatString,
+        luxonDisplayDateTimeFormatString
+      }),
+    [
+      allFields,
+      defaultColWidth,
+      luxonDisplayDateFormatString,
+      luxonDisplayDateTimeFormatString,
+      luxonDisplayTimeFormatString
+    ]
+  )
   const hiddenColumnsMemoized = useMemo(() => getHiddenColumns(allFields), [allFields])
   const [loading, setLoading] = useState<boolean>(false)
   const [data, setData] = useState<DataWithPagination<any>>(getInitialData(defaultPageSize))
@@ -46,51 +53,53 @@ export default function DataPreview(props: DataPreviewProps) {
   const [openStatisticModal, setOpenStatisticModal] = useState<boolean>(false)
 
   useEffect(() => {
-    if (!prevProps)
-      return
+    if (!prevProps) return
 
-    if (!_.isEqual(prevProps.dataset, dataset) || !_.isEqual(prevProps.allFields, allFields))
-      refresh()
+    if (!_.isEqual(prevProps.dataset, dataset) || !_.isEqual(prevProps.allFields, allFields)) refresh()
   }, [dataset, allFields])
 
   const refresh = () => setVersion(prevVersion => prevVersion + 1)
 
-  const handleRequest = useCallback(async (params: RequestParams) => {
-    try {
-      setLoading(true)
-      const datasetData = await loadData(dataset, allFields, params)
-      setData(datasetData)
-      setStatistic({
-        timeMs: datasetData.timeMs,
-        cacheHit: datasetData.cacheHit,
-        query: datasetData.query,
-        params: datasetData.params
-      })
-    } catch (e: any) {
-      console.error(e.message)
-      notification.error({
-        message: t('Request error'),
-        description: e.message
-      })
-    } finally {
-      setLoading(false)
-    }
-  }, [dataset, allFields, t])
+  const handleRequest = useCallback(
+    async (params: RequestParams) => {
+      try {
+        setLoading(true)
+        const datasetData = await loadData(dataset, allFields, params)
+        setData(datasetData)
+        setStatistic({
+          timeMs: datasetData.timeMs,
+          cacheHit: datasetData.cacheHit,
+          query: datasetData.query,
+          params: datasetData.params
+        })
+      } catch (e: any) {
+        console.error(e.message)
+        notification.error({
+          message: t('Request error'),
+          description: e.message
+        })
+      } finally {
+        setLoading(false)
+      }
+    },
+    [dataset, allFields, t]
+  )
 
   function showStatistic() {
-    if (!statistic)
-      return
+    if (!statistic) return
 
     setOpenStatisticModal(true)
   }
 
   const renderToolbar = () => (
     <Space size={10}>
-      <Title level={5} style={{display: 'inline'}}>{t('Preview')}</Title>
+      <Title level={5} style={{display: 'inline'}}>
+        {t('Preview')}
+      </Title>
       <Button
         size="small"
         disabled={!statistic}
-        icon={<FieldTimeOutlined/>}
+        icon={<FieldTimeOutlined />}
         title={t('Execution statistic')}
         onClick={showStatistic}
       />

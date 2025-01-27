@@ -17,9 +17,14 @@ const SUFFIX_BUTTON_WIDTH = 24
 const ICONS_MODAL_WIDTH = 1100
 const ICONS_COMPONENT_HEIGHT = 600
 
-export const IconAttributeField: FC<CustomAttributeFieldContext> = ({data: dataWrapper, form, attrName, attribute, value}) => {
-  if (attrName !== ICON_ATTR_NAME || attribute.type !== FieldType.string)
-    throw new Error('Illegal attribute')
+export const IconAttributeField: FC<CustomAttributeFieldContext> = ({
+  data: dataWrapper,
+  form,
+  attrName,
+  attribute,
+  value
+}) => {
+  if (attrName !== ICON_ATTR_NAME || attribute.type !== FieldType.string) throw new Error('Illegal attribute')
 
   const uniqueKey = generateKey(dataWrapper)
   const {t} = useTranslation()
@@ -28,8 +33,7 @@ export const IconAttributeField: FC<CustomAttributeFieldContext> = ({data: dataW
   const isDisabled = useMemo(() => attribute.readOnly, [attribute.readOnly])
   const additionalProps = useMemo((): any => {
     const additionalProps: any = {}
-    if (isDisabled)
-      additionalProps.disabled = true
+    if (isDisabled) additionalProps.disabled = true
 
     return additionalProps
   }, [isDisabled])
@@ -51,7 +55,12 @@ export const IconAttributeField: FC<CustomAttributeFieldContext> = ({data: dataW
       <FormItem
         className={styles.formItem}
         name={attrName}
-        label={<span>{t(attribute.displayName)}&nbsp;<IconSuspense iconName={currentValue}/></span>}
+        label={
+          <span>
+            {t(attribute.displayName)}&nbsp;
+            <IconSuspense iconName={currentValue} />
+          </span>
+        }
         hidden={attribute.fieldHidden}
         initialValue={value ?? attribute.defaultValue}
         rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
@@ -60,17 +69,19 @@ export const IconAttributeField: FC<CustomAttributeFieldContext> = ({data: dataW
           id={`${uniqueKey}#${attrName}`}
           readOnly
           onSearch={() => setIconsModalVisible(true)}
-          addonAfter={currentValue && [
-            <Tooltip key="clear" title={t('Clear')}>
-              <Button
-                type="link"
-                style={{width: SUFFIX_BUTTON_WIDTH}}
-                icon={<CloseCircleOutlined/>}
-                danger
-                onClick={handleClear}
-              />
-            </Tooltip>
-          ]}
+          addonAfter={
+            currentValue && [
+              <Tooltip key="clear" title={t('Clear')}>
+                <Button
+                  type="link"
+                  style={{width: SUFFIX_BUTTON_WIDTH}}
+                  icon={<CloseCircleOutlined />}
+                  danger
+                  onClick={handleClear}
+                />
+              </Tooltip>
+            ]
+          }
           {...additionalProps}
         />
       </FormItem>
@@ -83,7 +94,7 @@ export const IconAttributeField: FC<CustomAttributeFieldContext> = ({data: dataW
         footer={null}
         onCancel={() => setIconsModalVisible(false)}
       >
-        <IconsSuspense height={ICONS_COMPONENT_HEIGHT} onSelect={handleIconSelect}/>
+        <IconsSuspense height={ICONS_COMPONENT_HEIGHT} onSelect={handleIconSelect} />
       </Modal>
     </>
   )

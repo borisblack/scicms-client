@@ -43,8 +43,7 @@ i18n
   })
   .then(t => {
     for (const code in _codeMessage) {
-      if (!_codeMessage.hasOwnProperty(code))
-        continue
+      if (!_codeMessage.hasOwnProperty(code)) continue
 
       codeMessage[code] = t(_codeMessage[code])
     }

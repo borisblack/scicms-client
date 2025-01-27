@@ -42,8 +42,7 @@ const attributeFields: AttributeFields = {
 
 export default function AttributeFieldWrapper(props: AttributeFieldProps) {
   const AttributeFieldComponent = attributeFields[props.attribute.type]
-  if (!AttributeFieldComponent)
-    throw new Error('Illegal attribute')
+  if (!AttributeFieldComponent) throw new Error('Illegal attribute')
 
   return pluginEngine.renderAttributeField({...props}, AttributeFieldComponent)
 }

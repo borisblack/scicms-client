@@ -9,21 +9,15 @@ import styles from '../DashFilters.module.css'
 const {Item: FormItem} = Form
 
 const BoolFilterValueField: FC<FilterValueFieldProps> = ({namePrefix, column, op}) => {
-  if (namePrefix.length === 0)
-    throw new Error('Illegal argument')
+  if (namePrefix.length === 0) throw new Error('Illegal argument')
 
-  if (!isBool(column.type))
-    throw new Error('Illegal argument')
+  if (!isBool(column.type)) throw new Error('Illegal argument')
 
   const fieldName = namePrefix[namePrefix.length - 1]
   const {t} = useTranslation()
 
   const renderDefaultContent = () => (
-    <FormItem
-      className={styles.formItem}
-      name={[fieldName, 'value']}
-      valuePropName="checked"
-    >
+    <FormItem className={styles.formItem} name={[fieldName, 'value']} valuePropName="checked">
       <Checkbox style={{marginTop: 24}}>{t('Value')}</Checkbox>
     </FormItem>
   )

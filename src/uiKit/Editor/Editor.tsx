@@ -6,12 +6,12 @@ import {EditorMode} from './constants'
 import './Editor.css'
 
 export interface EditorProps {
-    value?: string
-    mode?: EditorMode
-    height?: string
-    lineNumbers?: boolean
-    canEdit: boolean
-    onChange?: (value: string) => void
+  value?: string
+  mode?: EditorMode
+  height?: string
+  lineNumbers?: boolean
+  canEdit: boolean
+  onChange?: (value: string) => void
 }
 
 const FontSizeTheme = EditorView.theme({
@@ -33,8 +33,7 @@ function getExtensions(mode: EditorMode | undefined): Extension[] {
 
 export default function Editor({value, mode, height, lineNumbers, canEdit, onChange}: EditorProps) {
   function handleChange(newValue: string) {
-    if (canEdit && newValue !== value && onChange)
-      onChange(newValue)
+    if (canEdit && newValue !== value && onChange) onChange(newValue)
   }
 
   return (

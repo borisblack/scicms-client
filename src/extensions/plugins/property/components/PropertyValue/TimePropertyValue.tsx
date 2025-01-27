@@ -16,14 +16,19 @@ export const TimePropertyValue: FC<PropertyValueProps> = ({type, value, canEdit,
   const appProps = useAppProperties()
   const {momentDisplayTimeFormatString} = appProps.dateTime
 
-  if (type !== FieldType.time)
-    throw new Error('Illegal type.')
+  if (type !== FieldType.time) throw new Error('Illegal type.')
 
-  const parsedValue = useMemo(() => value == null ? undefined : dayjs.tz(value, MOMENT_ISO_TIME_FORMAT_STRING, UTC), [value])
-  
-  const handleChange = useCallback((val: Dayjs | null) => {
-    onChange(val == null ? null : val.format(/*MOMENT_ISO_TIME_FORMAT_STRING*/))
-  }, [onChange])
+  const parsedValue = useMemo(
+    () => (value == null ? undefined : dayjs.tz(value, MOMENT_ISO_TIME_FORMAT_STRING, UTC)),
+    [value]
+  )
+
+  const handleChange = useCallback(
+    (val: Dayjs | null) => {
+      onChange(val == null ? null : val.format(/*MOMENT_ISO_TIME_FORMAT_STRING*/))
+    },
+    [onChange]
+  )
 
   return (
     <TimePicker

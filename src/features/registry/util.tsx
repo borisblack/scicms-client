@@ -11,10 +11,10 @@ import {createMDITab} from 'src/util/mdi'
 import {UserInfo, ViewType} from 'src/types'
 
 interface ToAntdMenuItemsParams {
-    ctx: MDIContext<ItemDataWrapper>
-    me: UserInfo | null
-    items: ItemMap
-    menuItems: (SubMenu | MenuItem)[]
+  ctx: MDIContext<ItemDataWrapper>
+  me: UserInfo | null
+  items: ItemMap
+  menuItems: (SubMenu | MenuItem)[]
 }
 
 export const toAntdMenuItems = ({me, ctx, items, menuItems}: ToAntdMenuItemsParams): ItemType[] =>
@@ -26,7 +26,11 @@ export const toAntdMenuItems = ({me, ctx, items, menuItems}: ToAntdMenuItemsPara
         return {
           key: it.key,
           label: i18n.t(it.label) as string,
-          icon: <span><IconSuspense iconName={it.icon}/></span>,
+          icon: (
+            <span>
+              <IconSuspense iconName={it.icon} />
+            </span>
+          ),
           children: toAntdMenuItems({me, ctx, items, menuItems: it.children})
         }
       } else {
@@ -34,14 +38,16 @@ export const toAntdMenuItems = ({me, ctx, items, menuItems}: ToAntdMenuItemsPara
         return {
           key: item.id,
           label: i18n.t(item.displayPluralName) as string,
-          icon: <span><IconSuspense iconName={item.icon}/></span>,
+          icon: (
+            <span>
+              <IconSuspense iconName={item.icon} />
+            </span>
+          ),
           onClick: () => handleItemClick(ctx, item)
         }
       }
     })
 
 function handleItemClick(ctx: MDIContext<ItemDataWrapper>, item: Item) {
-  ctx.openTab(
-    createMDITab(item, ViewType.default)
-  )
+  ctx.openTab(createMDITab(item, ViewType.default))
 }

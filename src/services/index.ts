@@ -6,9 +6,13 @@ import {GraphQLError} from 'graphql/error'
 import {DateTime} from 'luxon'
 import {clientConfig} from 'src/config'
 
-export const storeJwt = (jwt: string) => { localStorage.setItem('jwt', jwt) }
+export const storeJwt = (jwt: string) => {
+  localStorage.setItem('jwt', jwt)
+}
 
-export const storeExpireAt = (expiredAt: number) => { localStorage.setItem('expireAt', expiredAt.toString()) }
+export const storeExpireAt = (expiredAt: number) => {
+  localStorage.setItem('expireAt', expiredAt.toString())
+}
 
 export const getJwt = (): string | null => localStorage.getItem('jwt')
 
@@ -22,9 +26,13 @@ export function isExpired(): boolean {
   return !!expireAt && expireAt < DateTime.now().toMillis()
 }
 
-export const removeJwt = () => { localStorage.removeItem('jwt') }
+export const removeJwt = () => {
+  localStorage.removeItem('jwt')
+}
 
-export const removeExpireAt = () => { localStorage.removeItem('expireAt') }
+export const removeExpireAt = () => {
+  localStorage.removeItem('expireAt')
+}
 
 // Setup Axios
 axios.defaults.headers.common['X-Requested-Width'] = 'XMLHttpRequest'
@@ -35,8 +43,7 @@ axios.interceptors.request.use((config: AxiosRequestConfig) => {
     if (isExpired()) {
       console.log('JWT is expired and cannot be used for authorization.')
     } else {
-      if (!config.headers)
-        config.headers = {}
+      if (!config.headers) config.headers = {}
 
       config.headers['Authorization'] = `Bearer ${jwt}`
     }
@@ -52,13 +59,12 @@ export function extractAxiosErrorMessage(e: AxiosError, showServerErrorMessage: 
       return 'User session expired'
     } else {
       if (showServerErrorMessage) {
-        return (res.data as any)?.message|| codeMessage[res.status] || e.message 
+        return (res.data as any)?.message || codeMessage[res.status] || e.message
       }
-        
+
       return codeMessage[res.status] || (res.data as any)?.message || e.message
     }
-  } else
-    return e.message
+  } else return e.message
 }
 
 export const throwAxiosResponseError = (e: AxiosError) => {
@@ -72,17 +78,16 @@ const authMiddleware = new ApolloLink((operation, forward) => {
   operation.setContext((context: Record<string, any>) => {
     const headers = {...context.headers}
     const jwt = getJwt()
-    if (jwt)
-      headers['Authorization'] = `Bearer ${jwt}`
+    if (jwt) headers['Authorization'] = `Bearer ${jwt}`
 
-    return { headers }
+    return {headers}
   })
 
   return forward(operation)
 })
 
 export const apolloClient = new ApolloClient({
-  link: from([authMiddleware/*, httpLink*/, uploadLink]),
+  link: from([authMiddleware /*, httpLink*/, uploadLink]),
   cache: new InMemoryCache({
     addTypename: false
   }),
@@ -98,7 +103,8 @@ export const apolloClient = new ApolloClient({
   }
 })
 
-export const extractGraphQLErrorMessages = (errors: ReadonlyArray<GraphQLError>) => errors.map(err => err.message).join('; ')
+export const extractGraphQLErrorMessages = (errors: ReadonlyArray<GraphQLError>) =>
+  errors.map(err => err.message).join('; ')
 
 export const throwGraphQLErrors = (errors: ReadonlyArray<GraphQLError>) => {
   throw new Error(extractGraphQLErrorMessages(errors))

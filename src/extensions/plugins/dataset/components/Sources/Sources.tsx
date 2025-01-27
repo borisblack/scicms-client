@@ -37,8 +37,7 @@ const initialSources: DatasetSources = {
 export function Sources({form, data: dataWrapper, buffer, onBufferChange}: CustomComponentContext) {
   const data = dataWrapper.data as Dataset | undefined
   const {item} = dataWrapper
-  if (item.name !== DATASET_ITEM_NAME)
-    throw new Error('Illegal argument')
+  if (item.name !== DATASET_ITEM_NAME) throw new Error('Illegal argument')
 
   const {t} = useTranslation()
   const appProps = useAppProperties()
@@ -56,8 +55,14 @@ export function Sources({form, data: dataWrapper, buffer, onBufferChange}: Custo
     total: 0
   }
   const [pagination, setPagination] = useState<IPagination>(defaultPagination)
-  const editorValue = useMemo(() => buffer.tableName ? `SELECT * FROM ${buffer.tableName}` : (buffer.query ?? ''), [buffer.query, buffer.tableName])
-  const useDesigner: boolean = useMemo(() => spec.useDesigner ?? false /*!editorValue*/, [/*editorValue,*/ spec.useDesigner])
+  const editorValue = useMemo(
+    () => (buffer.tableName ? `SELECT * FROM ${buffer.tableName}` : buffer.query ?? ''),
+    [buffer.query, buffer.tableName]
+  )
+  const useDesigner: boolean = useMemo(
+    () => spec.useDesigner ?? false /*!editorValue*/,
+    [/*editorValue,*/ spec.useDesigner]
+  )
 
   useEffect(() => {
     onBufferChange({
@@ -73,8 +78,7 @@ export function Sources({form, data: dataWrapper, buffer, onBufferChange}: Custo
       .then(res => {
         setTables(res.data)
 
-        if (res.meta.pagination != null)
-          setPagination(res.meta.pagination)
+        if (res.meta.pagination != null) setPagination(res.meta.pagination)
       })
       .finally(() => setLoading(false))
   }, [datasource, schema, q, pagination.page, pagination.pageSize, pagination.total])
@@ -87,8 +91,8 @@ export function Sources({form, data: dataWrapper, buffer, onBufferChange}: Custo
     setQ(e.target.value)
   }, DEBOUNCE_WAIT_INTERVAL)
 
-  const handlePaginationChange =
-        (page: number, pageSize: number) => setPagination(prevPagination => ({...prevPagination, page, pageSize}))
+  const handlePaginationChange = (page: number, pageSize: number) =>
+    setPagination(prevPagination => ({...prevPagination, page, pageSize}))
 
   function handleSourcesChange(newSources: DatasetSources, buildResult: SourcesQueryBuildResult) {
     onBufferChange({
@@ -113,8 +117,7 @@ export function Sources({form, data: dataWrapper, buffer, onBufferChange}: Custo
     })
 
   function handleEditorValueChange(value: string) {
-    if (value === editorValue)
-      return
+    if (value === editorValue) return
 
     onBufferChange({
       ...buffer,
@@ -128,7 +131,9 @@ export function Sources({form, data: dataWrapper, buffer, onBufferChange}: Custo
     title: (
       <TableItem
         table={table}
-        strong={table.name === sources.mainTable?.name || sources.joinedTables.findIndex(t => t.name === table.name) >= 0}
+        strong={
+          table.name === sources.mainTable?.name || sources.joinedTables.findIndex(t => t.name === table.name) >= 0
+        }
         canEdit={acl.canWrite}
       />
     ),
@@ -136,8 +141,8 @@ export function Sources({form, data: dataWrapper, buffer, onBufferChange}: Custo
       key: `${table.name}_${fieldName}`,
       title: (
         <span className="text-ellipsis">
-          <FieldTypeIcon fieldType={field.type}/>
-                    &nbsp;&nbsp;
+          <FieldTypeIcon fieldType={field.type} />
+          &nbsp;&nbsp;
           {fieldName}
         </span>
       )
@@ -157,16 +162,8 @@ export function Sources({form, data: dataWrapper, buffer, onBufferChange}: Custo
       >
         <div className={styles.tablesPane}>
           <Space.Compact className={styles.filterInput} size="small">
-            <Input
-              allowClear
-              placeholder={t('Schema')}
-              onChange={handleSchemaChange}
-            />
-            <Search
-              allowClear
-              placeholder={t('Source name')}
-              onChange={handleFilterChange}
-            />
+            <Input allowClear placeholder={t('Schema')} onChange={handleSchemaChange} />
+            <Search allowClear placeholder={t('Source name')} onChange={handleFilterChange} />
           </Space.Compact>
 
           <Tree
@@ -212,11 +209,7 @@ export function Sources({form, data: dataWrapper, buffer, onBufferChange}: Custo
             splitterSize={splitConfig.splitterSize}
             resetOnDoubleClick
           >
-            <SourcesDesigner
-              sources={sources}
-              canEdit={acl.canWrite && useDesigner}
-              onChange={handleSourcesChange}
-            />
+            <SourcesDesigner sources={sources} canEdit={acl.canWrite && useDesigner} onChange={handleSourcesChange} />
             <div>
               <CodeEditor
                 value={editorValue}

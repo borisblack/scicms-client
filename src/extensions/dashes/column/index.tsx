@@ -12,6 +12,6 @@ export const column: Dash = {
     {name: 'yField', label: 'y-axis field', cardinality: 1, required: true},
     {name: 'seriesField', label: 'Series field', cardinality: 1, required: false}
   ],
-  renderOptionsForm: (props) => <ColumnDashOptionsForm {...props}/>,
-  render: ({context}) => <ColumnDashSuspense {...context}/>
+  renderOptionsForm: props => <ColumnDashOptionsForm {...props} />,
+  render: ({context}) => <ColumnDashSuspense {...context} />
 }

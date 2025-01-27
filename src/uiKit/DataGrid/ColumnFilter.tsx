@@ -4,8 +4,8 @@ import {Input} from 'antd'
 import styles from './DataGrid.module.css'
 
 interface Props {
-    column: Column<any, unknown>
-    onSubmit: () => void
+  column: Column<any, unknown>
+  onSubmit: () => void
 }
 
 export default function ColumnFilter({column, onSubmit}: Props) {
@@ -21,8 +21,7 @@ export default function ColumnFilter({column, onSubmit}: Props) {
 
   function handleKeyUp(evt: KeyboardEvent<any>) {
     evt.stopPropagation()
-    if (evt.key === 'Enter')
-      onSubmit()
+    if (evt.key === 'Enter') onSubmit()
   }
 
   function handleChange(evt: ChangeEvent<any>) {

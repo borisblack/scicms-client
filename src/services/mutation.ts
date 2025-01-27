@@ -22,8 +22,7 @@ export default class MutationManager {
     if (!item.manualVersioning && majorRev)
       throw new Error('The majorRev attribute must be specified for manual versioning item only')
 
-    if (!item.localized && locale)
-      throw new Error('The locale attribute can be specified for localized item only.')
+    if (!item.localized && locale) throw new Error('The locale attribute can be specified for localized item only.')
 
     const mutation = gql(this.buildCreateMutation(item, locale))
     const variables: any = {data}
@@ -67,8 +66,7 @@ export default class MutationManager {
     locale?: string | null,
     copyCollectionRelations?: boolean
   ): Promise<ItemData> {
-    if (!item.versioned)
-      throw new Error('Item is not versioned')
+    if (!item.versioned) throw new Error('Item is not versioned')
 
     if (item.manualVersioning && !majorRev)
       throw new Error('The majorRev attribute must be specified for manual versioning item')
@@ -76,8 +74,7 @@ export default class MutationManager {
     if (!item.manualVersioning && majorRev)
       throw new Error('The majorRev attribute must be specified for manual versioning item only')
 
-    if (!item.localized && locale)
-      throw new Error('The locale attribute can be specified for localized item only')
+    if (!item.localized && locale) throw new Error('The locale attribute can be specified for localized item only')
 
     const mutation = gql(this.buildCreateVersionMutation(item, locale, copyCollectionRelations))
     const variables: any = {id, data}
@@ -118,9 +115,14 @@ export default class MutationManager {
         `
   }
 
-  async createLocalization(item: Item, id: string, data: ItemInput, locale: string, copyCollectionRelations?: boolean): Promise<ItemData> {
-    if (!item.localized)
-      throw new Error('Item is not localized')
+  async createLocalization(
+    item: Item,
+    id: string,
+    data: ItemInput,
+    locale: string,
+    copyCollectionRelations?: boolean
+  ): Promise<ItemData> {
+    if (!item.localized) throw new Error('Item is not localized')
 
     const mutation = gql(this.buildCreateLocalizationMutation(item, copyCollectionRelations))
     const variables: any = {id, data, locale}
@@ -208,7 +210,11 @@ export default class MutationManager {
         `
   }
 
-  async purge<T extends ItemData>(item: Item, id: string, deletingStrategy: DeletingStrategy): Promise<ResponseCollection<T>> {
+  async purge<T extends ItemData>(
+    item: Item,
+    id: string,
+    deletingStrategy: DeletingStrategy
+  ): Promise<ResponseCollection<T>> {
     const mutation = gql(this.buildPurgeMutation(item))
 
     const res = await apolloClient.mutate({mutation, variables: {id, deletingStrategy}})

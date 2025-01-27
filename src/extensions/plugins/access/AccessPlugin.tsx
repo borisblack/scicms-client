@@ -9,7 +9,7 @@ export class AccessPlugin extends Plugin {
     this.addAttributeField({
       id: ACCESS_MASK_ATTRIBUTE_FIELD_ID,
       mountPoint: `${ACCESS_ITEM_NAME}.${MASK_ATTR_NAME}`,
-      render: ({context}) => <AccessMaskAttributeField {...context}/>
+      render: ({context}) => <AccessMaskAttributeField {...context} />
     })
   }
 

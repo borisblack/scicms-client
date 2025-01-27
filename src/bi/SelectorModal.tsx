@@ -6,16 +6,24 @@ import {Dataset, IDash, ISelector} from '../types/bi'
 import SelectorForm, {SelectorFormValues} from './SelectorForm'
 
 interface SelectorFormModalProps {
-    selector: ISelector
-    datasetMap: Record<string, Dataset>
-    dashes: IDash[]
-    open: boolean
-    canEdit: boolean
-    onChange: (selector: ISelector) => void
-    onClose: () => void
+  selector: ISelector
+  datasetMap: Record<string, Dataset>
+  dashes: IDash[]
+  open: boolean
+  canEdit: boolean
+  onChange: (selector: ISelector) => void
+  onClose: () => void
 }
 
-export default function SelectorModal({selector, datasetMap, dashes, canEdit, open, onChange, onClose}: SelectorFormModalProps) {
+export default function SelectorModal({
+  selector,
+  datasetMap,
+  dashes,
+  canEdit,
+  open,
+  onChange,
+  onClose
+}: SelectorFormModalProps) {
   const {t} = useTranslation()
   const [form] = Form.useForm()
 
@@ -40,7 +48,9 @@ export default function SelectorModal({selector, datasetMap, dashes, canEdit, op
       extra={
         <Space>
           <Button onClick={cancelEdit}>{t('Cancel')}</Button>
-          <Button disabled={!canEdit} type="primary" onClick={() => form.submit()}>OK</Button>
+          <Button disabled={!canEdit} type="primary" onClick={() => form.submit()}>
+            OK
+          </Button>
         </Space>
       }
       onClose={onClose}
@@ -53,12 +63,7 @@ export default function SelectorModal({selector, datasetMap, dashes, canEdit, op
         initialValues={selector}
         onFinish={handleFormFinish}
       >
-        <SelectorForm
-          selector={selector}
-          datasetMap={datasetMap}
-          dashes={dashes}
-          canEdit={canEdit}
-        />
+        <SelectorForm selector={selector} datasetMap={datasetMap} dashes={dashes} canEdit={canEdit} />
       </Form>
     </Drawer>
   )

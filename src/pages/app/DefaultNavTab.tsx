@@ -18,10 +18,21 @@ import {useAppProperties, useAuth, useItemOperations, useMutationManager, useReg
 import {getTitle} from 'src/util/mdi'
 import IconSuspense from 'src/uiKit/icons/IconSuspense'
 import {useMDIContext} from 'src/uiKit/MDITabs/hooks'
-import {ApiMiddlewareContext, ApiOperation, CustomComponentContext, CustomRendererContext} from 'src/extensions/plugins/types'
+import {
+  ApiMiddlewareContext,
+  ApiOperation,
+  CustomComponentContext,
+  CustomRendererContext
+} from 'src/extensions/plugins/types'
 import {pluginEngine} from 'src/extensions/plugins'
 import styles from './NavTab.module.css'
-import {hasConfigIdAttribute, hasCurrentAttribute, hasGenerationAttribute, hasMajorRevAttribute, hasPermissionAttribute} from 'src/util/schema'
+import {
+  hasConfigIdAttribute,
+  hasCurrentAttribute,
+  hasGenerationAttribute,
+  hasMajorRevAttribute,
+  hasPermissionAttribute
+} from 'src/util/schema'
 
 interface Props {
   data: ItemDataWrapper
@@ -38,7 +49,8 @@ function DefaultNavTab({data: dataWrapper}: Props) {
   const {t} = useTranslation()
   const appProps = useAppProperties()
   const {defaultPageSize} = appProps.query
-  const {luxonDisplayDateFormatString, luxonDisplayTimeFormatString, luxonDisplayDateTimeFormatString} = appProps.dateTime
+  const {luxonDisplayDateFormatString, luxonDisplayTimeFormatString, luxonDisplayDateTimeFormatString} =
+    appProps.dateTime
   const {maxTextLength, colWidth: defaultColWidth} = appProps.ui.dataGrid
   const [loading, setLoading] = useState(false)
   const [data, setData] = useState(getInitialData<ItemData>(defaultPageSize))
@@ -50,30 +62,53 @@ function DefaultNavTab({data: dataWrapper}: Props) {
   const [buffer, setBuffer] = useState<IBuffer>({})
   const {item} = dataWrapper
   const isSystemItem = item.name === ITEM_TEMPLATE_ITEM_NAME || item.name === ITEM_ITEM_NAME
-  const canVersion = item.versioned && hasConfigIdAttribute(item) && hasMajorRevAttribute(item) && hasGenerationAttribute(item) && hasCurrentAttribute(item)
-  const columnsMemoized = useMemo(() => getColumns({
-    items: itemMap,
-    item,
-    maxTextLength,
-    defaultColWidth,
-    luxonDisplayDateFormatString,
-    luxonDisplayTimeFormatString,
-    luxonDisplayDateTimeFormatString,
-    onOpenItem: openItem
-  }), [defaultColWidth, item, itemMap, luxonDisplayDateFormatString, luxonDisplayDateTimeFormatString, luxonDisplayTimeFormatString, maxTextLength])
+  const canVersion =
+    item.versioned &&
+    hasConfigIdAttribute(item) &&
+    hasMajorRevAttribute(item) &&
+    hasGenerationAttribute(item) &&
+    hasCurrentAttribute(item)
+  const columnsMemoized = useMemo(
+    () =>
+      getColumns({
+        items: itemMap,
+        item,
+        maxTextLength,
+        defaultColWidth,
+        luxonDisplayDateFormatString,
+        luxonDisplayTimeFormatString,
+        luxonDisplayDateTimeFormatString,
+        onOpenItem: openItem
+      }),
+    [
+      defaultColWidth,
+      item,
+      itemMap,
+      luxonDisplayDateFormatString,
+      luxonDisplayDateTimeFormatString,
+      luxonDisplayTimeFormatString,
+      maxTextLength
+    ]
+  )
   const hiddenColumnsMemoized = useMemo(() => getHiddenColumns(item), [item])
   const handleBufferChange = useCallback((bufferChanges: IBuffer) => setBuffer({...buffer, ...bufferChanges}), [buffer])
-  const renderContext: CustomRendererContext = useMemo(() => ({
-    item,
-    buffer,
-    onBufferChange: handleBufferChange
-  }), [buffer, handleBufferChange, item])
+  const renderContext: CustomRendererContext = useMemo(
+    () => ({
+      item,
+      buffer,
+      onBufferChange: handleBufferChange
+    }),
+    [buffer, handleBufferChange, item]
+  )
 
-  const customComponentContext: CustomComponentContext = useMemo(() => ({
-    data: dataWrapper,
-    buffer,
-    onBufferChange: handleBufferChange
-  }), [dataWrapper, buffer, handleBufferChange])
+  const customComponentContext: CustomComponentContext = useMemo(
+    () => ({
+      data: dataWrapper,
+      buffer,
+      onBufferChange: handleBufferChange
+    }),
+    [dataWrapper, buffer, handleBufferChange]
+  )
 
   useEffect(() => {
     const headerNode = headerRef.current
@@ -103,43 +138,44 @@ function DefaultNavTab({data: dataWrapper}: Props) {
 
   const refresh = () => setVersion(prevVersion => prevVersion + 1)
 
-  const handleRequest = useCallback(async (params: RequestParams) => {
-    const allParams: ExtRequestParams = {...params, locale: showAllLocalesRef.current ? 'all' : null}
+  const handleRequest = useCallback(
+    async (params: RequestParams) => {
+      const allParams: ExtRequestParams = {...params, locale: showAllLocalesRef.current ? 'all' : null}
 
-    try {
-      setLoading(true)
-      const dataWithPagination = await findAll(itemMap, item, allParams)
-      setData(dataWithPagination)
-    } catch (e: any) {
-      notification.error({
-        message: t('Request error'),
-        description: e.message
-      })
-    } finally {
-      setLoading(false)
-    }
-  }, [item, itemMap, t])
-
-  const handleView = useCallback(async (id: string) => {
-    setLoading(true)
-    await openItem(
-      item,
-      id,
-      undefined,
-      refresh,
-      (closedData, remove) => {
-        if (remove)
-          refresh()
+      try {
+        setLoading(true)
+        const dataWithPagination = await findAll(itemMap, item, allParams)
+        setData(dataWithPagination)
+      } catch (e: any) {
+        notification.error({
+          message: t('Request error'),
+          description: e.message
+        })
+      } finally {
+        setLoading(false)
       }
-    )
-    setLoading(false)
-  }, [item, openItem])
+    },
+    [item, itemMap, t]
+  )
 
-  const handleRowDoubleClick = useCallback((row: Row<ItemData>) => handleView(row.original[item.idAttribute]), [handleView, item.idAttribute])
+  const handleView = useCallback(
+    async (id: string) => {
+      setLoading(true)
+      await openItem(item, id, undefined, refresh, (closedData, remove) => {
+        if (remove) refresh()
+      })
+      setLoading(false)
+    },
+    [item, openItem]
+  )
+
+  const handleRowDoubleClick = useCallback(
+    (row: Row<ItemData>) => handleView(row.original[item.idAttribute]),
+    [handleView, item.idAttribute]
+  )
 
   const logoutIfNeed = useCallback(() => {
-    if (!isSystemItem)
-      return
+    if (!isSystemItem) return
 
     confirm({
       title: `${t('You must sign in again to apply the changes')}`,
@@ -147,72 +183,83 @@ function DefaultNavTab({data: dataWrapper}: Props) {
     })
   }, [isSystemItem, handleLogout, t])
 
-  const handleDelete = useCallback(async (id: string, purge: boolean = false) => {
-    setLoading(true)
-    try {
-      if (purge) {
-        await mutationManager.purge(item, id, appProps.mutation.deletingStrategy)
-      } else {
-        const doDelete = async () => await mutationManager.remove(item, id, appProps.mutation.deletingStrategy)
-        if (pluginEngine.hasApiMiddleware(item.name)) {
-          const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values: {id}}
-          await pluginEngine.handleApiMiddleware(item.name, ApiOperation.DELETE, apiMiddlewareContext, doDelete)
+  const handleDelete = useCallback(
+    async (id: string, purge: boolean = false) => {
+      setLoading(true)
+      try {
+        if (purge) {
+          await mutationManager.purge(item, id, appProps.mutation.deletingStrategy)
         } else {
-          await doDelete()
+          const doDelete = async () => await mutationManager.remove(item, id, appProps.mutation.deletingStrategy)
+          if (pluginEngine.hasApiMiddleware(item.name)) {
+            const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values: {id}}
+            await pluginEngine.handleApiMiddleware(item.name, ApiOperation.DELETE, apiMiddlewareContext, doDelete)
+          } else {
+            await doDelete()
+          }
+        }
+        closeItem(item.name, id)
+        refresh()
+        logoutIfNeed()
+      } catch (e: any) {
+        notification.error({
+          message: t('Deletion error'),
+          description: e.message
+        })
+      } finally {
+        setLoading(false)
+      }
+    },
+    [closeItem, item, logoutIfNeed, mutationManager, me, itemMap, buffer, t]
+  )
+
+  const getRowContextMenu = useCallback(
+    (row: Row<ItemData>) => {
+      const items: ItemType[] = [
+        {
+          key: 'open',
+          label: t('Open'),
+          icon: <FolderOpenOutlined />,
+          onClick: () => handleView(row.original[item.idAttribute])
+        }
+      ]
+
+      const rowPermissionId = row.original.permission?.data?.id
+      const rowPermission = rowPermissionId ? permissionMap[rowPermissionId] : null
+      const canDelete = !hasPermissionAttribute(item) || (!!rowPermission && ACL.canDelete(me, rowPermission))
+      if (canDelete) {
+        if (canVersion) {
+          items.push({
+            key: 'delete',
+            label: t('Delete'),
+            icon: <DeleteTwoTone twoToneColor="#eb2f96" />,
+            children: [
+              {
+                key: 'delete',
+                label: t('Current Version'),
+                onClick: () => handleDelete(row.original[item.idAttribute])
+              },
+              {
+                key: 'purge',
+                label: t('All Versions'),
+                onClick: () => handleDelete(row.original[item.idAttribute], true)
+              }
+            ]
+          })
+        } else {
+          items.push({
+            key: 'delete',
+            label: t('Delete'),
+            icon: <DeleteTwoTone twoToneColor="#eb2f96" />,
+            onClick: () => handleDelete(row.original[item.idAttribute])
+          })
         }
       }
-      closeItem(item.name, id)
-      refresh()
-      logoutIfNeed()
-    } catch (e: any) {
-      notification.error({
-        message: t('Deletion error'),
-        description: e.message
-      })
-    } finally {
-      setLoading(false)
-    }
-  }, [closeItem, item, logoutIfNeed, mutationManager, me, itemMap, buffer, t])
 
-  const getRowContextMenu = useCallback((row: Row<ItemData>) => {
-    const items: ItemType[] = [{
-      key: 'open',
-      label: t('Open'),
-      icon: <FolderOpenOutlined />,
-      onClick: () => handleView(row.original[item.idAttribute])
-    }]
-
-    const rowPermissionId = row.original.permission?.data?.id
-    const rowPermission = rowPermissionId ? permissionMap[rowPermissionId] : null
-    const canDelete = !hasPermissionAttribute(item) || (!!rowPermission && ACL.canDelete(me, rowPermission))
-    if (canDelete) {
-      if (canVersion) {
-        items.push({
-          key: 'delete',
-          label: t('Delete'),
-          icon: <DeleteTwoTone twoToneColor="#eb2f96" />,
-          children: [{
-            key: 'delete',
-            label: t('Current Version'),
-            onClick: () => handleDelete(row.original[item.idAttribute])
-          }, {
-            key: 'purge',
-            label: t('All Versions'),
-            onClick: () => handleDelete(row.original[item.idAttribute], true)
-          }]
-        })
-      } else {
-        items.push({
-          key: 'delete',
-          label: t('Delete'),
-          icon: <DeleteTwoTone twoToneColor="#eb2f96" />,
-          onClick: () => handleDelete(row.original[item.idAttribute])
-        })
-      }
-    }
-
-    return items
-  }, [t, me, permissionMap, handleView, item, canVersion, handleDelete])
+      return items
+    },
+    [t, me, permissionMap, handleView, item, canVersion, handleDelete]
+  )
 
   const handleCreate = useCallback(() => {
     createItem(item, undefined, undefined, refresh, refresh)
@@ -226,8 +273,19 @@ function DefaultNavTab({data: dataWrapper}: Props) {
     return (
       <PageHeader
         className={styles.pageHeader}
-        title={<span><IconSuspense iconName={item.icon} />&nbsp;&nbsp;{getTitle(dataWrapper)}</span>}
-        extra={canCreate && <Button type="primary" onClick={handleCreate}><PlusCircleOutlined /> {t('Create')}</Button>}
+        title={
+          <span>
+            <IconSuspense iconName={item.icon} />
+            &nbsp;&nbsp;{getTitle(dataWrapper)}
+          </span>
+        }
+        extra={
+          canCreate && (
+            <Button type="primary" onClick={handleCreate}>
+              <PlusCircleOutlined /> {t('Create')}
+            </Button>
+          )
+        }
       />
     )
   }, [handleCreate, item, me, permissionMap, t, dataWrapper])
@@ -241,38 +299,49 @@ function DefaultNavTab({data: dataWrapper}: Props) {
 
   return (
     <>
-      {pluginEngine.hasComponents('default.header') && pluginEngine.renderComponents('default.header', customComponentContext)}
-      {pluginEngine.hasComponents(`${item.name}.default.header`) && pluginEngine.renderComponents(`${item.name}.default.header`, customComponentContext)}
+      {pluginEngine.hasComponents('default.header') &&
+        pluginEngine.renderComponents('default.header', customComponentContext)}
+      {pluginEngine.hasComponents(`${item.name}.default.header`) &&
+        pluginEngine.renderComponents(`${item.name}.default.header`, customComponentContext)}
       {pluginEngine.hasRenderers('default.header', `${item.name}.default.header`) && <div ref={headerRef} />}
 
-      {(!pluginEngine.hasComponents('default.header', `${item.name}.default.header`) && !pluginEngine.hasRenderers('default.header', `${item.name}.default.header`)) && renderPageHeader()}
+      {!pluginEngine.hasComponents('default.header', `${item.name}.default.header`) &&
+        !pluginEngine.hasRenderers('default.header', `${item.name}.default.header`) &&
+        renderPageHeader()}
 
-      {pluginEngine.hasComponents('default.content') && pluginEngine.renderComponents('default.content', customComponentContext)}
-      {pluginEngine.hasComponents(`${item.name}.default.content`) && pluginEngine.renderComponents(`${item.name}.default.content`, customComponentContext)}
+      {pluginEngine.hasComponents('default.content') &&
+        pluginEngine.renderComponents('default.content', customComponentContext)}
+      {pluginEngine.hasComponents(`${item.name}.default.content`) &&
+        pluginEngine.renderComponents(`${item.name}.default.content`, customComponentContext)}
       {pluginEngine.hasRenderers('default.content', `${item.name}.default.content`) && <div ref={contentRef} />}
 
-      {(!pluginEngine.hasComponents('default.content', `${item.name}.default.content`) && !pluginEngine.hasRenderers('default.content', `${item.name}.default.content`)) &&
-        <DataGrid
-          loading={loading}
-          columns={columnsMemoized}
-          data={dataMemoized}
-          initialState={{
-            hiddenColumns: hiddenColumnsMemoized,
-            pageSize: appProps.query.defaultPageSize
-          }}
-          hasFilters={true}
-          version={version}
-          toolbar={item.localized && <Checkbox onChange={handleLocalizationsCheckBoxChange}>{t('All Locales')}</Checkbox>}
-          title={t(item.displayPluralName)}
-          getRowId={originalRow => originalRow[item.idAttribute]}
-          getRowContextMenu={getRowContextMenu}
-          onRequest={handleRequest}
-          onRowDoubleClick={handleRowDoubleClick}
-        />
-      }
+      {!pluginEngine.hasComponents('default.content', `${item.name}.default.content`) &&
+        !pluginEngine.hasRenderers('default.content', `${item.name}.default.content`) && (
+          <DataGrid
+            loading={loading}
+            columns={columnsMemoized}
+            data={dataMemoized}
+            initialState={{
+              hiddenColumns: hiddenColumnsMemoized,
+              pageSize: appProps.query.defaultPageSize
+            }}
+            hasFilters={true}
+            version={version}
+            toolbar={
+              item.localized && <Checkbox onChange={handleLocalizationsCheckBoxChange}>{t('All Locales')}</Checkbox>
+            }
+            title={t(item.displayPluralName)}
+            getRowId={originalRow => originalRow[item.idAttribute]}
+            getRowContextMenu={getRowContextMenu}
+            onRequest={handleRequest}
+            onRowDoubleClick={handleRowDoubleClick}
+          />
+        )}
 
-      {pluginEngine.hasComponents('default.footer') && pluginEngine.renderComponents('default.footer', customComponentContext)}
-      {pluginEngine.hasComponents(`${item.name}.default.footer`) && pluginEngine.renderComponents(`${item.name}.default.footer`, customComponentContext)}
+      {pluginEngine.hasComponents('default.footer') &&
+        pluginEngine.renderComponents('default.footer', customComponentContext)}
+      {pluginEngine.hasComponents(`${item.name}.default.footer`) &&
+        pluginEngine.renderComponents(`${item.name}.default.footer`, customComponentContext)}
       {pluginEngine.hasRenderers('default.footer', `${item.name}.default.footer`) && <div ref={footerRef} />}
     </>
   )

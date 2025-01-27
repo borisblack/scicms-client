@@ -11,7 +11,7 @@ export class LifecyclePlugin extends Plugin {
       priority: 10,
       title: 'Spec',
       icon: 'PartitionOutlined',
-      render: ({context}) => <LifecycleSpecSuspense key={LIFECYCLE_SPEC_COMPONENT_ID} {...context}/>
+      render: ({context}) => <LifecycleSpecSuspense key={LIFECYCLE_SPEC_COMPONENT_ID} {...context} />
     })
   }
 

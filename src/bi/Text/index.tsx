@@ -10,13 +10,13 @@ import TextModal from '../TextModal'
 import styles from './Text.module.css'
 
 interface TextProps {
-    text: IText
-    height: number
-    canEdit: boolean
-    readOnly: boolean
-    onLockChange: (locked: boolean) => void
-    onChange: (text: IText) => void
-    onDelete: () => void
+  text: IText
+  height: number
+  canEdit: boolean
+  readOnly: boolean
+  onLockChange: (locked: boolean) => void
+  onChange: (text: IText) => void
+  onDelete: () => void
 }
 
 export default function Text({text, height, readOnly, canEdit, onLockChange, onChange, onDelete}: TextProps) {
@@ -43,13 +43,23 @@ export default function Text({text, height, readOnly, canEdit, onLockChange, onC
                 },*/
         {
           key: 'edit',
-          label: <Space><EditOutlined/>{t('Edit')}</Space>,
+          label: (
+            <Space>
+              <EditOutlined />
+              {t('Edit')}
+            </Space>
+          ),
           // disabled: !canEdit,
           onClick: handleTextModalOpen
         },
         {
           key: 'delete',
-          label: <Space><DeleteOutlined className="red"/>{t('Delete')}</Space>,
+          label: (
+            <Space>
+              <DeleteOutlined className="red" />
+              {t('Delete')}
+            </Space>
+          ),
           disabled: !canEdit,
           onClick: onDelete
         }
@@ -61,7 +71,7 @@ export default function Text({text, height, readOnly, canEdit, onLockChange, onC
 
   return (
     <>
-      {(canEdit && !readOnly) && (
+      {canEdit && !readOnly && (
         <PageHeader
           className={styles.pageHeader}
           extra={[
@@ -69,7 +79,7 @@ export default function Text({text, height, readOnly, canEdit, onLockChange, onC
               <Button
                 type="text"
                 className={styles.toolbarBtn}
-                icon={<SettingOutlined/>}
+                icon={<SettingOutlined />}
                 title={t('Settings')}
                 onMouseDown={e => e.stopPropagation()}
               />
@@ -78,19 +88,13 @@ export default function Text({text, height, readOnly, canEdit, onLockChange, onC
         />
       )}
 
-      {(text.level == null) ? (
+      {text.level == null ? (
         <Typography.Text>{text.content}</Typography.Text>
       ) : (
         <Typography.Title level={text.level}>{text.content}</Typography.Title>
       )}
 
-      <TextModal
-        {...textModalProps}
-        text={text}
-        canEdit={canEdit}
-        onChange={onChange}
-        onClose={handleTextModalClose}
-      />
+      <TextModal {...textModalProps} text={text} canEdit={canEdit} onChange={onChange} onClose={handleTextModalClose} />
     </>
   )
 }

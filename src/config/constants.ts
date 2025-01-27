@@ -96,6 +96,6 @@ export const UPDATED_BY_ATTR_NAME = 'updatedBy'
 export const LOCKED_BY_ATTR_NAME = 'lockedBy'
 
 export enum DndItemType {
-    SOURCE_TABLE = 'SOURCE_TABLE',
-    DATASET_FIELD = 'DATASET_FIELD'
+  SOURCE_TABLE = 'SOURCE_TABLE',
+  DATASET_FIELD = 'DATASET_FIELD'
 }

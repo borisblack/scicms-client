@@ -13,15 +13,15 @@ import {fetchLifecycles, LifecycleMap} from 'src/services/lifecycle'
 import {fetchProperties, PropertyMap} from 'src/services/property'
 
 export interface RegistryState {
-    isInitialized: boolean
-    loading: boolean
-    coreConfig?: CoreConfig
-    itemTemplates: ItemTemplateMap
-    items: ItemMap
-    permissions: PermissionMap
-    lifecycles: LifecycleMap
-    properties: PropertyMap
-    locales: Locale[]
+  isInitialized: boolean
+  loading: boolean
+  coreConfig?: CoreConfig
+  itemTemplates: ItemTemplateMap
+  items: ItemMap
+  permissions: PermissionMap
+  lifecycles: LifecycleMap
+  properties: PropertyMap
+  locales: Locale[]
 }
 
 const initialState: RegistryState = {
@@ -37,15 +37,17 @@ const initialState: RegistryState = {
 
 const initializeIfNeeded = createAsyncThunk(
   'registry/initialize',
-  async (me: UserInfo) => Promise.all([
-    fetchCoreConfig(),
-    fetchItemTemplates(),
-    fetchItems(),
-    fetchPermissions(me),
-    fetchLifecycles(),
-    fetchProperties(),
-    fetchLocales()
-  ]), {
+  async (me: UserInfo) =>
+    Promise.all([
+      fetchCoreConfig(),
+      fetchItemTemplates(),
+      fetchItems(),
+      fetchPermissions(me),
+      fetchLifecycles(),
+      fetchProperties(),
+      fetchLocales()
+    ]),
+  {
     condition: (credentials, {getState}) => shouldInitialize(getState() as {registry: RegistryState})
   }
 )

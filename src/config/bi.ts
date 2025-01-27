@@ -3,73 +3,73 @@ import {ColumnType} from 'src/types/bi'
 import {clientConfig} from '.'
 
 export interface BiConfig {
-    cols: number
-    rowHeight: number
-    defaultDashType: string
-    defaultDashHeight: number
-    defaultSelectorHeight: number
-    defaultSelectorType: ColumnType
-    defaultTextHeight: number
-    defaultPageSize: number
-    defaultRefreshIntervalSeconds: number
-    locale: string
-    maxPageSize: number
-    minRefreshIntervalSeconds: number
-    openFirstDashboard: boolean
-    fractionDigits: number
-    percentFractionDigits: number
-    dateTime: {
-        dateFormatString: string
-        timeFormatString: string
-        dateTimeFormatString: string
+  cols: number
+  rowHeight: number
+  defaultDashType: string
+  defaultDashHeight: number
+  defaultSelectorHeight: number
+  defaultSelectorType: ColumnType
+  defaultTextHeight: number
+  defaultPageSize: number
+  defaultRefreshIntervalSeconds: number
+  locale: string
+  maxPageSize: number
+  minRefreshIntervalSeconds: number
+  openFirstDashboard: boolean
+  fractionDigits: number
+  percentFractionDigits: number
+  dateTime: {
+    dateFormatString: string
+    timeFormatString: string
+    dateTimeFormatString: string
+  }
+  dash: {
+    all: {
+      colors10: string[]
+      colors20: string[]
+      legend?: {
+        label?: {
+          style?: {
+            [key: string]: any
+          }
+        }
+        itemName?: {
+          style?: {
+            [key: string]: any
+          }
+        }
+      }
+      axisLabelStyle?: {
+        [key: string]: any
+      }
     }
-    dash: {
-        all: {
-            colors10: string[]
-            colors20: string[]
-            legend?: {
-                label?: {
-                    style?: {
-                        [key: string]: any
-                    }
-                }
-                itemName?: {
-                    style?: {
-                        [key: string]: any
-                    }
-                }
-            }
-            axisLabelStyle?: {
-                [key: string]: any
-            }
-        }
-        doughnut?: {
-            labelStyle: {
-                [key: string]: any
-            }
-            statistic?: {
-                title?: false
-            }
-        }
-        map: {
-            urlTemplate: string
-            defaultZoom: number
-            maxZoom: number
-            centerPosition?: {
-                latitude: number
-                longitude: number
-            }
-            defaultSize: number
-        }
-        pie?: {
-            labelStyle: {
-                [key: string]: any
-            }
-        }
-        statistic: {
-            color?: string
-        }
+    doughnut?: {
+      labelStyle: {
+        [key: string]: any
+      }
+      statistic?: {
+        title?: false
+      }
     }
+    map: {
+      urlTemplate: string
+      defaultZoom: number
+      maxZoom: number
+      centerPosition?: {
+        latitude: number
+        longitude: number
+      }
+      defaultSize: number
+    }
+    pie?: {
+      labelStyle: {
+        [key: string]: any
+      }
+    }
+    statistic: {
+      color?: string
+    }
+  }
 }
 
 export enum BiPropertyKey {

@@ -13,30 +13,25 @@ const {TextArea} = Input
 
 const ArrayAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrName, attribute, value}) => {
   const appProps = useAppProperties()
-  if (attribute.type !== FieldType.array)
-    throw new Error('Illegal attribute')
+  if (attribute.type !== FieldType.array) throw new Error('Illegal attribute')
 
   const uniqueKey = generateKey(dataWrapper)
   const {t} = useTranslation()
   const isDisabled = useMemo(() => attribute.readOnly, [attribute.readOnly])
   const additionalProps = useMemo((): any => {
     const additionalProps: any = {}
-    if (isDisabled)
-      additionalProps.disabled = true
+    if (isDisabled) additionalProps.disabled = true
 
     return additionalProps
   }, [isDisabled])
 
   const parseValue = useCallback((val: any) => {
-    if (val == null)
-      return null
+    if (val == null) return null
 
-    if (!_.isArray(val))
-      throw new Error('Illegal attribute')
+    if (!_.isArray(val)) throw new Error('Illegal attribute')
 
     const arr = val.map(it => {
-      if (_.isObject(it))
-        return JSON.stringify(it)
+      if (_.isObject(it)) return JSON.stringify(it)
 
       return it
     })
@@ -50,14 +45,12 @@ const ArrayAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrNa
       name={attrName}
       label={t(attribute.displayName)}
       hidden={attribute.fieldHidden}
-      initialValue={parseValue(value) ?? (attribute.defaultValue ? parseValue(JSON.parse(attribute.defaultValue)) : null)}
+      initialValue={
+        parseValue(value) ?? (attribute.defaultValue ? parseValue(JSON.parse(attribute.defaultValue)) : null)
+      }
       rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
     >
-      <TextArea
-        id={`${uniqueKey}#${attrName}`}
-        rows={appProps.ui.form.textAreaRows}
-        {...additionalProps}
-      />
+      <TextArea id={`${uniqueKey}#${attrName}`} rows={appProps.ui.form.textAreaRows} {...additionalProps} />
     </FormItem>
   )
 }

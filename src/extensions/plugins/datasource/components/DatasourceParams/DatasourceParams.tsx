@@ -18,8 +18,7 @@ const delimiterOptions: DefaultOptionType[] = [
 export function DatasourceParams({form, data: dataWrapper, buffer, onBufferChange}: CustomComponentContext) {
   const data = dataWrapper.data as Datasource | undefined
   const {item} = dataWrapper
-  if (item.name !== DATASOURCE_ITEM_NAME)
-    throw new Error('Illegal argument')
+  if (item.name !== DATASOURCE_ITEM_NAME) throw new Error('Illegal argument')
 
   const {t} = useTranslation()
   const acl = useAcl(item, data)
@@ -53,8 +52,7 @@ export function DatasourceParams({form, data: dataWrapper, buffer, onBufferChang
       }
     })
 
-  const hasAvailableParams = () =>
-    sourceType === DatasourceType.SPREADSHEET || sourceType === DatasourceType.CSV
+  const hasAvailableParams = () => sourceType === DatasourceType.SPREADSHEET || sourceType === DatasourceType.CSV
 
   return (
     <Row>
@@ -63,7 +61,7 @@ export function DatasourceParams({form, data: dataWrapper, buffer, onBufferChang
           <Text>{`${t('Delimiter')}:`}</Text>
           &nbsp;&nbsp;
           <Select
-            size='small'
+            size="small"
             disabled={!acl.canWrite}
             options={delimiterOptions}
             value={delimiter}
@@ -74,11 +72,7 @@ export function DatasourceParams({form, data: dataWrapper, buffer, onBufferChang
 
       {(sourceType === DatasourceType.SPREADSHEET || sourceType === DatasourceType.CSV) && (
         <Col span={24}>
-          <Checkbox
-            disabled={!acl.canWrite}
-            checked={firstLineIsAHeading}
-            onChange={handleFirstLineIsAHeadingCheck}
-          >
+          <Checkbox disabled={!acl.canWrite} checked={firstLineIsAHeading} onChange={handleFirstLineIsAHeadingCheck}>
             {t('First line is a heading')}
           </Checkbox>
         </Col>

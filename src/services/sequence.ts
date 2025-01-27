@@ -5,21 +5,15 @@ import i18n from '../i18n'
 import {Sequence} from '../types/schema'
 
 const FIND_ALL_BY_NAME_QUERY = gql`
-    query findAllSequencesByName($name: String!) {
-        sequences(
-            filters: {
-                name: {
-                    containsi: $name
-                }
-            }
-        ) {
-            data {
-                id
-                name
-                displayName
-            }
-        }
+  query findAllSequencesByName($name: String!) {
+    sequences(filters: {name: {containsi: $name}}) {
+      data {
+        id
+        name
+        displayName
+      }
     }
+  }
 `
 
 export async function fetchSequencesByName(name: string): Promise<Sequence[]> {

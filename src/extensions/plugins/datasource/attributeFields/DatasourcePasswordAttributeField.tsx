@@ -7,12 +7,13 @@ import {CustomAttributeFieldContext} from '../../types'
 import PasswordAttributeField from 'src/pages/app/attributeFields/PasswordAttributeField'
 import {DatasourceType} from 'src/types/schema'
 
-export const DatasourcePasswordAttributeField: FC<CustomAttributeFieldContext> = (ctx) => {
+export const DatasourcePasswordAttributeField: FC<CustomAttributeFieldContext> = ctx => {
   const {form, attrName, attribute} = ctx
-  if (attrName !== PASSWORD_ATTR_NAME || attribute.type !== FieldType.password)
-    throw new Error('Illegal attribute')
+  if (attrName !== PASSWORD_ATTR_NAME || attribute.type !== FieldType.password) throw new Error('Illegal attribute')
 
   const sourceType = Form.useWatch(SOURCE_TYPE_ATTR_NAME, form)
 
-  return <PasswordAttributeField {...ctx} attribute={{...attribute, readOnly: sourceType !== DatasourceType.DATABASE}}/>
+  return (
+    <PasswordAttributeField {...ctx} attribute={{...attribute, readOnly: sourceType !== DatasourceType.DATABASE}} />
+  )
 }

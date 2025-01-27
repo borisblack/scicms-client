@@ -1,4 +1,4 @@
 export enum EditorMode {
-    JAVASCRIPT = 'javascript',
-    SQL = 'sql'
+  JAVASCRIPT = 'javascript',
+  SQL = 'sql'
 }

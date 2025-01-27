@@ -18,16 +18,14 @@ const TimeAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, form, a
   const appProps = useAppProperties()
   const {momentDisplayTimeFormatString} = appProps.dateTime
 
-  if (attribute.type !== FieldType.time)
-    throw new Error('Illegal attribute')
+  if (attribute.type !== FieldType.time) throw new Error('Illegal attribute')
 
   const uniqueKey = generateKey(dataWrapper)
   const {t} = useTranslation()
   const isDisabled = useMemo(() => attribute.readOnly, [attribute.readOnly])
   const additionalProps = useMemo((): any => {
     const additionalProps: any = {}
-    if (isDisabled)
-      additionalProps.disabled = true
+    if (isDisabled) additionalProps.disabled = true
 
     return additionalProps
   }, [isDisabled])
@@ -37,7 +35,10 @@ const TimeAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, form, a
     return evt
   }
 
-  const parseValue = useCallback((val: string | null | undefined) => val == null ? null : dayjs.tz(val, MOMENT_ISO_TIME_FORMAT_STRING, UTC), [])
+  const parseValue = useCallback(
+    (val: string | null | undefined) => (val == null ? null : dayjs.tz(val, MOMENT_ISO_TIME_FORMAT_STRING, UTC)),
+    []
+  )
 
   return (
     <>
@@ -59,7 +60,7 @@ const TimeAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, form, a
         />
       </FormItem>
       <FormItem name={`${attrName}.changed`} valuePropName="checked" hidden>
-        <Checkbox id={`${uniqueKey}#${attrName}.changed`}/>
+        <Checkbox id={`${uniqueKey}#${attrName}.changed`} />
       </FormItem>
     </>
   )

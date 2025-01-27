@@ -8,18 +8,24 @@ import 'gantt-task-react/dist/index.css'
 import styles from './ViewSwitcher.module.css'
 
 interface ViewSwitcherProps {
-    viewMode: ViewMode
-    showTaskList: boolean
-    topLevelTasksOnly: boolean
-    onViewModeChange: (viewMode: ViewMode) => void
-    onShowTaskListChange: (showTaskList: boolean) => void
-    onTopLevelTasksOnly: (topLevelTasksOnly: boolean) => void
-    onRefresh: () => void
+  viewMode: ViewMode
+  showTaskList: boolean
+  topLevelTasksOnly: boolean
+  onViewModeChange: (viewMode: ViewMode) => void
+  onShowTaskListChange: (showTaskList: boolean) => void
+  onTopLevelTasksOnly: (topLevelTasksOnly: boolean) => void
+  onRefresh: () => void
 }
 
-export default function ViewSwitcher(
-  {viewMode, showTaskList, topLevelTasksOnly, onViewModeChange, onShowTaskListChange, onTopLevelTasksOnly, onRefresh}: ViewSwitcherProps
-) {
+export default function ViewSwitcher({
+  viewMode,
+  showTaskList,
+  topLevelTasksOnly,
+  onViewModeChange,
+  onShowTaskListChange,
+  onTopLevelTasksOnly,
+  onRefresh
+}: ViewSwitcherProps) {
   const {t} = useTranslation()
 
   function handleShowTaskListChange(e: CheckboxChangeEvent) {
@@ -37,11 +43,7 @@ export default function ViewSwitcher(
           {t('Show Task List')}
         </Checkbox>
 
-        <Radio.Group
-          size="small"
-          value={viewMode}
-          onChange={(e) => onViewModeChange(e.target.value)}
-        >
+        <Radio.Group size="small" value={viewMode} onChange={e => onViewModeChange(e.target.value)}>
           <Radio.Button value={ViewMode.Hour}>{t('Hour')}</Radio.Button>
           <Radio.Button value={ViewMode.QuarterDay}>{t('Quarter of Day')}</Radio.Button>
           <Radio.Button value={ViewMode.HalfDay}>{t('Half of Day')}</Radio.Button>
@@ -55,7 +57,7 @@ export default function ViewSwitcher(
           {t('Top Level Tasks Only')}
         </Checkbox>
 
-        <Button size="small" icon={<ReloadOutlined/>} onClick={onRefresh}>
+        <Button size="small" icon={<ReloadOutlined />} onClick={onRefresh}>
           {t('Refresh')}
         </Button>
       </Space>

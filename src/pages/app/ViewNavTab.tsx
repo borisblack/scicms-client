@@ -24,8 +24,20 @@ import {useAppProperties, useAuth, useFormAcl, useMutationManager, useQueryManag
 import {useMDIContext} from 'src/uiKit/MDITabs/hooks'
 import {generateKey} from 'src/util/mdi'
 import IconSuspense from 'src/uiKit/icons/IconSuspense'
-import {hasCurrentAttribute, hasGenerationAttribute, hasLocaleAttribute, hasMajorRevAttribute, isItemLockable, sortAttributes} from 'src/util/schema'
-import {ApiMiddlewareContext, ApiOperation, CustomComponentContext, CustomRendererContext} from 'src/extensions/plugins/types'
+import {
+  hasCurrentAttribute,
+  hasGenerationAttribute,
+  hasLocaleAttribute,
+  hasMajorRevAttribute,
+  isItemLockable,
+  sortAttributes
+} from 'src/util/schema'
+import {
+  ApiMiddlewareContext,
+  ApiOperation,
+  CustomComponentContext,
+  CustomRendererContext
+} from 'src/extensions/plugins/types'
 import {pluginEngine} from 'src/extensions/plugins'
 import {clientConfig} from 'src/config'
 
@@ -46,8 +58,18 @@ function ViewNavTab({data: dataWrapper}: Props) {
   const appProps = useAppProperties()
   const [loading, setLoading] = useState<boolean>(false)
   const isLockable = isItemLockable(item)
-  const [isLockedByMe, setLockedByMe] = useState<boolean>(me?.id != null && (!isLockable || data?.lockedBy?.data?.id === me.id))
-  const [viewState, setViewState] = useState<ViewState>(isNew ? ViewState.CREATE : (isLockedByMe ? (item.versioned ? ViewState.CREATE_VERSION : ViewState.UPDATE) : ViewState.VIEW))
+  const [isLockedByMe, setLockedByMe] = useState<boolean>(
+    me?.id != null && (!isLockable || data?.lockedBy?.data?.id === me.id)
+  )
+  const [viewState, setViewState] = useState<ViewState>(
+    isNew
+      ? ViewState.CREATE
+      : isLockedByMe
+        ? item.versioned
+          ? ViewState.CREATE_VERSION
+          : ViewState.UPDATE
+        : ViewState.VIEW
+  )
   const [buffer, setBuffer] = useState<IBuffer>({})
   const headerRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
@@ -59,23 +81,28 @@ function ViewNavTab({data: dataWrapper}: Props) {
   const mutationManager = useMutationManager()
   const acl = useFormAcl(item, data)
   const handleBufferChange = useCallback((bufferChanges: IBuffer) => setBuffer({...buffer, ...bufferChanges}), [buffer])
-  const renderContext: CustomRendererContext = useMemo(() => ({
-    item,
-    buffer,
-    data,
-    onBufferChange: handleBufferChange
-  }), [buffer, data, handleBufferChange, item])
+  const renderContext: CustomRendererContext = useMemo(
+    () => ({
+      item,
+      buffer,
+      data,
+      onBufferChange: handleBufferChange
+    }),
+    [buffer, data, handleBufferChange, item]
+  )
 
-  const customComponentContext: CustomComponentContext = useMemo(() => ({
-    data: dataWrapper,
-    form,
-    buffer,
-    onBufferChange: handleBufferChange
-  }), [dataWrapper, form, buffer, handleBufferChange])
+  const customComponentContext: CustomComponentContext = useMemo(
+    () => ({
+      data: dataWrapper,
+      form,
+      buffer,
+      onBufferChange: handleBufferChange
+    }),
+    [dataWrapper, form, buffer, handleBufferChange]
+  )
 
   useEffect(() => {
-    if (DEBUG)
-      console.log('Fields reset')
+    if (DEBUG) console.log('Fields reset')
 
     form.resetFields()
   }, [form, data])
@@ -119,8 +146,7 @@ function ViewNavTab({data: dataWrapper}: Props) {
   }, [ctx, logout, resetRegistry])
 
   const logoutIfNeed = useCallback(() => {
-    if (!isSystemItem)
-      return
+    if (!isSystemItem) return
 
     confirm({
       title: `${t('You must sign in again to apply the changes')}`,
@@ -136,9 +162,13 @@ function ViewNavTab({data: dataWrapper}: Props) {
 
     let parsedValues: ItemData
     try {
-      parsedValues = await parseValues({item, data, values: {...values, ...buffer}, timezone: appProps.dateTime.timeZone})
-      if (DEBUG)
-        console.log('Parsed values', parsedValues)
+      parsedValues = await parseValues({
+        item,
+        data,
+        values: {...values, ...buffer},
+        timezone: appProps.dateTime.timeZone
+      })
+      if (DEBUG) console.log('Parsed values', parsedValues)
     } catch (e: any) {
       console.error(e.message)
       notification.error({
@@ -148,20 +178,26 @@ function ViewNavTab({data: dataWrapper}: Props) {
       return
     }
 
-    if (DEBUG)
-      console.log('ViewState', viewState)
+    if (DEBUG) console.log('ViewState', viewState)
 
     const filteredValues = filterValues(parsedValues)
     switch (viewState) {
       case ViewState.CREATE:
-        await create(filteredValues, item.manualVersioning ? parsedValues.majorRev : null, item.localized ? parsedValues.locale : null)
+        await create(
+          filteredValues,
+          item.manualVersioning ? parsedValues.majorRev : null,
+          item.localized ? parsedValues.locale : null
+        )
         break
       case ViewState.CREATE_VERSION:
-        await createVersion(filteredValues, item.manualVersioning ? parsedValues.majorRev : null, item.localized ? parsedValues.locale : null)
+        await createVersion(
+          filteredValues,
+          item.manualVersioning ? parsedValues.majorRev : null,
+          item.localized ? parsedValues.locale : null
+        )
         break
       case ViewState.CREATE_LOCALIZATION:
-        if (!parsedValues.locale)
-          throw new Error('Locale is required')
+        if (!parsedValues.locale) throw new Error('Locale is required')
 
         await createLocalization(filteredValues, parsedValues.locale)
         break
@@ -175,8 +211,7 @@ function ViewNavTab({data: dataWrapper}: Props) {
   }
 
   async function create(values: ItemData, majorRev?: string | null, locale?: string | null) {
-    if (!acl.canCreate)
-      throw new Error('Cannot create such item')
+    if (!acl.canCreate) throw new Error('Cannot create such item')
 
     setLoading(true)
     try {
@@ -209,22 +244,33 @@ function ViewNavTab({data: dataWrapper}: Props) {
   }
 
   async function createVersion(values: ItemData, majorRev?: string | null, locale?: string | null) {
-    if (!acl.canCreate)
-      throw new Error('Cannot edit this item')
+    if (!acl.canCreate) throw new Error('Cannot edit this item')
 
     if (!item.versioned || !hasMajorRevAttribute(item) || !hasGenerationAttribute(item) || !hasCurrentAttribute(item))
       throw new Error('Item is not versioned')
 
-    if (isNew)
-      throw new Error('Cannot create version for new item')
+    if (isNew) throw new Error('Cannot create version for new item')
 
     setLoading(true)
     try {
-      const doCreateVersion = async () => await mutationManager.createVersion(item, data[item.idAttribute], values, majorRev, locale, appProps.mutation.copyCollectionRelations)
+      const doCreateVersion = async () =>
+        await mutationManager.createVersion(
+          item,
+          data[item.idAttribute],
+          values,
+          majorRev,
+          locale,
+          appProps.mutation.copyCollectionRelations
+        )
       let createdVersion: ItemData
       if (pluginEngine.hasApiMiddleware(item.name)) {
         const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values}
-        createdVersion = await pluginEngine.handleApiMiddleware(item.name, ApiOperation.CREATE_VERSION, apiMiddlewareContext, doCreateVersion)
+        createdVersion = await pluginEngine.handleApiMiddleware(
+          item.name,
+          ApiOperation.CREATE_VERSION,
+          apiMiddlewareContext,
+          doCreateVersion
+        )
       } else {
         createdVersion = await doCreateVersion()
       }
@@ -235,7 +281,6 @@ function ViewNavTab({data: dataWrapper}: Props) {
         setLockedByMe(false)
         setViewState(ViewState.VIEW)
       }
-
     } catch (e: any) {
       console.error(e.message)
       notification.error({
@@ -248,22 +293,31 @@ function ViewNavTab({data: dataWrapper}: Props) {
   }
 
   async function createLocalization(values: ItemData, locale: string) {
-    if (!acl.canCreate)
-      throw new Error('Cannot edit this item')
+    if (!acl.canCreate) throw new Error('Cannot edit this item')
 
-    if (!item.localized || !hasLocaleAttribute(item))
-      throw new Error('Item is not localized')
+    if (!item.localized || !hasLocaleAttribute(item)) throw new Error('Item is not localized')
 
-    if (isNew)
-      throw new Error('Cannot create localization for new item')
+    if (isNew) throw new Error('Cannot create localization for new item')
 
     setLoading(true)
     try {
-      const doCreateLocalization = async () => await mutationManager.createLocalization(item, data[item.idAttribute], values, locale, appProps.mutation.copyCollectionRelations)
+      const doCreateLocalization = async () =>
+        await mutationManager.createLocalization(
+          item,
+          data[item.idAttribute],
+          values,
+          locale,
+          appProps.mutation.copyCollectionRelations
+        )
       let createdLocalization: ItemData
       if (pluginEngine.hasApiMiddleware(item.name)) {
         const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values}
-        createdLocalization = await pluginEngine.handleApiMiddleware(item.name, ApiOperation.CREATE_LOCALIZATION, apiMiddlewareContext, doCreateLocalization)
+        createdLocalization = await pluginEngine.handleApiMiddleware(
+          item.name,
+          ApiOperation.CREATE_LOCALIZATION,
+          apiMiddlewareContext,
+          doCreateLocalization
+        )
       } else {
         createdLocalization = await doCreateLocalization()
       }
@@ -274,7 +328,6 @@ function ViewNavTab({data: dataWrapper}: Props) {
         setLockedByMe(false)
         setViewState(ViewState.VIEW)
       }
-
     } catch (e: any) {
       console.error(e.message)
       notification.error({
@@ -287,11 +340,9 @@ function ViewNavTab({data: dataWrapper}: Props) {
   }
 
   async function update(values: ItemData) {
-    if (!acl.canWrite)
-      throw new Error('Cannot edit this item')
+    if (!acl.canWrite) throw new Error('Cannot edit this item')
 
-    if (isNew)
-      throw new Error('New item cannot be updated')
+    if (isNew) throw new Error('New item cannot be updated')
 
     setLoading(true)
     try {
@@ -322,66 +373,74 @@ function ViewNavTab({data: dataWrapper}: Props) {
     }
   }
 
-  const filterVisibleAttributeNames = useCallback((attributes: {[name: string]: Attribute}): string[] => Object.keys(attributes).filter(attrName => {
-    const attr = attributes[attrName]
-    return !attr.private
-      /*&& !attr.fieldHidden*/
-      && (attr.type !== FieldType.relation || (attr.relType !== RelType.oneToMany && attr.relType !== RelType.manyToMany))
-      && (item.versioned || (attrName !== CONFIG_ID_ATTR_NAME && attrName !== MAJOR_REV_ATTR_NAME && attrName !== MINOR_REV_ATTR_NAME && attrName !== CURRENT_ATTR_NAME))
-      && (item.localized || attrName !== LOCALE_ATTR_NAME)
-  }), [item.localized, item.versioned])
+  const filterVisibleAttributeNames = useCallback(
+    (attributes: {[name: string]: Attribute}): string[] =>
+      Object.keys(attributes).filter(attrName => {
+        const attr = attributes[attrName]
+        return (
+          !attr.private &&
+          /*&& !attr.fieldHidden*/
+          (attr.type !== FieldType.relation ||
+            (attr.relType !== RelType.oneToMany && attr.relType !== RelType.manyToMany)) &&
+          (item.versioned ||
+            (attrName !== CONFIG_ID_ATTR_NAME &&
+              attrName !== MAJOR_REV_ATTR_NAME &&
+              attrName !== MINOR_REV_ATTR_NAME &&
+              attrName !== CURRENT_ATTR_NAME)) &&
+          (item.localized || attrName !== LOCALE_ATTR_NAME)
+        )
+      }),
+    [item.localized, item.versioned]
+  )
 
   const renderAttributes = (attributes: {[name: string]: Attribute}) => (
     <Row gutter={16}>
-      {filterVisibleAttributeNames(attributes)
-        .map(attrName => {
-          const attr = attributes[attrName]
-          const {fieldWidth} = attr
-          const span = (fieldWidth == null || fieldWidth <= 0 || fieldWidth > ANTD_GRID_COLS) ? appProps.ui.form.fieldWidth : fieldWidth
-          const attributeContent = (
-            <AttributeFieldWrapper
-              key={attrName}
-              data={dataWrapper}
-              form={form}
-              attrName={attrName}
-              attribute={attr}
-              value={data ? data[attrName] : null}
-              setLoading={setLoading}
-              onChange={(value: any) => handleFieldChange(attrName, value)}
-            />
-          )
-          
-          return attr.fieldHidden ? (
-            attributeContent
-          ) : (
-            <Col span={span} key={attrName}>
-              {attributeContent}
-            </Col>
-          )
-        })}
+      {filterVisibleAttributeNames(attributes).map(attrName => {
+        const attr = attributes[attrName]
+        const {fieldWidth} = attr
+        const span =
+          fieldWidth == null || fieldWidth <= 0 || fieldWidth > ANTD_GRID_COLS
+            ? appProps.ui.form.fieldWidth
+            : fieldWidth
+        const attributeContent = (
+          <AttributeFieldWrapper
+            key={attrName}
+            data={dataWrapper}
+            form={form}
+            attrName={attrName}
+            attribute={attr}
+            value={data ? data[attrName] : null}
+            setLoading={setLoading}
+            onChange={(value: any) => handleFieldChange(attrName, value)}
+          />
+        )
+
+        return attr.fieldHidden ? (
+          attributeContent
+        ) : (
+          <Col span={span} key={attrName}>
+            {attributeContent}
+          </Col>
+        )
+      })}
     </Row>
   )
 
   async function handleFieldChange(attrName: string, value: any) {
     if (attrName === LOCALE_ATTR_NAME) {
-      if (!item.localized)
-        throw new Error('Illegal state. Cannot change locale on non localized item')
+      if (!item.localized) throw new Error('Illegal state. Cannot change locale on non localized item')
 
-      if (!value)
-        return
+      if (!value) return
 
-      if (viewState !== ViewState.UPDATE && viewState !== ViewState.CREATE_VERSION)
-        return
+      if (viewState !== ViewState.UPDATE && viewState !== ViewState.CREATE_VERSION) return
 
-      if (isNew || (data.locale ?? coreConfig?.i18n?.defaultLocale) === value)
-        return
+      if (isNew || (data.locale ?? coreConfig?.i18n?.defaultLocale) === value) return
 
       setLoading(true)
       try {
         const existingLocalization = await queryManager.findLocalization(item, data.configId, data.majorRev, value)
         if (existingLocalization) {
-          if (viewState === ViewState.UPDATE)
-            setViewState(ViewState.CREATE_LOCALIZATION)
+          if (viewState === ViewState.UPDATE) setViewState(ViewState.CREATE_LOCALIZATION)
 
           ctx.updateActiveTab({...dataWrapper, data: existingLocalization})
         } else {
@@ -414,15 +473,13 @@ function ViewNavTab({data: dataWrapper}: Props) {
     const allAttributes = item.spec.attributes
     const ownAttributes: {[name: string]: Attribute} = {}
     for (const attrName in allAttributes) {
-      if (!(attrName in templateAttributes))
-        ownAttributes[attrName] = allAttributes[attrName]
+      if (!(attrName in templateAttributes)) ownAttributes[attrName] = allAttributes[attrName]
     }
     return sortAttributes(ownAttributes)
   }, [item.spec.attributes, templateAttributes])
 
   const handleHtmlExport = useCallback(() => {
-    if (!data)
-      return
+    if (!data) return
 
     const {attributes} = item.spec
     const visibleAttributeNames = filterVisibleAttributeNames(attributes)
@@ -455,55 +512,62 @@ function ViewNavTab({data: dataWrapper}: Props) {
     exportWin.document.body.innerHTML = exportWinHtml
   }, [data, filterVisibleAttributeNames, item.displayName, item.spec, t])
 
-  const getComponentTabs = useCallback((mountPoint: string): Tab[] =>
-    pluginEngine.getComponents(mountPoint).map(component => {
-      const title = t(component.title ?? 'Untitled')
-      return {
-        key: component.id,
-        label: <span><IconSuspense iconName={component.icon} />&nbsp;{title}</span>,
-        children: component.render({context: customComponentContext})
+  const getComponentTabs = useCallback(
+    (mountPoint: string): Tab[] =>
+      pluginEngine.getComponents(mountPoint).map(component => {
+        const title = t(component.title ?? 'Untitled')
+        return {
+          key: component.id,
+          label: (
+            <span>
+              <IconSuspense iconName={component.icon} />
+              &nbsp;{title}
+            </span>
+          ),
+          children: component.render({context: customComponentContext})
+        }
+      }),
+    [customComponentContext, t]
+  )
+
+  const getTabs = useCallback(
+    (collectionAttrNames: string[]): Tab[] => {
+      const tabs: Tab[] = []
+      if (pluginEngine.hasComponents('tabs.begin')) tabs.push(...getComponentTabs('tabs.begin'))
+
+      if (pluginEngine.hasComponents(`${item.name}.tabs.begin`))
+        tabs.push(...getComponentTabs(`${item.name}.tabs.begin`))
+
+      if (!isNew) {
+        tabs.push(
+          ...collectionAttrNames.map(key => {
+            const attribute = item.spec.attributes[key]
+            if (!attribute.target) throw new Error('Illegal attribute target')
+
+            const target = itemMap[attribute.target]
+            const title = t(attribute.displayName)
+            return {
+              key: key,
+              label: (
+                <span>
+                  <IconSuspense iconName={target.icon} />
+                  {title}
+                </span>
+              ),
+              children: <RelationsDataGridWrapper data={dataWrapper} relAttrName={key} relAttribute={attribute} />
+            }
+          })
+        )
       }
 
-    }), [customComponentContext, t])
+      if (pluginEngine.hasComponents('tabs.end')) tabs.push(...getComponentTabs('tabs.end'))
 
-  const getTabs = useCallback((collectionAttrNames: string[]): Tab[] => {
-    const tabs: Tab[] = []
-    if (pluginEngine.hasComponents('tabs.begin'))
-      tabs.push(...getComponentTabs('tabs.begin'))
+      if (pluginEngine.hasComponents(`${item.name}.tabs.end`)) tabs.push(...getComponentTabs(`${item.name}.tabs.end`))
 
-    if (pluginEngine.hasComponents(`${item.name}.tabs.begin`))
-      tabs.push(...getComponentTabs(`${item.name}.tabs.begin`))
-
-    if (!isNew) {
-      tabs.push(...collectionAttrNames.map(key => {
-        const attribute = item.spec.attributes[key]
-        if (!attribute.target)
-          throw new Error('Illegal attribute target')
-
-        const target = itemMap[attribute.target]
-        const title = t(attribute.displayName)
-        return {
-          key: key,
-          label: <span><IconSuspense iconName={target.icon} />{title}</span>,
-          children: (
-            <RelationsDataGridWrapper
-              data={dataWrapper}
-              relAttrName={key}
-              relAttribute={attribute}
-            />
-          )
-        }
-      }))
-    }
-
-    if (pluginEngine.hasComponents('tabs.end'))
-      tabs.push(...getComponentTabs('tabs.end'))
-
-    if (pluginEngine.hasComponents(`${item.name}.tabs.end`))
-      tabs.push(...getComponentTabs(`${item.name}.tabs.end`))
-
-    return tabs
-  }, [getComponentTabs, item, isNew, itemMap, t, dataWrapper])
+      return tabs
+    },
+    [getComponentTabs, item, isNew, itemMap, t, dataWrapper]
+  )
 
   const renderTabs = useCallback(() => {
     const hasTabsContentPlugins = pluginEngine.hasRenderers('tabs.content', `${item.name}.tabs.content`)
@@ -511,26 +575,32 @@ function ViewNavTab({data: dataWrapper}: Props) {
       hasTabsContentPlugins || pluginEngine.hasComponents('tabs.content', `${item.name}.tabs.content`)
 
     const hasTabsPluginsOrComponents =
-      hasTabsContentPluginsOrComponents || pluginEngine.hasComponents('tabs.begin', `${item.name}.tabs.begin`, 'tabs.end', `${item.name}.tabs.end`)
+      hasTabsContentPluginsOrComponents ||
+      pluginEngine.hasComponents('tabs.begin', `${item.name}.tabs.begin`, 'tabs.end', `${item.name}.tabs.end`)
 
-    if (isNew && !hasTabsPluginsOrComponents)
-      return null
+    if (isNew && !hasTabsPluginsOrComponents) return null
 
-    const collectionAttrNames =
-      Object.keys(item.spec.attributes).filter(key => {
-        const attribute = item.spec.attributes[key]
-        return attribute.type === FieldType.relation
-          && (attribute.relType === RelType.oneToMany || attribute.relType === RelType.manyToMany)
-          && !attribute.private && !attribute.fieldHidden
-      })
+    const collectionAttrNames = Object.keys(item.spec.attributes).filter(key => {
+      const attribute = item.spec.attributes[key]
+      return (
+        attribute.type === FieldType.relation &&
+        (attribute.relType === RelType.oneToMany || attribute.relType === RelType.manyToMany) &&
+        !attribute.private &&
+        !attribute.fieldHidden
+      )
+    })
 
     const hasTabs =
-      !hasTabsContentPluginsOrComponents && (collectionAttrNames.length > 0 || pluginEngine.hasComponents('tabs.begin', `${item.name}.tabs.begin`, 'tabs.end', `${item.name}.tabs.end`))
+      !hasTabsContentPluginsOrComponents &&
+      (collectionAttrNames.length > 0 ||
+        pluginEngine.hasComponents('tabs.begin', `${item.name}.tabs.begin`, 'tabs.end', `${item.name}.tabs.end`))
 
     return (
       <>
-        {pluginEngine.hasComponents('tabs.content') && pluginEngine.renderComponents('tabs.content', customComponentContext)}
-        {pluginEngine.hasComponents(`${item.name}.tabs.content`) && pluginEngine.renderComponents(`${item.name}.tabs.content`, customComponentContext)}
+        {pluginEngine.hasComponents('tabs.content') &&
+          pluginEngine.renderComponents('tabs.content', customComponentContext)}
+        {pluginEngine.hasComponents(`${item.name}.tabs.content`) &&
+          pluginEngine.renderComponents(`${item.name}.tabs.content`, customComponentContext)}
         {hasTabsContentPlugins && <div ref={tabsContentRef} />}
         {hasTabs && <Tabs items={getTabs(collectionAttrNames)} />}
       </>
@@ -539,11 +609,13 @@ function ViewNavTab({data: dataWrapper}: Props) {
 
   const hasHeaderPlugins = pluginEngine.hasRenderers('view.header', `${item.name}.view.header`)
   const hasContentPlugins = pluginEngine.hasRenderers('view.content', `${item.name}.view.content`)
-  const collapseAttrItems = [{
-    key: 'mainAttributes',
-    label: t('Main attributes'),
-    children: renderAttributes(ownAttributes)
-  }]
+  const collapseAttrItems = [
+    {
+      key: 'mainAttributes',
+      label: t('Main attributes'),
+      children: renderAttributes(ownAttributes)
+    }
+  ]
   if (item.includeTemplates.length > 0) {
     collapseAttrItems.push({
       key: 'additionalAttributes',
@@ -554,11 +626,13 @@ function ViewNavTab({data: dataWrapper}: Props) {
 
   return (
     <Spin spinning={loading}>
-      {pluginEngine.hasComponents('view.header') && pluginEngine.renderComponents('view.header', customComponentContext)}
-      {pluginEngine.hasComponents(`${item.name}.view.header`) && pluginEngine.renderComponents(`${item.name}.view.header`, customComponentContext)}
+      {pluginEngine.hasComponents('view.header') &&
+        pluginEngine.renderComponents('view.header', customComponentContext)}
+      {pluginEngine.hasComponents(`${item.name}.view.header`) &&
+        pluginEngine.renderComponents(`${item.name}.view.header`, customComponentContext)}
       {hasHeaderPlugins && <div ref={headerRef} />}
 
-      {(!pluginEngine.hasComponents('view.header', `${item.name}.view.header`) && !hasHeaderPlugins) && (
+      {!pluginEngine.hasComponents('view.header', `${item.name}.view.header`) && !hasHeaderPlugins && (
         <ViewNavTabHeader
           data={dataWrapper}
           form={form}
@@ -576,31 +650,36 @@ function ViewNavTab({data: dataWrapper}: Props) {
         />
       )}
 
-      {pluginEngine.hasComponents('view.content') && pluginEngine.renderComponents('view.content', customComponentContext)}
-      {pluginEngine.hasComponents(`${item.name}.view.content`) && pluginEngine.renderComponents(`${item.name}.view.content`, customComponentContext)}
+      {pluginEngine.hasComponents('view.content') &&
+        pluginEngine.renderComponents('view.content', customComponentContext)}
+      {pluginEngine.hasComponents(`${item.name}.view.content`) &&
+        pluginEngine.renderComponents(`${item.name}.view.content`, customComponentContext)}
       {hasContentPlugins && <div ref={contentRef} />}
 
-      {(!pluginEngine.hasComponents('view.content', `${item.name}.view.content`) && !hasContentPlugins) &&
+      {!pluginEngine.hasComponents('view.content', `${item.name}.view.content`) && !hasContentPlugins && (
         <Form
           form={form}
           size="small"
           layout="vertical"
-          disabled={(!acl.canWrite || !isLockedByMe /*|| viewState === ViewState.VIEW*/) && (!acl.canCreate || !isNew)}
+          disabled={(!acl.canWrite || !isLockedByMe) /*|| viewState === ViewState.VIEW*/ && (!acl.canCreate || !isNew)}
           onFinish={handleFormFinish}
         >
-          {pluginEngine.hasComponents('view.content.form.begin') && pluginEngine.renderComponents('view.content.form.begin', customComponentContext)}
-          {pluginEngine.hasComponents(`${item.name}.view.content.form.begin`) && pluginEngine.renderComponents(`${item.name}.view.content.form.begin`, customComponentContext)}
-          <Collapse
-            defaultActiveKey={['mainAttributes']}
-            items={collapseAttrItems}
-          />
-          {pluginEngine.hasComponents('view.content.form.end') && pluginEngine.renderComponents('view.content.form.end', customComponentContext)}
-          {pluginEngine.hasComponents('view.content.form.end') && pluginEngine.renderComponents('view.content.form.end', customComponentContext)}
+          {pluginEngine.hasComponents('view.content.form.begin') &&
+            pluginEngine.renderComponents('view.content.form.begin', customComponentContext)}
+          {pluginEngine.hasComponents(`${item.name}.view.content.form.begin`) &&
+            pluginEngine.renderComponents(`${item.name}.view.content.form.begin`, customComponentContext)}
+          <Collapse defaultActiveKey={['mainAttributes']} items={collapseAttrItems} />
+          {pluginEngine.hasComponents('view.content.form.end') &&
+            pluginEngine.renderComponents('view.content.form.end', customComponentContext)}
+          {pluginEngine.hasComponents('view.content.form.end') &&
+            pluginEngine.renderComponents('view.content.form.end', customComponentContext)}
         </Form>
-      }
+      )}
 
-      {pluginEngine.hasComponents('view.footer') && pluginEngine.renderComponents('view.footer', customComponentContext)}
-      {pluginEngine.hasComponents(`${item.name}.view.footer`) && pluginEngine.renderComponents(`${item.name}.view.footer`, customComponentContext)}
+      {pluginEngine.hasComponents('view.footer') &&
+        pluginEngine.renderComponents('view.footer', customComponentContext)}
+      {pluginEngine.hasComponents(`${item.name}.view.footer`) &&
+        pluginEngine.renderComponents(`${item.name}.view.footer`, customComponentContext)}
       {pluginEngine.hasRenderers('view.footer', `${item.name}.view.footer`) && <div ref={footerRef} />}
 
       {renderTabs()}

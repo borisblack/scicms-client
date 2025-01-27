@@ -5,8 +5,8 @@ import {copyToClipboard} from 'src/util'
 import {antdIcons, allFaIcons} from './loaders'
 
 export interface IconsProps {
-    height?: number | string
-    onSelect?: (iconName: string) => void
+  height?: number | string
+  onSelect?: (iconName: string) => void
 }
 
 export default function Icons({height, onSelect = copyToClipboard}: IconsProps) {
@@ -17,9 +17,12 @@ export default function Icons({height, onSelect = copyToClipboard}: IconsProps) 
           <Col span={6} key={iconName}>
             <span
               style={{cursor: 'pointer'}}
-              onClick={() => {onSelect(iconName)}}
+              onClick={() => {
+                onSelect(iconName)
+              }}
             >
-              <Icon/>&nbsp;{iconName}
+              <Icon />
+              &nbsp;{iconName}
             </span>
           </Col>
         ))}

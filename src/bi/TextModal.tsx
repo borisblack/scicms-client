@@ -6,11 +6,11 @@ import {IText} from '../types/bi'
 import TextForm, {TextFormValues} from './TextForm'
 
 interface TextFormModalProps {
-    text: IText
-    open: boolean
-    canEdit: boolean
-    onChange: (text: IText) => void
-    onClose: () => void
+  text: IText
+  open: boolean
+  canEdit: boolean
+  onChange: (text: IText) => void
+  onClose: () => void
 }
 
 export default function TextModal({text, canEdit, open, onChange, onClose}: TextFormModalProps) {
@@ -38,7 +38,9 @@ export default function TextModal({text, canEdit, open, onChange, onClose}: Text
       extra={
         <Space>
           <Button onClick={cancelEdit}>{t('Cancel')}</Button>
-          <Button disabled={!canEdit} type="primary" onClick={() => form.submit()}>OK</Button>
+          <Button disabled={!canEdit} type="primary" onClick={() => form.submit()}>
+            OK
+          </Button>
         </Space>
       }
       onClose={onClose}
@@ -51,10 +53,7 @@ export default function TextModal({text, canEdit, open, onChange, onClose}: Text
         initialValues={text}
         onFinish={handleFormFinish}
       >
-        <TextForm
-          text={text}
-          canEdit={canEdit}
-        />
+        <TextForm text={text} canEdit={canEdit} />
       </Form>
     </Drawer>
   )

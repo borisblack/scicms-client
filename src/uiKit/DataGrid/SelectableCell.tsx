@@ -4,10 +4,10 @@ import {DefaultOptionType} from 'rc-select/lib/Select'
 import {FocusEvent, KeyboardEvent, useRef, useState} from 'react'
 
 interface Props {
-    value: any
-    allowClear?: boolean
-    options: DefaultOptionType[]
-    onChange: (value: any) => void
+  value: any
+  allowClear?: boolean
+  options: DefaultOptionType[]
+  onChange: (value: any) => void
 }
 
 export function SelectableCell({value, allowClear = false, options, onChange}: Props) {

@@ -12,17 +12,17 @@ import {BiConfig} from 'src/config/bi'
 import {getBiProperties} from 'src/config/util'
 
 interface UseBIDataProps {
-    withDatasets?: boolean
-    withDashboards?: boolean
-    withDashboardCategories?: boolean
+  withDatasets?: boolean
+  withDashboards?: boolean
+  withDashboardCategories?: boolean
 }
 
 interface UseBIResult {
-    datasets: Dataset[]
-    dashboards: Dashboard[]
-    dashboardCategories: DashboardCategory[]
-    openDataset: (id: string) => void
-    openDashboard: (id: string, queryFilter?: QueryFilter) => void
+  datasets: Dataset[]
+  dashboards: Dashboard[]
+  dashboardCategories: DashboardCategory[]
+  openDataset: (id: string) => void
+  openDashboard: (id: string, queryFilter?: QueryFilter) => void
 }
 
 interface UseSelectorsProps {
@@ -41,7 +41,11 @@ const defaultUseBIProps = {
   withDashboardCategories: false
 }
 
-export function useBIData({withDatasets, withDashboards, withDashboardCategories}: UseBIDataProps = defaultUseBIProps): UseBIResult {
+export function useBIData({
+  withDatasets,
+  withDashboards,
+  withDashboardCategories
+}: UseBIDataProps = defaultUseBIProps): UseBIResult {
   const {items: itemMap} = useRegistry()
   const {open} = useItemOperations()
   const datasetItem = useMemo(() => itemMap[DATASET_ITEM_NAME], [itemMap])
@@ -52,34 +56,37 @@ export function useBIData({withDatasets, withDashboards, withDashboardCategories
 
   useEffect(() => {
     if (withDatasets) {
-      DatasetService.fetchDatasets()
-        .then(datasetList => {
-          setDatasets(_.sortBy(datasetList, ds => ds.name))
-        })
+      DatasetService.fetchDatasets().then(datasetList => {
+        setDatasets(_.sortBy(datasetList, ds => ds.name))
+      })
     }
 
     if (withDashboards) {
-      DashboardService.fetchDashboards()
-        .then(dashboardList => {
-          setDashboards(_.sortBy(dashboardList, db => db.name))
-        })
+      DashboardService.fetchDashboards().then(dashboardList => {
+        setDashboards(_.sortBy(dashboardList, db => db.name))
+      })
     }
 
     if (withDashboardCategories) {
-      DashboardCategoryService.fetchDashboardCategories()
-        .then(dashboardCategoryList => {
-          setDashboardCategories(_.sortBy(dashboardCategoryList, dc => dc.name))
-        })
+      DashboardCategoryService.fetchDashboardCategories().then(dashboardCategoryList => {
+        setDashboardCategories(_.sortBy(dashboardCategoryList, dc => dc.name))
+      })
     }
   }, [])
 
-  const openDataset = useCallback(async (id: string) => {
-    await open(datasetItem, id)
-  }, [datasetItem, open])
+  const openDataset = useCallback(
+    async (id: string) => {
+      await open(datasetItem, id)
+    },
+    [datasetItem, open]
+  )
 
-  const openDashboard = useCallback(async (id: string, queryFilter?: QueryFilter) => {
-    await open(dashboardItem, id, queryFilter ? {queryFilter} : undefined)
-  }, [dashboardItem, open])
+  const openDashboard = useCallback(
+    async (id: string, queryFilter?: QueryFilter) => {
+      await open(dashboardItem, id, queryFilter ? {queryFilter} : undefined)
+    },
+    [dashboardItem, open]
+  )
 
   return {datasets, dashboards, dashboardCategories, openDataset, openDashboard}
 }
@@ -89,7 +96,11 @@ export function useSelectors({selectors, onSelectorChange}: UseSelectorsProps): 
     const res: Record<string, SelectorFilter[]> = {}
     selectors
       .filter(selector => selector.value != null)
-      .filter(selector => selector.links.filter(link => link.type === SelectorLinkType.out || link.type === SelectorLinkType.both).length > 0)
+      .filter(
+        selector =>
+          selector.links.filter(link => link.type === SelectorLinkType.out || link.type === SelectorLinkType.both)
+            .length > 0
+      )
       .forEach(selector => {
         selector.links
           .filter(link => link.type === SelectorLinkType.out || link.type === SelectorLinkType.both)
@@ -108,14 +119,24 @@ export function useSelectors({selectors, onSelectorChange}: UseSelectorsProps): 
     return res
   }, [selectors])
 
-  const selectDashValue = useCallback((id: string, value: any) => {
-    selectors
-      .filter(selector => selector.links.filter(link => link.dashId === id && (link.type === SelectorLinkType.in || link.type === SelectorLinkType.both)).length > 0)
-      .forEach(selector => onSelectorChange({
-        ...selector,
-        value
-      }))
-  }, [selectors, onSelectorChange])
+  const selectDashValue = useCallback(
+    (id: string, value: any) => {
+      selectors
+        .filter(
+          selector =>
+            selector.links.filter(
+              link => link.dashId === id && (link.type === SelectorLinkType.in || link.type === SelectorLinkType.both)
+            ).length > 0
+        )
+        .forEach(selector =>
+          onSelectorChange({
+            ...selector,
+            value
+          })
+        )
+    },
+    [selectors, onSelectorChange]
+  )
 
   return {
     selectedDashFilters,

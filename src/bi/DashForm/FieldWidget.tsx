@@ -9,19 +9,27 @@ import FieldName from 'src/components/FieldName'
 import styles from './FieldWidget.module.css'
 
 interface FieldWidgetProps {
-    style?: CSSProperties
-    field: NamedColumn
-    isDatasetField: boolean
-    isSortField?: boolean
-    canEdit: boolean
-    onChange: (oldValue: string, newValue: string) => void
-    onRemove: () => void
+  style?: CSSProperties
+  field: NamedColumn
+  isDatasetField: boolean
+  isSortField?: boolean
+  canEdit: boolean
+  onChange: (oldValue: string, newValue: string) => void
+  onRemove: () => void
 }
 
 const BTN_SIZE = 30
 const BTN_SPACE = 2
 
-export default function FieldWidget({style, field, isDatasetField, isSortField, canEdit, onChange, onRemove}: FieldWidgetProps) {
+export default function FieldWidget({
+  style,
+  field,
+  isDatasetField,
+  isSortField,
+  canEdit,
+  onChange,
+  onRemove
+}: FieldWidgetProps) {
   const {t} = useTranslation()
   const isFormula = field.custom && ((field.source && field.aggregate) || field.formula)
   const [desc, setDesc] = useState<boolean>(field.name.endsWith(':desc'))
@@ -44,16 +52,9 @@ export default function FieldWidget({style, field, isDatasetField, isSortField, 
       }}
     >
       <span title={fieldName}>
-        <FieldTypeIcon
-          fieldType={field.type}
-          color={isFormula ? '#007bff' : '#28a745'}
-        />
-                &nbsp;&nbsp;
-        <FieldName
-          name={fieldName}
-          tag={field.custom ? (isDatasetField ? 'dataset' : undefined) : 'lock'}
-        />
-
+        <FieldTypeIcon fieldType={field.type} color={isFormula ? '#007bff' : '#28a745'} />
+        &nbsp;&nbsp;
+        <FieldName name={fieldName} tag={field.custom ? (isDatasetField ? 'dataset' : undefined) : 'lock'} />
         {isSortField && (
           <Button
             className={styles.fieldWidget_sortBtn}
@@ -62,20 +63,19 @@ export default function FieldWidget({style, field, isDatasetField, isSortField, 
             title={desc ? t('Sort Descending') : t('Sort Ascending')}
             onClick={toggleSort}
           >
-            {desc ? <SortAscendingOutlined/> : <SortDescendingOutlined/>}
+            {desc ? <SortAscendingOutlined /> : <SortDescendingOutlined />}
           </Button>
         )}
-
         {canEdit && (
           <Button
             className={styles.fieldWidget_removeBtn}
-            style={{right: isSortField ? (BTN_SIZE + BTN_SPACE*2) : BTN_SPACE}}
+            style={{right: isSortField ? BTN_SIZE + BTN_SPACE * 2 : BTN_SPACE}}
             // type="text"
             size="small"
             title={t('Remove')}
             onClick={onRemove}
           >
-            <CloseOutlined/>
+            <CloseOutlined />
           </Button>
         )}
       </span>

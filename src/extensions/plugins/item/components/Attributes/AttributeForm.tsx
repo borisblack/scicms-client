@@ -43,40 +43,56 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
   const [targetOptions, setTargetOptions] = useState<OptionType[]>([])
   const [intermediateOptions, setIntermediateOptions] = useState<OptionType[]>([])
   const itemNames = useMemo(() => Object.keys(itemMap), [itemMap])
-  const isCollectionRelation = attrType === FieldType.relation && (relType === RelType.oneToMany || relType === RelType.manyToMany)
-  const allTargetAttributes = useMemo(() => target ? itemMap[target].spec.attributes : {}, [target, itemMap])
-  const targetRelationAttrNames = useMemo(() => Object.keys(allTargetAttributes).filter(key => {
-    const targetAttribute = allTargetAttributes[key]
-    return targetAttribute.type === FieldType.relation || targetAttribute.relType === RelType.oneToOne
-  }), [allTargetAttributes])
+  const isCollectionRelation =
+    attrType === FieldType.relation && (relType === RelType.oneToMany || relType === RelType.manyToMany)
+  const allTargetAttributes = useMemo(() => (target ? itemMap[target].spec.attributes : {}), [target, itemMap])
+  const targetRelationAttrNames = useMemo(
+    () =>
+      Object.keys(allTargetAttributes).filter(key => {
+        const targetAttribute = allTargetAttributes[key]
+        return targetAttribute.type === FieldType.relation || targetAttribute.relType === RelType.oneToOne
+      }),
+    [allTargetAttributes]
+  )
 
   const inversedByOptions = useMemo(
-    () => targetRelationAttrNames
-      .filter(attrName => {
-        const targetRelAttr = allTargetAttributes[attrName]
-        return targetRelAttr.relType === RelType.oneToOne || targetRelAttr.relType === RelType.manyToOne || targetRelAttr.relType === RelType.manyToMany
-      })
-      .map(uniqueAttrName => ({label: uniqueAttrName, value: uniqueAttrName})),
+    () =>
+      targetRelationAttrNames
+        .filter(attrName => {
+          const targetRelAttr = allTargetAttributes[attrName]
+          return (
+            targetRelAttr.relType === RelType.oneToOne ||
+            targetRelAttr.relType === RelType.manyToOne ||
+            targetRelAttr.relType === RelType.manyToMany
+          )
+        })
+        .map(uniqueAttrName => ({label: uniqueAttrName, value: uniqueAttrName})),
     [allTargetAttributes, targetRelationAttrNames]
   )
 
   const mappedByOptions = useMemo(
-    () => targetRelationAttrNames
-      .filter(attrName => {
-        const targetRelAttr = allTargetAttributes[attrName]
-        return targetRelAttr.relType === RelType.oneToOne || targetRelAttr.relType === RelType.oneToMany || targetRelAttr.relType === RelType.manyToMany
-      })
-      .map(uniqueAttrName => ({label: uniqueAttrName, value: uniqueAttrName})),
+    () =>
+      targetRelationAttrNames
+        .filter(attrName => {
+          const targetRelAttr = allTargetAttributes[attrName]
+          return (
+            targetRelAttr.relType === RelType.oneToOne ||
+            targetRelAttr.relType === RelType.oneToMany ||
+            targetRelAttr.relType === RelType.manyToMany
+          )
+        })
+        .map(uniqueAttrName => ({label: uniqueAttrName, value: uniqueAttrName})),
     [allTargetAttributes, targetRelationAttrNames]
   )
 
   const referencedByOptions = useMemo(
-    () => Object.keys(allTargetAttributes)
-      .filter(attrName => {
-        const targetRelAttr = allTargetAttributes[attrName]
-        return targetRelAttr.keyed || targetRelAttr.unique
-      })
-      .map(uniqueAttrName => ({label: uniqueAttrName, value: uniqueAttrName})),
+    () =>
+      Object.keys(allTargetAttributes)
+        .filter(attrName => {
+          const targetRelAttr = allTargetAttributes[attrName]
+          return targetRelAttr.keyed || targetRelAttr.unique
+        })
+        .map(uniqueAttrName => ({label: uniqueAttrName, value: uniqueAttrName})),
     [allTargetAttributes]
   )
 
@@ -86,8 +102,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
 
   const handleSeqNameSearch = _.debounce(async (value: string) => {
     setSeqNameOptions([])
-    if (value.length < MIN_SEARCH_LENGTH)
-      return
+    if (value.length < MIN_SEARCH_LENGTH) return
 
     try {
       const sequences = await SequenceService.fetchSequencesByName(value)
@@ -102,8 +117,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
 
   const handleTargetSearch = _.debounce((value: string) => {
     setTargetOptions([])
-    if (value.length < MIN_SEARCH_LENGTH)
-      return
+    if (value.length < MIN_SEARCH_LENGTH) return
 
     const regExp = new RegExp(value, 'i')
     const targets = itemNames.filter(it => it.match(regExp))
@@ -112,8 +126,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
 
   const handleIntermediateSearch = _.debounce((value: string) => {
     setIntermediateOptions([])
-    if (value.length < MIN_SEARCH_LENGTH)
-      return
+    if (value.length < MIN_SEARCH_LENGTH) return
 
     const regExp = new RegExp(value, 'i')
     const intermediates = itemNames.filter(it => it.match(regExp))
@@ -129,10 +142,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
             name="name"
             label={t('Name')}
             initialValue={attribute?.name}
-            rules={[
-              {required: true, message: t('Required field')},
-              regExpRule(LOWERCASE_NO_WHITESPACE_PATTERN)
-            ]}
+            rules={[{required: true, message: t('Required field')}, regExpRule(LOWERCASE_NO_WHITESPACE_PATTERN)]}
           >
             <Input style={{maxWidth: 300}} maxLength={50} disabled={attribute?.name != null} />
           </FormItem>
@@ -146,16 +156,18 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
           >
             <Select
               style={{maxWidth: 200}}
-              options={Object.keys(FieldType).sort().map(ft => ({
-                value: ft,
-                label: (
-                  <span className="text-ellipsis">
-                    <FieldTypeIcon fieldType={ft as FieldType} />
-                    &nbsp;&nbsp;
-                    {ft}
-                  </span>
-                )
-              }))}
+              options={Object.keys(FieldType)
+                .sort()
+                .map(ft => ({
+                  value: ft,
+                  label: (
+                    <span className="text-ellipsis">
+                      <FieldTypeIcon fieldType={ft as FieldType} />
+                      &nbsp;&nbsp;
+                      {ft}
+                    </span>
+                  )
+                }))}
               onSelect={(val: FieldType) => setAttrType(val)}
             />
           </FormItem>
@@ -223,12 +235,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
             </>
           )}
 
-          <FormItem
-            className={styles.formItem}
-            name="keyed"
-            valuePropName="checked"
-            initialValue={attribute?.keyed}
-          >
+          <FormItem className={styles.formItem} name="keyed" valuePropName="checked" initialValue={attribute?.keyed}>
             <Checkbox /*disabled*/>{t('Keyed')}</Checkbox>
           </FormItem>
 
@@ -335,7 +342,11 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
                 rules={[{required: true, message: t('Required field')}]}
               >
                 <Select style={{maxWidth: 200}} onSelect={(val: RelType) => setRelType(val)}>
-                  {Object.keys(RelType).map(it => <SelectOption key={it} value={it}>{it}</SelectOption>)}
+                  {Object.keys(RelType).map(it => (
+                    <SelectOption key={it} value={it}>
+                      {it}
+                    </SelectOption>
+                  ))}
                 </Select>
               </FormItem>
 
@@ -382,11 +393,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
                       initialValue={attribute?.mappedBy}
                       rules={[requiredFieldRule(relType === RelType.oneToMany)]}
                     >
-                      <Select
-                        options={mappedByOptions}
-                        style={{width: 300}}
-                        placeholder={t('Mapped By')}
-                      />
+                      <Select options={mappedByOptions} style={{width: 300}} placeholder={t('Mapped By')} />
                     </FormItem>
                   )}
 
@@ -397,11 +404,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
                       label={t('Inversed By')}
                       initialValue={attribute?.inversedBy}
                     >
-                      <Select
-                        options={inversedByOptions}
-                        style={{width: 300}}
-                        placeholder={t('Inversed By')}
-                      />
+                      <Select options={inversedByOptions} style={{width: 300}} placeholder={t('Inversed By')} />
                     </FormItem>
                   )}
 
@@ -412,11 +415,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
                       label={t('Referenced By')}
                       initialValue={attribute?.referencedBy}
                     >
-                      <Select
-                        options={referencedByOptions}
-                        style={{width: 300}}
-                        placeholder={t('Referenced By')}
-                      />
+                      <Select options={referencedByOptions} style={{width: 300}} placeholder={t('Referenced By')} />
                     </FormItem>
                   )}
                 </>
@@ -451,12 +450,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
           )}
 
           {attrType === FieldType.text && (
-            <FormItem
-              className={styles.formItem}
-              name="format"
-              label={t('Format')}
-              initialValue={attribute?.format}
-            >
+            <FormItem className={styles.formItem} name="format" label={t('Format')} initialValue={attribute?.format}>
               <Input style={{maxWidth: 300}} maxLength={50} />
             </FormItem>
           )}
@@ -485,7 +479,11 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
             </>
           )}
 
-          {(attrType === FieldType.int || attrType === FieldType.long || attrType === FieldType.float || attrType === FieldType.double || attrType === FieldType.decimal) && (
+          {(attrType === FieldType.int ||
+            attrType === FieldType.long ||
+            attrType === FieldType.float ||
+            attrType === FieldType.double ||
+            attrType === FieldType.decimal) && (
             <>
               <FormItem
                 className={styles.formItem}

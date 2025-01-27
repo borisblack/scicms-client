@@ -1,6 +1,15 @@
-import {DEFAULT_SORT_ORDER_ATTR_NAME, INCLUDE_TEMPLATES_ATTR_NAME, ITEM_ITEM_NAME, NOT_LOCKABLE_ATTR_NAME} from 'src/config/constants'
+import {
+  DEFAULT_SORT_ORDER_ATTR_NAME,
+  INCLUDE_TEMPLATES_ATTR_NAME,
+  ITEM_ITEM_NAME,
+  NOT_LOCKABLE_ATTR_NAME
+} from 'src/config/constants'
 import {Plugin} from '../Plugin'
-import {DefaultSortOrderAttributeField, IncludeTemplatesAttributeField, NotLockableAttributeField} from './attributeFields'
+import {
+  DefaultSortOrderAttributeField,
+  IncludeTemplatesAttributeField,
+  NotLockableAttributeField
+} from './attributeFields'
 import {Attributes, Indexes} from './components'
 
 const ITEM_ATTRIBUTES_COMPONENT_ID = 'itemAttributes'
@@ -20,7 +29,7 @@ export class ItemPlugin extends Plugin {
       mountPoint: 'item.tabs.begin',
       title: 'Attributes',
       icon: 'BarsOutlined',
-      render: ({context}) => <Attributes key={ITEM_ATTRIBUTES_COMPONENT_ID} {...context}/>
+      render: ({context}) => <Attributes key={ITEM_ATTRIBUTES_COMPONENT_ID} {...context} />
     })
 
     this.addComponent({
@@ -29,7 +38,7 @@ export class ItemPlugin extends Plugin {
       mountPoint: 'itemTemplate.tabs.begin',
       title: 'Attributes',
       icon: 'BarsOutlined',
-      render: ({context}) => <Attributes key={ITEM_TEMPLATE_ATTRIBUTES_COMPONENT_ID} {...context}/>
+      render: ({context}) => <Attributes key={ITEM_TEMPLATE_ATTRIBUTES_COMPONENT_ID} {...context} />
     })
 
     this.addComponent({
@@ -38,7 +47,7 @@ export class ItemPlugin extends Plugin {
       priority: 20,
       title: 'Indexes',
       icon: 'HolderOutlined',
-      render: ({context}) => <Indexes key={ITEM_INDEXES_COMPONENT_ID} {...context}/>
+      render: ({context}) => <Indexes key={ITEM_INDEXES_COMPONENT_ID} {...context} />
     })
 
     this.addComponent({
@@ -47,20 +56,20 @@ export class ItemPlugin extends Plugin {
       priority: 20,
       title: 'Indexes',
       icon: 'HolderOutlined',
-      render: ({context}) => <Indexes key={ITEM_TEMPLATE_INDEXES_COMPONENT_ID} {...context}/>
+      render: ({context}) => <Indexes key={ITEM_TEMPLATE_INDEXES_COMPONENT_ID} {...context} />
     })
 
     // Attribute fields
     this.addAttributeField({
       id: DEFAULT_SORT_ORDER_ATTRIBUTE_FIELD_ID,
       mountPoint: `${ITEM_ITEM_NAME}.${DEFAULT_SORT_ORDER_ATTR_NAME}`,
-      render: ({context}) => <DefaultSortOrderAttributeField {...context}/>
+      render: ({context}) => <DefaultSortOrderAttributeField {...context} />
     })
 
     this.addAttributeField({
       id: INCLUDE_TEMPLATES_ATTRIBUTE_FIELD_ID,
       mountPoint: `${ITEM_ITEM_NAME}.${INCLUDE_TEMPLATES_ATTR_NAME}`,
-      render: ({context}) => <IncludeTemplatesAttributeField {...context}/>
+      render: ({context}) => <IncludeTemplatesAttributeField {...context} />
     })
 
     // this.addAttributeField({

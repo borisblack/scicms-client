@@ -8,9 +8,9 @@ import * as RulesService from 'src/services/rules'
 import {useBiProperties} from 'src/bi/util/hooks'
 
 interface ReportDashOpts {
-    displayedColNames: string[]
-    keyColName?: string
-    rules?: string
+  displayedColNames: string[]
+  keyColName?: string
+  rules?: string
 }
 
 const TABLE_HEADER_HEIGHT = 40
@@ -21,33 +21,38 @@ function ReportDash({dataset, dash, height, fullScreen, data}: DashRenderContext
   const keyColName = Array.isArray(optValues.keyColName) ? optValues.keyColName[0] : optValues.keyColName
   const cellRules = useMemo(() => RulesService.parseRules(rules), [rules])
   const allColumns = {...(dataset.spec.columns ?? {}), ...dash.fields}
-  const columns: ColumnsType<any> =
-        displayedColNames
-          .filter(cn => cn in allColumns)
-          .map(cn => {
-            const datasetColumn = allColumns[cn]
-            return {
-              key: cn,
-              dataIndex: cn,
-              title: datasetColumn.alias ?? cn,
-              width: datasetColumn.colWidth as string | number | undefined,
-              render: (value, record) => renderCell(cn, value, record),
-              onCell: record => ({style: RulesService.getFieldStyle(cellRules, cn, record)})
-            }
-          })
+  const columns: ColumnsType<any> = displayedColNames
+    .filter(cn => cn in allColumns)
+    .map(cn => {
+      const datasetColumn = allColumns[cn]
+      return {
+        key: cn,
+        dataIndex: cn,
+        title: datasetColumn.alias ?? cn,
+        width: datasetColumn.colWidth as string | number | undefined,
+        render: (value, record) => renderCell(cn, value, record),
+        onCell: record => ({style: RulesService.getFieldStyle(cellRules, cn, record)})
+      }
+    })
 
   const biProps = useBiProperties()
   const {dateFormatString, timeFormatString, dateTimeFormatString} = biProps.dateTime
   const {fractionDigits} = biProps
 
   function renderCell(colName: string, value: any, record: Record<string, any>): ReactNode {
-    const formattedValue = formatValue({value, type: columnType(allColumns[colName]), dateFormatString, timeFormatString, dateTimeFormatString, fractionDigits})
+    const formattedValue = formatValue({
+      value,
+      type: columnType(allColumns[colName]),
+      dateFormatString,
+      timeFormatString,
+      dateTimeFormatString,
+      fractionDigits
+    })
 
     return RulesService.renderField(cellRules, colName, formattedValue, record)
   }
 
-  if (columns.length !== displayedColNames.length)
-    return <Alert message="Invalid columns specification" type="error"/>
+  if (columns.length !== displayedColNames.length) return <Alert message="Invalid columns specification" type="error" />
 
   return (
     <Table

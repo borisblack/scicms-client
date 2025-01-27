@@ -12,9 +12,15 @@ import styles from './AttributeField.module.css'
 
 const {Item: FormItem} = Form
 
-const MediaAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, form, attrName, attribute, value, setLoading}) => {
-  if (attribute.type !== FieldType.media)
-    throw new Error('Illegal attribute')
+const MediaAttributeField: FC<AttributeFieldProps> = ({
+  data: dataWrapper,
+  form,
+  attrName,
+  attribute,
+  value,
+  setLoading
+}) => {
+  if (attribute.type !== FieldType.media) throw new Error('Illegal attribute')
 
   const {item} = dataWrapper
   const uniqueKey = generateKey(dataWrapper)
@@ -24,8 +30,7 @@ const MediaAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, form, 
   const isDisabled = useMemo(() => attribute.readOnly, [attribute.readOnly])
   const additionalProps = useMemo((): any => {
     const additionalProps: any = {}
-    if (isDisabled)
-      additionalProps.disabled = true
+    if (isDisabled) additionalProps.disabled = true
 
     return additionalProps
   }, [isDisabled])
@@ -35,15 +40,16 @@ const MediaAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, form, 
   }
 
   function getInitialUploadFileList(): UploadFile[] {
-    if (!mediaData)
-      return []
+    if (!mediaData) return []
 
-    return [{
-      uid: mediaData.id,
-      name: mediaData.filename,
-      status: 'done',
-      url: MediaService.getDownloadUrlById(mediaData.id)
-    }]
+    return [
+      {
+        uid: mediaData.id,
+        name: mediaData.filename,
+        status: 'done',
+        url: MediaService.getDownloadUrlById(mediaData.id)
+      }
+    ]
   }
 
   function beforeUpload(file: RcFile, fileList: RcFile[]) {
@@ -52,8 +58,7 @@ const MediaAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, form, 
   }
 
   async function handleDownload() {
-    if (!mediaData)
-      return
+    if (!mediaData) return
 
     const {id, filename} = mediaData
     setLoading(true)
@@ -93,7 +98,7 @@ const MediaAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, form, 
   return (
     <>
       <FormItem hidden name={`${attrName}.id`} initialValue={mediaData?.id}>
-        <Input id={`${uniqueKey}#${attrName}.id`}/>
+        <Input id={`${uniqueKey}#${attrName}.id`} />
       </FormItem>
       <FormItem
         className={styles.formItem}
@@ -118,7 +123,11 @@ const MediaAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, form, 
           onRemove={handleRemove}
           {...additionalProps}
         >
-          {fileList.length === 0 && <Button size="middle" icon={<UploadOutlined />}>{t('Add')}</Button>}
+          {fileList.length === 0 && (
+            <Button size="middle" icon={<UploadOutlined />}>
+              {t('Add')}
+            </Button>
+          )}
         </Upload>
       </FormItem>
     </>

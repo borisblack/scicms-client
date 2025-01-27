@@ -1,8 +1,5 @@
 import {CSSProperties, MouseEvent} from 'react'
-import {
-  flexRender,
-  Row
-} from '@tanstack/react-table'
+import {flexRender, Row} from '@tanstack/react-table'
 import {CSS} from '@dnd-kit/utilities'
 import {useSortable} from '@dnd-kit/sortable'
 import {Dropdown, type MenuProps} from 'antd'
@@ -17,7 +14,7 @@ interface DraggableRowProps<T> {
 }
 
 export function DraggableRow<T>({row, getRowContextMenu, onRowClick, onRowDoubleClick}: DraggableRowProps<T>) {
-  const { transform, transition, setNodeRef, isDragging } = useSortable({
+  const {transform, transition, setNodeRef, isDragging} = useSortable({
     id: row.id
   })
 
@@ -46,10 +43,7 @@ export function DraggableRow<T>({row, getRowContextMenu, onRowClick, onRowDouble
   )
 
   return getRowContextMenu ? (
-    <Dropdown
-      menu={{items: getRowContextMenu(row)}}
-      trigger={['contextMenu']}
-    >
+    <Dropdown menu={{items: getRowContextMenu(row)}} trigger={['contextMenu']}>
       {rowContent}
     </Dropdown>
   ) : (

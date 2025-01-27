@@ -11,7 +11,7 @@ export class DashboardPlugin extends Plugin {
       priority: 10,
       title: 'Spec',
       icon: 'BoxPlotOutlined',
-      render: ({context}) => <DashboardSpec key={DASHBOARD_SPEC_COMPONENT_ID} {...context}/>
+      render: ({context}) => <DashboardSpec key={DASHBOARD_SPEC_COMPONENT_ID} {...context} />
     })
   }
 

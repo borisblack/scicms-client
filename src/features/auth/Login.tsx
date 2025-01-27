@@ -55,7 +55,7 @@ function Login() {
   const urlParams = useParams()
   const [isOauth2Redirecting, setOauth2Redirecting] = useState(false)
   const [isOauth2LoggingIn, setOauth2LoggingIn] = useState(false)
-    
+
   storeTargetUrl(targetUrl)
 
   useEffect(() => {
@@ -69,19 +69,17 @@ function Login() {
   }, [location.pathname])
 
   useEffect(() => {
-    if (jwt && !isExpired && !me)
-      dispatch(fetchMeIfNeeded())
+    if (jwt && !isExpired && !me) dispatch(fetchMeIfNeeded())
   }, [jwt, isExpired, me])
 
-  function handleLogin(credentials: {username: string, password: string}) {
+  function handleLogin(credentials: {username: string; password: string}) {
     dispatch(login(credentials))
   }
 
   function handleOauth2Redirect(credentials: {provider: string}) {
     const {provider: providerId} = credentials
     const provider = securityConfig.oauth2Providers.find(p => p.id === providerId)
-    if (provider == null)
-      throw new Error('Provider not found.')
+    if (provider == null) throw new Error('Provider not found.')
 
     setOauth2Redirecting(true)
     const authUrl = new URL(provider.authUrl)
@@ -98,14 +96,12 @@ function Login() {
 
     const provider = urlParams['provider']
     const code = searchParams.get('code')
-    if (!provider || !code)
-      throw new Error('Invalid OAuth2 credentials.')
+    if (!provider || !code) throw new Error('Invalid OAuth2 credentials.')
 
     setOauth2LoggingIn(true)
-    dispatch(loginOauth2({provider, code}))
-      .finally(() => {
-        setOauth2LoggingIn(false)
-      })
+    dispatch(loginOauth2({provider, code})).finally(() => {
+      setOauth2LoggingIn(false)
+    })
   }
 
   function handleTabsChange(key: string) {
@@ -116,22 +112,16 @@ function Login() {
     {
       key: LOCAL_AUTH_TYPE,
       label: t('System'),
-      children: <LoginForm onLogin={handleLogin}/>
+      children: <LoginForm onLogin={handleLogin} />
     },
     {
       key: OAUTH2_AUTH_TYPE,
       label: t('OAuth2'),
-      children: (
-        <Oauth2LoginForm
-          oauth2Providers={securityConfig.oauth2Providers}
-          onLogin={handleOauth2Redirect}
-        />
-      )
+      children: <Oauth2LoginForm oauth2Providers={securityConfig.oauth2Providers} onLogin={handleOauth2Redirect} />
     }
   ]
 
-  if (me && !isExpired)
-    return <Navigate to={targetUrl}/>
+  if (me && !isExpired) return <Navigate to={targetUrl} />
 
   return (
     <Layout className="Login">
@@ -154,9 +144,7 @@ function Login() {
           </Row>
         </Spin>
       </Content>
-      <Footer className="Login-footer">
-        {`${t('SciSolutions')} ©${new Date().getFullYear()}`}
-      </Footer>
+      <Footer className="Login-footer">{`${t('SciSolutions')} ©${new Date().getFullYear()}`}</Footer>
     </Layout>
   )
 }

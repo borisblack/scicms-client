@@ -9,9 +9,13 @@ import styles from './AttributeField.module.css'
 const FormItem = Form.Item
 
 const NumberAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrName, attribute, value}) => {
-  if (attribute.type !== FieldType.int && attribute.type !== FieldType.long
-        && attribute.type !== FieldType.float && attribute.type !== FieldType.double
-        && attribute.type !== FieldType.decimal)
+  if (
+    attribute.type !== FieldType.int &&
+    attribute.type !== FieldType.long &&
+    attribute.type !== FieldType.float &&
+    attribute.type !== FieldType.double &&
+    attribute.type !== FieldType.decimal
+  )
     throw new Error('Illegal attribute')
 
   const uniqueKey = generateKey(dataWrapper)
@@ -19,8 +23,7 @@ const NumberAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrN
   const isDisabled = useMemo(() => attribute.readOnly, [attribute.readOnly])
   const additionalProps = useMemo((): any => {
     const additionalProps: any = {}
-    if (isDisabled)
-      additionalProps.disabled = true
+    if (isDisabled) additionalProps.disabled = true
 
     return additionalProps
   }, [isDisabled])
@@ -33,7 +36,7 @@ const NumberAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrN
       hidden={attribute.fieldHidden}
       initialValue={value ?? (attribute.defaultValue ? parseFloat(attribute.defaultValue) : null)}
       rules={[
-        { type: 'number', min: attribute.minRange, max: attribute.maxRange },
+        {type: 'number', min: attribute.minRange, max: attribute.maxRange},
         {required: attribute.required && !attribute.readOnly, message: t('Required field')}
       ]}
     >

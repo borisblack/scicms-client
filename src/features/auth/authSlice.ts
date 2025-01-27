@@ -25,12 +25,12 @@ import {SecurityConfig, UserInfo} from 'src/types'
 import i18n from 'src/i18n'
 
 export interface AuthState {
-    loading: boolean
-    securityConfig: SecurityConfig
-    jwt: string | null
-    expireAt: number | null
-    isExpired: boolean
-    me: UserInfo | null
+  loading: boolean
+  securityConfig: SecurityConfig
+  jwt: string | null
+  expireAt: number | null
+  isExpired: boolean
+  me: UserInfo | null
 }
 
 const initialState: AuthState = {
@@ -42,49 +42,32 @@ const initialState: AuthState = {
   me: null
 }
 
-const fetchSecurityConfig = createAsyncThunk(
-  'auth/fetchSecurityConfig',
-  () => doFetchSecurityConfig().then(securityConfig => securityConfig)
+const fetchSecurityConfig = createAsyncThunk('auth/fetchSecurityConfig', () =>
+  doFetchSecurityConfig().then(securityConfig => securityConfig)
 )
 
-const login = createAsyncThunk(
-  'auth/login',
-  (credentials: {username: string, password: string}) => {
-    removeJwt()
-    return doLogin(credentials).then(tokenResponse => tokenResponse)
-  }
-)
+const login = createAsyncThunk('auth/login', (credentials: {username: string; password: string}) => {
+  removeJwt()
+  return doLogin(credentials).then(tokenResponse => tokenResponse)
+})
 
-const loginOauth2 = createAsyncThunk(
-  'auth/loginOauth2',
-  (credentials: {provider: string, code: string}) => {
-    removeJwt()
-    return doLoginOauth2(credentials).then(tokenResponse => tokenResponse)
-  }
-)
+const loginOauth2 = createAsyncThunk('auth/loginOauth2', (credentials: {provider: string; code: string}) => {
+  removeJwt()
+  return doLoginOauth2(credentials).then(tokenResponse => tokenResponse)
+})
 
-const fetchMeIfNeeded = createAsyncThunk(
-  'auth/fetchMeIfNeeded',
-  () => doFetchMe().then(me => me),
-  {
-    condition: (credentials, {getState}) => shouldFetchMe(getState() as {auth: AuthState})
-  }
-)
+const fetchMeIfNeeded = createAsyncThunk('auth/fetchMeIfNeeded', () => doFetchMe().then(me => me), {
+  condition: (credentials, {getState}) => shouldFetchMe(getState() as {auth: AuthState})
+})
 
 const shouldFetchMe = (state: {auth: AuthState}) => {
   const {loading, me} = state.auth
   return !me /*&& !loading*/
 }
 
-const logout = createAsyncThunk(
-  'auth/logout',
-  () => doLogout()
-)
+const logout = createAsyncThunk('auth/logout', () => doLogout())
 
-const updateSessionData = createAsyncThunk(
-  'auth/updateSessionData',
-  doUpdateSessionData
-)
+const updateSessionData = createAsyncThunk('auth/updateSessionData', doUpdateSessionData)
 
 const authSlice = createSlice({
   name: 'auth',

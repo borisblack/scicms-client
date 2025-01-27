@@ -13,8 +13,12 @@ import {generateKey} from 'src/util/mdi'
 const FormItem = Form.Item
 
 const StringAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrName, attribute, value}) => {
-  if (attribute.type !== FieldType.string && attribute.type !== FieldType.uuid
-        && attribute.type !== FieldType.email && attribute.type !== FieldType.sequence)
+  if (
+    attribute.type !== FieldType.string &&
+    attribute.type !== FieldType.uuid &&
+    attribute.type !== FieldType.email &&
+    attribute.type !== FieldType.sequence
+  )
     throw new Error('Illegal attribute')
 
   const {item, data} = dataWrapper
@@ -23,19 +27,15 @@ const StringAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrN
   const {t} = useTranslation()
 
   const isEnabled = useCallback((): boolean => {
-    if (attribute.readOnly)
-      return false
+    if (attribute.readOnly) return false
 
-    if (item.name === ITEM_ITEM_NAME && attrName === NAME_ATTR_NAME && !isNew)
-      return false
+    if (item.name === ITEM_ITEM_NAME && attrName === NAME_ATTR_NAME && !isNew) return false
 
-    if (attribute.type === FieldType.sequence)
-      return false
+    if (attribute.type === FieldType.sequence) return false
 
     if (attrName === MAJOR_REV_ATTR_NAME) {
       if (item.versioned) {
-        if (!item.manualVersioning)
-          return false
+        if (!item.manualVersioning) return false
       } else {
         return false
       }
@@ -46,17 +46,20 @@ const StringAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrN
 
   const additionalProps = useMemo((): any => {
     const additionalProps: any = {}
-    if (!isEnabled())
-      additionalProps.disabled = true
+    if (!isEnabled()) additionalProps.disabled = true
 
     return additionalProps
   }, [isEnabled])
 
   const getRules = useCallback(() => {
-    const rules: FormRule[] = [{
-      required: (attribute.required && !attribute.readOnly) || (attrName === MAJOR_REV_ATTR_NAME && !!item.versioned && !!item.manualVersioning),
-      message: t('Required field')
-    }]
+    const rules: FormRule[] = [
+      {
+        required:
+          (attribute.required && !attribute.readOnly) ||
+          (attrName === MAJOR_REV_ATTR_NAME && !!item.versioned && !!item.manualVersioning),
+        message: t('Required field')
+      }
+    ]
 
     switch (attribute.type) {
       case FieldType.uuid:
@@ -86,11 +89,7 @@ const StringAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrN
       initialValue={value ?? attribute.defaultValue}
       rules={getRules()}
     >
-      <Input
-        id={`${uniqueKey}#${attrName}`}
-        maxLength={attribute.length}
-        {...additionalProps}
-      />
+      <Input id={`${uniqueKey}#${attrName}`} maxLength={attribute.length} {...additionalProps} />
     </FormItem>
   )
 }

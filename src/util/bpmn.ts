@@ -3,30 +3,30 @@ import _ from 'lodash'
 import {LifecycleSpec, StateMap} from '../types/schema'
 
 interface BpmnDefinitions {
-    process: {
-        id: string
-        isExecutable: boolean
-        startEvent: {
-            id: string
-            outgoings: string[]
-        }
-        endEvent: {
-            id: string
-            incomings: string[]
-        }
-        tasks: {
-            id: string
-            name: string
-            incomings: string[]
-            outgoings: string[]
-        }[]
-        sequenceFlows: {
-            id: string
-            name: string | null
-            sourceRef: string
-            targetRef: string
-        }[]
+  process: {
+    id: string
+    isExecutable: boolean
+    startEvent: {
+      id: string
+      outgoings: string[]
     }
+    endEvent: {
+      id: string
+      incomings: string[]
+    }
+    tasks: {
+      id: string
+      name: string
+      incomings: string[]
+      outgoings: string[]
+    }[]
+    sequenceFlows: {
+      id: string
+      name: string | null
+      sourceRef: string
+      targetRef: string
+    }[]
+  }
 }
 
 export function parseBpmn(bpmn: string): BpmnDefinitions {

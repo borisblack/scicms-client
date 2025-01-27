@@ -3,12 +3,19 @@ import ExecutionStatistic from './ExecutionStatistic'
 import {useTranslation} from 'react-i18next'
 import {ExecutionStatisticInfo} from '../types/bi'
 
-interface ExecutionStatisticModalProps extends ExecutionStatisticInfo{
+interface ExecutionStatisticModalProps extends ExecutionStatisticInfo {
   open: boolean
   onClose: () => void
 }
 
-export default function ExecutionStatisticModal({timeMs, cacheHit, query, params, open, onClose}: ExecutionStatisticModalProps) {
+export default function ExecutionStatisticModal({
+  timeMs,
+  cacheHit,
+  query,
+  params,
+  open,
+  onClose
+}: ExecutionStatisticModalProps) {
   const {t} = useTranslation()
 
   return (
@@ -20,12 +27,7 @@ export default function ExecutionStatisticModal({timeMs, cacheHit, query, params
       destroyOnClose
       onClose={onClose}
     >
-      <ExecutionStatistic
-        timeMs={timeMs}
-        cacheHit={cacheHit}
-        query={query}
-        params={params}
-      />
+      <ExecutionStatistic timeMs={timeMs} cacheHit={cacheHit} query={query} params={params} />
     </Drawer>
   )
 }

@@ -6,38 +6,33 @@ import _ from 'lodash'
 import {ItemFiltersInput} from 'src/services/query'
 
 const FIND_ALL_BY_FILTER_QUERY = gql`
-    query findAllTasksByFilter(
-        $filters: TaskFiltersInput
-    ) {
-        tasks(
-            sort: ["sortOrder:asc"]
-            filters: $filters
-        ) {
-        data {
+  query findAllTasksByFilter($filters: TaskFiltersInput) {
+    tasks(sort: ["sortOrder:asc"], filters: $filters) {
+      data {
+        id
+        name
+        description
+        project {
+          data {
             id
-            name
-            description
-            project {
-                data {
-                    id
-                }
-            }
-            start
-            end
-            progress
-            isMilestone
-            dependencies {
-                data {
-                    target {
-                        data {
-                            id
-                        }
-                    }
-                }
-            }
+          }
         }
+        start
+        end
+        progress
+        isMilestone
+        dependencies {
+          data {
+            target {
+              data {
+                id
+              }
+            }
+          }
+        }
+      }
     }
-    }
+  }
 `
 
 export async function fetchAllTasksByFilter(projectId: string, level: number = -1, parentId?: string): Promise<Task[]> {

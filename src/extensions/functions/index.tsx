@@ -2,17 +2,17 @@ import {Parser} from 'js-expression'
 import functionConfig from '../../config/customFunction'
 
 export interface CustomFunction {
-    id: string
-    category: string
-    exec: (...args: any[]) => any
-    description?: string
+  id: string
+  category: string
+  exec: (...args: any[]) => any
+  description?: string
 }
 
 type CustomFunctionInfo = Omit<CustomFunction, 'exec'>
 
 export interface CustomFunctionContext {
-    expression: string
-    values?: {[key: string]: any}
+  expression: string
+  values?: {[key: string]: any}
 }
 
 const parser = new Parser()

@@ -12,8 +12,7 @@ import './PropertyValue.css'
 const EXPANDED_EDITOR_HEIGHT = '90vh'
 
 export const JsonPropertyValue: FC<PropertyValueProps> = ({type, value, canEdit, onChange}) => {
-  if (type !== FieldType.json && type !== FieldType.array)
-    throw new Error('Illegal type.')
+  if (type !== FieldType.json && type !== FieldType.array) throw new Error('Illegal type.')
 
   const appProps = useAppProperties()
   const {editorHeight} = appProps.ui.form

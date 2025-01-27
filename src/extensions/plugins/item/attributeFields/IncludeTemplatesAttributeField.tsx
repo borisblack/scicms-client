@@ -14,7 +14,13 @@ import styles from 'src/pages/app/attributeFields/AttributeField.module.css'
 
 const FormItem = Form.Item
 
-export const IncludeTemplatesAttributeField: FC<CustomAttributeFieldContext> = ({data: dataWrapper, form, attrName, attribute, value}) => {
+export const IncludeTemplatesAttributeField: FC<CustomAttributeFieldContext> = ({
+  data: dataWrapper,
+  form,
+  attrName,
+  attribute,
+  value
+}) => {
   if (attrName !== INCLUDE_TEMPLATES_ATTR_NAME || attribute.type !== FieldType.array)
     throw new Error('Illegal attribute')
 
@@ -24,22 +30,18 @@ export const IncludeTemplatesAttributeField: FC<CustomAttributeFieldContext> = (
   const isDisabled = useMemo(() => attribute.readOnly, [attribute.readOnly])
   const additionalProps = useMemo((): any => {
     const additionalProps: any = {}
-    if (isDisabled)
-      additionalProps.disabled = true
+    if (isDisabled) additionalProps.disabled = true
 
     return additionalProps
   }, [isDisabled])
 
   function parseValue(val: any): string[] | undefined {
-    if (val == null)
-      return undefined
+    if (val == null) return undefined
 
-    if (!_.isArray(val))
-      throw new Error('Illegal attribute')
+    if (!_.isArray(val)) throw new Error('Illegal attribute')
 
     const arr = val.map(it => {
-      if (_.isObject(it))
-        return JSON.stringify(it)
+      if (_.isObject(it)) return JSON.stringify(it)
 
       return it
     })
@@ -54,7 +56,9 @@ export const IncludeTemplatesAttributeField: FC<CustomAttributeFieldContext> = (
         name={attrName}
         label={t(attribute.displayName)}
         hidden={attribute.fieldHidden}
-        initialValue={parseValue(value) ?? (attribute.defaultValue ? parseValue(JSON.parse(attribute.defaultValue)) : undefined)}
+        initialValue={
+          parseValue(value) ?? (attribute.defaultValue ? parseValue(JSON.parse(attribute.defaultValue)) : undefined)
+        }
         rules={[requiredFieldRule(attribute.required && !attribute.readOnly)]}
       >
         <Select

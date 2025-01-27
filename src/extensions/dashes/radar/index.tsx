@@ -12,6 +12,6 @@ export const radar: Dash = {
     {name: 'yField', label: 'y-axis field', cardinality: 1, required: true},
     {name: 'seriesField', label: 'Series field', cardinality: 1, required: false}
   ],
-  renderOptionsForm: (props) => <RadarDashOptionsForm {...props}/>,
-  render: ({context}) => <RadarDashSuspense {...context}/>
+  renderOptionsForm: props => <RadarDashOptionsForm {...props} />,
+  render: ({context}) => <RadarDashSuspense {...context} />
 }

@@ -33,8 +33,7 @@ const propertyValueComponents: Record<string, FC<PropertyValueProps>> = {
 
 export function PropertyValue(props: PropertyValueProps) {
   const PropertyValueComponent = propertyValueComponents[props.type]
-  if (!PropertyValueComponent)
-    return null
+  if (!PropertyValueComponent) return null
 
-  return <PropertyValueComponent {...props}/>
+  return <PropertyValueComponent {...props} />
 }

@@ -9,7 +9,17 @@ import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
 
 import {DASHBOARD_ITEM_NAME, EMPTY_ARRAY} from 'src/config/constants'
-import {Dashboard, DashboardExtra, DashboardItemType, DashboardLayoutItem, IDash, IDashboardSpec, ISelector, IText, QueryOp} from 'src/types/bi'
+import {
+  Dashboard,
+  DashboardExtra,
+  DashboardItemType,
+  DashboardLayoutItem,
+  IDash,
+  IDashboardSpec,
+  ISelector,
+  IText,
+  QueryOp
+} from 'src/types/bi'
 import {generateQueryBlock, printSingleQueryFilter} from '../util'
 import DashWrapper from '../DashWrapper'
 import {useAcl} from 'src/util/hooks'
@@ -40,27 +50,44 @@ let seqNum = 0
 
 function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: DashboardSpecProps) {
   const {item, data, extra} = dataWrapper
-  if (item.name !== DASHBOARD_ITEM_NAME)
-    throw new Error('Illegal argument')
+  if (item.name !== DASHBOARD_ITEM_NAME) throw new Error('Illegal argument')
 
   const biProps = useBiProperties()
   const {dateFormatString, timeFormatString, dateTimeFormatString} = biProps.dateTime
-  const {rowHeight, fractionDigits, cols: defaultCols, defaultDashHeight, defaultSelectorHeight, defaultSelectorType, defaultTextHeight, defaultDashType, defaultRefreshIntervalSeconds} = biProps
+  const {
+    rowHeight,
+    fractionDigits,
+    cols: defaultCols,
+    defaultDashHeight,
+    defaultSelectorHeight,
+    defaultSelectorType,
+    defaultTextHeight,
+    defaultDashType,
+    defaultRefreshIntervalSeconds
+  } = biProps
   const uniqueKey = generateKey(dataWrapper)
   const {t} = useTranslation()
   const acl = useAcl(item, data)
   const {datasets, dashboards} = useBIData({withDatasets: true, withDashboards: true})
   const datasetMap = useMemo(() => _.mapKeys(datasets, ds => ds.name), [datasets])
   const spec: IDashboardSpec = useMemo(() => buffer.spec ?? data?.spec ?? initialSpec(), [buffer.spec, data?.spec])
-  const dashboardLayout: DashboardLayoutItem[] = useMemo(() => spec.layout ?? spec.dashes.map(dash => ({
-    id: dash.id,
-    type: DashboardItemType.DASH,
-    x: dash.x as number,
-    y: dash.y as number,
-    w: dash.w as number,
-    h: dash.h as number
-  })), [spec.dashes, spec.layout])
-  const dashboardDashes: IDash[] = useMemo(() => spec.dashes?.map(dash => ({...dash, id: dash.id ?? uuidv4(), fields: dash.fields ?? {}})) ?? [], [spec.dashes])
+  const dashboardLayout: DashboardLayoutItem[] = useMemo(
+    () =>
+      spec.layout ??
+      spec.dashes.map(dash => ({
+        id: dash.id,
+        type: DashboardItemType.DASH,
+        x: dash.x as number,
+        y: dash.y as number,
+        w: dash.w as number,
+        h: dash.h as number
+      })),
+    [spec.dashes, spec.layout]
+  )
+  const dashboardDashes: IDash[] = useMemo(
+    () => spec.dashes?.map(dash => ({...dash, id: dash.id ?? uuidv4(), fields: dash.fields ?? {}})) ?? [],
+    [spec.dashes]
+  )
   const dashboardTexts: IText[] = useMemo(() => spec.texts ?? [], [spec.texts])
   const dashboardSelectors: ISelector[] = useMemo(() => spec.selectors ?? [], [spec.selectors])
   const {selectedDashFilters, selectDashValue} = useSelectors({
@@ -78,8 +105,7 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
     })
   }, [data])
 
-  if (isNew)
-    return null
+  if (isNew) return null
 
   const createLayoutItem = (type: DashboardItemType): DashboardLayoutItem => ({
     id: uuidv4(),
@@ -89,7 +115,7 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
     w: defaultCols / 2,
     h: getDefaultLayoutItemHeight(type)
   })
-  
+
   function getDefaultLayoutItemHeight(type: DashboardItemType) {
     switch (type) {
       case DashboardItemType.DASH:
@@ -116,14 +142,8 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
     }
 
     const newSpec: IDashboardSpec = {
-      layout: [
-        newLayoutItem,
-        ...dashboardLayout
-      ],
-      dashes: [
-        ...dashboardDashes,
-        newDash
-      ],
+      layout: [newLayoutItem, ...dashboardLayout],
+      dashes: [...dashboardDashes, newDash],
       texts: dashboardTexts,
       selectors: dashboardSelectors
     }
@@ -139,15 +159,9 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
     }
 
     const newSpec: IDashboardSpec = {
-      layout: [
-        newLayoutItem,
-        ...dashboardLayout
-      ],
+      layout: [newLayoutItem, ...dashboardLayout],
       dashes: dashboardDashes,
-      texts: [
-        ...dashboardTexts,
-        newText
-      ],
+      texts: [...dashboardTexts, newText],
       selectors: dashboardSelectors
     }
 
@@ -166,24 +180,17 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
     }
 
     const newSpec: IDashboardSpec = {
-      layout: [
-        newLayoutItem,
-        ...dashboardLayout
-      ],
+      layout: [newLayoutItem, ...dashboardLayout],
       dashes: dashboardDashes,
       texts: dashboardTexts,
-      selectors: [
-        ...dashboardSelectors,
-        newSelector
-      ]
+      selectors: [...dashboardSelectors, newSelector]
     }
 
     onBufferChange({spec: newSpec})
   }
 
   function handleLayoutChange(layouts: Layout[]) {
-    if (layouts.length !== dashboardLayout.length)
-      throw new Error('Illegal layout state.')
+    if (layouts.length !== dashboardLayout.length) throw new Error('Illegal layout state.')
 
     const newSpec: IDashboardSpec = {
       layout: layouts.map(layout => {
@@ -215,7 +222,10 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
       layout: dashboardLayout.filter(layoutItem => layoutItem.id !== id),
       dashes: type === DashboardItemType.DASH ? dashboardDashes.filter(dash => dash.id !== id) : dashboardDashes,
       texts: type === DashboardItemType.TEXT ? dashboardTexts.filter(text => text.id !== id) : dashboardTexts,
-      selectors: type === DashboardItemType.SELECTOR ? dashboardSelectors.filter(selector => selector.id !== id) : dashboardSelectors
+      selectors:
+        type === DashboardItemType.SELECTOR
+          ? dashboardSelectors.filter(selector => selector.id !== id)
+          : dashboardSelectors
     }
 
     if (type === DashboardItemType.DASH) {
@@ -231,12 +241,11 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
   }
 
   function handleDashChange(updatedDash: IDash) {
-    if (!acl.canWrite)
-      return
+    if (!acl.canWrite) return
 
     const newSpec: IDashboardSpec = {
       layout: dashboardLayout,
-      dashes: dashboardDashes.map(dash => dash.id === updatedDash.id ? updatedDash : dash),
+      dashes: dashboardDashes.map(dash => (dash.id === updatedDash.id ? updatedDash : dash)),
       texts: dashboardTexts,
       selectors: dashboardSelectors
     }
@@ -246,13 +255,12 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
   }
 
   function handleTextChange(updatedText: IText) {
-    if (!acl.canWrite)
-      return
+    if (!acl.canWrite) return
 
     const newSpec: IDashboardSpec = {
       layout: dashboardLayout,
       dashes: dashboardDashes,
-      texts: dashboardTexts.map(text => text.id === updatedText.id ? updatedText : text),
+      texts: dashboardTexts.map(text => (text.id === updatedText.id ? updatedText : text)),
       selectors: dashboardSelectors
     }
     onBufferChange({
@@ -268,8 +276,7 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
       layout: dashboardLayout,
       dashes: dashboardDashes,
       texts: dashboardTexts,
-      selectors: dashboardSelectors.map(selector => selector.id === updatedSelector.id ? updatedSelector : selector)
-
+      selectors: dashboardSelectors.map(selector => (selector.id === updatedSelector.id ? updatedSelector : selector))
     }
     onBufferChange({
       spec: newSpec
@@ -283,9 +290,12 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
       case DashboardItemType.TEXT:
         return renderText(dashboardTexts.find(text => text.id === layoutItem.id) as IText, layoutItem.h)
       case DashboardItemType.SELECTOR:
-        return renderSelector(dashboardSelectors.find(selector => selector.id === layoutItem.id) as ISelector, layoutItem.h)
+        return renderSelector(
+          dashboardSelectors.find(selector => selector.id === layoutItem.id) as ISelector,
+          layoutItem.h
+        )
       default:
-        return <Alert description={t('Unsupported layout item.')} type="error"/>
+        return <Alert description={t('Unsupported layout item.')} type="error" />
     }
   }
 
@@ -321,10 +331,7 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
 
   function renderText(text: IText, height: number) {
     return (
-      <div
-        key={text.id}
-        className={styles.layoutItem}
-      >
+      <div key={text.id} className={styles.layoutItem}>
         <Text
           text={text}
           height={height}
@@ -340,10 +347,7 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
 
   function renderSelector(selector: ISelector, height: number) {
     return (
-      <div
-        key={selector.id}
-        className={styles.layoutItem}
-      >
+      <div key={selector.id} className={styles.layoutItem}>
         <Selector
           selector={selector}
           height={height}
@@ -383,22 +387,43 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
             placement="bottomLeft"
             trigger={['hover']}
             menu={{
-              items: [{
-                key: 'dash',
-                label: <Space><FundOutlined/>{t('Dash')}</Space>,
-                onClick: handleDashAdd
-              }, {
-                key: 'selector',
-                label: <Space><i className="fa-solid fa-sliders"></i>{t('Selector')}</Space>,
-                onClick: handleSelectorAdd
-              }, {
-                key: 'text',
-                label: <Space><i className="fa-solid fa-font"></i>{t('Text')}</Space>,
-                onClick: handleTextAdd
-              }]
+              items: [
+                {
+                  key: 'dash',
+                  label: (
+                    <Space>
+                      <FundOutlined />
+                      {t('Dash')}
+                    </Space>
+                  ),
+                  onClick: handleDashAdd
+                },
+                {
+                  key: 'selector',
+                  label: (
+                    <Space>
+                      <i className="fa-solid fa-sliders"></i>
+                      {t('Selector')}
+                    </Space>
+                  ),
+                  onClick: handleSelectorAdd
+                },
+                {
+                  key: 'text',
+                  label: (
+                    <Space>
+                      <i className="fa-solid fa-font"></i>
+                      {t('Text')}
+                    </Space>
+                  ),
+                  onClick: handleTextAdd
+                }
+              ]
             }}
           >
-            <Button type="dashed" icon={<PlusCircleOutlined/>}>{t('Add')}</Button>
+            <Button type="dashed" icon={<PlusCircleOutlined />}>
+              {t('Add')}
+            </Button>
           </Dropdown>
         </div>
       )}

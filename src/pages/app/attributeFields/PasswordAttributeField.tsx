@@ -10,16 +10,14 @@ const FormItem = Form.Item
 const {Password} = Input
 
 const PasswordAttributeField: FC<AttributeFieldProps> = ({form, data: dataWrapper, attrName, attribute, value}) => {
-  if (attribute.type !== FieldType.password)
-    throw new Error('Illegal attribute')
+  if (attribute.type !== FieldType.password) throw new Error('Illegal attribute')
 
   const uniqueKey = generateKey(dataWrapper)
   const {t} = useTranslation()
   const isDisabled = useMemo(() => attribute.readOnly, [attribute.readOnly])
   const additionalProps = useMemo((): any => {
     const additionalProps: any = {}
-    if (isDisabled)
-      additionalProps.disabled = true
+    if (isDisabled) additionalProps.disabled = true
 
     return additionalProps
   }, [isDisabled])
@@ -36,11 +34,7 @@ const PasswordAttributeField: FC<AttributeFieldProps> = ({form, data: dataWrappe
         // hasFeedback
         rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
       >
-        <Password
-          id={`${uniqueKey}#${attrName}`}
-          maxLength={attribute.length}
-          {...additionalProps}
-        />
+        <Password id={`${uniqueKey}#${attrName}`} maxLength={attribute.length} {...additionalProps} />
       </FormItem>
       {attribute.confirm && (
         <Form.Item
@@ -55,7 +49,7 @@ const PasswordAttributeField: FC<AttributeFieldProps> = ({form, data: dataWrappe
               required: Boolean(password),
               message: t('Please confirm password')
             },
-            ({ getFieldValue }) => ({
+            ({getFieldValue}) => ({
               validator(_, value) {
                 if (!value || getFieldValue(attrName) === value) {
                   return Promise.resolve()
@@ -65,11 +59,7 @@ const PasswordAttributeField: FC<AttributeFieldProps> = ({form, data: dataWrappe
             })
           ]}
         >
-          <Password
-            id={`${uniqueKey}#${attrName}.confirm`}
-            maxLength={attribute.length}
-            {...additionalProps}
-          />
+          <Password id={`${uniqueKey}#${attrName}.confirm`} maxLength={attribute.length} {...additionalProps} />
         </Form.Item>
       )}
     </>

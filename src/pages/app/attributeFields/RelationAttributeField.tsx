@@ -59,22 +59,23 @@ const isSecurityItem = (itemName: string) => securityItemNames.has(itemName)
 const isBiItem = (itemName: string) => biItemNames.has(itemName)
 
 function getDefaultPermission(itemName: string): string {
-  if (isSecurityItem(itemName))
-    return SECURITY_PERMISSION_ID
+  if (isSecurityItem(itemName)) return SECURITY_PERMISSION_ID
 
-  if (isBiItem(itemName))
-    return BI_PERMISSION_ID
+  if (isBiItem(itemName)) return BI_PERMISSION_ID
 
   return DEFAULT_PERMISSION_ID
 }
 
 const RelationAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, form, attrName, attribute, value}) => {
-  if (attribute.type !== FieldType.relation || attribute.relType === RelType.oneToMany || attribute.relType === RelType.manyToMany)
+  if (
+    attribute.type !== FieldType.relation ||
+    attribute.relType === RelType.oneToMany ||
+    attribute.relType === RelType.manyToMany
+  )
     throw new Error('Illegal attribute')
 
   const {target} = attribute
-  if (!target)
-    throw new Error('Target is undefined')
+  if (!target) throw new Error('Target is undefined')
 
   const {item, data} = dataWrapper
   const isNew = data?.id == null
@@ -87,25 +88,30 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, for
   const [loading, setLoading] = useState<boolean>(false)
   const [isRelationModalVisible, setRelationModalVisible] = useState<boolean>(false)
   const isDisabled = useMemo(
-    () => attribute.readOnly || ((attrName === LIFECYCLE_ATTR_NAME || attrName === PERMISSION_ATTR_NAME) && !acl.canAdmin),
+    () =>
+      attribute.readOnly || ((attrName === LIFECYCLE_ATTR_NAME || attrName === PERMISSION_ATTR_NAME) && !acl.canAdmin),
     [attrName, attribute.readOnly, acl.canAdmin]
   )
   const additionalProps = useMemo((): any => {
     const additionalProps: any = {}
-    if (isDisabled)
-      additionalProps.disabled = true
+    if (isDisabled) additionalProps.disabled = true
 
     return additionalProps
   }, [isDisabled])
 
   const [currentId, setCurrentId] = useState(value?.data?.id)
   const targetItem = itemMap[target]
-  const referencedBy = useMemo(() => `${attribute.referencedBy || item.idAttribute}`, [attribute.referencedBy, item.idAttribute])
-  const initialData = useMemo(() => (value?.data ?? {id: attribute.defaultValue}), [attribute.defaultValue, value?.data])
+  const referencedBy = useMemo(
+    () => `${attribute.referencedBy || item.idAttribute}`,
+    [attribute.referencedBy, item.idAttribute]
+  )
+  const initialData = useMemo(() => value?.data ?? {id: attribute.defaultValue}, [attribute.defaultValue, value?.data])
   const extraFiltersInput: ItemFiltersInput<ItemData> = useMemo(() => {
     if (attrName === LIFECYCLE_ATTR_NAME) {
-      const allowedLifecycleIds =
-        [...item.allowedLifecycles.data.map((al: AllowedLifecycle) => al.target.data.id), DEFAULT_LIFECYCLE_ID]
+      const allowedLifecycleIds = [
+        ...item.allowedLifecycles.data.map((al: AllowedLifecycle) => al.target.data.id),
+        DEFAULT_LIFECYCLE_ID
+      ]
 
       return {
         id: {
@@ -115,8 +121,10 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, for
     }
 
     if (attrName === PERMISSION_ATTR_NAME) {
-      const allowedPermissionIds =
-        [...item.allowedPermissions.data.map((ap: AllowedPermission) => ap.target.data.id), getDefaultPermission(item.name)]
+      const allowedPermissionIds = [
+        ...item.allowedPermissions.data.map((ap: AllowedPermission) => ap.target.data.id),
+        getDefaultPermission(item.name)
+      ]
 
       return {
         id: {
@@ -130,12 +138,11 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, for
 
   useEffect(() => {
     if (isNew && attribute.defaultValue != null) {
-      queryManager.findById(targetItem, attribute.defaultValue)
-        .then(response => {
-          if (response.data != null) {
-            form.setFieldValue(attrName, response.data[targetItem.titleAttribute])
-          }
-        })
+      queryManager.findById(targetItem, attribute.defaultValue).then(response => {
+        if (response.data != null) {
+          form.setFieldValue(attrName, response.data[targetItem.titleAttribute])
+        }
+      })
     }
   }, [])
 
@@ -148,8 +155,7 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, for
   }
 
   async function openRelation() {
-    if (!currentId)
-      return
+    if (!currentId) return
 
     setLoading(true)
     try {
@@ -163,8 +169,7 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, for
     setCurrentId(null)
     form.setFieldValue(attrName, null)
     form.setFieldValue(`${attrName}.${referencedBy}`, null)
-    if (attrName === LIFECYCLE_ATTR_NAME)
-      form.setFieldValue(STATE_ATTR_NAME, null)
+    if (attrName === LIFECYCLE_ATTR_NAME) form.setFieldValue(STATE_ATTR_NAME, null)
   }
 
   return (
@@ -181,32 +186,34 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, for
           id={`${uniqueKey}#${attrName}`}
           readOnly
           onSearch={() => setRelationModalVisible(true)}
-          addonAfter={currentId && [
-            <Tooltip key="open" title={t('Open')}>
-              <Button
-                type="link"
-                style={{marginLeft: 4, width: SUFFIX_BUTTON_WIDTH}}
-                icon={<FolderOpenOutlined/>}
-                loading={loading}
-                disabled={false}
-                onClick={openRelation}
-              />
-            </Tooltip>,
-            <Tooltip key="clear" title={t('Clear')}>
-              <Button
-                type="link"
-                style={{width: SUFFIX_BUTTON_WIDTH}}
-                icon={<CloseCircleOutlined/>}
-                danger
-                onClick={handleClear}
-              />
-            </Tooltip>
-          ]}
+          addonAfter={
+            currentId && [
+              <Tooltip key="open" title={t('Open')}>
+                <Button
+                  type="link"
+                  style={{marginLeft: 4, width: SUFFIX_BUTTON_WIDTH}}
+                  icon={<FolderOpenOutlined />}
+                  loading={loading}
+                  disabled={false}
+                  onClick={openRelation}
+                />
+              </Tooltip>,
+              <Tooltip key="clear" title={t('Clear')}>
+                <Button
+                  type="link"
+                  style={{width: SUFFIX_BUTTON_WIDTH}}
+                  icon={<CloseCircleOutlined />}
+                  danger
+                  onClick={handleClear}
+                />
+              </Tooltip>
+            ]
+          }
           {...additionalProps}
         />
       </FormItem>
       <FormItem hidden name={`${attrName}.${referencedBy}`} initialValue={initialData[referencedBy]}>
-        <Input id={`${uniqueKey}#${attrName}.${referencedBy}`}/>
+        <Input id={`${uniqueKey}#${attrName}.${referencedBy}`} />
       </FormItem>
       <Modal
         title={t(attribute.displayName)}

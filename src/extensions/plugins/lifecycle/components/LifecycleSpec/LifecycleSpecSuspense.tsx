@@ -6,7 +6,7 @@ const LifecycleSpec = lazy(() => import('./LifecycleSpec'))
 export function LifecycleSpecSuspense(ctx: CustomComponentContext) {
   return (
     <Suspense fallback={null}>
-      <LifecycleSpec {...ctx}/>
+      <LifecycleSpec {...ctx} />
     </Suspense>
   )
 }

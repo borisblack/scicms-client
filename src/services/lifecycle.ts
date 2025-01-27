@@ -10,31 +10,31 @@ export type LifecycleMap = Record<string, Lifecycle>
 export const DEFAULT_LIFECYCLE_ID = 'ad051120-65cf-440a-8fc3-7a24ac8301d3'
 
 const FIND_ALL_QUERY = gql`
-    query {
-        lifecycles {
-            data {
-                id
-                name
-                displayName
-                description
-                spec
-            }
-        }
+  query {
+    lifecycles {
+      data {
+        id
+        name
+        displayName
+        description
+        spec
+      }
     }
+  }
 `
 
 const FIND_BY_ID_QUERY = gql`
-    query findLifecycle($id: ID!) {
-        lifecycle(id: $id) {
-            data {
-                id
-                name
-                displayName
-                description
-                spec
-            }
-        }
+  query findLifecycle($id: ID!) {
+    lifecycle(id: $id) {
+      data {
+        id
+        name
+        displayName
+        description
+        spec
+      }
     }
+  }
 `
 
 export const fetchLifecycles = async (): Promise<LifecycleMap> => {
@@ -44,7 +44,7 @@ export const fetchLifecycles = async (): Promise<LifecycleMap> => {
     throw new Error(i18n.t('An error occurred while executing the request'))
   }
 
-  return  _.mapKeys(res.data.lifecycles.data, lifecycle => lifecycle.id)
+  return _.mapKeys(res.data.lifecycles.data, lifecycle => lifecycle.id)
 }
 
 export const findLifecycleById = async (id: string): Promise<Lifecycle> => {
@@ -54,5 +54,5 @@ export const findLifecycleById = async (id: string): Promise<Lifecycle> => {
     throw new Error(i18n.t('An error occurred while executing the request'))
   }
 
-  return  res.data.lifecycle.data
+  return res.data.lifecycle.data
 }

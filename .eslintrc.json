@@ -1,0 +1,33 @@
+{
+    "extends": [
+      "react-app",
+      "react-app/jest",
+      "prettier",
+      "plugin:prettier/recommended"
+    ],
+    "plugins": ["prettier"],
+    "parser": "@typescript-eslint/parser",
+    "ignorePatterns": ["src/lib/*"],
+    "rules": {
+      "comma-dangle": "off",
+      "no-useless-escape": "off",
+      "no-unused-expressions": "off",
+      "semi": "off",
+      "@typescript-eslint/comma-dangle": "error",
+      "@typescript-eslint/semi": [
+        "error",
+        "never"
+      ],
+      "@typescript-eslint/member-delimiter-style": [
+        "error",
+        {
+          "multiline": {
+            "delimiter": "none"
+          },
+          "singleline": {
+            "delimiter": "semi"
+          }
+        }
+      ]
+    }
+}

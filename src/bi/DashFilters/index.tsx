@@ -9,11 +9,11 @@ import DashFilter from './DashFilter'
 import styles from './DashFilters.module.css'
 
 interface DashFiltersProps {
-    namePrefix: (string|number)[]
-    dataset: Dataset
-    initialBlock?: QueryBlock
-    showLogicalOp?: boolean
-    onRemove?: () => void
+  namePrefix: (string | number)[]
+  dataset: Dataset
+  initialBlock?: QueryBlock
+  showLogicalOp?: boolean
+  onRemove?: () => void
 }
 
 const {Item: FormItem, List: FormList} = Form
@@ -21,16 +21,16 @@ const {Option: SelectOption} = Select
 const TOOLBAR_HEIGHT = 24
 const LOGICAL_OP_FIELD_WIDTH = 75
 const BTN_WIDTH = 40
-const H_SPACE = 4, V_SPACE = 6
+const H_SPACE = 4,
+  V_SPACE = 6
 const INDENT = 12
 
 export default function DashFilters({namePrefix, dataset, initialBlock, showLogicalOp, onRemove}: DashFiltersProps) {
-  if (namePrefix.length === 0)
-    throw new Error('Illegal argument')
+  if (namePrefix.length === 0) throw new Error('Illegal argument')
 
   const form = Form.useFormInstance()
   const fieldName = namePrefix[namePrefix.length - 1]
-  const startBtnLeft = showLogicalOp ? (LOGICAL_OP_FIELD_WIDTH + H_SPACE) : 0
+  const startBtnLeft = showLogicalOp ? LOGICAL_OP_FIELD_WIDTH + H_SPACE : 0
   const {t} = useTranslation()
 
   return (
@@ -46,11 +46,15 @@ export default function DashFilters({namePrefix, dataset, initialBlock, showLogi
             style={{width: LOGICAL_OP_FIELD_WIDTH, height: TOOLBAR_HEIGHT, marginBottom: V_SPACE}}
             placeholder={t('Logical Operator')}
           >
-            {positiveLogicalOps.map(p => <SelectOption key={p} value={p}>{logicalOpTitles[p]}</SelectOption>)}
+            {positiveLogicalOps.map(p => (
+              <SelectOption key={p} value={p}>
+                {logicalOpTitles[p]}
+              </SelectOption>
+            ))}
           </Select>
         </FormItem>
       ) : (
-        <div style={{height: TOOLBAR_HEIGHT, marginBottom: V_SPACE}}/>
+        <div style={{height: TOOLBAR_HEIGHT, marginBottom: V_SPACE}} />
       )}
 
       <FormList name={[fieldName, 'filters']} initialValue={initialBlock?.filters}>
@@ -62,7 +66,7 @@ export default function DashFilters({namePrefix, dataset, initialBlock, showLogi
               title={t('Add Filter')}
               onClick={() => add({id: uuidv4()})}
             >
-                            +
+              +
             </Button>
 
             <div style={{marginLeft: INDENT}}>
@@ -89,7 +93,13 @@ export default function DashFilters({namePrefix, dataset, initialBlock, showLogi
         {(fields, {add, remove}) => (
           <>
             <Button
-              style={{position: 'absolute', width: BTN_WIDTH, height: TOOLBAR_HEIGHT, top: 0, left: startBtnLeft + BTN_WIDTH + H_SPACE}}
+              style={{
+                position: 'absolute',
+                width: BTN_WIDTH,
+                height: TOOLBAR_HEIGHT,
+                top: 0,
+                left: startBtnLeft + BTN_WIDTH + H_SPACE
+              }}
               // type="primary"
               title={t('Add Block')}
               onClick={() => add(generateQueryBlock())}
@@ -118,12 +128,18 @@ export default function DashFilters({namePrefix, dataset, initialBlock, showLogi
       {onRemove && (
         <Button
           danger
-          style={{position: 'absolute', width: BTN_WIDTH, height: TOOLBAR_HEIGHT, top: 0, left: startBtnLeft + BTN_WIDTH*2 + H_SPACE*2}}
+          style={{
+            position: 'absolute',
+            width: BTN_WIDTH,
+            height: TOOLBAR_HEIGHT,
+            top: 0,
+            left: startBtnLeft + BTN_WIDTH * 2 + H_SPACE * 2
+          }}
           title={t('Remove Block')}
           type="text"
           onClick={onRemove}
         >
-          <DeleteOutlined/>
+          <DeleteOutlined />
         </Button>
       )}
     </div>

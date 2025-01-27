@@ -11,7 +11,12 @@ const FormItem = Form.Item
 
 const sortDirections = ['asc', 'desc']
 
-export const DefaultSortOrderAttributeField: FC<CustomAttributeFieldContext> = ({attrName, attribute, value, onChange}) => {
+export const DefaultSortOrderAttributeField: FC<CustomAttributeFieldContext> = ({
+  attrName,
+  attribute,
+  value,
+  onChange
+}) => {
   if (attrName !== DEFAULT_SORT_ORDER_ATTR_NAME || attribute.type !== FieldType.string)
     throw new Error('Illegal attribute')
 
@@ -19,8 +24,7 @@ export const DefaultSortOrderAttributeField: FC<CustomAttributeFieldContext> = (
   const isDisabled = useMemo(() => attribute.readOnly, [attribute.readOnly])
   const additionalProps = useMemo((): any => {
     const additionalProps: any = {}
-    if (isDisabled)
-      additionalProps.disabled = true
+    if (isDisabled) additionalProps.disabled = true
 
     return additionalProps
   }, [isDisabled])

@@ -7,8 +7,8 @@ import {requiredFieldRule} from 'src/util/form'
 import styles from './TextForm.module.css'
 
 interface TextFormProps {
-    text: IText
-    canEdit: boolean
+  text: IText
+  canEdit: boolean
 }
 
 export interface TextFormValues extends IText {}
@@ -16,7 +16,7 @@ export interface TextFormValues extends IText {}
 const {TextArea} = Input
 const {Item: FormItem} = Form
 
-const levelOptions: DefaultOptionType[] = [1, 2, 3, 4 ,5].map(level => ({label: `H${level}`, value: level}))
+const levelOptions: DefaultOptionType[] = [1, 2, 3, 4, 5].map(level => ({label: `H${level}`, value: level}))
 
 export default function TextForm({text, canEdit}: TextFormProps) {
   const form = Form.useFormInstance()
@@ -32,26 +32,17 @@ export default function TextForm({text, canEdit}: TextFormProps) {
   return (
     <Row gutter={10}>
       <FormItem name="id" hidden>
-        <Input/>
+        <Input />
       </FormItem>
 
       <Col span={24}>
-        <FormItem
-          className={styles.formItem}
-          name="content"
-          label={t('Content')}
-          rules={[requiredFieldRule()]}
-        >
-          <TextArea/>
+        <FormItem className={styles.formItem} name="content" label={t('Content')} rules={[requiredFieldRule()]}>
+          <TextArea />
         </FormItem>
       </Col>
       <Col span={8}>
-        <FormItem
-          className={styles.formItem}
-          name="level"
-          label={t('Header')}
-        >
-          <Select allowClear options={levelOptions}/>
+        <FormItem className={styles.formItem} name="level" label={t('Header')}>
+          <Select allowClear options={levelOptions} />
         </FormItem>
       </Col>
     </Row>

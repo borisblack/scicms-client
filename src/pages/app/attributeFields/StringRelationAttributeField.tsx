@@ -17,13 +17,20 @@ const {Item: FormItem} = Form
 const {Search} = Input
 
 interface StringRelationAttributeFieldProps extends AttributeFieldProps {
-    target: string
-    forceVisible?: boolean
+  target: string
+  forceVisible?: boolean
 }
 
-const StringRelationAttributeField: FC<StringRelationAttributeFieldProps> = ({data: dataWrapper, form, attrName, attribute, target, value, forceVisible}) => {
-  if (attribute.type !== FieldType.string)
-    throw new Error('Illegal attribute')
+const StringRelationAttributeField: FC<StringRelationAttributeFieldProps> = ({
+  data: dataWrapper,
+  form,
+  attrName,
+  attribute,
+  target,
+  value,
+  forceVisible
+}) => {
+  if (attribute.type !== FieldType.string) throw new Error('Illegal attribute')
 
   const uniqueKey = generateKey(dataWrapper)
   const {items: itemMap} = useRegistry()
@@ -35,8 +42,7 @@ const StringRelationAttributeField: FC<StringRelationAttributeFieldProps> = ({da
   const isDisabled = useMemo(() => attribute.readOnly, [attribute.readOnly])
   const additionalProps = useMemo((): any => {
     const additionalProps: any = {}
-    if (isDisabled)
-      additionalProps.disabled = true
+    if (isDisabled) additionalProps.disabled = true
 
     return additionalProps
   }, [isDisabled])
@@ -53,18 +59,15 @@ const StringRelationAttributeField: FC<StringRelationAttributeFieldProps> = ({da
   }
 
   async function openRelation() {
-    if (!currentValue)
-      return
+    if (!currentValue) return
 
     setLoading(true)
     try {
       const targetTitleAttrName = targetItem.titleAttribute
-      if (targetTitleAttrName.includes('.'))
-        return Promise.reject('Title attribute must belong to item')
+      if (targetTitleAttrName.includes('.')) return Promise.reject('Title attribute must belong to item')
 
       const found = await queryManager.findAllBy(targetItem, {[targetItem.titleAttribute]: {eq: currentValue}})
-      if (found.length !== 1)
-        return Promise.reject(`Illegal state. Found ${found.length} records`)
+      if (found.length !== 1) return Promise.reject(`Illegal state. Found ${found.length} records`)
 
       await openItem(targetItem, found[0][targetItem.idAttribute])
     } catch (e: any) {
@@ -97,25 +100,27 @@ const StringRelationAttributeField: FC<StringRelationAttributeFieldProps> = ({da
           id={`${uniqueKey}#${attrName}`}
           readOnly
           onSearch={() => setSearchModalVisible(true)}
-          addonAfter={currentValue && [
-            <Tooltip key="open" title={t('Open')}>
-              <Button
-                type="link"
-                style={{marginLeft: 4, width: SUFFIX_BUTTON_WIDTH}}
-                icon={<FolderOpenOutlined/>}
-                loading={loading}
-                onClick={openRelation}
-              />
-            </Tooltip>,
-            <Tooltip key="clear" title={t('Clear')}>
-              <Button
-                type="link"
-                style={{width: SUFFIX_BUTTON_WIDTH}}
-                icon={<CloseCircleOutlined/>}
-                onClick={handleClear}
-              />
-            </Tooltip>
-          ]}
+          addonAfter={
+            currentValue && [
+              <Tooltip key="open" title={t('Open')}>
+                <Button
+                  type="link"
+                  style={{marginLeft: 4, width: SUFFIX_BUTTON_WIDTH}}
+                  icon={<FolderOpenOutlined />}
+                  loading={loading}
+                  onClick={openRelation}
+                />
+              </Tooltip>,
+              <Tooltip key="clear" title={t('Clear')}>
+                <Button
+                  type="link"
+                  style={{width: SUFFIX_BUTTON_WIDTH}}
+                  icon={<CloseCircleOutlined />}
+                  onClick={handleClear}
+                />
+              </Tooltip>
+            ]
+          }
           {...additionalProps}
         />
       </FormItem>
@@ -128,10 +133,7 @@ const StringRelationAttributeField: FC<StringRelationAttributeFieldProps> = ({da
         footer={null}
         onCancel={() => setSearchModalVisible(false)}
       >
-        <SearchDataGridWrapper
-          item={targetItem}
-          onSelect={itemData => handleRelationSelect(itemData)}
-        />
+        <SearchDataGridWrapper item={targetItem} onSelect={itemData => handleRelationSelect(itemData)} />
       </Modal>
     </>
   )

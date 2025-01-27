@@ -5,21 +5,24 @@ import {Table} from '../types/bi'
 import qs from 'qs'
 
 export interface DatasourceTablesInput {
-    schema?: string
-    q?: string
-    pagination?: PaginationInput
+  schema?: string
+  q?: string
+  pagination?: PaginationInput
 }
 
 interface DatasourceTablesResponse {
-    data: Table[]
-    meta: DatasourceResponseMeta
+  data: Table[]
+  meta: DatasourceResponseMeta
 }
 
 interface DatasourceResponseMeta {
-    pagination?: Pagination
+  pagination?: Pagination
 }
 
-export async function loadDatasourceTables(datasource: string, input: DatasourceTablesInput): Promise<DatasourceTablesResponse> {
+export async function loadDatasourceTables(
+  datasource: string,
+  input: DatasourceTablesInput
+): Promise<DatasourceTablesResponse> {
   const query = qs.stringify(input)
 
   try {

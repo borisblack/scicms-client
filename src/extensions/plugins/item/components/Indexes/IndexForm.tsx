@@ -7,10 +7,10 @@ import {NamedIndex} from './types'
 import {useAppProperties} from 'src/util/hooks'
 
 interface Props {
-    form: FormInstance
-    index: NamedIndex | null
-    canEdit: boolean
-    onFormFinish: (values: any) => void
+  form: FormInstance
+  index: NamedIndex | null
+  canEdit: boolean
+  onFormFinish: (values: any) => void
 }
 
 const {Item: FormItem} = Form
@@ -33,7 +33,7 @@ export default function IndexForm({form, index, canEdit, onFormFinish}: Props) {
         initialValue={index?.name}
         rules={[{required: true, message: t('Required field')}]}
       >
-        <Input style={{maxWidth: 300}} maxLength={50}/>
+        <Input style={{maxWidth: 300}} maxLength={50} />
       </FormItem>
 
       <FormItem
@@ -43,15 +43,10 @@ export default function IndexForm({form, index, canEdit, onFormFinish}: Props) {
         initialValue={index?.columns?.join('\n')}
         rules={[{required: true, message: t('Required field')}]}
       >
-        <TextArea style={{maxWidth: 180}} rows={appProps.ui.form.textAreaRows}/>
+        <TextArea style={{maxWidth: 180}} rows={appProps.ui.form.textAreaRows} />
       </FormItem>
 
-      <FormItem
-        className={styles.formItem}
-        name="unique"
-        valuePropName="checked"
-        initialValue={index?.unique}
-      >
+      <FormItem className={styles.formItem} name="unique" valuePropName="checked" initialValue={index?.unique}>
         <Checkbox>{t('Unique')}</Checkbox>
       </FormItem>
     </Form>

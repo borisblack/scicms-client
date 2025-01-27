@@ -4,25 +4,25 @@ import i18n from '../i18n'
 import {apolloClient, extractGraphQLErrorMessages} from '.'
 
 export interface CoreConfig {
-    data: {
-        dataSources: string[]
-    }
-    i18n: {
-        defaultLocale: string
-    }
+  data: {
+    dataSources: string[]
+  }
+  i18n: {
+    defaultLocale: string
+  }
 }
 
 const FETCH_CORE_CONFIG_QUERY = gql`
-    query {
-        config {
-            data {
-                dataSources
-            }
-            i18n {
-                defaultLocale
-            }
-        }
+  query {
+    config {
+      data {
+        dataSources
+      }
+      i18n {
+        defaultLocale
+      }
     }
+  }
 `
 
 export async function fetchCoreConfig(): Promise<CoreConfig> {

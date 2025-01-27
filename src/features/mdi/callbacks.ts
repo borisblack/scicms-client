@@ -22,8 +22,7 @@ export function unregister(key: string) {
 }
 
 export function changeKey(key: string, newKey: string) {
-  if (newKey === key)
-    return
+  if (newKey === key) return
 
   const callbacks: MDIObservable<any> = localCallbacksStore.get(key) ?? defaultObservable()
   localCallbacksStore.delete(key)

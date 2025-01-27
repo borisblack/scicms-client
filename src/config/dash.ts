@@ -14,26 +14,12 @@ import {statistic} from '../extensions/dashes/statistic'
 import {report} from '../extensions/dashes/report'
 
 interface DashConfig {
-    dashes: Dash[]
+  dashes: Dash[]
 }
 
 // Add dashes here
 const dashConfig: DashConfig = {
-  dashes: [
-    area,
-    bar,
-    bubble,
-    bubbleMap,
-    column,
-    doughnut,
-    line,
-    pie,
-    polarArea,
-    radar,
-    report,
-    scatter,
-    statistic
-  ]
+  dashes: [area, bar, bubble, bubbleMap, column, doughnut, line, pie, polarArea, radar, report, scatter, statistic]
 }
 
 export default dashConfig

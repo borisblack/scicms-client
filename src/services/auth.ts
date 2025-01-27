@@ -4,34 +4,34 @@ import {apolloClient, extractAxiosErrorMessage, throwAxiosResponseError} from '.
 import {SecurityConfig, UserInfo} from '../types'
 
 export interface JwtTokenResponse {
-    jwt: string
-    user: UserInfo
-    expirationIntervalMillis: number
+  jwt: string
+  user: UserInfo
+  expirationIntervalMillis: number
 }
 
 interface ChangePasswordRequest {
-    oldPassword: string
-    newPassword: string
+  oldPassword: string
+  newPassword: string
 }
 
 const ME_QUERY = gql`
-    query {
-        me {
-            id
-            username
-            roles
-            authType
-            sessionData
-        }
+  query {
+    me {
+      id
+      username
+      roles
+      authType
+      sessionData
     }
+  }
 `
 
 const UPDATE_SESSION_DATA_MUTATION = gql`
-    mutation updateSessionData($sessionData: JSON) {
-        updateSessionData(sessionData: $sessionData) {
-            data
-        }
+  mutation updateSessionData($sessionData: JSON) {
+    updateSessionData(sessionData: $sessionData) {
+      data
     }
+  }
 `
 
 export async function fetchSecurityConfig(): Promise<SecurityConfig> {
@@ -44,8 +44,8 @@ export async function fetchSecurityConfig(): Promise<SecurityConfig> {
   }
 }
 
-export async function login(credentials: { username: string, password: string }) {
-  const { username, password } = credentials
+export async function login(credentials: {username: string; password: string}) {
+  const {username, password} = credentials
 
   try {
     const res = await axios.post('/api/auth/local', {
@@ -59,8 +59,8 @@ export async function login(credentials: { username: string, password: string })
   }
 }
 
-export async function loginOauth2(credentials: { provider: string, code: string }) {
-  const { provider, code } = credentials
+export async function loginOauth2(credentials: {provider: string; code: string}) {
+  const {provider, code} = credentials
 
   try {
     const res = await axios.post('/api/auth/oauth2', {
@@ -92,9 +92,9 @@ export async function changePassword(request: ChangePasswordRequest) {
   }
 }
 
-export const fetchMe = (): Promise<UserInfo> => apolloClient.query({query: ME_QUERY})
-  .then(result => result.data.me)
+export const fetchMe = (): Promise<UserInfo> => apolloClient.query({query: ME_QUERY}).then(result => result.data.me)
 
 export const updateSessionData = (sessionData: {[key: string]: any}): Promise<{[key: string]: any}> =>
-  apolloClient.mutate({mutation: UPDATE_SESSION_DATA_MUTATION, variables: {sessionData}})
+  apolloClient
+    .mutate({mutation: UPDATE_SESSION_DATA_MUTATION, variables: {sessionData}})
     .then(result => result.data.updateSessionData.data)

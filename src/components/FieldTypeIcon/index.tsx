@@ -4,10 +4,10 @@ import {FieldType} from 'src/types'
 import styles from './FieldTypeIcon.module.css'
 
 interface FieldTypeIconProps {
-    fieldType: FieldType
-    color?: string
-    className?: string
-    style?: CSSProperties
+  fieldType: FieldType
+  color?: string
+  className?: string
+  style?: CSSProperties
 }
 
 export default function FieldTypeIcon({fieldType, color, className, style}: FieldTypeIconProps) {
@@ -58,7 +58,6 @@ export default function FieldTypeIcon({fieldType, color, className, style}: Fiel
       className={`${iconClassName()} fa-border ${styles.fieldTypeIcon} ${className ?? ''}`}
       style={{color, ...(style ?? {})}}
       title={fieldType}
-    >
-    </i>
+    ></i>
   )
 }

@@ -7,7 +7,7 @@ const LineDash = lazy(() => import('./LineDash'))
 function LineDashSuspense(ctx: DashRenderContext) {
   return (
     <Suspense fallback={null}>
-      <LineDash {...ctx}/>
+      <LineDash {...ctx} />
     </Suspense>
   )
 }

@@ -7,7 +7,7 @@ const AreaDash = lazy(() => import('./AreaDash'))
 function AreaDashSuspense(ctx: DashRenderContext) {
   return (
     <Suspense fallback={null}>
-      <AreaDash {...ctx}/>
+      <AreaDash {...ctx} />
     </Suspense>
   )
 }

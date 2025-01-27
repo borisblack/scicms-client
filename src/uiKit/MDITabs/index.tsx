@@ -7,35 +7,35 @@ import {ReactMDIContext} from './ReactMDIContext'
 import styles from './MDITabs.module.css'
 
 export interface MDITab<T> {
-    key: string
-    data: T
+  key: string
+  data: T
 }
 
 export interface MDIObservable<T> {
-    onUpdate: ((updatedData: T) => void)[]
-    onClose: ((closedData: T, remove: boolean) => void)[]
+  onUpdate: ((updatedData: T) => void)[]
+  onClose: ((closedData: T, remove: boolean) => void)[]
 }
 
 export interface MDITabObservable<T> extends MDITab<T>, MDIObservable<T> {}
 
 export interface MDIContext<T> {
-    items: MDITab<T>[]
-    activeKey?: string
-    setActiveKey: (activeKey: string) => void
-    openTab: (item: MDITabObservable<T>) => void
-    updateTab: (key: string, data: T, newKey?: string) => void
-    updateActiveTab: (data: T, newKey?: string) => void
-    closeTab: (key: string, remove?: boolean) => void
-    closeActiveTab: (remove?: boolean) => void
-    reset: () => void
+  items: MDITab<T>[]
+  activeKey?: string
+  setActiveKey: (activeKey: string) => void
+  openTab: (item: MDITabObservable<T>) => void
+  updateTab: (key: string, data: T, newKey?: string) => void
+  updateActiveTab: (data: T, newKey?: string) => void
+  closeTab: (key: string, remove?: boolean) => void
+  closeActiveTab: (remove?: boolean) => void
+  reset: () => void
 }
 
 interface MDITabsProps<T> {
-    ctx: MDIContext<T>
-    className?: string
-    type?: TabsType
-    getItemLabel: (data: T) => ReactNode
-    renderItem: (data: T) => ReactNode
+  ctx: MDIContext<T>
+  className?: string
+  type?: TabsType
+  getItemLabel: (data: T) => ReactNode
+  renderItem: (data: T) => ReactNode
 }
 
 export default function MDITabs<T>({ctx, className, type, getItemLabel, renderItem}: MDITabsProps<T>) {
@@ -47,16 +47,13 @@ export default function MDITabs<T>({ctx, className, type, getItemLabel, renderIt
     }
   }
 
-  const getTabs = (): Tab[] => items.map(item => ({
-    key: item.key,
-    label: getItemLabel(item.data),
-    style: {background: '#fff'},
-    children: (
-      <div className={styles.mdiTabContent}>
-        {renderItem(item.data)}
-      </div>
-    )
-  }))
+  const getTabs = (): Tab[] =>
+    items.map(item => ({
+      key: item.key,
+      label: getItemLabel(item.data),
+      style: {background: '#fff'},
+      children: <div className={styles.mdiTabContent}>{renderItem(item.data)}</div>
+    }))
 
   return (
     <ReactMDIContext.Provider value={ctx}>

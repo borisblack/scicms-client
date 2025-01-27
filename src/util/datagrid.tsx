@@ -58,7 +58,7 @@ interface PaginateLocalParams {
 const {Link} = Typography
 const columnHelper = createColumnHelper<any>()
 
-export function getInitialData<T>(pageSize: number): DataWithPagination<T>{
+export function getInitialData<T>(pageSize: number): DataWithPagination<T> {
   return {
     data: [],
     pagination: {
@@ -70,30 +70,41 @@ export function getInitialData<T>(pageSize: number): DataWithPagination<T>{
 }
 
 export function getColumns({
-  items, item, defaultColWidth, maxTextLength, luxonDisplayDateFormatString, luxonDisplayTimeFormatString, luxonDisplayDateTimeFormatString, onOpenItem
+  items,
+  item,
+  defaultColWidth,
+  maxTextLength,
+  luxonDisplayDateFormatString,
+  luxonDisplayTimeFormatString,
+  luxonDisplayDateTimeFormatString,
+  onOpenItem
 }: GetColumnsParams): ColumnDef<ItemData, any>[] {
   const columns: ColumnDef<ItemData, any>[] = []
   const {attributes} = item.spec
   const sortedAttributes = sortAttributes(attributes)
   for (const [attrName, attr] of Object.entries(sortedAttributes)) {
-    if (attr.private || (attr.type === FieldType.relation && (attr.relType === RelType.oneToMany || attr.relType === RelType.manyToMany)))
+    if (
+      attr.private ||
+      (attr.type === FieldType.relation && (attr.relType === RelType.oneToMany || attr.relType === RelType.manyToMany))
+    )
       continue
 
     const column = columnHelper.accessor(attrName, {
       header: i18n.t(attr.displayName) as string,
-      cell: info => renderCell({
-        items,
-        item,
-        data: info.row.original,
-        attrName,
-        attribute: attr,
-        value: info.getValue(),
-        maxTextLength,
-        luxonDisplayDateFormatString,
-        luxonDisplayTimeFormatString,
-        luxonDisplayDateTimeFormatString,
-        onOpenItem
-      }),
+      cell: info =>
+        renderCell({
+          items,
+          item,
+          data: info.row.original,
+          attrName,
+          attribute: attr,
+          value: info.getValue(),
+          maxTextLength,
+          luxonDisplayDateFormatString,
+          luxonDisplayTimeFormatString,
+          luxonDisplayDateTimeFormatString,
+          onOpenItem
+        }),
       size: attr.colWidth ?? defaultColWidth,
       enableSorting: attr.type !== FieldType.text && attr.type !== FieldType.json && attr.type !== FieldType.array,
       enableColumnFilter: item.name !== ACCESS_ITEM_NAME || attrName !== MASK_ATTR_NAME
@@ -106,16 +117,22 @@ export function getColumns({
 }
 
 const renderCell = ({
-  items, item, data, attrName, attribute, value, maxTextLength, luxonDisplayDateFormatString, luxonDisplayTimeFormatString, luxonDisplayDateTimeFormatString, onOpenItem
+  items,
+  item,
+  data,
+  attrName,
+  attribute,
+  value,
+  maxTextLength,
+  luxonDisplayDateFormatString,
+  luxonDisplayTimeFormatString,
+  luxonDisplayDateTimeFormatString,
+  onOpenItem
 }: RenderCellParams): ReactElement | string | null => {
   switch (attribute.type) {
     case FieldType.string:
       if (item.name === MEDIA_ITEM_NAME && attrName === FILENAME_ATTR_NAME && value != null) {
-        return (
-          <Link onClick={() => download(data.id, value)}>
-            {value}
-          </Link>
-        )
+        return <Link onClick={() => download(data.id, value)}>{value}</Link>
       }
       return value
     case FieldType.uuid:
@@ -147,7 +164,11 @@ const renderCell = ({
     case FieldType.array:
       return value ? _.truncate(JSON.stringify(value), {length: maxTextLength}) : null
     case FieldType.bool:
-      return <div className="text-centered"><Checkbox checked={value} /></div>
+      return (
+        <div className="text-centered">
+          <Checkbox checked={value} />
+        </div>
+      )
     case FieldType.date:
       return value ? DateTime.fromISO(value, {zone: UTC}).toFormat(luxonDisplayDateFormatString) : null
     case FieldType.time:
@@ -158,8 +179,7 @@ const renderCell = ({
     case FieldType.media:
       const media = items[MEDIA_ITEM_NAME]
       const mediaData: Media | null = value?.data
-      if (!mediaData)
-        return null
+      if (!mediaData) return null
 
       return (
         <Link onClick={() => download(mediaData.id, mediaData.filename)}>
@@ -170,19 +190,13 @@ const renderCell = ({
       if (attribute.relType === RelType.oneToMany || attribute.relType === RelType.manyToMany)
         throw new Error('Cannot render oneToMany or manyToMany relation')
 
-      if (!attribute.target)
-        throw new Error('Illegal state')
+      if (!attribute.target) throw new Error('Illegal state')
 
       const subItem = items[attribute.target]
-      const title = (value && value.data) ? (value.data[subItem.titleAttribute] ?? value.data.id) : null
-      if (title == null)
-        return null
+      const title = value && value.data ? value.data[subItem.titleAttribute] ?? value.data.id : null
+      if (title == null) return null
 
-      return (
-        <Link onClick={() => onOpenItem(subItem, value.data.id)}>
-          {title}
-        </Link>
-      )
+      return <Link onClick={() => onOpenItem(subItem, value.data.id)}>{title}</Link>
     default:
       throw new Error('Illegal attribute')
   }
@@ -192,12 +206,10 @@ export function getHiddenColumns(item: Item): string[] {
   const {attributes} = item.spec
   const hiddenColumns = []
   for (const attrName in attributes) {
-    if (!attributes.hasOwnProperty(attrName))
-      continue
+    if (!attributes.hasOwnProperty(attrName)) continue
 
     const attribute = attributes[attrName]
-    if (attribute.colHidden)
-      hiddenColumns.push(attrName)
+    if (attribute.colHidden) hiddenColumns.push(attrName)
   }
 
   return hiddenColumns
@@ -229,7 +241,14 @@ export async function findAllRelated(
 ): Promise<DataWithPagination<any>> {
   const queryManager = new QueryManager(items)
   const item = items[itemName]
-  const responseCollection = await queryManager.findAllRelated(item, itemId, relAttrName, target, params, extraFiltersInput)
+  const responseCollection = await queryManager.findAllRelated(
+    item,
+    itemId,
+    relAttrName,
+    target,
+    params,
+    extraFiltersInput
+  )
   const {page, pageSize, total} = responseCollection.meta.pagination
   return {
     data: responseCollection.data,
@@ -259,28 +278,35 @@ function filterLocal(data: any[], filters: ColumnFiltersState): any[] {
       let matched = 0
       for (const key in it) {
         const filterVal = filterMap[key]
-        if (filterVal == null)
-          continue
+        if (filterVal == null) continue
 
         let dataVal = it[key]
-        if (dataVal == null)
-          return false
+        if (dataVal == null) return false
 
         if (_.isBoolean(dataVal)) {
           const lowerFilterVal = filterVal.toLowerCase()
-          if (!((dataVal && (lowerFilterVal === '1' || lowerFilterVal === 'true' || lowerFilterVal === 'yes' || lowerFilterVal === 'y'))
-            || (!dataVal && (lowerFilterVal === '0' || lowerFilterVal === 'false' || lowerFilterVal === 'no' || lowerFilterVal === 'n')))) {
+          if (
+            !(
+              (dataVal &&
+                (lowerFilterVal === '1' ||
+                  lowerFilterVal === 'true' ||
+                  lowerFilterVal === 'yes' ||
+                  lowerFilterVal === 'y')) ||
+              (!dataVal &&
+                (lowerFilterVal === '0' ||
+                  lowerFilterVal === 'false' ||
+                  lowerFilterVal === 'no' ||
+                  lowerFilterVal === 'n'))
+            )
+          ) {
             return false
           }
         } else {
-          if (_.isArray(dataVal))
-            dataVal = dataVal.join(', ')
+          if (_.isArray(dataVal)) dataVal = dataVal.join(', ')
 
-          if (!_.isString(dataVal))
-            dataVal = _.toString(dataVal)
+          if (!_.isString(dataVal)) dataVal = _.toString(dataVal)
 
-          if (dataVal.match(new RegExp(filterVal, 'i')) == null)
-            return false
+          if (dataVal.match(new RegExp(filterVal, 'i')) == null) return false
         }
         matched++
       }
@@ -298,35 +324,26 @@ function sortLocal(data: any[], sorting: SortingState): any[] {
     return [...data].sort((a, b) => {
       const {id, desc} = sortingState
       let aVal = a[id] ?? ''
-      if (Array.isArray(aVal))
-        aVal = aVal.join(', ')
+      if (Array.isArray(aVal)) aVal = aVal.join(', ')
 
       let bVal = b[id] ?? ''
-      if (Array.isArray(bVal))
-        bVal = bVal.join(', ')
+      if (Array.isArray(bVal)) bVal = bVal.join(', ')
 
       if (desc) {
-        if (aVal < bVal)
-          return 1
-        else if (aVal > bVal)
-          return -1
-        else
-          return 0
+        if (aVal < bVal) return 1
+        else if (aVal > bVal) return -1
+        else return 0
       } else {
-        if (aVal < bVal)
-          return -1
-        else if (aVal > bVal)
-          return 1
-        else
-          return 0
+        if (aVal < bVal) return -1
+        else if (aVal > bVal) return 1
+        else return 0
       }
     })
   }
 }
 
 function paginateLocal({data, page, pageSize, minPageSize, maxPageSize}: PaginateLocalParams): DataWithPagination<any> {
-  if (page < 1 && (pageSize < minPageSize || pageSize > maxPageSize))
-    throw new Error('Illegal argument')
+  if (page < 1 && (pageSize < minPageSize || pageSize > maxPageSize)) throw new Error('Illegal argument')
 
   const total = data.length
   let pageNumber = page

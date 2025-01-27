@@ -11,8 +11,8 @@ import {regExpRule} from 'src/util/form'
 import styles from './JoinedTableForm.module.css'
 
 interface JoinedTableFormProps {
-    mainTable: Table
-    joinedTable: JoinedTable
+  mainTable: Table
+  joinedTable: JoinedTable
 }
 
 const {Text} = Typography
@@ -25,48 +25,49 @@ export default function JoinedTableForm(props: JoinedTableFormProps) {
 
   useEffect(() => {
     const {mainTable: prevMainTable, joinedTable: prevJoinTable} = prevProps ?? {}
-    if (mainTable.name !== prevMainTable?.name || joinedTable.name !== prevJoinTable?.name)
-      form.resetFields()
+    if (mainTable.name !== prevMainTable?.name || joinedTable.name !== prevJoinTable?.name) form.resetFields()
   }, [mainTable, joinedTable])
 
-  const mainTableFieldType = (joinFieldNumber: number): RuleRender => ({getFieldValue}: FormInstance): RuleObject => ({
-    validator(_, value) {
-      const joinedTableField = getFieldValue(['joins', joinFieldNumber, 'field'])
-      if (!value || !joinedTableField)
-        return Promise.resolve()
+  const mainTableFieldType =
+    (joinFieldNumber: number): RuleRender =>
+    ({getFieldValue}: FormInstance): RuleObject => ({
+      validator(_, value) {
+        const joinedTableField = getFieldValue(['joins', joinFieldNumber, 'field'])
+        if (!value || !joinedTableField) return Promise.resolve()
 
-      const mainTableFieldType = mainTable.columns[value].type
-      const joinedTableFieldType = joinedTable.columns[joinedTableField].type
-      if (mainTableFieldType === joinedTableFieldType)
-        return Promise.resolve()
+        const mainTableFieldType = mainTable.columns[value].type
+        const joinedTableFieldType = joinedTable.columns[joinedTableField].type
+        if (mainTableFieldType === joinedTableFieldType) return Promise.resolve()
 
-      return Promise.reject(new Error(t('Field types do not match')))
-    }
-  })
+        return Promise.reject(new Error(t('Field types do not match')))
+      }
+    })
 
-  const joinedFieldTypeRule = (joinFieldNumber: number): RuleRender => ({getFieldValue}: FormInstance): RuleObject => ({
-    validator(_, value) {
-      const mainTableField = getFieldValue(['joins', joinFieldNumber, 'mainTableField'])
-      if (!value || !mainTableField)
-        return Promise.resolve()
+  const joinedFieldTypeRule =
+    (joinFieldNumber: number): RuleRender =>
+    ({getFieldValue}: FormInstance): RuleObject => ({
+      validator(_, value) {
+        const mainTableField = getFieldValue(['joins', joinFieldNumber, 'mainTableField'])
+        if (!value || !mainTableField) return Promise.resolve()
 
-      const mainTableFieldType = mainTable.columns[mainTableField].type
-      const joinedTableFieldType = joinedTable.columns[value].type
-      if (mainTableFieldType === joinedTableFieldType)
-        return Promise.resolve()
+        const mainTableFieldType = mainTable.columns[mainTableField].type
+        const joinedTableFieldType = joinedTable.columns[value].type
+        if (mainTableFieldType === joinedTableFieldType) return Promise.resolve()
 
-      return Promise.reject(new Error(t('Field types do not match')))
-    }
-  })
+        return Promise.reject(new Error(t('Field types do not match')))
+      }
+    })
 
   return (
     <>
       <Row gutter={10}>
         <Col span={9}>
           <span className={styles.tableHeader} title={mainTable.name}>
-            <TableOutlined className="green"/>
-              &nbsp;&nbsp;
-            <Text strong ellipsis>{mainTable.name}</Text>
+            <TableOutlined className="green" />
+            &nbsp;&nbsp;
+            <Text strong ellipsis>
+              {mainTable.name}
+            </Text>
           </span>
         </Col>
         <Col span={4}>
@@ -83,20 +84,18 @@ export default function JoinedTableForm(props: JoinedTableFormProps) {
         </Col>
         <Col span={9} style={{textAlign: 'right'}}>
           <span className={styles.tableHeader} title={joinedTable.name}>
-            <TableOutlined className="green"/>
-              &nbsp;&nbsp;
-            <Text strong ellipsis>{joinedTable.name}</Text>
+            <TableOutlined className="green" />
+            &nbsp;&nbsp;
+            <Text strong ellipsis>
+              {joinedTable.name}
+            </Text>
           </span>
         </Col>
       </Row>
       <Row gutter={10}>
         <Col offset={13} span={9}>
-          <Form.Item
-            name={['alias']}
-            label={t('Alias')}
-            rules={[regExpRule(/^\w+$/)]}
-          >
-            <Input placeholder={t('Alias')}/>
+          <Form.Item name={['alias']} label={t('Alias')} rules={[regExpRule(/^\w+$/)]}>
+            <Input placeholder={t('Alias')} />
           </Form.Item>
         </Col>
       </Row>
@@ -111,10 +110,7 @@ export default function JoinedTableForm(props: JoinedTableFormProps) {
                   <Col span={9}>
                     <Form.Item
                       name={[joinFieldNumber, 'mainTableField']}
-                      rules={[
-                        {required: true, message: t('Required field')},
-                        mainTableFieldType(joinFieldNumber)
-                      ]}
+                      rules={[{required: true, message: t('Required field')}, mainTableFieldType(joinFieldNumber)]}
                     >
                       <Select
                         placeholder={t('Main table field')}
@@ -122,7 +118,7 @@ export default function JoinedTableForm(props: JoinedTableFormProps) {
                           value: col,
                           label: (
                             <span className="text-ellipsis">
-                              <FieldTypeIcon fieldType={mainTable.columns[col].type}/>
+                              <FieldTypeIcon fieldType={mainTable.columns[col].type} />
                               &nbsp;&nbsp;
                               {col}
                             </span>
@@ -133,10 +129,7 @@ export default function JoinedTableForm(props: JoinedTableFormProps) {
                   </Col>
 
                   <Col span={4}>
-                    <Form.Item
-                      name={[joinFieldNumber, 'op']}
-                      rules={[{required: true, message: t('Required field')}]}
-                    >
+                    <Form.Item name={[joinFieldNumber, 'op']} rules={[{required: true, message: t('Required field')}]}>
                       <Select
                         disabled
                         suffixIcon={null}
@@ -149,10 +142,7 @@ export default function JoinedTableForm(props: JoinedTableFormProps) {
                   <Col span={9}>
                     <Form.Item
                       name={[joinFieldNumber, 'field']}
-                      rules={[
-                        {required: true, message: t('Required field')},
-                        joinedFieldTypeRule(joinFieldNumber)
-                      ]}
+                      rules={[{required: true, message: t('Required field')}, joinedFieldTypeRule(joinFieldNumber)]}
                     >
                       <Select
                         placeholder={t('Joined table field')}
@@ -160,8 +150,8 @@ export default function JoinedTableForm(props: JoinedTableFormProps) {
                           value: col,
                           label: (
                             <span className="text-ellipsis">
-                              <FieldTypeIcon fieldType={joinedTable.columns[col].type}/>
-                                                            &nbsp;&nbsp;
+                              <FieldTypeIcon fieldType={joinedTable.columns[col].type} />
+                              &nbsp;&nbsp;
                               {col}
                             </span>
                           )
@@ -174,7 +164,7 @@ export default function JoinedTableForm(props: JoinedTableFormProps) {
                     <Button
                       type="text"
                       danger
-                      icon={<DeleteOutlined/>}
+                      icon={<DeleteOutlined />}
                       title={t('Remove')}
                       onClick={() => remove(joinFieldNumber)}
                     />
@@ -184,10 +174,7 @@ export default function JoinedTableForm(props: JoinedTableFormProps) {
             })}
             <Row gutter={10}>
               <Col span={4}>
-                <Button
-                  icon={<PlusCircleOutlined/>}
-                  onClick={() => add({op: QueryOp.$eq})}
-                >
+                <Button icon={<PlusCircleOutlined />} onClick={() => add({op: QueryOp.$eq})}>
                   {t('Add')}
                 </Button>
               </Col>

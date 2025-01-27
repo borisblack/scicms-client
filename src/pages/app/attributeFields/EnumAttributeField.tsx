@@ -9,16 +9,14 @@ import styles from './AttributeField.module.css'
 const FormItem = Form.Item
 
 const EnumAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrName, attribute, value}) => {
-  if (attribute.type !== FieldType.enum || !attribute.enumSet)
-    throw new Error('Illegal attribute')
+  if (attribute.type !== FieldType.enum || !attribute.enumSet) throw new Error('Illegal attribute')
 
   const uniqueKey = generateKey(dataWrapper)
   const {t} = useTranslation()
   const isDisabled = useMemo(() => attribute.readOnly, [attribute.readOnly])
   const additionalProps = useMemo((): any => {
     const additionalProps: any = {}
-    if (isDisabled)
-      additionalProps.disabled = true
+    if (isDisabled) additionalProps.disabled = true
 
     return additionalProps
   }, [isDisabled])

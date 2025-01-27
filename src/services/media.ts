@@ -7,87 +7,81 @@ import {DeletingStrategy, MediaInfo} from '../types'
 import {Media} from '../types/schema'
 
 export interface UploadInput {
-    file: File
-    label?: string
-    description?: string
-    permission?: string
+  file: File
+  label?: string
+  description?: string
+  permission?: string
 }
 
 export interface MediaInput {
-    label?: String
-    description?: String
-    lifecycle?: String
-    permission?: String
+  label?: String
+  description?: String
+  lifecycle?: String
+  permission?: String
 }
 
 const UPLOAD_MUTATION = gql`
-    mutation upload($file: Upload!) {
-        upload(file: $file) {
-            id
-            filename
-            label
-            description
-            fileSize
-            mimetype
-            checksum
-            createdAt
-        }
+  mutation upload($file: Upload!) {
+    upload(file: $file) {
+      id
+      filename
+      label
+      description
+      fileSize
+      mimetype
+      checksum
+      createdAt
     }
+  }
 `
 
 const UPLOAD_MULTIPLE_MUTATION = gql`
-    mutation uploadMultiple($files: [Upload!]!) {
-        uploadMultiple(files: $files) {
-            id
-            filename
-            label
-            description
-            fileSize
-            mimetype
-            checksum
-            createdAt
-        }
+  mutation uploadMultiple($files: [Upload!]!) {
+    uploadMultiple(files: $files) {
+      id
+      filename
+      label
+      description
+      fileSize
+      mimetype
+      checksum
+      createdAt
     }
+  }
 `
 
 const UPDATE_MEDIA_MUTATION = gql`
-    mutation updateMedia($id: ID!, $data: MediaInput!) {
-        updateMedia(
-            id: $id
-            data: $data
-        ) {
-            data {
-                id
-                filename
-                label
-                description
-                fileSize
-                mimeType
-                path
-                checksum
-            }
-        }
+  mutation updateMedia($id: ID!, $data: MediaInput!) {
+    updateMedia(id: $id, data: $data) {
+      data {
+        id
+        filename
+        label
+        description
+        fileSize
+        mimeType
+        path
+        checksum
+      }
     }
+  }
 `
 
 const DELETE_MEDIA_MUTATION = gql`
-    mutation deleteMedia($id: ID!, $deletingStrategy: DeletingStrategy!) {
-        deleteMedia(
-            id: $id
-            deletingStrategy: $deletingStrategy
-        ) {
-            data {
-                id
-                filename
-                label
-                description
-                fileSize
-                mimeType
-                path
-                checksum
-            }
-        }
+  mutation deleteMedia($id: ID!, $deletingStrategy: DeletingStrategy!) {
+    deleteMedia(id: $id, deletingStrategy: $deletingStrategy) {
+      data {
+        id
+        filename
+        label
+        description
+        fileSize
+        mimeType
+        path
+        checksum
+      }
     }
+  }
 `
 
 const APOLLO_REQUIRE_PREFLIGHT_HEADER = 'apollo-require-preflight'
@@ -95,14 +89,11 @@ const APOLLO_REQUIRE_PREFLIGHT_HEADER = 'apollo-require-preflight'
 export async function uploadData(input: UploadInput): Promise<MediaInfo> {
   const data = new FormData()
   data.set('file', input.file)
-  if (input.label)
-    data.set('label', input.label)
+  if (input.label) data.set('label', input.label)
 
-  if (input.description)
-    data.set('description', input.description)
+  if (input.description) data.set('description', input.description)
 
-  if (input.permission)
-    data.set('permission', input.permission)
+  if (input.permission) data.set('permission', input.permission)
 
   try {
     const res = await axios.post('/api/media/upload', data)

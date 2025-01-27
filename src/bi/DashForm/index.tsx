@@ -1,18 +1,6 @@
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
-import {
-  Col,
-  Collapse,
-  Form,
-  Input,
-  InputNumber,
-  Popover,
-  Row,
-  Select,
-  Space,
-  Tooltip,
-  Typography
-} from 'antd'
+import {Col, Collapse, Form, Input, InputNumber, Popover, Row, Select, Space, Tooltip, Typography} from 'antd'
 import {FolderOpenOutlined, QuestionCircleOutlined} from '@ant-design/icons'
 
 import {Column, Dashboard, Dataset, IDash, NamedColumn, QueryBlock} from 'src/types/bi'
@@ -60,7 +48,16 @@ const {Option: SelectOption} = Select
 const {Link} = Typography
 const dashTypes = getDashIds()
 
-export default function DashForm({dash, dashboards, canEdit, datasetMap, onDatasetChange, onFieldAdd, onFieldOpen, onFieldRemove}: DashFormProps) {
+export default function DashForm({
+  dash,
+  dashboards,
+  canEdit,
+  datasetMap,
+  onDatasetChange,
+  onFieldAdd,
+  onFieldOpen,
+  onFieldRemove
+}: DashFormProps) {
   const form = Form.useFormInstance()
   const {t} = useTranslation()
   const appProps = useAppProperties()
@@ -94,28 +91,35 @@ export default function DashForm({dash, dashboards, canEdit, datasetMap, onDatas
     form.setFieldValue('optValues', {})
   }, [form])
 
-  const handleDatasetChange = useCallback((datasetName: string) => {
-    resetSortAndOptValuesFormFields()
-    form.setFieldValue('defaultFilters', generateQueryBlock())
-    const newDataset = datasetMap[datasetName]
-    setDataset(newDataset)
-    onDatasetChange(newDataset)
-  }, [datasetMap, form, onDatasetChange, resetSortAndOptValuesFormFields])
+  const handleDatasetChange = useCallback(
+    (datasetName: string) => {
+      resetSortAndOptValuesFormFields()
+      form.setFieldValue('defaultFilters', generateQueryBlock())
+      const newDataset = datasetMap[datasetName]
+      setDataset(newDataset)
+      onDatasetChange(newDataset)
+    },
+    [datasetMap, form, onDatasetChange, resetSortAndOptValuesFormFields]
+  )
 
-  const handleDashTypeChange = useCallback((newDashType: string) => {
-    // form.setFieldValue('optValues', {})
-    setDashType(newDashType)
-  }, [form])
+  const handleDashTypeChange = useCallback(
+    (newDashType: string) => {
+      // form.setFieldValue('optValues', {})
+      setDashType(newDashType)
+    },
+    [form]
+  )
 
-  const renderDashOptions = () => (
-    dataset && dashHandler && dashHandler.renderOptionsForm({
+  const renderDashOptions = () =>
+    dataset &&
+    dashHandler &&
+    dashHandler.renderOptionsForm({
       dataset,
       availableColNames,
       form,
       fieldName: 'optValues',
       values: dash.optValues ?? {}
     })
-  )
 
   return (
     <>
@@ -130,24 +134,26 @@ export default function DashForm({dash, dashboards, canEdit, datasetMap, onDatas
           <FormItem
             className={styles.formItem}
             name="dataset"
-            label={(
+            label={
               <Space>
                 {t('Dataset')}
                 {dataset && (
                   <Tooltip key="open" title={t('Open')}>
                     <Link onClick={() => openDataset(datasetMap[dataset.name].id)}>
-                      <FolderOpenOutlined/>
+                      <FolderOpenOutlined />
                     </Link>
                   </Tooltip>
                 )}
               </Space>
-            )}
+            }
             initialValue={dash.dataset}
             rules={[{required: true, message: t('Required field')}]}
           >
             <Select
               style={{maxWidth: 220}}
-              options={Object.keys(datasetMap).sort().map(d => ({label: d, value: d}))}
+              options={Object.keys(datasetMap)
+                .sort()
+                .map(d => ({label: d, value: d}))}
               onSelect={handleDatasetChange}
             />
           </FormItem>
@@ -184,8 +190,8 @@ export default function DashForm({dash, dashboards, canEdit, datasetMap, onDatas
                 options={dashTypes.map(dt => ({
                   label: (
                     <span>
-                      <IconSuspense iconName={getDash(dt)?.icon} className="red" style={{display: 'inline'}}/>
-                                            &nbsp;
+                      <IconSuspense iconName={getDash(dt)?.icon} className="red" style={{display: 'inline'}} />
+                      &nbsp;
                       {dt}
                     </span>
                   ),
@@ -209,7 +215,7 @@ export default function DashForm({dash, dashboards, canEdit, datasetMap, onDatas
           <div className={styles.dashFormPane}>
             <Row gutter={10} style={{marginBottom: 10}}>
               <FormItem name="id" hidden initialValue={dash.id}>
-                <Input/>
+                <Input />
               </FormItem>
 
               <Col span={12}>
@@ -220,17 +226,12 @@ export default function DashForm({dash, dashboards, canEdit, datasetMap, onDatas
                   initialValue={dash.name}
                   rules={[{required: true, message: t('Required field')}]}
                 >
-                  <Input/>
+                  <Input />
                 </FormItem>
               </Col>
               <Col span={6}>
-                <FormItem
-                  className={styles.formItem}
-                  name="unit"
-                  label={t('Unit')}
-                  initialValue={dash.unit}
-                >
-                  <Input/>
+                <FormItem className={styles.formItem} name="unit" label={t('Unit')} initialValue={dash.unit}>
+                  <Input />
                 </FormItem>
               </Col>
               <Col span={6}>
@@ -244,59 +245,74 @@ export default function DashForm({dash, dashboards, canEdit, datasetMap, onDatas
                     {type: 'number', min: minRefreshIntervalSeconds}
                   ]}
                 >
-                  <InputNumber style={{width: '100%'}} min={minRefreshIntervalSeconds}/>
+                  <InputNumber style={{width: '100%'}} min={minRefreshIntervalSeconds} />
                 </FormItem>
               </Col>
             </Row>
 
             <Collapse
               defaultActiveKey={['dashOptions', 'defaultFilters']}
-              items={[{
-                key: 'dashOptions',
-                label: t('Dash Options'),
-                children: (
-                  <>
-                    <Row gutter={10} style={{marginBottom: 10}}>
-                      <Col span={6}>
-                        <FormItem
-                          className={styles.formItem}
-                          name="relatedDashboardId"
-                          label={t('Related Dashboard')}
-                          initialValue={dash.relatedDashboardId}
-                        >
-                          <Select allowClear>
-                            {dashboards.map(d => <SelectOption key={d.id} value={d.id}>{d.name}</SelectOption>)}
-                          </Select>
-                        </FormItem>
-                      </Col>
-                    </Row>
+              items={[
+                {
+                  key: 'dashOptions',
+                  label: t('Dash Options'),
+                  children: (
+                    <>
+                      <Row gutter={10} style={{marginBottom: 10}}>
+                        <Col span={6}>
+                          <FormItem
+                            className={styles.formItem}
+                            name="relatedDashboardId"
+                            label={t('Related Dashboard')}
+                            initialValue={dash.relatedDashboardId}
+                          >
+                            <Select allowClear>
+                              {dashboards.map(d => (
+                                <SelectOption key={d.id} value={d.id}>
+                                  {d.name}
+                                </SelectOption>
+                              ))}
+                            </Select>
+                          </FormItem>
+                        </Col>
+                      </Row>
 
-                    {renderDashOptions()}
-                  </>
-                )
-              }, {
-                key: 'defaultFilters',
-                label: (
-                  <Space>
-                    {t('Default Filters')}
-                    <Popover
-                      arrow={false}
-                      placement="right"
-                      overlayInnerStyle={{width: 600}}
-                      title={<>{getCustomFunctionsInfo().map((s, i) => <div key={i} style={{fontWeight: 'normal'}}>{s}</div>)}</>}
-                    >
-                      <QuestionCircleOutlined className="blue"/>
-                    </Popover>
-                  </Space>
-                ),
-                children: (dataset && (
-                  <DashFilters
-                    namePrefix={['defaultFilters']}
-                    dataset={dataset}
-                    initialBlock={toFormQueryBlock(dataset, timeZone, dash.defaultFilters)}
-                  />
-                ))
-              }]}
+                      {renderDashOptions()}
+                    </>
+                  )
+                },
+                {
+                  key: 'defaultFilters',
+                  label: (
+                    <Space>
+                      {t('Default Filters')}
+                      <Popover
+                        arrow={false}
+                        placement="right"
+                        overlayInnerStyle={{width: 600}}
+                        title={
+                          <>
+                            {getCustomFunctionsInfo().map((s, i) => (
+                              <div key={i} style={{fontWeight: 'normal'}}>
+                                {s}
+                              </div>
+                            ))}
+                          </>
+                        }
+                      >
+                        <QuestionCircleOutlined className="blue" />
+                      </Popover>
+                    </Space>
+                  ),
+                  children: dataset && (
+                    <DashFilters
+                      namePrefix={['defaultFilters']}
+                      dataset={dataset}
+                      initialBlock={toFormQueryBlock(dataset, timeZone, dash.defaultFilters)}
+                    />
+                  )
+                }
+              ]}
             />
           </div>
         </Split>

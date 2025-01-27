@@ -1,13 +1,13 @@
 import styles from './DashFieldOverlay.module.css'
 
 export enum OverlayType {
-    IllegalMoveHover = 'Illegal',
-    LegalMoveHover = 'Legal',
-    PossibleMove = 'Possible'
+  IllegalMoveHover = 'Illegal',
+  LegalMoveHover = 'Legal',
+  PossibleMove = 'Possible'
 }
 
 interface DashFieldOverlayProps {
-    type: OverlayType
+  type: OverlayType
 }
 
 function getOverlayColor(type: OverlayType): string {

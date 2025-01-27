@@ -27,14 +27,11 @@ const prioritySorter = (a: Prioritized, b: Prioritized) =>
 const attributeFieldSorter = (a: CustomAttributeField, b: CustomAttributeField) => {
   const aMountPoint = a.mountPoint
   const bMountPoint = b.mountPoint
-  if (aMountPoint === bMountPoint)
-    return 0
+  if (aMountPoint === bMountPoint) return 0
 
-  if (aMountPoint === '*')
-    return 1
+  if (aMountPoint === '*') return 1
 
-  if (bMountPoint === '*')
-    return -1
+  if (bMountPoint === '*') return -1
 
   return aMountPoint < bMountPoint ? 1 : -1
 }
@@ -49,8 +46,7 @@ export class PluginEngine {
   constructor(private plugins: Plugin[]) {}
 
   onLoad() {
-    if (this.isLoaded)
-      return
+    if (this.isLoaded) return
 
     // Load plugins
     for (const plugin of this.plugins) {
@@ -58,24 +54,20 @@ export class PluginEngine {
     }
 
     // Renderers
-    const renderers: CustomRenderer[] = this.plugins.flatMap(p => p.renderers)
-      .sort(prioritySorter)
-    
+    const renderers: CustomRenderer[] = this.plugins.flatMap(p => p.renderers).sort(prioritySorter)
+
     this.renderersByMountPoint = _.groupBy(renderers, renderer => renderer.mountPoint)
 
     // Custom components
-    const components: CustomComponent[] = this.plugins.flatMap(p => p.components)
-      .sort(prioritySorter)
+    const components: CustomComponent[] = this.plugins.flatMap(p => p.components).sort(prioritySorter)
 
     this.componentsByMountPoint = _.groupBy(components, component => component.mountPoint)
 
     // Attribute fields
-    this.attributeFields = this.plugins.flatMap(p => p.attributeFields)
-      .sort(attributeFieldSorter)
+    this.attributeFields = this.plugins.flatMap(p => p.attributeFields).sort(attributeFieldSorter)
 
     // API middleware
-    const apiMiddlewares: ApiMiddleware[] = this.plugins.flatMap(p => p.apiMiddlewares)
-      .sort(prioritySorter)
+    const apiMiddlewares: ApiMiddleware[] = this.plugins.flatMap(p => p.apiMiddlewares).sort(prioritySorter)
 
     this.apiMiddlewareByItemName = _.groupBy(apiMiddlewares, apiMiddleware => apiMiddleware.itemName)
 
@@ -83,8 +75,7 @@ export class PluginEngine {
   }
 
   onUnload() {
-    if (!this.isLoaded)
-      return
+    if (!this.isLoaded) return
 
     for (const plugin of this.plugins) {
       plugin.onUnload()
@@ -96,12 +87,11 @@ export class PluginEngine {
   // Renderers
   hasRenderers(...mountPoints: string[]): boolean {
     for (const mountPoint of mountPoints) {
-      if (this.renderersByMountPoint.hasOwnProperty(mountPoint))
-        return true
+      if (this.renderersByMountPoint.hasOwnProperty(mountPoint)) return true
     }
     return false
   }
-  
+
   render(mountPoint: string, node: HTMLElement, context: CustomRendererContext) {
     const renderers = this.renderersByMountPoint[mountPoint]
     renderers?.forEach(renderer => {
@@ -112,31 +102,24 @@ export class PluginEngine {
   // Custom components
   hasComponents(...mountPoints: string[]): boolean {
     for (const mountPoint of mountPoints) {
-      if (mountPoint in this.componentsByMountPoint)
-        return true
+      if (mountPoint in this.componentsByMountPoint) return true
     }
     return false
   }
-  
-  getComponents = (mountPoint: string): CustomComponent[] =>
-    this.componentsByMountPoint[mountPoint] ?? []
-  
+
+  getComponents = (mountPoint: string): CustomComponent[] => this.componentsByMountPoint[mountPoint] ?? []
+
   renderComponents(mountPoint: string, context: CustomComponentContext): ReactElement | null {
     const components = this.componentsByMountPoint[mountPoint]
-    if (!components)
-      return null
-  
-    return (
-      <>
-        {components.map(component => component.render({context}))}
-      </>
-    )
+    if (!components) return null
+
+    return <>{components.map(component => component.render({context}))}</>
   }
 
   // Attribute fields
   hasAttributeField = (itemName: string, attrName: string): boolean =>
     this.getAttributeField(itemName, attrName) != null
-  
+
   getAttributeField = (itemName: string, attrName: string): CustomAttributeField | undefined =>
     this.attributeFields.find(af => {
       const separatorIndex = af.mountPoint.indexOf('.')
@@ -144,29 +127,46 @@ export class PluginEngine {
       const fieldAttrName = af.mountPoint.substring(separatorIndex + 1)
       return fieldAttrName === attrName && (fieldItemName === itemName || fieldItemName === '*')
     })
-  
-  renderAttributeField(context: CustomAttributeFieldContext, defaultRender: FC<CustomAttributeFieldContext>): ReactElement | null {
+
+  renderAttributeField(
+    context: CustomAttributeFieldContext,
+    defaultRender: FC<CustomAttributeFieldContext>
+  ): ReactElement | null {
     const attributeField = this.getAttributeField(context.data.item.name, context.attrName)
-  
+
     return <>{attributeField ? attributeField.render({context}) : defaultRender(context)}</>
   }
 
   // Api middleware
-  hasApiMiddleware = (itemName: string): boolean => itemName in this.apiMiddlewareByItemName || '*' in this.apiMiddlewareByItemName
+  hasApiMiddleware = (itemName: string): boolean =>
+    itemName in this.apiMiddlewareByItemName || '*' in this.apiMiddlewareByItemName
 
-  async handleApiMiddleware(itemName: string, operation: ApiOperation, context: ApiMiddlewareContext, next: () => any): Promise<any> {
-    const apiMiddlewares = [...(this.apiMiddlewareByItemName[itemName] ?? []), ...(this.apiMiddlewareByItemName['*'] ?? [])]
-    if (apiMiddlewares.length === 0)
-      return await next()
+  async handleApiMiddleware(
+    itemName: string,
+    operation: ApiOperation,
+    context: ApiMiddlewareContext,
+    next: () => any
+  ): Promise<any> {
+    const apiMiddlewares = [
+      ...(this.apiMiddlewareByItemName[itemName] ?? []),
+      ...(this.apiMiddlewareByItemName['*'] ?? [])
+    ]
+    if (apiMiddlewares.length === 0) return await next()
 
     return await this.handleApiMiddlewares(apiMiddlewares, operation, context, next)
   }
 
-  async handleApiMiddlewares(list: ApiMiddleware[], operation: ApiOperation, context: ApiMiddlewareContext, next: () => any): Promise<any> {
-    if (list.length === 0)
-      return await next()
+  async handleApiMiddlewares(
+    list: ApiMiddleware[],
+    operation: ApiOperation,
+    context: ApiMiddlewareContext,
+    next: () => any
+  ): Promise<any> {
+    if (list.length === 0) return await next()
 
     const first = list[0]
-    return await first.handle(operation, context, () => this.handleApiMiddlewares(list.slice(1), operation, context, next))
+    return await first.handle(operation, context, () =>
+      this.handleApiMiddlewares(list.slice(1), operation, context, next)
+    )
   }
 }

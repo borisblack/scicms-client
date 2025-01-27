@@ -11,7 +11,7 @@ export class ProjectPlugin extends Plugin {
       priority: 10,
       title: 'Gantt Chart',
       icon: 'FaChartGantt',
-      render: ({context}) => <ProjectGantt key={PROJECT_GANTT_COMPONENT_ID} {...context}/>
+      render: ({context}) => <ProjectGantt key={PROJECT_GANTT_COMPONENT_ID} {...context} />
     })
   }
 

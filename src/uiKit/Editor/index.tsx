@@ -3,9 +3,9 @@ import {EditorProps} from './Editor'
 
 const Editor = lazy(() => import('./Editor'))
 
-const EditorSuspense = (props: EditorProps) =>  (
+const EditorSuspense = (props: EditorProps) => (
   <Suspense fallback={null}>
-    <Editor {...props}/>
+    <Editor {...props} />
   </Suspense>
 )
 

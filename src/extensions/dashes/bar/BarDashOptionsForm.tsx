@@ -22,7 +22,7 @@ export default function BarDashOptionsForm({fieldName, values}: DashOptionsFormP
           label={t('Legend position')}
           initialValue={values.legendPosition ?? 'top-left'}
         >
-          <Select allowClear options={legendPositions.map(p => ({value: p, label: p}))}/>
+          <Select allowClear options={legendPositions.map(p => ({value: p, label: p}))} />
         </FormItem>
       </Col>
 
@@ -74,22 +74,22 @@ export default function BarDashOptionsForm({fieldName, values}: DashOptionsFormP
         <FormItem
           className={styles.formItem}
           name={[fieldName, 'rules']}
-          label={(
+          label={
             <Space>
               {t('Rules')}
               <Popover
                 arrow={false}
                 placement="bottom"
-                content={<RulesHelp height={350}/>}
+                content={<RulesHelp height={350} />}
                 overlayInnerStyle={{width: 1060}}
               >
-                <QuestionCircleOutlined className="blue"/>
+                <QuestionCircleOutlined className="blue" />
               </Popover>
             </Space>
-          )}
+          }
           initialValue={values.rules}
         >
-          <TextArea rows={8}/>
+          <TextArea rows={8} />
         </FormItem>
       </Col>
     </Row>

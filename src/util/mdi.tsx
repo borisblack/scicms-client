@@ -18,7 +18,6 @@ function generateId(itemName: string) {
   return tempId.toString()
 }
 
-
 export function generateKey(data: ItemDataWrapper): string {
   const {item, viewType, data: itemData, extra} = data
   const itemName = item.name
@@ -26,7 +25,12 @@ export function generateKey(data: ItemDataWrapper): string {
   return generateKeyById(itemName, viewType, itemData?.id ?? data.id, extra)
 }
 
-export function generateKeyById(itemName: string, viewType: ViewType, id?: string, extra?: Record<string, any>): string {
+export function generateKeyById(
+  itemName: string,
+  viewType: ViewType,
+  id?: string,
+  extra?: Record<string, any>
+): string {
   let key = `${itemName}#${viewType}`
   if (id != null) {
     key += `#${id}`
@@ -44,9 +48,9 @@ export function generateLabel(data: ItemDataWrapper): ReactNode {
 
   return (
     <span className="mdi-tab-label" title={title}>
-      {(viewType === ViewType.default) ? <SearchOutlined/> : <IconSuspense iconName={item.icon}/>}
+      {viewType === ViewType.default ? <SearchOutlined /> : <IconSuspense iconName={item.icon} />}
       {title}
-      {extra && <ExclamationCircleOutlined className="tab-label-suffix orange"/>}
+      {extra && <ExclamationCircleOutlined className="tab-label-suffix orange" />}
     </span>
   )
 }
@@ -81,7 +85,7 @@ export function createMDITab(
   const itemDataWrapper = {
     item,
     viewType,
-    id: (viewType === ViewType.view && data?.id == null) ? generateId(item.name) : undefined,
+    id: viewType === ViewType.view && data?.id == null ? generateId(item.name) : undefined,
     data,
     extra
   }

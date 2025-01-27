@@ -15,11 +15,11 @@ import ChangePasswordModal from '../auth/ChangePasswordModal'
 import styles from './Navbar.module.css'
 
 type NavbarProps = {
-    ctx: MDIContext<ItemDataWrapper>
-    menuItems: ItemType[]
-    isLoading?: boolean
-    appPrefix?: string
-    width?: number
+  ctx: MDIContext<ItemDataWrapper>
+  menuItems: ItemType[]
+  isLoading?: boolean
+  appPrefix?: string
+  width?: number
 }
 
 const DEFAULT_NAVBAR_WIDTH = 275
@@ -38,7 +38,11 @@ const Navbar = ({ctx, menuItems, isLoading = false, appPrefix, width = DEFAULT_N
   const {t} = useTranslation()
   const navbarCollapsedKey = appPrefix ? `${appPrefix}${NAVBAR_COLLAPSED_KEY_SUFFIX}` : NAVBAR_COLLAPSED_KEY
   const [collapsed, setCollapsed] = useState(isNavbarCollapsed(navbarCollapsedKey))
-  const {show: showChangePasswordModal, close: closeChangePasswordModal, modalProps: changePasswordModalProps} = useModal()
+  const {
+    show: showChangePasswordModal,
+    close: closeChangePasswordModal,
+    modalProps: changePasswordModalProps
+  } = useModal()
   // const { loading, error, data } = useQuery(ME_QUERY, {errorPolicy: 'all'})
 
   const handleLogout = useCallback(async () => {
@@ -57,8 +61,7 @@ const Navbar = ({ctx, menuItems, isLoading = false, appPrefix, width = DEFAULT_N
   }
 
   const getProfileChildMenuItems = (): ItemType[] => {
-    if (me == null)
-      return []
+    if (me == null) return []
 
     const profileChildMenuItems: ItemType[] = []
 
@@ -73,7 +76,7 @@ const Navbar = ({ctx, menuItems, isLoading = false, appPrefix, width = DEFAULT_N
     profileChildMenuItems.push({
       key: 'logout',
       label: t('Logout'),
-      icon: <LogoutOutlined/>,
+      icon: <LogoutOutlined />,
       onClick: handleLogout
     })
 
@@ -90,7 +93,7 @@ const Navbar = ({ctx, menuItems, isLoading = false, appPrefix, width = DEFAULT_N
       onCollapse={handleToggle}
     >
       <div className={styles.navbarLogoWrapper} onClick={handleToggle}>
-        <img src={logo} className={styles.navbarLogo} alt="logo"/>
+        <img src={logo} className={styles.navbarLogo} alt="logo" />
         {!collapsed && <span className={styles.navbarLogoText}>{t('SciCMS Admin')}</span>}
       </div>
       <Spin spinning={loading || isLoading}>
@@ -109,10 +112,7 @@ const Navbar = ({ctx, menuItems, isLoading = false, appPrefix, width = DEFAULT_N
         />
       </Spin>
 
-      <ChangePasswordModal
-        {...changePasswordModalProps}
-        onClose={closeChangePasswordModal}
-      />
+      <ChangePasswordModal {...changePasswordModalProps} onClose={closeChangePasswordModal} />
     </Sider>
   )
 }

@@ -18,6 +18,6 @@ export const bubbleMap: Dash = {
     {name: 'colorField', label: 'Color field', cardinality: 1, required: false},
     {name: 'labelField', label: 'Label field', cardinality: 1, required: false}
   ],
-  renderOptionsForm: (props) => <BubbleMapDashOptionsForm {...props}/>,
-  render: ({context}) => <BubbleMapDash {...context}/>
+  renderOptionsForm: props => <BubbleMapDashOptionsForm {...props} />,
+  render: ({context}) => <BubbleMapDash {...context} />
 }

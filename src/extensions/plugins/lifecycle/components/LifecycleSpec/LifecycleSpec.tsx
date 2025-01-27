@@ -12,13 +12,12 @@ import 'src/lib/diagram/bpmn-js.css'
 import styles from './LifecycleSpec.module.css'
 
 const customTranslateModule = {
-  translate: [ 'value', customTranslate ]
+  translate: ['value', customTranslate]
 }
 
 export default function LifecycleSpec({data: dataWrapper, onBufferChange}: CustomComponentContext) {
   const {item, data} = dataWrapper
-  if (item.name !== LIFECYCLE_ITEM_NAME)
-    throw new Error('Illegal argument')
+  if (item.name !== LIFECYCLE_ITEM_NAME) throw new Error('Illegal argument')
 
   const acl = useAcl(item, data)
   const container = useRef<HTMLDivElement>(null)
@@ -35,19 +34,16 @@ export default function LifecycleSpec({data: dataWrapper, onBufferChange}: Custo
       m = new Modeler(props)
       const eventBus = m.get('eventBus')
       eventBus.on('elements.changed', (context: any) => {
-        m.saveXML({format: true})
-          .then((xml: any) => {
-            onBufferChange({spec: xml.xml})
-          })
+        m.saveXML({format: true}).then((xml: any) => {
+          onBufferChange({spec: xml.xml})
+        })
       })
     } else {
       m = new Viewer(props)
     }
 
-    if (data?.spec)
-      m.importXML(data.spec)
-    else
-      m.createDiagram()
+    if (data?.spec) m.importXML(data.spec)
+    else m.createDiagram()
 
     modeler.current = m
 
@@ -60,7 +56,7 @@ export default function LifecycleSpec({data: dataWrapper, onBufferChange}: Custo
 
   return (
     <div className={styles.bpmnDiagramWrapper}>
-      <div className={styles.bpmnDiagramContainer} ref={container}/>
+      <div className={styles.bpmnDiagramContainer} ref={container} />
     </div>
   )
 }

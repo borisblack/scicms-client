@@ -17,21 +17,19 @@ const DateAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrNam
   const appProps = useAppProperties()
   const {momentDisplayDateFormatString} = appProps.dateTime
 
-  if (attribute.type !== FieldType.date)
-    throw new Error('Illegal attribute')
+  if (attribute.type !== FieldType.date) throw new Error('Illegal attribute')
 
   const uniqueKey = generateKey(dataWrapper)
   const {t} = useTranslation()
   const isDisabled = useMemo(() => attribute.readOnly, [attribute.readOnly])
   const additionalProps = useMemo((): any => {
     const additionalProps: any = {}
-    if (isDisabled)
-      additionalProps.disabled = true
+    if (isDisabled) additionalProps.disabled = true
 
     return additionalProps
   }, [isDisabled])
 
-  const parseValue = useCallback((val: string | null | undefined) => val == null ? null : dayjs.utc(val), [])
+  const parseValue = useCallback((val: string | null | undefined) => (val == null ? null : dayjs.utc(val)), [])
 
   return (
     <FormItem

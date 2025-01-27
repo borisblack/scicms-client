@@ -22,19 +22,20 @@ const BETWEEN_INPUT_WIDTH = 140
 const {Item: FormItem} = Form
 
 const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, column, op}) => {
-  if (namePrefix.length === 0)
-    throw new Error('Illegal argument')
+  if (namePrefix.length === 0) throw new Error('Illegal argument')
 
-  if (!isTemporal(column.type))
-    throw new Error('Illegal argument')
+  if (!isTemporal(column.type)) throw new Error('Illegal argument')
 
   const fieldName = namePrefix[namePrefix.length - 1]
   const temporalType = columnType(column) as TemporalType
   const {t} = useTranslation()
   const appProps = useAppProperties()
-  const {momentDisplayDateFormatString, momentDisplayTimeFormatString, momentDisplayDateTimeFormatString} = appProps.dateTime
+  const {momentDisplayDateFormatString, momentDisplayTimeFormatString, momentDisplayDateTimeFormatString} =
+    appProps.dateTime
   const [isManual, setManual] = useState(form.getFieldValue([...namePrefix, 'extra', 'isManual']))
-  const [period, setPeriod] = useState(form.getFieldValue([...namePrefix, 'extra', 'period']) ?? TemporalPeriod.ARBITRARY)
+  const [period, setPeriod] = useState(
+    form.getFieldValue([...namePrefix, 'extra', 'period']) ?? TemporalPeriod.ARBITRARY
+  )
   const [isManualLeft, setManualLeft] = useState(form.getFieldValue([...namePrefix, 'extra', 'isManualLeft']))
   const [isManualRight, setManualRight] = useState(form.getFieldValue([...namePrefix, 'extra', 'isManualRight']))
 
@@ -57,42 +58,32 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
 
   const renderDefaultContent = () => (
     <Space>
-      <FormItem
-        className={styles.formItem}
-        name={[fieldName, 'value']}
-        rules={[{required: true, message: ''}]}
-      >
+      <FormItem className={styles.formItem} name={[fieldName, 'value']} rules={[{required: true, message: ''}]}>
         {isManual ? (
-          <Input bordered={false} style={{width: INPUT_WIDTH}} placeholder={t('Value')}/>
+          <Input bordered={false} style={{width: INPUT_WIDTH}} placeholder={t('Value')} />
+        ) : temporalType === FieldType.time ? (
+          <TimePicker
+            bordered={false}
+            style={{width: INPUT_WIDTH}}
+            placeholder={t('Value')}
+            format={momentDisplayTimeFormatString}
+          />
         ) : (
-          temporalType === FieldType.time ? (
-            <TimePicker
-              bordered={false}
-              style={{width: INPUT_WIDTH}}
-              placeholder={t('Value')}
-              format={momentDisplayTimeFormatString}
-            />
-          ) : (
-            <DatePicker
-              bordered={false}
-              style={{width: INPUT_WIDTH}}
-              placeholder={t('Value')}
-              format={temporalType === FieldType.date ? momentDisplayDateFormatString : momentDisplayDateTimeFormatString}
-              showTime={temporalType === FieldType.datetime || temporalType === FieldType.timestamp}
-            />
-          )
+          <DatePicker
+            bordered={false}
+            style={{width: INPUT_WIDTH}}
+            placeholder={t('Value')}
+            format={temporalType === FieldType.date ? momentDisplayDateFormatString : momentDisplayDateTimeFormatString}
+            showTime={temporalType === FieldType.datetime || temporalType === FieldType.timestamp}
+          />
         )}
       </FormItem>
-      <FormItem
-        className={styles.formItem}
-        name={[fieldName, 'extra', 'isManual']}
-        valuePropName="checked"
-      >
+      <FormItem className={styles.formItem} name={[fieldName, 'extra', 'isManual']} valuePropName="checked">
         <Switch
           className={styles.switch}
           title={t('Edit manually')}
-          checkedChildren={<FunctionOutlined/>}
-          unCheckedChildren={<FunctionOutlined/>}
+          checkedChildren={<FunctionOutlined />}
+          unCheckedChildren={<FunctionOutlined />}
           onChange={handleManualChange}
         />
       </FormItem>
@@ -122,36 +113,32 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
             rules={[{required: true, message: ''}]}
           >
             {isManualLeft ? (
-              <Input bordered={false} style={{width: BETWEEN_INPUT_WIDTH}} placeholder={t('Begin')}/>
+              <Input bordered={false} style={{width: BETWEEN_INPUT_WIDTH}} placeholder={t('Begin')} />
+            ) : temporalType === FieldType.time ? (
+              <TimePicker
+                bordered={false}
+                style={{width: BETWEEN_INPUT_WIDTH}}
+                placeholder={t('Begin')}
+                format={momentDisplayTimeFormatString}
+              />
             ) : (
-              temporalType === FieldType.time ? (
-                <TimePicker
-                  bordered={false}
-                  style={{width: BETWEEN_INPUT_WIDTH}}
-                  placeholder={t('Begin')}
-                  format={momentDisplayTimeFormatString}
-                />
-              ) : (
-                <DatePicker
-                  bordered={false}
-                  style={{width: BETWEEN_INPUT_WIDTH}}
-                  placeholder={t('Begin')}
-                  format={temporalType === FieldType.date ? momentDisplayDateFormatString : momentDisplayDateTimeFormatString}
-                  showTime={temporalType === FieldType.datetime || temporalType === FieldType.timestamp}
-                />
-              )
+              <DatePicker
+                bordered={false}
+                style={{width: BETWEEN_INPUT_WIDTH}}
+                placeholder={t('Begin')}
+                format={
+                  temporalType === FieldType.date ? momentDisplayDateFormatString : momentDisplayDateTimeFormatString
+                }
+                showTime={temporalType === FieldType.datetime || temporalType === FieldType.timestamp}
+              />
             )}
           </FormItem>
-          <FormItem
-            className={styles.formItem}
-            name={[fieldName, 'extra', 'isManualLeft']}
-            valuePropName="checked"
-          >
+          <FormItem className={styles.formItem} name={[fieldName, 'extra', 'isManualLeft']} valuePropName="checked">
             <Switch
               className={styles.switch}
               title={t('Edit manually')}
-              checkedChildren={<FunctionOutlined/>}
-              unCheckedChildren={<FunctionOutlined/>}
+              checkedChildren={<FunctionOutlined />}
+              unCheckedChildren={<FunctionOutlined />}
               onChange={handleManualLeftChange}
             />
           </FormItem>
@@ -162,37 +149,32 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
             rules={[{required: true, message: ''}]}
           >
             {isManualRight ? (
-              <Input bordered={false} style={{width: BETWEEN_INPUT_WIDTH}} placeholder={t('End')}/>
+              <Input bordered={false} style={{width: BETWEEN_INPUT_WIDTH}} placeholder={t('End')} />
+            ) : temporalType === FieldType.time ? (
+              <TimePicker
+                bordered={false}
+                style={{width: BETWEEN_INPUT_WIDTH}}
+                placeholder={t('End')}
+                format={momentDisplayTimeFormatString}
+              />
             ) : (
-              temporalType === FieldType.time ? (
-                <TimePicker
-                  bordered={false}
-                  style={{width: BETWEEN_INPUT_WIDTH}}
-                  placeholder={t('End')}
-                  format={momentDisplayTimeFormatString}
-                />
-              ) : (
-                <DatePicker
-                  bordered={false}
-                  style={{width: BETWEEN_INPUT_WIDTH}}
-                  placeholder={t('End')}
-                  format={temporalType === FieldType.date ? momentDisplayDateFormatString : momentDisplayDateTimeFormatString}
-                  showTime={temporalType === FieldType.datetime || temporalType === FieldType.timestamp}
-                />
-              )
+              <DatePicker
+                bordered={false}
+                style={{width: BETWEEN_INPUT_WIDTH}}
+                placeholder={t('End')}
+                format={
+                  temporalType === FieldType.date ? momentDisplayDateFormatString : momentDisplayDateTimeFormatString
+                }
+                showTime={temporalType === FieldType.datetime || temporalType === FieldType.timestamp}
+              />
             )}
-
           </FormItem>
-          <FormItem
-            className={styles.formItem}
-            name={[fieldName, 'extra', 'isManualRight']}
-            valuePropName="checked"
-          >
+          <FormItem className={styles.formItem} name={[fieldName, 'extra', 'isManualRight']} valuePropName="checked">
             <Switch
               className={styles.switch}
               title={t('Edit manually')}
-              checkedChildren={<FunctionOutlined/>}
-              unCheckedChildren={<FunctionOutlined/>}
+              checkedChildren={<FunctionOutlined />}
+              unCheckedChildren={<FunctionOutlined />}
               onChange={handleManualRightChange}
             />
           </FormItem>
@@ -204,7 +186,7 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
             name={[fieldName, 'extra', 'value']}
             rules={[{required: true, message: ''}]}
           >
-            <InputNumber bordered={false} placeholder={t('number')}/>
+            <InputNumber bordered={false} placeholder={t('number')} />
           </FormItem>
 
           <FormItem
@@ -216,7 +198,10 @@ const TemporalFilterValueField: FC<FilterValueFieldProps> = ({form, namePrefix, 
               bordered={false}
               style={{width: 100}}
               placeholder={t('unit')}
-              options={(temporalType === FieldType.time ? timeTemporalUnits : allTemporalUnits).map(k => ({value: k, label: temporalUnitTitles[k]}))}
+              options={(temporalType === FieldType.time ? timeTemporalUnits : allTemporalUnits).map(k => ({
+                value: k,
+                label: temporalUnitTitles[k]
+              }))}
             />
           </FormItem>
         </>

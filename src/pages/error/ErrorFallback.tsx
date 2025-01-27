@@ -11,7 +11,7 @@ export default function ErrorFallback() {
     <div className={styles.container}>
       <p className={styles.smile}>:(</p>
       <p className={styles.title}>{t('Oops! An error has occurred')}</p>
-      <Divider/>
+      <Divider />
       <p className={styles.desc}>{t('Client application error')}</p>
       <div className={styles.small}>
         <p>{t('Try to do the following')}:</p>
@@ -22,7 +22,7 @@ export default function ErrorFallback() {
         </ul>
       </div>
       <p className={styles.label}>{error.message}</p>
-      <Divider/>
+      <Divider />
     </div>
   )
 }

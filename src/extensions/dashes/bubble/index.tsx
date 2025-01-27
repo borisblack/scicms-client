@@ -13,6 +13,6 @@ export const bubble: Dash = {
     {name: 'sizeField', label: 'Size field', cardinality: 1, required: true},
     {name: 'colorField', label: 'Color field', cardinality: 1, required: false}
   ],
-  renderOptionsForm: (props) => <BubbleDashOptionsForm {...props}/>,
-  render: ({context}) => <BubbleDashSuspense {...context}/>
+  renderOptionsForm: props => <BubbleDashOptionsForm {...props} />,
+  render: ({context}) => <BubbleDashSuspense {...context} />
 }

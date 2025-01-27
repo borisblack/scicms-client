@@ -13,18 +13,28 @@ import SelectorValue, {SelectorValueFormValues} from './SelectorValue'
 import {fromFormSelectorFilter, toFormSelectorFilter} from '../util'
 
 interface SelectorProps {
-    selector: ISelector
-    height: number
-    datasetMap: Record<string, Dataset>
-    dashes: IDash[]
-    canEdit: boolean
-    readOnly: boolean
-    onLockChange: (locked: boolean) => void
-    onChange: (text: ISelector) => void
-    onDelete: () => void
+  selector: ISelector
+  height: number
+  datasetMap: Record<string, Dataset>
+  dashes: IDash[]
+  canEdit: boolean
+  readOnly: boolean
+  onLockChange: (locked: boolean) => void
+  onChange: (text: ISelector) => void
+  onDelete: () => void
 }
 
-export default function Selector({selector, height, datasetMap, dashes, canEdit, readOnly, onLockChange, onChange, onDelete}: SelectorProps) {
+export default function Selector({
+  selector,
+  height,
+  datasetMap,
+  dashes,
+  canEdit,
+  readOnly,
+  onLockChange,
+  onChange,
+  onDelete
+}: SelectorProps) {
   const {t} = useTranslation()
   const appProps = useAppProperties()
   const {timeZone} = appProps.dateTime
@@ -63,12 +73,22 @@ export default function Selector({selector, height, datasetMap, dashes, canEdit,
                 },*/
         {
           key: 'edit',
-          label: <Space><EditOutlined/>{t('Edit')}</Space>,
+          label: (
+            <Space>
+              <EditOutlined />
+              {t('Edit')}
+            </Space>
+          ),
           onClick: handleSelectorModalOpen
         },
         {
           key: 'delete',
-          label: <Space><DeleteOutlined className="red"/>{t('Delete')}</Space>,
+          label: (
+            <Space>
+              <DeleteOutlined className="red" />
+              {t('Delete')}
+            </Space>
+          ),
           disabled: !canEdit,
           onClick: onDelete
         }
@@ -89,21 +109,16 @@ export default function Selector({selector, height, datasetMap, dashes, canEdit,
             key="clear"
             type="text"
             className={styles.toolbarBtn}
-            icon={<ClearOutlined/>}
+            icon={<ClearOutlined />}
             title={t('Clear')}
             onClick={handleSelectorClear}
             onMouseDown={e => e.stopPropagation()}
           />,
-          <Dropdown
-            key="settings"
-            placement="bottomRight"
-            trigger={['click']}
-            menu={{items: getSettingsMenuItems()}}
-          >
+          <Dropdown key="settings" placement="bottomRight" trigger={['click']} menu={{items: getSettingsMenuItems()}}>
             <Button
               type="text"
               className={styles.toolbarBtn}
-              icon={<SettingOutlined/>}
+              icon={<SettingOutlined />}
               title={t('Settings')}
               onMouseDown={e => e.stopPropagation()}
             />
@@ -118,11 +133,7 @@ export default function Selector({selector, height, datasetMap, dashes, canEdit,
         initialValues={{selectorFilter: toFormSelectorFilter(selector, timeZone)}}
         onFinish={handleSelectorValueFormFinish}
       >
-        <SelectorValue
-          namePrefix={['selectorFilter']}
-          selector={selector}
-          datasetMap={datasetMap}
-        />
+        <SelectorValue namePrefix={['selectorFilter']} selector={selector} datasetMap={datasetMap} />
       </Form>
 
       <SelectorModal

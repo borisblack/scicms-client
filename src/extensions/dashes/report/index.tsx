@@ -11,6 +11,6 @@ export const report: Dash = {
     {name: 'displayedColNames', label: 'Displayed columns', cardinality: -1, required: true},
     {name: 'keyColName', label: 'Key column', cardinality: 1, required: false}
   ],
-  renderOptionsForm: (props) => <ReportDashOptionsForm {...props}/>,
-  render: ({context}) => <ReportDash {...context}/>
+  renderOptionsForm: props => <ReportDashOptionsForm {...props} />,
+  render: ({context}) => <ReportDash {...context} />
 }

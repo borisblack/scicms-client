@@ -12,16 +12,14 @@ const FormItem = Form.Item
 const {Option: SelectOption} = Select
 
 export const LocaleAttributeField: FC<CustomAttributeFieldContext> = ({attrName, attribute, value, onChange}) => {
-  if (attribute.type !== FieldType.string || attrName !== LOCALE_ATTR_NAME)
-    throw new Error('Illegal attribute')
+  if (attribute.type !== FieldType.string || attrName !== LOCALE_ATTR_NAME) throw new Error('Illegal attribute')
 
   const {locales} = useRegistry()
   const {t} = useTranslation()
   const isDisabled = useMemo(() => attribute.readOnly, [attribute.readOnly])
   const additionalProps = useMemo((): any => {
     const additionalProps: any = {}
-    if (isDisabled)
-      additionalProps.disabled = true
+    if (isDisabled) additionalProps.disabled = true
 
     return additionalProps
   }, [isDisabled])
@@ -36,7 +34,11 @@ export const LocaleAttributeField: FC<CustomAttributeFieldContext> = ({attrName,
       rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
     >
       <Select onSelect={(val: string) => onChange(val)} {...additionalProps}>
-        {locales.map(it => <SelectOption key={it.name} value={it.name}>{it.displayName}</SelectOption>)}
+        {locales.map(it => (
+          <SelectOption key={it.name} value={it.name}>
+            {it.displayName}
+          </SelectOption>
+        ))}
       </Select>
     </FormItem>
   )

@@ -8,11 +8,7 @@ import {DeleteTwoTone, PlusCircleOutlined} from '@ant-design/icons'
 
 import {Split} from 'src/uiKit/Split'
 import {DATASET_ITEM_NAME} from 'src/config/constants'
-import {
-  type DataWithPagination,
-  type RequestParams,
-  DataGrid
-} from 'src/uiKit/DataGrid'
+import {type DataWithPagination, type RequestParams, DataGrid} from 'src/uiKit/DataGrid'
 import {getInitialData, processLocal} from 'src/util/datagrid'
 import {Column, Dataset, DatasetSpec} from 'src/types/bi'
 import {NamedColumn} from 'src/types/bi'
@@ -35,8 +31,7 @@ let customFieldCounter: number = 0
 export function DatasetFields({data: dataWrapper, buffer, onBufferChange}: CustomComponentContext) {
   const data = dataWrapper.data as Dataset | undefined
   const {item} = dataWrapper
-  if (item.name !== DATASET_ITEM_NAME)
-    throw new Error('Illegal argument')
+  if (item.name !== DATASET_ITEM_NAME) throw new Error('Illegal argument')
 
   const {t} = useTranslation()
   const appProps = useAppProperties()
@@ -54,7 +49,7 @@ export function DatasetFields({data: dataWrapper, buffer, onBufferChange}: Custo
   const isNew = !data?.id
 
   useEffect(() => {
-    const newSpec = data?.spec ?? {} as Partial<DatasetSpec>
+    const newSpec = data?.spec ?? ({} as Partial<DatasetSpec>)
     setNamedFields(toNamedFields(newSpec.columns ?? {}))
     onBufferChange({
       spec: newSpec
@@ -65,21 +60,18 @@ export function DatasetFields({data: dataWrapper, buffer, onBufferChange}: Custo
     setVersion(prevVersion => prevVersion + 1)
   }, [namedFields])
 
-  if (isNew)
-    return null
+  if (isNew) return null
 
   const handleRequest = (params: RequestParams) => {
-    setFilteredData(
-      processLocal({data: namedFields, params, minPageSize, maxPageSize})
-    )
+    setFilteredData(processLocal({data: namedFields, params, minPageSize, maxPageSize}))
   }
 
   function handleFieldChange(updatedField: NamedColumn, prevName: string) {
-    if (!acl.canWrite)
-      return
+    if (!acl.canWrite) return
 
-    const newNamedFields =
-            allFields.hasOwnProperty(prevName) ? namedFields.map(f => f.name === prevName ? updatedField : f) : [updatedField, ...namedFields]
+    const newNamedFields = allFields.hasOwnProperty(prevName)
+      ? namedFields.map(f => (f.name === prevName ? updatedField : f))
+      : [updatedField, ...namedFields]
 
     setNamedFields(newNamedFields)
 
@@ -100,12 +92,10 @@ export function DatasetFields({data: dataWrapper, buffer, onBufferChange}: Custo
   }
 
   function createDraft() {
-    if (!acl.canWrite)
-      return
+    if (!acl.canWrite) return
 
     const ownColNames = Object.keys(ownFields).sort()
-    if (ownColNames.length === 0)
-      return
+    if (ownColNames.length === 0) return
 
     const firstOwnColName = ownColNames[0]
     const firstOwnColumn = ownFields[firstOwnColName]
@@ -126,8 +116,7 @@ export function DatasetFields({data: dataWrapper, buffer, onBufferChange}: Custo
   }
 
   function handleFieldEdit(fieldName: string) {
-    if (!allFields.hasOwnProperty(fieldName))
-      throw new Error(`Field [${fieldName}] not found`)
+    if (!allFields.hasOwnProperty(fieldName)) throw new Error(`Field [${fieldName}] not found`)
 
     const field = allFields[fieldName]
     setCurrentField({...field, name: fieldName})
@@ -136,14 +125,11 @@ export function DatasetFields({data: dataWrapper, buffer, onBufferChange}: Custo
 
   const renderToolbar = () => (
     <Space size={10}>
-      <Title level={5} style={{display: 'inline'}}>{t('Fields')}</Title>
+      <Title level={5} style={{display: 'inline'}}>
+        {t('Fields')}
+      </Title>
       {acl.canWrite && !_.isEmpty(ownFields) && (
-        <Button
-          type="primary"
-          size="small"
-          icon={<PlusCircleOutlined/>}
-          onClick={createDraft}
-        >
+        <Button type="primary" size="small" icon={<PlusCircleOutlined />} onClick={createDraft}>
           {t('Add')}
         </Button>
       )}
@@ -157,7 +143,7 @@ export function DatasetFields({data: dataWrapper, buffer, onBufferChange}: Custo
       items.push({
         key: 'delete',
         label: t('Delete'),
-        icon: <DeleteTwoTone twoToneColor="#eb2f96"/>,
+        icon: <DeleteTwoTone twoToneColor="#eb2f96" />,
         onClick: () => removeField(row.original.name)
       })
     }
@@ -166,8 +152,7 @@ export function DatasetFields({data: dataWrapper, buffer, onBufferChange}: Custo
   }
 
   function removeField(name: string) {
-    if (!acl.canWrite || ownFields.hasOwnProperty(name))
-      return
+    if (!acl.canWrite || ownFields.hasOwnProperty(name)) return
 
     const newNamedFields = namedFields.filter(nf => nf.name !== name)
 
@@ -225,11 +210,7 @@ export function DatasetFields({data: dataWrapper, buffer, onBufferChange}: Custo
         </div>
 
         <div style={{padding: 16}}>
-          <DataPreview
-            dataset={data}
-            allFields={allFields}
-            height={MIN_BOTTOM_PANE_SIZE}
-          />
+          <DataPreview dataset={data} allFields={allFields} height={MIN_BOTTOM_PANE_SIZE} />
         </div>
       </Split>
 

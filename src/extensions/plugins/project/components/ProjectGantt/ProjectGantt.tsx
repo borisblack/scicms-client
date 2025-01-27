@@ -23,14 +23,11 @@ const WEEK_COLUMN_WIDTH = 250
 const Gantt = lazy(() => import('./Gantt'))
 
 function calculateColumnWidth(viewMode: ViewMode) {
-  if (viewMode === ViewMode.Year)
-    return YEAR_COLUMN_WIDTH
+  if (viewMode === ViewMode.Year) return YEAR_COLUMN_WIDTH
 
-  if (viewMode === ViewMode.Month)
-    return MONTH_COLUMN_WIDTH
+  if (viewMode === ViewMode.Month) return MONTH_COLUMN_WIDTH
 
-  if (viewMode === ViewMode.Week)
-    return WEEK_COLUMN_WIDTH
+  if (viewMode === ViewMode.Week) return WEEK_COLUMN_WIDTH
 
   return DEFAULT_COLUMN_WIDTH
 }
@@ -49,16 +46,12 @@ export function ProjectGantt({data: dataWrapper}: CustomComponentContext) {
   const acl = useAcl(item, data)
 
   useEffect(() => {
-    if (!data?.id)
-      return
+    if (!data?.id) return
 
     setLoading(true)
     fetchAllTasksByFilter(data.id, topLevelTasksOnly ? 0 : -1, parentId)
       .then(tasks => {
-        const newTasks = [
-          mapToProjectTask(data as Project),
-          ...tasks.map(task => mapToGanttTask(task))
-        ]
+        const newTasks = [mapToProjectTask(data as Project), ...tasks.map(task => mapToGanttTask(task))]
         setGanttTasks(newTasks)
       })
       .finally(() => {
@@ -72,14 +65,9 @@ export function ProjectGantt({data: dataWrapper}: CustomComponentContext) {
     if (task.project) {
       const [start, end] = getStartEndDateForProject(newTasks, task.project)
       const project = newTasks[newTasks.findIndex(t => t.id === task.project)]
-      if (
-        project.start.getTime() !== start.getTime() ||
-                project.end.getTime() !== end.getTime()
-      ) {
-        const changedProject = { ...project, start, end }
-        newTasks = newTasks.map(t =>
-          t.id === task.project ? changedProject : t
-        )
+      if (project.start.getTime() !== start.getTime() || project.end.getTime() !== end.getTime()) {
+        const changedProject = {...project, start, end}
+        newTasks = newTasks.map(t => (t.id === task.project ? changedProject : t))
       }
     }
     setGanttTasks(newTasks)
@@ -117,8 +105,7 @@ export function ProjectGantt({data: dataWrapper}: CustomComponentContext) {
 
   const handleRefresh = () => setVersion(prevVersion => prevVersion + 1)
 
-  if (!data)
-    return null
+  if (!data) return null
 
   return (
     <div className={styles.wrapper}>

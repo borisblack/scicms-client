@@ -11,9 +11,9 @@ import SourcesQueryBuilder, {SourcesQueryBuildResult} from './SourcesQueryBuilde
 import styles from './SourcesDesigner.module.css'
 
 interface SourcesDesignerProps {
-    sources: DatasetSources
-    canEdit: boolean
-    onChange: (sources: DatasetSources, buildResult: SourcesQueryBuildResult) => void
+  sources: DatasetSources
+  canEdit: boolean
+  onChange: (sources: DatasetSources, buildResult: SourcesQueryBuildResult) => void
 }
 
 const LEFT_PANE_WIDTH = 400
@@ -33,7 +33,7 @@ export default function SourcesDesigner({sources, canEdit, onChange}: SourcesDes
       accept: DndItemType.SOURCE_TABLE,
       canDrop: (item: Table) => handleCanDrop(item),
       drop: (item: Table) => handleDrop(item),
-      collect: (monitor) => ({
+      collect: monitor => ({
         isOver: monitor.isOver(),
         canDrop: monitor.canDrop()
       })
@@ -46,11 +46,9 @@ export default function SourcesDesigner({sources, canEdit, onChange}: SourcesDes
   }, [sources])
 
   function handleCanDrop(table: Table): boolean {
-    if (!canEdit)
-      return false
+    if (!canEdit) return false
 
-    if (table.name === sources.mainTable?.name)
-      return false
+    if (table.name === sources.mainTable?.name) return false
 
     const joinedTableIndex = sources.joinedTables.findIndex(t => t.name === table.name)
     return joinedTableIndex === -1
@@ -66,10 +64,7 @@ export default function SourcesDesigner({sources, canEdit, onChange}: SourcesDes
     } else {
       newSources = {
         mainTable: sources.mainTable,
-        joinedTables: [
-          ...sources.joinedTables,
-          {...table, joinType: JoinType.inner, joins: []}
-        ]
+        joinedTables: [...sources.joinedTables, {...table, joinType: JoinType.inner, joins: []}]
       }
     }
     onChange(newSources, queryBuilder.build(newSources))
@@ -115,34 +110,35 @@ export default function SourcesDesigner({sources, canEdit, onChange}: SourcesDes
     let top = TABLE_WIDGET_HEIGHT / 2
 
     return sources.joinedTables.map((joinedTable, i) => {
-      const vStep = (i === 0 ? (TABLE_WIDGET_HEIGHT / 2) : (i === 1 ? (TABLE_WIDGET_HEIGHT/2 + VERTICAL_SPACE) : (TABLE_WIDGET_HEIGHT + VERTICAL_SPACE)))
+      const vStep =
+        i === 0
+          ? TABLE_WIDGET_HEIGHT / 2
+          : i === 1
+            ? TABLE_WIDGET_HEIGHT / 2 + VERTICAL_SPACE
+            : TABLE_WIDGET_HEIGHT + VERTICAL_SPACE
       const isJoinedTableValid = queryBuilder.validateJoinedTable(joinedTable)
-      const res = (i === 0) ? (
-        <LineHorizontal
-          key={joinedTable.name}
-          y={top}
-          x1={TABLE_WIDGET_WIDTH}
-          x2={LEFT_PANE_WIDTH}
-          valid={isJoinedTableValid}
-          onClick={() => handleLineClick(joinedTable)}
-        />
-      ) : (
-        <div key={joinedTable.name}>
-          <LineVertical
-            x={TABLE_WIDGET_WIDTH / 2}
-            y1={top}
-            y2={top + vStep}
-            valid={isJoinedTableValid}
-          />
+      const res =
+        i === 0 ? (
           <LineHorizontal
-            y={top + vStep}
-            x1={TABLE_WIDGET_WIDTH / 2}
+            key={joinedTable.name}
+            y={top}
+            x1={TABLE_WIDGET_WIDTH}
             x2={LEFT_PANE_WIDTH}
             valid={isJoinedTableValid}
             onClick={() => handleLineClick(joinedTable)}
           />
-        </div>
-      )
+        ) : (
+          <div key={joinedTable.name}>
+            <LineVertical x={TABLE_WIDGET_WIDTH / 2} y1={top} y2={top + vStep} valid={isJoinedTableValid} />
+            <LineHorizontal
+              y={top + vStep}
+              x1={TABLE_WIDGET_WIDTH / 2}
+              x2={LEFT_PANE_WIDTH}
+              valid={isJoinedTableValid}
+              onClick={() => handleLineClick(joinedTable)}
+            />
+          </div>
+        )
 
       top += vStep
 
@@ -156,7 +152,7 @@ export default function SourcesDesigner({sources, canEdit, onChange}: SourcesDes
   }
 
   function handleJoinedTableChange(joinedTable: JoinedTable) {
-    const newJoinedTables = sources.joinedTables.map(jt => jt.name === joinedTable.name ? joinedTable : jt)
+    const newJoinedTables = sources.joinedTables.map(jt => (jt.name === joinedTable.name ? joinedTable : jt))
     const newSources = {
       mainTable: sources.mainTable,
       joinedTables: newJoinedTables
@@ -168,10 +164,7 @@ export default function SourcesDesigner({sources, canEdit, onChange}: SourcesDes
     <>
       <div className={styles.sourcesDesigner} ref={drop}>
         <div className={styles.sourcesDesigner_content}>
-          <div
-            className={styles.sourcesDesigner_content_pane}
-            style={{width: LEFT_PANE_WIDTH}}
-          >
+          <div className={styles.sourcesDesigner_content_pane} style={{width: LEFT_PANE_WIDTH}}>
             {sources.mainTable && (
               <TableWidget
                 style={{width: TABLE_WIDGET_WIDTH, height: TABLE_WIDGET_HEIGHT}}
@@ -181,10 +174,7 @@ export default function SourcesDesigner({sources, canEdit, onChange}: SourcesDes
               />
             )}
           </div>
-          <div
-            className={styles.sourcesDesigner_content_pane}
-            style={{width: RIGHT_PANE_WIDTH, left: LEFT_PANE_WIDTH}}
-          >
+          <div className={styles.sourcesDesigner_content_pane} style={{width: RIGHT_PANE_WIDTH, left: LEFT_PANE_WIDTH}}>
             {renderJoinedTables()}
           </div>
           {renderLines()}

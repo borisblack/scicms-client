@@ -14,14 +14,16 @@ export const DatePropertyValue: FC<PropertyValueProps> = ({type, value, canEdit,
   const appProps = useAppProperties()
   const {momentDisplayDateFormatString} = appProps.dateTime
 
-  if (type !== FieldType.date)
-    throw new Error('Illegal type')
+  if (type !== FieldType.date) throw new Error('Illegal type')
 
-  const parsedValue = useMemo(() => value == null ? undefined : dayjs.utc(value), [value])
+  const parsedValue = useMemo(() => (value == null ? undefined : dayjs.utc(value)), [value])
 
-  const handleChange = useCallback((val: dayjs.Dayjs | null) => {
-    onChange(val == null ? undefined : val.format())
-  }, [onChange])
+  const handleChange = useCallback(
+    (val: dayjs.Dayjs | null) => {
+      onChange(val == null ? undefined : val.format())
+    },
+    [onChange]
+  )
 
   return (
     <DatePicker

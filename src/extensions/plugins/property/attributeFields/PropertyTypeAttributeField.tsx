@@ -29,13 +29,18 @@ const propertyTypes: PropertyType[] = [
   FieldType.json
 ]
 
-export const PropertyTypeAttributeField: FC<CustomAttributeFieldContext> = ({attrName, attribute, value, form, onChange}) => {
+export const PropertyTypeAttributeField: FC<CustomAttributeFieldContext> = ({
+  attrName,
+  attribute,
+  value,
+  form,
+  onChange
+}) => {
   const {t} = useTranslation()
   const isDisabled = useMemo(() => attribute.readOnly, [attribute.readOnly])
   const additionalProps = useMemo((): any => {
     const additionalProps: any = {}
-    if (isDisabled)
-      additionalProps.disabled = true
+    if (isDisabled) additionalProps.disabled = true
 
     return additionalProps
   }, [isDisabled])

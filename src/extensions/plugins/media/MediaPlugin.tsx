@@ -9,7 +9,7 @@ export class MediaPlugin extends Plugin {
     this.addAttributeField({
       id: MEDIA_FILE_ATTRIBUTE_FIELD_ID,
       mountPoint: `${MEDIA_ITEM_NAME}.${FILENAME_ATTR_NAME}`,
-      render: ({context}) => <MediaFileAttributeField {...context}/>
+      render: ({context}) => <MediaFileAttributeField {...context} />
     })
   }
 

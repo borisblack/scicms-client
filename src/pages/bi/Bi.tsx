@@ -52,23 +52,23 @@ function Bi() {
 
   function initializePage() {
     setLoading(true)
-    Promise.all([
-      DashboardCategoryService.fetchDashboardCategories(),
-      DashboardService.fetchDashboards()
-    ])
+    Promise.all([DashboardCategoryService.fetchDashboardCategories(), DashboardService.fetchDashboards()])
       .then(([dashboardCategoryList, dashboardList]) => {
-        const dashboardCategoryById: Record<string, DashboardCategory> = _.mapKeys(dashboardCategoryList, category => category.id)
+        const dashboardCategoryById: Record<string, DashboardCategory> = _.mapKeys(
+          dashboardCategoryList,
+          category => category.id
+        )
         setDashboardCategoryMap(dashboardCategoryById)
 
         const dashboardsById: Record<string, Dashboard> = _.mapKeys(dashboardList, dashboard => dashboard.id)
         setDashboardMap(dashboardsById)
 
         if (biProps.openFirstDashboard) {
-          const publicData =
-                        dashboardList.filter(dashboard => dashboard.isPublic /*&& dashboard.categories.data.length === 0*/)
+          const publicData = dashboardList.filter(
+            dashboard => dashboard.isPublic /*&& dashboard.categories.data.length === 0*/
+          )
 
-          if (publicData.length > 0)
-            openDashboard(publicData[0])
+          if (publicData.length > 0) openDashboard(publicData[0])
         }
       })
       .finally(() => {
@@ -77,21 +77,16 @@ function Bi() {
   }
 
   function openDashboard(dashboard: Dashboard, extra?: DashboardExtra) {
-    mdiContext.openTab(
-      createMDITab(
-        dashboardItem,
-        ViewType.view,
-        dashboard,
-        extra
-      )
-    )
+    mdiContext.openTab(createMDITab(dashboardItem, ViewType.view, dashboard, extra))
   }
 
   function getDashboardMenuItems(): ItemType[] {
-    const rootCategories =
-            Object.values(dashboardCategoryMap).filter(category => category.parentCategories.data.length === 0)
-    const rootDashboards =
-            Object.values(dashboardMap).filter(dashboard => dashboard.isPublic && dashboard.categories.data.length === 0)
+    const rootCategories = Object.values(dashboardCategoryMap).filter(
+      category => category.parentCategories.data.length === 0
+    )
+    const rootDashboards = Object.values(dashboardMap).filter(
+      dashboard => dashboard.isPublic && dashboard.categories.data.length === 0
+    )
 
     return mapDashboardMenuItems('root', rootCategories, rootDashboards)
   }
@@ -100,15 +95,14 @@ function Bi() {
     prefix: string,
     dashboardCategoryList: DashboardCategory[],
     dashboardList: Dashboard[]
-  ): ItemType[] => ([
+  ): ItemType[] => [
     ...dashboardCategoryList.map(category => ({
       key: `${prefix}#${category.id}`,
       label: category.name,
-      icon: category.icon ? <IconSuspense iconName={category.icon}/> : <FolderOutlined />,
+      icon: category.icon ? <IconSuspense iconName={category.icon} /> : <FolderOutlined />,
       children: mapDashboardMenuItems(
         `${prefix}#${category.id}`,
-        category.childCategories.data
-          .map(childCategory => dashboardCategoryMap[childCategory.id]),
+        category.childCategories.data.map(childCategory => dashboardCategoryMap[childCategory.id]),
         category.dashboards.data
           .filter(childDashboard => childDashboard.isPublic)
           .map(childDashboard => dashboardMap[childDashboard.id])
@@ -117,43 +111,32 @@ function Bi() {
     ...dashboardList.map(dashboard => ({
       key: `${prefix}#${dashboard.id}`,
       label: dashboard.name,
-      onClick: () => mdiContext.openTab(
-        createMDITab(
-          dashboardItem,
-          ViewType.view,
-          dashboard
-        )
-      )
+      onClick: () => mdiContext.openTab(createMDITab(dashboardItem, ViewType.view, dashboard))
     }))
-  ])
+  ]
 
   const renderDashboard = (data: ItemDataWrapper): ReactNode => (
     <div className="Bi-page-content">
-      <DashboardSpec
-        data={data}
-        readOnly
-        buffer={{}}
-        onBufferChange={() => {}}
-      />
+      <DashboardSpec data={data} readOnly buffer={{}} onBufferChange={() => {}} />
     </div>
   )
 
-  if (!me || isExpired)
-    return <Navigate to="/login?targetUrl=/bi"/>
+  if (!me || isExpired) return <Navigate to="/login?targetUrl=/bi" />
 
-  if (!isInitialized)
-    return null
+  if (!isInitialized) return null
 
   return (
     <Layout className="Bi">
       <Navbar
         ctx={mdiContext}
-        menuItems={[{
-          key: 'dashboards',
-          label: t('Dashboards'),
-          icon: <FundOutlined />,
-          children: getDashboardMenuItems()
-        }]}
+        menuItems={[
+          {
+            key: 'dashboards',
+            label: t('Dashboards'),
+            icon: <FundOutlined />,
+            children: getDashboardMenuItems()
+          }
+        ]}
         isLoading={loading}
         appPrefix="bi"
         width={300}

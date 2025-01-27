@@ -21,13 +21,7 @@ export function initTasks() {
     },
     {
       start: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1),
-      end: new Date(
-        currentDate.getFullYear(),
-        currentDate.getMonth(),
-        2,
-        12,
-        28
-      ),
+      end: new Date(currentDate.getFullYear(), currentDate.getMonth(), 2, 12, 28),
       name: 'Idea',
       id: 'Task 0',
       progress: 45,

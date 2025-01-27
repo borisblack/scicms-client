@@ -5,9 +5,12 @@ import {extractAxiosErrorMessage} from 'src/services'
 import QueryManager from 'src/services/query'
 import {ApiMiddlewareContext, ApiOperation} from '../types'
 
-export async function handleItemTemplateApiOperation(operation: ApiOperation, context: ApiMiddlewareContext, next: () => any) {
-  if (context.item.name !== ITEM_TEMPLATE_ITEM_NAME)
-    throw new Error('Illegal argument')
+export async function handleItemTemplateApiOperation(
+  operation: ApiOperation,
+  context: ApiMiddlewareContext,
+  next: () => any
+) {
+  if (context.item.name !== ITEM_TEMPLATE_ITEM_NAME) throw new Error('Illegal argument')
 
   switch (operation) {
     case ApiOperation.CREATE:

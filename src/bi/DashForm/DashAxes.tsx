@@ -37,12 +37,7 @@ export default function DashAxes({dataset, dash, dashHandler, formFieldName, can
               initialValue={initialValue}
               rules={axis.required ? [requiredFieldRule()] : []}
             >
-              <Select
-                style={{display: 'none'}}
-                allowClear
-                mode="multiple"
-                options={[]}
-              />
+              <Select style={{display: 'none'}} allowClear mode="multiple" options={[]} />
             </Form.Item>
 
             <DashAxisArea
@@ -63,21 +58,10 @@ export default function DashAxes({dataset, dash, dashHandler, formFieldName, can
         label={t('Sort Fields')}
         initialValue={dash.sortField ? (Array.isArray(dash.sortField) ? dash.sortField : [dash.sortField]) : undefined}
       >
-        <Select
-          style={{display: 'none'}}
-          allowClear
-          mode="multiple"
-          options={[]}
-        />
+        <Select style={{display: 'none'}} allowClear mode="multiple" options={[]} />
       </Form.Item>
 
-      <DashAxisArea
-        dataset={dataset}
-        dash={dash}
-        namePath="sortField"
-        cardinality={-1}
-        canEdit={canEdit}
-      />
+      <DashAxisArea dataset={dataset} dash={dash} namePath="sortField" cardinality={-1} canEdit={canEdit} />
     </div>
   )
 }

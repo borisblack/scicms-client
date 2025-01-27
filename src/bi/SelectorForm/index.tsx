@@ -14,10 +14,10 @@ import styles from './SelectorForm.module.css'
 import SelectorLinkTypeLabel from './SelectorLinkTypeLabel'
 
 interface SelectorFormProps {
-    selector: ISelector
-    datasetMap: Record<string, Dataset>
-    dashes: IDash[]
-    canEdit: boolean
+  selector: ISelector
+  datasetMap: Record<string, Dataset>
+  dashes: IDash[]
+  canEdit: boolean
 }
 
 export interface SelectorFormValues extends ISelector {}
@@ -30,16 +30,18 @@ export default function SelectorForm({selector, datasetMap, dashes, canEdit}: Se
   const {t} = useTranslation()
   const {openDataset} = useBIData({withDashboards: true})
   const datasetName = Form.useWatch('dataset', form)
-  const dataset: Dataset | undefined = useMemo(() => datasetName ? datasetMap[datasetName] : undefined, [datasetName, datasetMap])
+  const dataset: Dataset | undefined = useMemo(
+    () => (datasetName ? datasetMap[datasetName] : undefined),
+    [datasetName, datasetMap]
+  )
   const fieldOptions: DefaultOptionType[] = useMemo(() => {
-    if (!dataset)
-      return []
+    if (!dataset) return []
 
     return Object.entries(dataset.spec.columns).map(([curFieldName, curField]) => ({
       label: (
         <span className="text-ellipsis">
-          <FieldTypeIcon fieldType={curField.type}/>
-                    &nbsp;&nbsp;
+          <FieldTypeIcon fieldType={curField.type} />
+          &nbsp;&nbsp;
           {curField.alias || curFieldName}
         </span>
       ),
@@ -48,8 +50,7 @@ export default function SelectorForm({selector, datasetMap, dashes, canEdit}: Se
   }, [dataset])
   const fieldType: ColumnType | undefined = Form.useWatch('type', form)
   const opOptions: DefaultOptionType[] = useMemo(() => {
-    if (!fieldType)
-      return []
+    if (!fieldType) return []
 
     return queryOpList(fieldType).map(op => ({
       label: queryOpTitles[op],
@@ -88,70 +89,52 @@ export default function SelectorForm({selector, datasetMap, dashes, canEdit}: Se
   return (
     <Row gutter={10}>
       <FormItem name={['id']} hidden>
-        <Input/>
+        <Input />
       </FormItem>
 
       <Col span={24}>
-        <FormItem
-          className={styles.formItem}
-          name={['name']}
-          label={t('Name')}
-          rules={[requiredFieldRule()]}
-        >
-          <Input/>
+        <FormItem className={styles.formItem} name={['name']} label={t('Name')} rules={[requiredFieldRule()]}>
+          <Input />
         </FormItem>
       </Col>
       <Col span={24}>
         <FormItem
           className={styles.formItem}
           name={['dataset']}
-          label={(
+          label={
             <Space>
               {t('Dataset')}
               {dataset && (
                 <Tooltip key="open" title={t('Open')}>
                   <Link onClick={() => openDataset(dataset.id)}>
-                    <FolderOpenOutlined/>
+                    <FolderOpenOutlined />
                   </Link>
                 </Tooltip>
               )}
             </Space>
-          )}
+          }
         >
           <Select
             allowClear
-            options={Object.keys(datasetMap).sort().map(d => ({label: d, value: d}))}
+            options={Object.keys(datasetMap)
+              .sort()
+              .map(d => ({label: d, value: d}))}
             onSelect={handleDatasetChange}
             onClear={handleDatasetChange}
           />
         </FormItem>
       </Col>
       <Col span={24}>
-        <FormItem
-          className={styles.formItem}
-          name={['field']}
-          label={t('Field')}
-          rules={[requiredFieldRule()]}
-        >
+        <FormItem className={styles.formItem} name={['field']} label={t('Field')} rules={[requiredFieldRule()]}>
           {dataset ? (
-            <Select
-              allowClear
-              options={fieldOptions}
-              onSelect={handleFieldChange}
-              onClear={handleFieldChange}
-            />
+            <Select allowClear options={fieldOptions} onSelect={handleFieldChange} onClear={handleFieldChange} />
           ) : (
-            <Input/>
+            <Input />
           )}
         </FormItem>
       </Col>
       <Col span={24}>
-        <FormItem
-          className={styles.formItem}
-          name={['type']}
-          label={t('Type')}
-          rules={[requiredFieldRule()]}
-        >
+        <FormItem className={styles.formItem} name={['type']} label={t('Type')} rules={[requiredFieldRule()]}>
           <Select
             allowClear
             disabled={!canEdit || !!dataset}
@@ -162,16 +145,8 @@ export default function SelectorForm({selector, datasetMap, dashes, canEdit}: Se
         </FormItem>
       </Col>
       <Col span={24}>
-        <FormItem
-          className={styles.formItem}
-          name={['op']}
-          label={t('Operator')}
-          rules={[requiredFieldRule()]}
-        >
-          <Select
-            allowClear
-            options={opOptions}
-          />
+        <FormItem className={styles.formItem} name={['op']} label={t('Operator')} rules={[requiredFieldRule()]}>
+          <Select allowClear options={opOptions} />
         </FormItem>
       </Col>
       <Col span={24}>
@@ -184,10 +159,7 @@ export default function SelectorForm({selector, datasetMap, dashes, canEdit}: Se
                 return (
                   <Row key={key} gutter={10}>
                     <Col span={14}>
-                      <FormItem
-                        name={[linkFieldNumber, 'dashId']}
-                        rules={[requiredFieldRule()]}
-                      >
+                      <FormItem name={[linkFieldNumber, 'dashId']} rules={[requiredFieldRule()]}>
                         <Select
                           placeholder={t('Dash')}
                           options={dashes.map(dash => ({
@@ -199,16 +171,13 @@ export default function SelectorForm({selector, datasetMap, dashes, canEdit}: Se
                     </Col>
 
                     <Col span={6}>
-                      <FormItem
-                        name={[linkFieldNumber, 'type']}
-                        rules={[requiredFieldRule()]}
-                      >
+                      <FormItem name={[linkFieldNumber, 'type']} rules={[requiredFieldRule()]}>
                         <Select
                           suffixIcon={null}
                           placeholder={t('Type')}
                           options={Object.keys(SelectorLinkType).map(linkType => ({
                             value: linkType,
-                            label: <SelectorLinkTypeLabel linkType={linkType as SelectorLinkType}/>
+                            label: <SelectorLinkTypeLabel linkType={linkType as SelectorLinkType} />
                           }))}
                         />
                       </FormItem>
@@ -218,7 +187,7 @@ export default function SelectorForm({selector, datasetMap, dashes, canEdit}: Se
                       <Button
                         type="text"
                         danger
-                        icon={<DeleteOutlined/>}
+                        icon={<DeleteOutlined />}
                         title={t('Remove')}
                         onClick={() => remove(linkFieldNumber)}
                       />
@@ -228,10 +197,7 @@ export default function SelectorForm({selector, datasetMap, dashes, canEdit}: Se
               })}
               <Row gutter={10}>
                 <Col span={4}>
-                  <Button
-                    icon={<PlusCircleOutlined/>}
-                    onClick={() => add({type: SelectorLinkType.in})}
-                  >
+                  <Button icon={<PlusCircleOutlined />} onClick={() => add({type: SelectorLinkType.in})}>
                     {t('Add')}
                   </Button>
                 </Col>

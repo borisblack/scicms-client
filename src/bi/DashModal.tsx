@@ -22,7 +22,7 @@ interface DashFormModalProps {
 interface MapDashValuesParams {
   dash: IDash
   values: DashFormValues
-  dataset?: Dataset  
+  dataset?: Dataset
   timezone: string
 }
 
@@ -41,13 +41,24 @@ const mapDashValues = ({dash, values, dataset, timezone}: MapDashValuesParams): 
 
 let customFieldCounter: number = 0
 
-export default function DashModal({dash, datasetMap, dashboards, canEdit, open, onChange, onClose}: DashFormModalProps) {
+export default function DashModal({
+  dash,
+  datasetMap,
+  dashboards,
+  canEdit,
+  open,
+  onChange,
+  onClose
+}: DashFormModalProps) {
   const {t} = useTranslation()
   const appProps = useAppProperties()
   const {timeZone} = appProps.dateTime
   const [form] = Form.useForm()
   const [selectedDataset, setSelectedDataset] = useState<Dataset | undefined>(datasetMap[dash.dataset ?? ''])
-  const allFields = useMemo(() => ({...selectedDataset?.spec.columns ?? {}, ...dash.fields}), [selectedDataset?.spec.columns, dash.fields])
+  const allFields = useMemo(
+    () => ({...(selectedDataset?.spec.columns ?? {}), ...dash.fields}),
+    [selectedDataset?.spec.columns, dash.fields]
+  )
   const datasetOwnFields = useMemo(() => _.pickBy(allFields, col => !col.custom), [allFields])
   const [fieldToChange, setFieldToChange] = useState<NamedColumn>()
   const {show: showFieldModal, close: closeFieldModal, modalProps: fieldModalProps} = useModal()
@@ -65,8 +76,7 @@ export default function DashModal({dash, datasetMap, dashboards, canEdit, open, 
 
   function handleFormFinish(values: DashFormValues) {
     const dataset = values.dataset ? datasetMap[values.dataset] : null
-    if (dataset == null)
-      return
+    if (dataset == null) return
 
     onChange(mapDashValues({dash, values, dataset, timezone: timeZone}))
     onClose()
@@ -78,12 +88,10 @@ export default function DashModal({dash, datasetMap, dashboards, canEdit, open, 
   }
 
   function createDraftField() {
-    if (!canEdit)
-      return
+    if (!canEdit) return
 
     const datasetOwnColNames = Object.keys(datasetOwnFields).sort()
-    if (datasetOwnColNames.length === 0)
-      return
+    if (datasetOwnColNames.length === 0) return
 
     const firstOwnColName = datasetOwnColNames[0]
     const firstOwnColumn = datasetOwnFields[firstOwnColName]
@@ -112,11 +120,9 @@ export default function DashModal({dash, datasetMap, dashboards, canEdit, open, 
     !allFields.hasOwnProperty(fieldName) || dash.fields.hasOwnProperty(fieldName)
 
   function handleFieldChange(field: NamedColumn, prevName: string) {
-    if (!canEdit)
-      return
+    if (!canEdit) return
 
-    if (!canFieldEdit(prevName))
-      throw new Error('Dataset field cannot be changed here.')
+    if (!canFieldEdit(prevName)) throw new Error('Dataset field cannot be changed here.')
 
     const newFields: Record<string, Column> = {
       ...dash.fields,
@@ -134,11 +140,9 @@ export default function DashModal({dash, datasetMap, dashboards, canEdit, open, 
   }
 
   function handleFieldRemove(fieldName: string) {
-    if (!canEdit)
-      return
+    if (!canEdit) return
 
-    if (!canFieldEdit(fieldName))
-      throw new Error('Dataset field cannot be removed here.')
+    if (!canFieldEdit(fieldName)) throw new Error('Dataset field cannot be removed here.')
 
     onChange({
       ...dash,
@@ -157,18 +161,14 @@ export default function DashModal({dash, datasetMap, dashboards, canEdit, open, 
       extra={
         <Space>
           <Button onClick={cancelEdit}>{t('Cancel')}</Button>
-          <Button disabled={!canEdit} type="primary" onClick={() => form.submit()}>OK</Button>
+          <Button disabled={!canEdit} type="primary" onClick={() => form.submit()}>
+            OK
+          </Button>
         </Space>
       }
       onClose={onClose}
     >
-      <Form
-        form={form}
-        size="small"
-        layout="vertical"
-        disabled={!canEdit}
-        onFinish={handleFormFinish}
-      >
+      <Form form={form} size="small" layout="vertical" disabled={!canEdit} onFinish={handleFormFinish}>
         <DashForm
           dash={dash}
           datasetMap={datasetMap}

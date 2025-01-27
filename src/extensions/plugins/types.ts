@@ -23,14 +23,15 @@ import {Item, ItemData, ItemDataWrapper} from 'src/types/schema'
  * tabs.content
  * <itemName>.tabs.content
  */
-export type CustomRendererMountPoint = string |
- 'default.header' |
- 'default.content' |
- 'default.footer' |
- 'view.header' |
- 'view.footer' |
- 'view.content' |
- 'tabs.content'
+export type CustomRendererMountPoint =
+  | string
+  | 'default.header'
+  | 'default.content'
+  | 'default.footer'
+  | 'view.header'
+  | 'view.footer'
+  | 'view.content'
+  | 'tabs.content'
 
 export interface CustomRenderer {
   mountPoint: CustomRendererMountPoint
@@ -50,7 +51,7 @@ export interface CustomRendererContext {
   onBufferChange: (buffer: IBuffer) => void
 }
 
-/** 
+/**
  * Custom component mount points (in additioonal to RenderMountPoint):
  * view.content.form.begin
  * view.content.form.end
@@ -61,11 +62,12 @@ export interface CustomRendererContext {
  * <itemName>.tabs.begin
  * <itemName>.tabs.end
  */
-export type CustomComponentMountPoint = CustomRendererMountPoint |
-  'view.content.form.begin' |
-  'view.content.form.end' |
-  'tabs.begin' |
-  'tabs.end'
+export type CustomComponentMountPoint =
+  | CustomRendererMountPoint
+  | 'view.content.form.begin'
+  | 'view.content.form.end'
+  | 'tabs.begin'
+  | 'tabs.end'
 
 export interface CustomComponent {
   id: string

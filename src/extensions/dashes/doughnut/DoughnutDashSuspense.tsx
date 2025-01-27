@@ -7,7 +7,7 @@ const DoughnutDash = lazy(() => import('./DoughnutDash'))
 function DoughnutDashSuspense(ctx: DashRenderContext) {
   return (
     <Suspense fallback={null}>
-      <DoughnutDash {...ctx}/>
+      <DoughnutDash {...ctx} />
     </Suspense>
   )
 }

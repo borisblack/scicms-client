@@ -30,17 +30,11 @@ function App() {
   }, [me, initializeIfNeeded])
 
   const renderItem = (data: ItemDataWrapper): ReactNode =>
-    data.viewType === ViewType.view ? (
-      <ViewNavTab data={data}/>
-    ) : (
-      <DefaultNavTab data={data}/>
-    )
+    data.viewType === ViewType.view ? <ViewNavTab data={data} /> : <DefaultNavTab data={data} />
 
-  if (!me || isExpired)
-    return <Navigate to="/login?targetUrl=/"/>
+  if (!me || isExpired) return <Navigate to="/login?targetUrl=/" />
 
-  if (!isInitialized)
-    return null
+  if (!isInitialized) return null
 
   return (
     <Layout className="App">

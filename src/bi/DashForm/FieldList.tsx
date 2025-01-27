@@ -9,12 +9,12 @@ import FieldItem from './FieldItem'
 import styles from './FieldList.module.css'
 
 interface FieldListProps {
-    dataset: Dataset
-    dash: IDash
-    canEdit: boolean
-    onFieldAdd: () => void
-    onFieldOpen: (field: NamedColumn) => void
-    onFieldRemove: (fieldName: string) => void
+  dataset: Dataset
+  dash: IDash
+  canEdit: boolean
+  onFieldAdd: () => void
+  onFieldOpen: (field: NamedColumn) => void
+  onFieldRemove: (fieldName: string) => void
 }
 
 const DEBOUNCE_WAIT_INTERVAL = 500
@@ -23,15 +23,17 @@ export default function FieldList({dataset, dash, canEdit, onFieldAdd, onFieldOp
   const {t} = useTranslation()
   const [q, setQ] = useState<string>()
   const filteredDatasetFieldNames = useMemo(
-    () => Object.keys(dataset.spec.columns)
-      .filter(fieldName => !q || fieldName.toLowerCase().includes(q.toLowerCase()))
-      .sort(),
+    () =>
+      Object.keys(dataset.spec.columns)
+        .filter(fieldName => !q || fieldName.toLowerCase().includes(q.toLowerCase()))
+        .sort(),
     [dataset.spec.columns, q]
   )
   const filteredDashFieldNames = useMemo(
-    () => Object.keys(dash.fields)
-      .filter(fieldName => !q || fieldName.toLowerCase().includes(q.toLowerCase()))
-      .sort(),
+    () =>
+      Object.keys(dash.fields)
+        .filter(fieldName => !q || fieldName.toLowerCase().includes(q.toLowerCase()))
+        .sort(),
     [dash.fields, q]
   )
 
@@ -42,16 +44,8 @@ export default function FieldList({dataset, dash, canEdit, onFieldAdd, onFieldOp
   return (
     <div>
       <Space className={styles.filterInput} size={4}>
-        <Input
-          allowClear
-          placeholder={t('Field name')} size="small"
-          onChange={handleFilter}
-        />
-        <Button
-          icon={<PlusOutlined/>}
-          title={t('Add')}
-          onClick={onFieldAdd}
-        />
+        <Input allowClear placeholder={t('Field name')} size="small" onChange={handleFilter} />
+        <Button icon={<PlusOutlined />} title={t('Add')} onClick={onFieldAdd} />
       </Space>
       <div className={styles.datasetFields}>
         {filteredDatasetFieldNames
@@ -71,8 +65,7 @@ export default function FieldList({dataset, dash, canEdit, onFieldAdd, onFieldOp
                 onFieldRemove={onFieldRemove}
               />
             )
-          })
-        }
+          })}
 
         {filteredDatasetFieldNames
           .filter(fieldName => {
@@ -91,8 +84,7 @@ export default function FieldList({dataset, dash, canEdit, onFieldAdd, onFieldOp
                 onFieldRemove={onFieldRemove}
               />
             )
-          })
-        }
+          })}
 
         {filteredDashFieldNames.map(fieldName => {
           const field = dash.fields[fieldName]

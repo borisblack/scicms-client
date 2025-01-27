@@ -12,24 +12,19 @@ import {useBIData, useBiProperties} from 'src/bi/util/hooks'
 import {handleDashClick} from '../util/antdPlot'
 
 interface PieDashOptions {
-    angleField?: string
-    colorField?: string
-    radius?: number
-    legendPosition?: LegendPosition
-    hideLegend?: boolean
-    rules?: string
+  angleField?: string
+  colorField?: string
+  radius?: number
+  legendPosition?: LegendPosition
+  hideLegend?: boolean
+  rules?: string
 }
 
 export default function PieDash({dataset, dash, data, onDashClick}: DashRenderContext) {
   const {openDashboard} = useBIData()
   const optValues = dash.optValues as PieDashOptions
   const {relatedDashboardId} = dash
-  const {
-    radius,
-    hideLegend,
-    legendPosition,
-    rules
-  } = optValues
+  const {radius, hideLegend, legendPosition, rules} = optValues
   const angleField = Array.isArray(optValues.angleField) ? optValues.angleField[0] : optValues.angleField
   const colorField = Array.isArray(optValues.colorField) ? optValues.colorField[0] : optValues.colorField
   const fieldRules = useMemo(() => RulesService.parseRules(rules), [rules])
@@ -39,27 +34,29 @@ export default function PieDash({dataset, dash, data, onDashClick}: DashRenderCo
   const {dateFormatString, timeFormatString, dateTimeFormatString} = biProps.dateTime
   const {dash: dashConfig, locale, fractionDigits, percentFractionDigits} = biProps
   const legendConfig = dashConfig.all.legend
-  const seriesColors = colorField ? RulesService.getSeriesColors(fieldRules, colorField, seriesData, defaultDashColors(seriesData.length, colors10, colors20)) : []
+  const seriesColors = colorField
+    ? RulesService.getSeriesColors(
+        fieldRules,
+        colorField,
+        seriesData,
+        defaultDashColors(seriesData.length, colors10, colors20)
+      )
+    : []
 
-  if (!angleField)
-    return <Alert message="angleField attribute not specified" type="error"/>
+  if (!angleField) return <Alert message="angleField attribute not specified" type="error" />
 
-  if (!colorField)
-    return <Alert message="colorField attribute not specified" type="error"/>
+  if (!colorField) return <Alert message="colorField attribute not specified" type="error" />
 
   const columns = {...(dataset.spec.columns ?? {}), ...dash.fields}
   const angleColumn = columns[angleField]
   const colorColumn = columns[colorField]
-  if (angleColumn == null || colorColumn == null)
-    return <Alert message="Invalid columns specification" type="error"/>
+  if (angleColumn == null || colorColumn == null) return <Alert message="Invalid columns specification" type="error" />
 
-  const handleEvent: DashEventHandler =
-        (chart, event) => handleDashClick(chart, event, colorField, queryFilter => {
-          if (relatedDashboardId)
-            openDashboard(relatedDashboardId, queryFilter)
-          else
-            onDashClick(queryFilter.value)
-        })
+  const handleEvent: DashEventHandler = (chart, event) =>
+    handleDashClick(chart, event, colorField, queryFilter => {
+      if (relatedDashboardId) openDashboard(relatedDashboardId, queryFilter)
+      else onDashClick(queryFilter.value)
+    })
 
   const config: PieConfig = {
     appendPadding: 10,
@@ -67,35 +64,56 @@ export default function PieDash({dataset, dash, data, onDashClick}: DashRenderCo
     angleField,
     colorField,
     radius,
-    legend: hideLegend ? false : {
-      position: legendPosition ?? 'top-left',
-      label: {
-        style: legendConfig?.label?.style
-      },
-      itemName: {
-        style: legendConfig?.itemName?.style
-      }
-    },
+    legend: hideLegend
+      ? false
+      : {
+          position: legendPosition ?? 'top-left',
+          label: {
+            style: legendConfig?.label?.style
+          },
+          itemName: {
+            style: legendConfig?.itemName?.style
+          }
+        },
     label: {
       type: 'inner',
       offset: '-30%',
-      content: ({ percent }) => `${toPercent(percent, percentFractionDigits)}%`,
+      content: ({percent}) => `${toPercent(percent, percentFractionDigits)}%`,
       style: dashConfig?.pie?.labelStyle
     },
-    interactions: [{
-      type: 'element-selected'
-    }, {
-      type: 'element-active'
-    }],
+    interactions: [
+      {
+        type: 'element-selected'
+      },
+      {
+        type: 'element-active'
+      }
+    ],
     autoFit: true,
     meta: {
       [angleField]: {
         alias: angleColumn.alias || angleField,
-        formatter: (value: any) => formatValue({value, type: columnType(angleColumn), dateFormatString, timeFormatString, dateTimeFormatString, fractionDigits})
+        formatter: (value: any) =>
+          formatValue({
+            value,
+            type: columnType(angleColumn),
+            dateFormatString,
+            timeFormatString,
+            dateTimeFormatString,
+            fractionDigits
+          })
       },
       [colorField]: {
         alias: colorColumn.alias || colorField,
-        formatter: (value: any) => formatValue({value, type: columnType(colorColumn), dateFormatString, timeFormatString, dateTimeFormatString, fractionDigits})
+        formatter: (value: any) =>
+          formatValue({
+            value,
+            type: columnType(colorColumn),
+            dateFormatString,
+            timeFormatString,
+            dateTimeFormatString,
+            fractionDigits
+          })
       }
     },
     color: seriesColors,
@@ -103,5 +121,5 @@ export default function PieDash({dataset, dash, data, onDashClick}: DashRenderCo
     onEvent: handleEvent
   }
 
-  return <Pie {...config} key={relatedDashboardId ?? uuidv4()}/>
+  return <Pie {...config} key={relatedDashboardId ?? uuidv4()} />
 }

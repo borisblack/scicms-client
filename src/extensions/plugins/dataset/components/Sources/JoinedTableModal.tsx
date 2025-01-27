@@ -6,23 +6,29 @@ import {JoinedTable, Table} from 'src/types/bi'
 import JoinedTableForm from './JoinedTableForm'
 
 interface JoinedTableModalProps {
-    mainTable: Table
-    joinedTable: JoinedTable
-    open: boolean
-    canEdit: boolean
-    onChange: (values: JoinsFormValues) => void
-    onClose: () => void
+  mainTable: Table
+  joinedTable: JoinedTable
+  open: boolean
+  canEdit: boolean
+  onChange: (values: JoinsFormValues) => void
+  onClose: () => void
 }
 
-interface JoinsFormValues extends Required<JoinedTable>{}
+interface JoinsFormValues extends Required<JoinedTable> {}
 
-export default function JoinedTableModal({mainTable, joinedTable, open, canEdit, onChange, onClose}: JoinedTableModalProps) {
+export default function JoinedTableModal({
+  mainTable,
+  joinedTable,
+  open,
+  canEdit,
+  onChange,
+  onClose
+}: JoinedTableModalProps) {
   const {t} = useTranslation()
   const [form] = Form.useForm()
 
   function handleFormFinish(values: JoinsFormValues) {
-    if (!canEdit)
-      return
+    if (!canEdit) return
 
     onChange({...joinedTable, ...values})
     onClose()
@@ -47,7 +53,7 @@ export default function JoinedTableModal({mainTable, joinedTable, open, canEdit,
         initialValues={joinedTable}
         onFinish={handleFormFinish}
       >
-        <JoinedTableForm mainTable={mainTable} joinedTable={joinedTable}/>
+        <JoinedTableForm mainTable={mainTable} joinedTable={joinedTable} />
       </Form>
     </Modal>
   )

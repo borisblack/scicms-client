@@ -5,20 +5,16 @@ import {getBit} from '.'
 import {UTC} from 'src/config/constants'
 
 function hasAccess(user: UserInfo | null, permission: Permission, bit: number): boolean {
-  if (user == null)
-    return false
+  if (user == null) return false
 
   const accesses = permission.accesses.data
     .filter(acc => {
-      if (!getBit(acc.mask, bit))
-        return false
+      if (!getBit(acc.mask, bit)) return false
 
       const identity = acc.target.data
-      if (identity.principal && identity.name !== user.username)
-        return false
+      if (identity.principal && identity.name !== user.username) return false
 
-      if ((!identity.principal && !hasRole(user, identity.name)))
-        return false
+      if (!identity.principal && !hasRole(user, identity.name)) return false
 
       const beginDate = DateTime.fromISO(acc.beginDate, {zone: UTC})
       const endDate = acc.endDate == null ? null : DateTime.fromISO(acc.endDate, {zone: UTC})
@@ -27,11 +23,9 @@ function hasAccess(user: UserInfo | null, permission: Permission, bit: number): 
     })
     .sort((a, b) => {
       let res = (a.sortOrder ?? Number.MAX_VALUE) - (b.sortOrder ?? Number.MAX_VALUE)
-      if (res !== 0)
-        return res
+      if (res !== 0) return res
 
-      if (a.granting === b.granting)
-        return 0
+      if (a.granting === b.granting) return 0
 
       return a.granting ? 1 : -1
     })
@@ -40,8 +34,7 @@ function hasAccess(user: UserInfo | null, permission: Permission, bit: number): 
 }
 
 export function hasRole(user: UserInfo | null, role: string): boolean {
-  if (user == null)
-    return false
+  if (user == null) return false
 
   const roleSet = new Set(user.roles)
   return roleSet.has(role)

@@ -26,40 +26,42 @@ import {RequestParams} from '../uiKit/DataGrid'
 import ItemManager, {ItemMap} from './item'
 
 export interface ExtRequestParams extends RequestParams {
-    majorRev?: string | null
-    locale?: string | null
-    state?: string | null
+  majorRev?: string | null
+  locale?: string | null
+  state?: string | null
 }
 
 type ItemDataKey<T extends ItemData> = keyof T
 
-export type ItemFiltersInput<T extends ItemData> = {
-    and?: T[] | null
-    or?: T[] | null
-    not?: T | null
-} | Partial<{[K in ItemDataKey<T>]: ItemFiltersInput<any> | ItemFilterInput<T, string | boolean | number>}>
+export type ItemFiltersInput<T extends ItemData> =
+  | {
+      and?: T[] | null
+      or?: T[] | null
+      not?: T | null
+    }
+  | Partial<{[K in ItemDataKey<T>]: ItemFiltersInput<any> | ItemFilterInput<T, string | boolean | number>}>
 
 export type ItemFilterInput<FilterType extends ItemData, ElementType extends string | boolean | number> = {
-    eq?: ElementType | null
-    ne?: ElementType | null
-    gt?: ElementType | null
-    gte?: ElementType | null
-    lt?: ElementType | null
-    lte?: ElementType | null
-    between?: ElementType[]
-    startsWith?: ElementType | null
-    endsWith?: ElementType | null
-    contains?: ElementType | null
-    containsi?: ElementType | null
-    notContains?: ElementType | null
-    notContainsi?: ElementType | null
-    in?: ElementType[] | null
-    notIn?: ElementType[] | null
-    null?: boolean | null
-    notNull?: boolean | null
-    and?: FilterType[] | null
-    or?: FilterType[] | null
-    not?: FilterType | null
+  eq?: ElementType | null
+  ne?: ElementType | null
+  gt?: ElementType | null
+  gte?: ElementType | null
+  lt?: ElementType | null
+  lte?: ElementType | null
+  between?: ElementType[]
+  startsWith?: ElementType | null
+  endsWith?: ElementType | null
+  contains?: ElementType | null
+  containsi?: ElementType | null
+  notContains?: ElementType | null
+  notContainsi?: ElementType | null
+  in?: ElementType[] | null
+  notIn?: ElementType[] | null
+  null?: boolean | null
+  notNull?: boolean | null
+  and?: FilterType[] | null
+  or?: FilterType[] | null
+  not?: FilterType | null
 }
 
 const SORT_ATTR_PATTERN = /^(\w+)\.?(\w+)?$/
@@ -174,16 +176,14 @@ function buildDateTimeFilter(filterValue: string): ItemFilterInput<ItemData, str
 
 function attributePathToGraphQl(attributePath: string): string {
   const tokens = attributePath.split('.')
-  if (tokens.length === 1)
-    return attributePath
+  if (tokens.length === 1) return attributePath
 
   return tokens.join(' { ') + ' }'.repeat(tokens.length - 1)
 }
 
 function getAttribute(data: ItemData, attributePath: string): any {
   const tokens = attributePath.split('.')
-  if (tokens.length === 1)
-    return data[attributePath]
+  if (tokens.length === 1) return data[attributePath]
 
   return tokens.reduce((obj, s) => (obj ?? {})[s], data)
 }
@@ -231,17 +231,14 @@ export default class QueryManager {
       filters: {...this.buildItemFiltersInput(item, filters), ...extraFiltersInput},
       pagination: {page, pageSize}
     }
-    if (item.versioned && majorRev)
-      variables.majorRev = majorRev
+    if (item.versioned && majorRev) variables.majorRev = majorRev
 
-    if (item.localized && locale)
-      variables.locale = locale
+    if (item.localized && locale) variables.locale = locale
 
     // if (item.localized)
     //     variables.locale = locale || this.coreConfigService.coreConfig.i18n.defaultLocale
 
-    if (state)
-      variables.state = state
+    if (state) variables.state = state
 
     const res = await apolloClient.query({query, variables})
     if (res.errors) {
@@ -250,8 +247,7 @@ export default class QueryManager {
     }
 
     const responseCollection = res.data[item.pluralName] as ResponseCollection<ItemData>
-    if (_.isEmpty(attributePaths))
-      return responseCollection
+    if (_.isEmpty(attributePaths)) return responseCollection
 
     const dataWithAttributePaths: ItemData[] = responseCollection.data.map(d => {
       const o = {...d}
@@ -265,30 +261,30 @@ export default class QueryManager {
     return {...responseCollection, data: dataWithAttributePaths}
   }
 
-  private buildSortExpression = (item: Item, sorting: SortingState, overrideAttributes?: {[name: string]: string}) => sorting.map(it => {
-    const matchRes = it.id.match(SORT_ATTR_PATTERN)
-    if (matchRes == null)
-      throw new Error(`Illegal sort attribute [${it.id}].`)
+  private buildSortExpression = (item: Item, sorting: SortingState, overrideAttributes?: {[name: string]: string}) =>
+    sorting.map(it => {
+      const matchRes = it.id.match(SORT_ATTR_PATTERN)
+      if (matchRes == null) throw new Error(`Illegal sort attribute [${it.id}].`)
 
-    const attrName = matchRes[1]
-    const nestedAttrName = matchRes[2]
-    const dir = it.desc ? 'desc' : 'asc'
-    if (nestedAttrName == null) {
-      const attr = item.spec.attributes[attrName]
-      switch (attr.type) {
-        case FieldType.relation:
-          const target = this.items[attr.target as string]
-          return `${attrName}.${target.titleAttribute}:${dir}`
-        case FieldType.media:
-          const media = this.items[MEDIA_ITEM_NAME]
-          return `${attrName}.${media.titleAttribute}:${dir}`
-        default:
-          return `${attrName}:${dir}`
+      const attrName = matchRes[1]
+      const nestedAttrName = matchRes[2]
+      const dir = it.desc ? 'desc' : 'asc'
+      if (nestedAttrName == null) {
+        const attr = item.spec.attributes[attrName]
+        switch (attr.type) {
+          case FieldType.relation:
+            const target = this.items[attr.target as string]
+            return `${attrName}.${target.titleAttribute}:${dir}`
+          case FieldType.media:
+            const media = this.items[MEDIA_ITEM_NAME]
+            return `${attrName}.${media.titleAttribute}:${dir}`
+          default:
+            return `${attrName}:${dir}`
+        }
+      } else {
+        return `${attrName}.${nestedAttrName}:${dir}`
       }
-    } else {
-      return `${attrName}.${nestedAttrName}:${dir}`
-    }
-  })
+    })
 
   private buildFindAllQuery = (item: Item, state?: string | null, attributesOverride?: {[name: string]: string}) => `
         query findAll${_.upperFirst(item.pluralName)}(
@@ -350,7 +346,9 @@ export default class QueryManager {
 
   private buildFindAllRelatedQuery = (item: Item, relationAttrName: string, target: Item) => {
     const relationAttribute = item.spec.attributes[relationAttrName]
-    const referencedBy = relationAttribute.mappedBy ? target.spec.attributes[relationAttribute.mappedBy].referencedBy : null
+    const referencedBy = relationAttribute.mappedBy
+      ? target.spec.attributes[relationAttribute.mappedBy].referencedBy
+      : null
     return `
       query find${_.upperFirst(item.name)}${_.upperFirst(relationAttrName)}(
         $id: ID!
@@ -389,17 +387,26 @@ export default class QueryManager {
     const filtersInput: ItemFiltersInput<ItemData> = {}
     for (const filter of filters) {
       const attr = attributes[filter.id]
-      if (attr.private || (attr.type === FieldType.relation && (attr.relType === RelType.oneToMany || attr.relType === RelType.manyToMany)))
+      if (
+        attr.private ||
+        (attr.type === FieldType.relation &&
+          (attr.relType === RelType.oneToMany || attr.relType === RelType.manyToMany))
+      )
         continue
-
-      (filtersInput as Record<string, any>)[filter.id] = this.buildAttributeFiltersInput(attr, filter.value)
+      ;(filtersInput as Record<string, any>)[filter.id] = this.buildAttributeFiltersInput(attr, filter.value)
     }
 
     return filtersInput
   }
 
-  buildAttributeFiltersInput(attr: Attribute, filterValue: any): ItemFiltersInput<ItemData> | ItemFilterInput<ItemData, any> {
-    if (attr.private || (attr.type === FieldType.relation && (attr.relType === RelType.oneToMany || attr.relType === RelType.manyToMany)))
+  buildAttributeFiltersInput(
+    attr: Attribute,
+    filterValue: any
+  ): ItemFiltersInput<ItemData> | ItemFilterInput<ItemData, any> {
+    if (
+      attr.private ||
+      (attr.type === FieldType.relation && (attr.relType === RelType.oneToMany || attr.relType === RelType.manyToMany))
+    )
       throw Error('Illegal attribute.')
 
     switch (attr.type) {
@@ -422,11 +429,10 @@ export default class QueryManager {
       case FieldType.bool:
         const lowerStrValue = (filterValue as string).toLowerCase()
         if (lowerStrValue === '1' || lowerStrValue === 'true' || lowerStrValue === 'yes' || lowerStrValue === 'y')
-          return  {eq: true}
+          return {eq: true}
         else if (lowerStrValue === '0' || lowerStrValue === 'false' || lowerStrValue === 'no' || lowerStrValue === 'n')
           return {eq: false}
-        else
-          break
+        else break
       case FieldType.date:
         return buildDateFilter(filterValue)
       case FieldType.time:
@@ -437,8 +443,7 @@ export default class QueryManager {
       case FieldType.media:
         return {filename: {containsi: filterValue}}
       case FieldType.relation:
-        if (!attr.target)
-          throw new Error('Illegal attribute.')
+        if (!attr.target) throw new Error('Illegal attribute.')
 
         const subItem = this.items[attr.target]
         const {titleAttribute} = subItem
@@ -475,7 +480,12 @@ export default class QueryManager {
         }
     `
 
-  findLocalization = async (item: Item, configId: string, majorRev: string, locale: string): Promise<ItemData | null> => {
+  findLocalization = async (
+    item: Item,
+    configId: string,
+    majorRev: string,
+    locale: string
+  ): Promise<ItemData | null> => {
     const query = gql(this.buildFindAllLocalizations(item))
     const res = await apolloClient.query({query, variables: {configId, majorRev, locale}})
     if (res.errors) {

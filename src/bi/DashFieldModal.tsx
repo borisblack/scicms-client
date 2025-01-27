@@ -7,12 +7,12 @@ import FieldForm from './FieldForm'
 import {Column} from 'src/types/bi'
 
 interface DashFieldModalProps {
-    field: NamedColumn
-    allFields: Record<string, Column>
-    open: boolean
-    canEdit: boolean
-    onChange: (field: NamedColumn, prevName: string) => void
-    onClose: () => void
+  field: NamedColumn
+  allFields: Record<string, Column>
+  open: boolean
+  canEdit: boolean
+  onChange: (field: NamedColumn, prevName: string) => void
+  onClose: () => void
 }
 
 interface FieldFormValues extends NamedColumn {}
@@ -22,8 +22,7 @@ export default function DashFieldModal({field, allFields, open, canEdit, onChang
   const [form] = Form.useForm()
 
   function handleFormFinish(values: FieldFormValues) {
-    if (!canEdit)
-      return
+    if (!canEdit) return
 
     onChange({...field, ...values}, field.name)
     onClose()
@@ -38,7 +37,9 @@ export default function DashFieldModal({field, allFields, open, canEdit, onChang
       extra={
         <Space>
           <Button onClick={onClose}>{t('Cancel')}</Button>
-          <Button disabled={!canEdit} type="primary" onClick={() => form.submit()}>OK</Button>
+          <Button disabled={!canEdit} type="primary" onClick={() => form.submit()}>
+            OK
+          </Button>
         </Space>
       }
       onClose={onClose}
@@ -53,11 +54,7 @@ export default function DashFieldModal({field, allFields, open, canEdit, onChang
         initialValues={field}
         onFinish={handleFormFinish}
       >
-        <FieldForm
-          field={field}
-          allFields={allFields}
-          canEdit={canEdit}
-        />
+        <FieldForm field={field} allFields={allFields} canEdit={canEdit} />
       </Form>
     </Drawer>
   )

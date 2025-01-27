@@ -31,7 +31,7 @@ root.render(
       <I18nextProvider i18n={i18n}>
         <DndProvider backend={HTML5Backend}>
           <ConfigProvider locale={clientConfig.antdLocale}>
-            <RouterProvider router={router}/>
+            <RouterProvider router={router} />
           </ConfigProvider>
         </DndProvider>
       </I18nextProvider>

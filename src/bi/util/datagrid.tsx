@@ -5,10 +5,7 @@ import {Checkbox} from 'antd'
 import {DateTime} from 'luxon'
 
 import {FieldType, Pagination, PrimitiveFilterInput} from 'src/types'
-import {
-  type DataWithPagination,
-  type RequestParams
-} from 'src/uiKit/DataGrid'
+import {type DataWithPagination, type RequestParams} from 'src/uiKit/DataGrid'
 import {
   LUXON_DATE_FORMAT_STRING,
   LUXON_DATE_HOURS_FORMAT_STRING,
@@ -29,10 +26,10 @@ import * as DatasetService from 'src/services/dataset'
 import {DatasetFieldInput, DatasetInput} from 'src/services/dataset'
 
 interface DatasetData<T> extends DataWithPagination<T> {
-    timeMs?: number
-    cacheHit?: boolean
-    query?: string
-    params?: Record<string, any>
+  timeMs?: number
+  cacheHit?: boolean
+  query?: string
+  params?: Record<string, any>
 }
 
 interface GetColumnsParams {
@@ -63,22 +60,41 @@ export const getInitialData = (pageSize: number): DataWithPagination<any> => ({
 })
 
 export const getColumns = ({
-  actualFields, defaultColWidth, luxonDisplayDateFormatString, luxonDisplayTimeFormatString, luxonDisplayDateTimeFormatString
+  actualFields,
+  defaultColWidth,
+  luxonDisplayDateFormatString,
+  luxonDisplayTimeFormatString,
+  luxonDisplayDateTimeFormatString
 }: GetColumnsParams): ColumnDef<any, any>[] =>
   Object.keys(actualFields)
     .filter(fieldName => !actualFields[fieldName].hidden)
     .map(fieldName => {
       const field = actualFields[fieldName]
       return columnHelper.accessor(fieldName, {
-        header: field.alias ? i18n.t(field.alias) as string : fieldName,
-        cell: info => renderCell({field, value: info.getValue(), luxonDisplayDateFormatString, luxonDisplayTimeFormatString, luxonDisplayDateTimeFormatString}),
-        size: _.isString(field.colWidth) ? parseInt(field.colWidth.replace(/\D/g, '')) : (field.colWidth ?? defaultColWidth),
+        header: field.alias ? (i18n.t(field.alias) as string) : fieldName,
+        cell: info =>
+          renderCell({
+            field,
+            value: info.getValue(),
+            luxonDisplayDateFormatString,
+            luxonDisplayTimeFormatString,
+            luxonDisplayDateTimeFormatString
+          }),
+        size: _.isString(field.colWidth)
+          ? parseInt(field.colWidth.replace(/\D/g, ''))
+          : field.colWidth ?? defaultColWidth,
         enableSorting: field.type !== FieldType.text,
         enableColumnFilter: true
       })
     })
 
-const renderCell = ({field, value, luxonDisplayDateFormatString, luxonDisplayTimeFormatString, luxonDisplayDateTimeFormatString}: RenderCellParams): ReactNode => {
+const renderCell = ({
+  field,
+  value,
+  luxonDisplayDateFormatString,
+  luxonDisplayTimeFormatString,
+  luxonDisplayDateTimeFormatString
+}: RenderCellParams): ReactNode => {
   switch (field.type) {
     case FieldType.string:
     case FieldType.text:
@@ -90,7 +106,7 @@ const renderCell = ({field, value, luxonDisplayDateFormatString, luxonDisplayTim
     case FieldType.decimal:
       return value
     case FieldType.bool:
-      return <Checkbox checked={value}/>
+      return <Checkbox checked={value} />
     case FieldType.date:
       return value ? DateTime.fromISO(value, {zone: UTC}).toFormat(luxonDisplayDateFormatString) : null
     case FieldType.time:
@@ -105,7 +121,11 @@ const renderCell = ({field, value, luxonDisplayDateFormatString, luxonDisplayTim
 
 export const getHiddenColumns = (actualColumns: Record<string, Column>): string[] => []
 
-export async function loadData(dataset: Dataset, actualFields: Record<string, Column>, {sorting, filters, pagination}: RequestParams): Promise<DatasetData<any>> {
+export async function loadData(
+  dataset: Dataset,
+  actualFields: Record<string, Column>,
+  {sorting, filters, pagination}: RequestParams
+): Promise<DatasetData<any>> {
   const {page, pageSize} = pagination
   const datasetInput: DatasetInput<any> = {
     fields: buildFieldsInput(actualFields),
@@ -144,12 +164,14 @@ export const buildFieldsInput = (actualColumns: Record<string, Column>): Dataset
       }
     })
 
-function buildFiltersInput(actualColumns: Record<string, Column>, filters: ColumnFiltersState): DatasetFiltersInput<any> {
+function buildFiltersInput(
+  actualColumns: Record<string, Column>,
+  filters: ColumnFiltersState
+): DatasetFiltersInput<any> {
   const filtersInput: DatasetFiltersInput<any> = {}
   for (const filter of filters) {
     const column = actualColumns[filter.id]
-    if (!column || column.hidden)
-      continue
+    if (!column || column.hidden) continue
 
     filtersInput[filter.id] = buildColumnFiltersInput(column, filter.value)
   }
@@ -157,9 +179,11 @@ function buildFiltersInput(actualColumns: Record<string, Column>, filters: Colum
   return filtersInput
 }
 
-function buildColumnFiltersInput(column: Column, filterValue: any): DatasetFiltersInput<any> | PrimitiveFilterInput<any> {
-  if (column.hidden)
-    throw Error('Illegal column.')
+function buildColumnFiltersInput(
+  column: Column,
+  filterValue: any
+): DatasetFiltersInput<any> | PrimitiveFilterInput<any> {
+  if (column.hidden) throw Error('Illegal column.')
 
   switch (column.type) {
     case FieldType.string:
@@ -174,23 +198,19 @@ function buildColumnFiltersInput(column: Column, filterValue: any): DatasetFilte
     case FieldType.bool:
       const lowerStrValue = (filterValue as string).toLowerCase()
       if (lowerStrValue === '1' || lowerStrValue === 'true' || lowerStrValue === 'yes' || lowerStrValue === 'y')
-        return  {$eq: true}
+        return {$eq: true}
       else if (lowerStrValue === '0' || lowerStrValue === 'false' || lowerStrValue === 'no' || lowerStrValue === 'n')
         return {$eq: false}
-      else
-        break
+      else break
     case FieldType.date:
       return buildDateFilter(filterValue)
     case FieldType.time:
       return buildTimeFilter(filterValue)
     case FieldType.datetime:
     case FieldType.timestamp:
-      if (column.format === FieldType.date)
-        return buildDateFilter(filterValue)
-      else if (column.format === FieldType.time)
-        return buildTimeFilter(filterValue)
-      else
-        return buildDateTimeFilter(filterValue)
+      if (column.format === FieldType.date) return buildDateFilter(filterValue)
+      else if (column.format === FieldType.time) return buildTimeFilter(filterValue)
+      else return buildDateTimeFilter(filterValue)
     default:
       throw Error('Illegal column.')
   }
@@ -306,8 +326,9 @@ function buildDateTimeFilter(filterValue: string): PrimitiveFilterInput<string> 
   throw new Error(i18n.t('Invalid filter format.'))
 }
 
-const buildSortInput = (sorting: SortingState): string[] => sorting.map(sortItem => {
-  const colName = sortItem.id
-  const dir = sortItem.desc ? 'desc' : 'asc'
-  return `${colName}:${dir}`
-})
+const buildSortInput = (sorting: SortingState): string[] =>
+  sorting.map(sortItem => {
+    const colName = sortItem.id
+    const dir = sortItem.desc ? 'desc' : 'asc'
+    return `${colName}:${dir}`
+  })

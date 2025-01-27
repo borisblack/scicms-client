@@ -3,13 +3,13 @@ import {useTranslation} from 'react-i18next'
 import styles from './TaskListHeader.module.css'
 
 interface TaskListHeaderProps {
-    headerHeight: number
-    rowWidth: string
-    fontFamily: string
-    fontSize: string
+  headerHeight: number
+  rowWidth: string
+  fontFamily: string
+  fontSize: string
 }
 
-const TaskListHeader: FC<TaskListHeaderProps> = ({ headerHeight, fontFamily, fontSize, rowWidth }) => {
+const TaskListHeader: FC<TaskListHeaderProps> = ({headerHeight, fontFamily, fontSize, rowWidth}) => {
   const {t} = useTranslation()
 
   return (
@@ -32,7 +32,7 @@ const TaskListHeader: FC<TaskListHeaderProps> = ({ headerHeight, fontFamily, fon
             minWidth: rowWidth
           }}
         >
-                    &nbsp;{t('Name')}
+          &nbsp;{t('Name')}
         </div>
         <div
           className={styles.ganttTable_HeaderSeparator}
@@ -47,7 +47,7 @@ const TaskListHeader: FC<TaskListHeaderProps> = ({ headerHeight, fontFamily, fon
             minWidth: rowWidth
           }}
         >
-                    &nbsp;{t('Start')}
+          &nbsp;{t('Start')}
         </div>
         <div
           className={styles.ganttTable_HeaderSeparator}
@@ -62,7 +62,7 @@ const TaskListHeader: FC<TaskListHeaderProps> = ({ headerHeight, fontFamily, fon
             minWidth: rowWidth
           }}
         >
-                    &nbsp;{t('End')}
+          &nbsp;{t('End')}
         </div>
       </div>
     </div>

@@ -13,12 +13,10 @@ function getStoreProperties() {
 }
 
 function getLocalProperty(path: string): any {
-  if (path === PropertyKey.MENU)
-    return menuConfig
+  if (path === PropertyKey.MENU) return menuConfig
 
   const biPathMatches = path.match(biPathPattern)
-  if (biPathMatches)
-    return _.get(biConfig, biPathMatches[1])
+  if (biPathMatches) return _.get(biConfig, biPathMatches[1])
 
   return _.get(appConfig, path)
 }
@@ -33,10 +31,16 @@ export const getAppProperties = (propertySource: PropertyMap = getStorePropertie
     timeZone: getProperty(PropertyKey.DATE_TIME_TIME_ZONE, propertySource),
     luxonDisplayDateFormatString: getProperty(PropertyKey.DATE_TIME_LUXON_DISPLAY_DATE_FORMAT_STRING, propertySource),
     luxonDisplayTimeFormatString: getProperty(PropertyKey.DATE_TIME_LUXON_DISPLAY_TIME_FORMAT_STRING, propertySource),
-    luxonDisplayDateTimeFormatString: getProperty(PropertyKey.DATE_TIME_LUXON_DISPLAY_DATE_TIME_FORMAT_STRING, propertySource),
+    luxonDisplayDateTimeFormatString: getProperty(
+      PropertyKey.DATE_TIME_LUXON_DISPLAY_DATE_TIME_FORMAT_STRING,
+      propertySource
+    ),
     momentDisplayDateFormatString: getProperty(PropertyKey.DATE_TIME_MOMENT_DISPLAY_DATE_FORMAT_STRING, propertySource),
     momentDisplayTimeFormatString: getProperty(PropertyKey.DATE_TIME_MOMENT_DISPLAY_TIME_FORMAT_STRING, propertySource),
-    momentDisplayDateTimeFormatString: getProperty(PropertyKey.DATE_TIME_MOMENT_DISPLAY_DATE_TIME_FORMAT_STRING, propertySource)
+    momentDisplayDateTimeFormatString: getProperty(
+      PropertyKey.DATE_TIME_MOMENT_DISPLAY_DATE_TIME_FORMAT_STRING,
+      propertySource
+    )
   },
   query: {
     minPageSize: getProperty(PropertyKey.QUERY_MIN_PAGE_SIZE, propertySource),

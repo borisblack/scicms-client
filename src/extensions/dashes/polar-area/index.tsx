@@ -12,6 +12,6 @@ export const polarArea: Dash = {
     {name: 'yField', label: 'y-axis field', cardinality: 1, required: true},
     {name: 'seriesField', label: 'Series field', cardinality: 1, required: false}
   ],
-  renderOptionsForm: (props) => <PolarAreaDashOptionsForm {...props}/>,
-  render: ({context}) => <PolarAreaDashSuspense {...context}/>
+  renderOptionsForm: props => <PolarAreaDashOptionsForm {...props} />,
+  render: ({context}) => <PolarAreaDashSuspense {...context} />
 }

@@ -2,11 +2,11 @@ import {InputNumber} from 'antd'
 import {FocusEvent, KeyboardEvent, useEffect, useRef, useState} from 'react'
 
 interface Props {
-    value?: string | number | null
-    min?: string | number
-    max?: string | number
-    step?: string | number
-    onChange: (value: string | number | null) => void
+  value?: string | number | null
+  min?: string | number
+  max?: string | number
+  step?: string | number
+  onChange: (value: string | number | null) => void
 }
 
 export function EditableNumberCell({value, min, max, step, onChange}: Props) {

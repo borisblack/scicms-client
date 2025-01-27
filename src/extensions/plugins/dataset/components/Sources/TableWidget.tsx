@@ -7,10 +7,10 @@ import {Table} from 'src/types/bi'
 import styles from './TableWidget.module.css'
 
 interface TableWidgetProps {
-    style?: CSSProperties
-    table: Table
-    canEdit: boolean
-    onRemove: () => void
+  style?: CSSProperties
+  table: Table
+  canEdit: boolean
+  onRemove: () => void
 }
 
 export default function TableWidget({style, table, canEdit, onRemove}: TableWidgetProps) {
@@ -19,8 +19,8 @@ export default function TableWidget({style, table, canEdit, onRemove}: TableWidg
   return (
     <div className={styles.tableWidget} style={style}>
       <span title={table.name}>
-        <TableOutlined className="green"/>
-                &nbsp;&nbsp;
+        <TableOutlined className="green" />
+        &nbsp;&nbsp;
         {table.name}
         {canEdit && (
           <Button
@@ -30,7 +30,7 @@ export default function TableWidget({style, table, canEdit, onRemove}: TableWidg
             title={t('Remove')}
             onClick={onRemove}
           >
-            <CloseOutlined/>
+            <CloseOutlined />
           </Button>
         )}
       </span>

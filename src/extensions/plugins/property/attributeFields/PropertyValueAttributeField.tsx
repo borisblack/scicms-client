@@ -10,7 +10,14 @@ import styles from 'src/pages/app/attributeFields/AttributeField.module.css'
 
 const FormItem = Form.Item
 
-export const PropertyValueAttributeField: FC<CustomAttributeFieldContext> = ({data: dataWrapper, attrName, attribute, value, form, onChange}) => {
+export const PropertyValueAttributeField: FC<CustomAttributeFieldContext> = ({
+  data: dataWrapper,
+  attrName,
+  attribute,
+  value,
+  form,
+  onChange
+}) => {
   const {t} = useTranslation()
   const {item, data} = dataWrapper
   const acl = useItemAcl(item, data)
@@ -32,7 +39,7 @@ export const PropertyValueAttributeField: FC<CustomAttributeFieldContext> = ({da
         initialValue={value ?? attribute.defaultValue}
         rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
       >
-        <Input hidden/>
+        <Input hidden />
       </FormItem>
 
       <div className="property-value-attribute-field-wrapper">

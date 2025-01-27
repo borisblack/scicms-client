@@ -2,10 +2,10 @@ import {CSSProperties, ReactNode, useMemo} from 'react'
 import './FullScreen.css'
 
 interface Props {
-    active: boolean
-    fullScreenStyle?: CSSProperties
-    normalStyle?: CSSProperties
-    children?: ReactNode
+  active: boolean
+  fullScreenStyle?: CSSProperties
+  normalStyle?: CSSProperties
+  children?: ReactNode
 }
 
 const defaultFullScreenStyle: CSSProperties = {
@@ -27,7 +27,7 @@ const defaultNormalStyle: CSSProperties = {
 
 export default function FullScreen({active, fullScreenStyle, normalStyle, children}: Props) {
   const wrapperStyle: CSSProperties = useMemo(
-    () => active ? {...defaultFullScreenStyle, ...fullScreenStyle} : {...defaultNormalStyle, ...normalStyle},
+    () => (active ? {...defaultFullScreenStyle, ...fullScreenStyle} : {...defaultNormalStyle, ...normalStyle}),
     [active, fullScreenStyle, normalStyle]
   )
 

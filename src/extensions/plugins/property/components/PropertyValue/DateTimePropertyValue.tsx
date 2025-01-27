@@ -16,14 +16,16 @@ export const DateTimePropertyValue: FC<PropertyValueProps> = ({type, value, canE
   const appProps = useAppProperties()
   const {momentDisplayDateTimeFormatString} = appProps.dateTime
 
-  if (type !== FieldType.datetime && type !== FieldType.timestamp)
-    throw new Error('Illegal type.')
+  if (type !== FieldType.datetime && type !== FieldType.timestamp) throw new Error('Illegal type.')
 
-  const parsedValue = useMemo(() => value == null ? undefined : dayjs.tz(value, UTC), [value])
+  const parsedValue = useMemo(() => (value == null ? undefined : dayjs.tz(value, UTC)), [value])
 
-  const handleChange = useCallback((val: Dayjs | null) => {
-    onChange(val == null ? null : val.format())
-  }, [onChange])
+  const handleChange = useCallback(
+    (val: Dayjs | null) => {
+      onChange(val == null ? null : val.format())
+    },
+    [onChange]
+  )
 
   return (
     <DatePicker

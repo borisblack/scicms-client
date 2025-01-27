@@ -11,13 +11,13 @@ export class PropertyPlugin extends Plugin {
     this.addAttributeField({
       id: PROPERTY_TYPE_ATTRIBUTE_FIELD_ID,
       mountPoint: `${PROPERTY_ITEM_NAME}.type`,
-      render: ({context}) => <PropertyTypeAttributeField {...context}/>
+      render: ({context}) => <PropertyTypeAttributeField {...context} />
     })
 
     this.addAttributeField({
       id: PROPERTY_VALUE_ATTRIBUTE_FIELD_ID,
       mountPoint: `${PROPERTY_ITEM_NAME}.value`,
-      render: ({context}) => <PropertyValueAttributeField {...context}/>
+      render: ({context}) => <PropertyValueAttributeField {...context} />
     })
   }
 

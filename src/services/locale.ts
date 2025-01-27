@@ -5,20 +5,20 @@ import {apolloClient, extractGraphQLErrorMessages} from '.'
 import {Locale} from '../types/schema'
 
 const FIND_ALL_QUERY = gql`
-    query {
-        locales {
-            data {
-                id
-                name
-                displayName
-                permission {
-                    data {
-                        id
-                    }
-                }
-            }
+  query {
+    locales {
+      data {
+        id
+        name
+        displayName
+        permission {
+          data {
+            id
+          }
         }
+      }
     }
+  }
 `
 
 export async function fetchLocales(): Promise<Locale[]> {

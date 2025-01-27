@@ -16,7 +16,7 @@ export default function ChangePasswordForm() {
         // hasFeedback
         rules={[requiredFieldRule()]}
       >
-        <Password/>
+        <Password />
       </FormItem>
 
       <FormItem
@@ -25,7 +25,7 @@ export default function ChangePasswordForm() {
         // hasFeedback
         rules={[requiredFieldRule()]}
       >
-        <Password/>
+        <Password />
       </FormItem>
 
       <Form.Item
@@ -35,7 +35,7 @@ export default function ChangePasswordForm() {
         // hasFeedback
         rules={[
           requiredFieldRule(true, 'Please confirm new password'),
-          ({ getFieldValue }) => ({
+          ({getFieldValue}) => ({
             validator(_, value) {
               if (!value || getFieldValue('newPassword') === value) {
                 return Promise.resolve()
@@ -45,7 +45,7 @@ export default function ChangePasswordForm() {
           })
         ]}
       >
-        <Password/>
+        <Password />
       </Form.Item>
     </>
   )

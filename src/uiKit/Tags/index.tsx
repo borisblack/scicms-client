@@ -6,10 +6,10 @@ import {ChangeEvent, useEffect, useRef, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 
 interface Props {
-    tags: string[]
-    editable?: boolean
-    newTagText?: string
-    onChange: (tags: string[]) => void
+  tags: string[]
+  editable?: boolean
+  newTagText?: string
+  onChange: (tags: string[]) => void
 }
 
 export default function Tags({tags, editable, newTagText, onChange}: Props) {
@@ -85,12 +85,7 @@ export default function Tags({tags, editable, newTagText, onChange}: Props) {
         const isLongTag = tag.length > 20
 
         const tagElem = (
-          <Tag
-            className="edit-tag"
-            key={tag}
-            closable
-            onClose={() => handleClose(tag)}
-          >
+          <Tag className="edit-tag" key={tag} closable onClose={() => handleClose(tag)}>
             <span
               onDoubleClick={e => {
                 setEditInputIndex(index)

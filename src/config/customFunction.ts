@@ -24,7 +24,7 @@ import {
 } from '../extensions/functions/temporal'
 
 interface FunctionConfig {
-    functions: CustomFunction[]
+  functions: CustomFunction[]
 }
 
 // Add functions here

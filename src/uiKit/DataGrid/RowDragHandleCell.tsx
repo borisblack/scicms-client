@@ -7,14 +7,5 @@ export const RowDragHandleCell = ({rowId}: {rowId: string}) => {
   const {t} = useTranslation()
   const {attributes, listeners} = useSortable({id: rowId})
 
-  return (
-    <Button
-      {...attributes}
-      {...listeners}
-      size="small"
-      type="text"
-      icon={<MoreOutlined/>}
-      title={t('Move')}
-    />
-  )
+  return <Button {...attributes} {...listeners} size="small" type="text" icon={<MoreOutlined />} title={t('Move')} />
 }

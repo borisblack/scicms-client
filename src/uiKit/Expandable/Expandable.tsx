@@ -28,13 +28,10 @@ export function Expandable({initialExpanded, children, onToggle}: PropsWithChild
 
   return (
     <div className={`expandable-mask ${expanded ? 'expandable-mask_expanded' : ''}`}>
-      <div
-        className={`expandable ${expanded ? 'expandable_expanded' : ''}`}
-        onKeyUp={handleKeyUp}
-      >
+      <div className={`expandable ${expanded ? 'expandable_expanded' : ''}`} onKeyUp={handleKeyUp}>
         <Button
           className="expandable__button"
-          icon={expanded ? <FullscreenExitOutlined/> : <FullscreenOutlined/>}
+          icon={expanded ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
           type="text"
           size="middle"
           disabled={false}

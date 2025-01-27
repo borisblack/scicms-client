@@ -28,7 +28,7 @@ export const fetchProperties = async (): Promise<PropertyMap> => {
     throw new Error(i18n.t('An error occurred while executing the request'))
   }
 
-  return  _.mapKeys(
+  return _.mapKeys(
     res.data.properties.data
       .filter((p: Property) => p.value != null && (!p.scope || p.scope === PropertyScope.client))
       .map((p: Property) => ({...p, value: parsePropertyValue(p.type, p.value as string)})),

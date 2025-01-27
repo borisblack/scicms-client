@@ -12,6 +12,6 @@ export const line: Dash = {
     {name: 'yField', label: 'y-axis field', cardinality: 1, required: true},
     {name: 'seriesField', label: 'Series field', cardinality: 1, required: false}
   ],
-  renderOptionsForm: (props) => <LineDashOptionsForm {...props}/>,
-  render: ({context}) => <LineDashSuspense {...context}/>
+  renderOptionsForm: props => <LineDashOptionsForm {...props} />,
+  render: ({context}) => <LineDashSuspense {...context} />
 }

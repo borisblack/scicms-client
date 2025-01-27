@@ -5,13 +5,13 @@ import {changePassword} from 'src/services/auth'
 import ChangePasswordForm from './ChangePasswordForm'
 
 interface ChangePasswordModalProps {
-    open: boolean
-    onClose: () => void
+  open: boolean
+  onClose: () => void
 }
 
 interface ChangePasswordFormValues {
-    oldPassword: string
-    newPassword: string
+  oldPassword: string
+  newPassword: string
 }
 
 export default function ChangePasswordModal({open, onClose}: ChangePasswordModalProps) {
@@ -37,22 +37,10 @@ export default function ChangePasswordModal({open, onClose}: ChangePasswordModal
   }
 
   return (
-    <Modal
-      title={t('Password changing')}
-      open={open}
-      destroyOnClose
-      onOk={() => form.submit()}
-      onCancel={onClose}
-    >
+    <Modal title={t('Password changing')} open={open} destroyOnClose onOk={() => form.submit()} onCancel={onClose}>
       <Spin spinning={loading}>
-        <Form
-          form={form}
-          labelCol={{span: 8}}
-          wrapperCol={{span: 16}}
-          layout="horizontal"
-          onFinish={handleFormFinish}
-        >
-          <ChangePasswordForm/>
+        <Form form={form} labelCol={{span: 8}} wrapperCol={{span: 16}} layout="horizontal" onFinish={handleFormFinish}>
+          <ChangePasswordForm />
         </Form>
       </Spin>
     </Modal>

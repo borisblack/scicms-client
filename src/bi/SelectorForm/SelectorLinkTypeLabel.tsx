@@ -4,12 +4,12 @@ import {SwapLeftOutlined, SwapOutlined, SwapRightOutlined} from '@ant-design/ico
 import {SelectorLinkType} from 'src/types/bi'
 
 interface SelectorLinkTypeProps {
-    linkType: SelectorLinkType
+  linkType: SelectorLinkType
 }
 
 export default function SelectorLinkTypeLabel({linkType}: SelectorLinkTypeProps) {
   function renderIcon() {
-    switch(linkType) {
+    switch (linkType) {
       case SelectorLinkType.in:
         return <SwapLeftOutlined />
       case SelectorLinkType.out:
@@ -22,6 +22,9 @@ export default function SelectorLinkTypeLabel({linkType}: SelectorLinkTypeProps)
   }
 
   return (
-    <Space>{renderIcon()}{linkType}</Space>
+    <Space>
+      {renderIcon()}
+      {linkType}
+    </Space>
   )
 }

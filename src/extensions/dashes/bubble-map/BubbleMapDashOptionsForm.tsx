@@ -27,7 +27,7 @@ export default function BubbleMapDashOptionsForm({fieldName, values}: DashOption
             {type: 'number', max: MAX_LAT}
           ]}
         >
-          <InputNumber style={{width: '100%'}} min={MIN_LAT} max={MAX_LAT} step={0.01}/>
+          <InputNumber style={{width: '100%'}} min={MIN_LAT} max={MAX_LAT} step={0.01} />
         </FormItem>
       </Col>
 
@@ -42,7 +42,7 @@ export default function BubbleMapDashOptionsForm({fieldName, values}: DashOption
             {type: 'number', max: MAX_LNG}
           ]}
         >
-          <InputNumber style={{width: '100%'}} min={MIN_LNG} max={MAX_LNG} step={0.01}/>
+          <InputNumber style={{width: '100%'}} min={MIN_LNG} max={MAX_LNG} step={0.01} />
         </FormItem>
       </Col>
 
@@ -57,7 +57,7 @@ export default function BubbleMapDashOptionsForm({fieldName, values}: DashOption
             {type: 'number', max: 19}
           ]}
         >
-          <InputNumber style={{width: '100%'}} min={1} max={19} step={1}/>
+          <InputNumber style={{width: '100%'}} min={1} max={19} step={1} />
         </FormItem>
       </Col>
 
@@ -65,22 +65,22 @@ export default function BubbleMapDashOptionsForm({fieldName, values}: DashOption
         <FormItem
           className={styles.formItem}
           name={[fieldName, 'rules']}
-          label={(
+          label={
             <Space>
               {t('Rules')}
               <Popover
                 arrow={false}
                 placement="bottom"
-                content={<RulesHelp height={350}/>}
+                content={<RulesHelp height={350} />}
                 overlayInnerStyle={{width: 1060}}
               >
-                <QuestionCircleOutlined className="blue"/>
+                <QuestionCircleOutlined className="blue" />
               </Popover>
             </Space>
-          )}
+          }
           initialValue={values.rules}
         >
-          <TextArea rows={8}/>
+          <TextArea rows={8} />
         </FormItem>
       </Col>
     </Row>

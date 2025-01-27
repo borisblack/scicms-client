@@ -2,8 +2,8 @@ import {Input, InputRef} from 'antd'
 import {ChangeEvent, FocusEvent, KeyboardEvent, useEffect, useRef, useState} from 'react'
 
 interface Props {
-    value: any
-    onChange: (value: any) => void
+  value: any
+  onChange: (value: any) => void
 }
 
 export function EditableCell({value, onChange}: Props) {

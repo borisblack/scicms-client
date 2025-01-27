@@ -8,12 +8,12 @@ import {UTC} from 'src/config/constants'
 import {useAppProperties} from 'src/util/hooks'
 
 interface TooltipContentProps {
-    task: GanttTask
-    fontSize: string
-    fontFamily: string
+  task: GanttTask
+  fontSize: string
+  fontFamily: string
 }
 
-const TooltipContent: FC<TooltipContentProps> = ({ task, fontSize, fontFamily }) => {
+const TooltipContent: FC<TooltipContentProps> = ({task, fontSize, fontFamily}) => {
   const style = {
     fontSize,
     fontFamily
@@ -37,11 +37,8 @@ const TooltipContent: FC<TooltipContentProps> = ({ task, fontSize, fontFamily })
       )}
 
       {!!task.progress && (
-        <p className={styles.tooltipDefaultContainerParagraph}>
-          {`${t('Progress')}: ${task.progress} %`}
-        </p>
+        <p className={styles.tooltipDefaultContainerParagraph}>{`${t('Progress')}: ${task.progress} %`}</p>
       )}
-
     </div>
   )
 }

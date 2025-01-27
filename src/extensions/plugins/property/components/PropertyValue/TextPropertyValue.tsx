@@ -11,8 +11,7 @@ import './PropertyValue.css'
 const EXPANDED_EDITOR_HEIGHT = '90vh'
 
 export const TextPropertyValue: FC<PropertyValueProps> = ({type, value, canEdit, onChange}) => {
-  if (type !== FieldType.text)
-    throw new Error('Illegal type.')
+  if (type !== FieldType.text) throw new Error('Illegal type.')
 
   const appProps = useAppProperties()
   const {editorHeight} = appProps.ui.form
@@ -25,13 +24,7 @@ export const TextPropertyValue: FC<PropertyValueProps> = ({type, value, canEdit,
   return (
     <Expandable onToggle={toggleExpanded}>
       <div className="property-value-editor">
-        <Editor
-          value={value ?? undefined}
-          height={height}
-          lineNumbers={false}
-          canEdit={canEdit}
-          onChange={onChange}
-        />
+        <Editor value={value ?? undefined} height={height} lineNumbers={false} canEdit={canEdit} onChange={onChange} />
       </div>
     </Expandable>
   )

@@ -11,13 +11,13 @@ export class CommonPlugin extends Plugin {
     this.addAttributeField({
       id: ICON_ATTRIBUTE_FIELD_ID,
       mountPoint: `*.${ICON_ATTR_NAME}`,
-      render: ({context}) => <IconAttributeField {...context}/>
+      render: ({context}) => <IconAttributeField {...context} />
     })
 
     this.addAttributeField({
       id: LOCALE_ATTRIBUTE_FIELD_ID,
       mountPoint: `*.${LOCALE_ATTR_NAME}`,
-      render: ({context}) => <LocaleAttributeField {...context}/>
+      render: ({context}) => <LocaleAttributeField {...context} />
     })
   }
 

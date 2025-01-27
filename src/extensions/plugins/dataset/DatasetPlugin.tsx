@@ -12,7 +12,7 @@ export class DatasetPlugin extends Plugin {
       priority: 10,
       title: 'Sources',
       icon: 'TableOutlined',
-      render: ({context}) => <Sources key={DATASET_SOURCES_COMPONENT_ID} {...context}/>
+      render: ({context}) => <Sources key={DATASET_SOURCES_COMPONENT_ID} {...context} />
     })
 
     this.addComponent({
@@ -21,7 +21,7 @@ export class DatasetPlugin extends Plugin {
       priority: 20,
       title: 'Fields',
       icon: 'BarsOutlined',
-      render: ({context}) => <DatasetFields key={DATASET_FIELDS_COMPONENT_ID} {...context}/>
+      render: ({context}) => <DatasetFields key={DATASET_FIELDS_COMPONENT_ID} {...context} />
     })
   }
 

@@ -11,7 +11,11 @@ export default function RightPanel({title, width, initialExpanded, style, sticke
 
   return (
     <>
-      <div className={styles.rightPanelSticker} style={{...stickerStyle, right: internalWith}} onClick={togglePanelWidth}>
+      <div
+        className={styles.rightPanelSticker}
+        style={{...stickerStyle, right: internalWith}}
+        onClick={togglePanelWidth}
+      >
         {title}
       </div>
       <div className={styles.rightPanel} style={{...style, width: internalWith}}>

@@ -9,8 +9,7 @@ import styles from './AttributeField.module.css'
 const FormItem = Form.Item
 
 const BoolAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrName, attribute, value}) => {
-  if (attribute.type !== FieldType.bool)
-    throw new Error('Illegal attribute')
+  if (attribute.type !== FieldType.bool) throw new Error('Illegal attribute')
 
   const uniqueKey = generateKey(dataWrapper)
   const {t} = useTranslation()
@@ -18,18 +17,15 @@ const BoolAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrNam
 
   const additionalProps = useMemo((): any => {
     const additionalProps: any = {}
-    if (isDisabled)
-      additionalProps.disabled = true
+    if (isDisabled) additionalProps.disabled = true
 
     return additionalProps
   }, [isDisabled])
 
   const parseValue = useCallback((val: boolean | string | number | null | undefined) => {
-    if (val === 1 || val === '1' || val === 'true')
-      return true
+    if (val === 1 || val === '1' || val === 'true') return true
 
-    if (val === 0 ||  val === '0' || val === 'false')
-      return false
+    if (val === 0 || val === '0' || val === 'false') return false
 
     return val
   }, [])
@@ -42,7 +38,9 @@ const BoolAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrNam
       valuePropName="checked"
       initialValue={parseValue(value) ?? parseValue(attribute.defaultValue)}
     >
-      <Checkbox id={`${uniqueKey}#${attrName}`} style={{marginTop: 24}} {...additionalProps}>{t(attribute.displayName)}</Checkbox>
+      <Checkbox id={`${uniqueKey}#${attrName}`} style={{marginTop: 24}} {...additionalProps}>
+        {t(attribute.displayName)}
+      </Checkbox>
     </FormItem>
   )
 }

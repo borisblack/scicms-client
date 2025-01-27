@@ -5,23 +5,23 @@ import {CSSProperties, ReactNode} from 'react'
 import IconSuspense from '../uiKit/icons/IconSuspense'
 
 export interface FieldRule {
-    condition?: string
-    items: FieldProps[]
+  condition?: string
+  items: FieldProps[]
 }
 
 export interface FieldProps {
-    field: string
-    icon?: string
-    color?: string
-    bgColor?: string
-    fontSize?: string
-    fontStyle?: string
-    fontWeight?: string
+  field: string
+  icon?: string
+  color?: string
+  bgColor?: string
+  fontSize?: string
+  fontStyle?: string
+  fontWeight?: string
 }
 
 const RULE_REGEXP = /^(?:(.+)\?)?(.+)$/
 const RULE_ITEM_REGEXP = /^([*\w]+)\.(\w+)=([-#\w]+)$/
-const ICON_REGEXP = /^(\w+)(?:-(\w+))?$/
+const ICON_REGEXP = /^(\w+)(?:-([#\w]+))?$/
 
 function evaluateExpression(condition: string, values: Record<string, any>): any {
   try {
@@ -36,21 +36,16 @@ function evaluateExpression(condition: string, values: Record<string, any>): any
 function toStyle(props: FieldProps): CSSProperties {
   const {icon, color, bgColor, fontSize, fontStyle, fontWeight} = props
   const style: CSSProperties = {}
-  if (color != null)
-    style.color = color
+  if (color != null) style.color = color
 
   if (icon == null) {
-    if (bgColor != null)
-      style.backgroundColor = bgColor
+    if (bgColor != null) style.backgroundColor = bgColor
 
-    if (fontStyle != null)
-      style.fontStyle = fontStyle
+    if (fontStyle != null) style.fontStyle = fontStyle
 
-    if (fontSize != null)
-      style.fontSize = fontSize
+    if (fontSize != null) style.fontSize = fontSize
 
-    if (fontWeight != null)
-      style.fontWeight = fontWeight
+    if (fontWeight != null) style.fontWeight = fontWeight
   }
 
   return style
@@ -59,33 +54,37 @@ function toStyle(props: FieldProps): CSSProperties {
 export function parseRules(rules?: string): FieldRule[] {
   const parsedRules = (rules?.split('\n') ?? [])
     .map(r => r.trim())
-    .map(r => r.replace(/;$/, ''))
+    .map(r => r.replace(/;$/, '')) // trailing semicolon
     .filter(r => r !== '')
-    .filter(r => !r.startsWith('#'))
-    .filter(r => r.match(RULE_REGEXP))
-    .map(r => {
-      const matchGroups = r.match(RULE_REGEXP) as RegExpMatchArray
+    .filter(r => !r.startsWith('#')) // comment
+    .map(r => r.match(RULE_REGEXP))
+    .filter(Boolean)
+    .map(mg => {
+      const matchGroups = mg as RegExpMatchArray
       return {
         condition: matchGroups[1]?.trim(),
         items: parseRuleItems(matchGroups[2] as string)
       }
     })
-    // console.log('Parsed rules', parsedRules)
+  // console.log('Parsed rules', parsedRules)
 
   return parsedRules
 }
 
 function parseRuleItems(ruleItems: string): FieldProps[] {
-  const parsedRules = ruleItems.split(';')
+  const parsedRules = ruleItems
+    .split(';')
     .map(r => r.replace(/\s*/g, ''))
-    .filter(r => r.match(RULE_ITEM_REGEXP))
-    .map(r => {
-      const ruleItemMatchGroups = r.match(RULE_ITEM_REGEXP) as RegExpMatchArray
+    .map(r => r.match(RULE_ITEM_REGEXP))
+    .filter(Boolean)
+    .map(mg => {
+      const ruleItemMatchGroups = mg as RegExpMatchArray
       const field = ruleItemMatchGroups[1] as string
       const prop = ruleItemMatchGroups[2] as string
       const value = ruleItemMatchGroups[3] as string
-      if (prop === 'icon') {
-        const iconMatchGroups = value.match(ICON_REGEXP) as RegExpMatchArray
+
+      let iconMatchGroups: RegExpMatchArray | null
+      if (prop === 'icon' && (iconMatchGroups = value.match(ICON_REGEXP)) != null) {
         return {
           field,
           icon: iconMatchGroups[1],
@@ -98,18 +97,22 @@ function parseRuleItems(ruleItems: string): FieldProps[] {
         }
       }
     })
-    // console.log('Parsed rule items', parsedRules)
+  // console.log('Parsed rule items', parsedRules)
 
   return parsedRules
 }
 
-export function renderField(fieldRules: FieldRule[], fieldName: string, value: any, record: Record<string, any>): ReactNode {
+export function renderField(
+  fieldRules: FieldRule[],
+  fieldName: string,
+  value: any,
+  record: Record<string, any>
+): ReactNode {
   let iconProps: FieldProps | null = null
   for (const rule of fieldRules) {
     if (rule.condition == null || evaluateExpression(rule.condition, record)) {
       for (const ruleItem of rule.items) {
-        if ((ruleItem.field === fieldName || ruleItem.field === '*') && ruleItem.icon != null)
-          iconProps = ruleItem
+        if ((ruleItem.field === fieldName || ruleItem.field === '*') && ruleItem.icon != null) iconProps = ruleItem
       }
     }
   }
@@ -117,8 +120,8 @@ export function renderField(fieldRules: FieldRule[], fieldName: string, value: a
   if (iconProps != null) {
     return (
       <div>
-        <IconSuspense iconName={iconProps.icon} style={toStyle(iconProps)}/>
-                &nbsp;
+        <IconSuspense iconName={iconProps.icon} style={toStyle(iconProps)} />
+        &nbsp;
         {value}
       </div>
     )
@@ -146,7 +149,8 @@ export function getFieldColor(fieldRules: FieldRule[], record: Record<string, an
   let fieldColor: string | undefined = undefined
   for (const rule of fieldRules) {
     if (rule.condition == null || evaluateExpression(rule.condition, record)) {
-      fieldColor = rule.items.map(i => i.color)
+      fieldColor = rule.items
+        .map(i => i.color)
         .filter(c => !!c)
         .reduce((prev, cur) => cur, fieldColor)
     }
@@ -155,16 +159,20 @@ export function getFieldColor(fieldRules: FieldRule[], record: Record<string, an
   return fieldColor
 }
 
-export function getSeriesColors(fieldRules: FieldRule[], fieldName: string, seriesData: Record<string, any>[], defaultColors: string[] | undefined): string[] | undefined {
+export function getSeriesColors(
+  fieldRules: FieldRule[],
+  fieldName: string,
+  seriesData: Record<string, any>[],
+  defaultColors: string[] | undefined
+): string[] | undefined {
   const isDefaultColorsEmpty = defaultColors == null || defaultColors.length === 0
-  const colors =
-        seriesData
-          .map((rec, i) => {
-            const color = getFieldColor(fieldRules, rec)
+  const colors = seriesData
+    .map((rec, i) => {
+      const color = getFieldColor(fieldRules, rec)
 
-            return color ?? (isDefaultColorsEmpty ? undefined : defaultColors[i % defaultColors.length])
-          })
-          .filter(c => c != null)
+      return color ?? (isDefaultColorsEmpty ? undefined : defaultColors[i % defaultColors.length])
+    })
+    .filter(c => c != null)
 
   return colors.length === 0 ? undefined : (colors as string[])
 }

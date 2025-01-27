@@ -13,7 +13,7 @@ import {ProjectPlugin} from 'src/extensions/plugins/project/ProjectPlugin'
 import {PropertyPlugin} from 'src/extensions/plugins/property/PropertyPlugin'
 
 interface PluginConfig {
-    plugins: Plugin[]
+  plugins: Plugin[]
 }
 
 // Add plugins here

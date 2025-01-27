@@ -2,12 +2,7 @@ import {useTranslation} from 'react-i18next'
 import {Button, Drawer, Form, Space, Tooltip} from 'antd'
 import {QuestionCircleOutlined} from '@ant-design/icons'
 
-import {
-  fromFormQueryBlock,
-  getCustomFunctionsInfo,
-  saveSessionFilters,
-  toFormQueryBlock
-} from './util'
+import {fromFormQueryBlock, getCustomFunctionsInfo, saveSessionFilters, toFormQueryBlock} from './util'
 import DashFilters from './DashFilters'
 import {Dataset, IDash, QueryBlock} from '../types/bi'
 import {useAppProperties} from 'src/util/hooks'
@@ -26,7 +21,15 @@ export interface FiltersFormValues {
   filters: QueryBlock
 }
 
-export default function FiltersModal({dash, dashboardId, dataset, filters, open, onChange, onClose}: FiltersModalProps) {
+export default function FiltersModal({
+  dash,
+  dashboardId,
+  dataset,
+  filters,
+  open,
+  onChange,
+  onClose
+}: FiltersModalProps) {
   const {t} = useTranslation()
   const appProps = useAppProperties()
   const {timeZone} = appProps.dateTime
@@ -49,8 +52,7 @@ export default function FiltersModal({dash, dashboardId, dataset, filters, open,
     onClose()
   }
 
-  if (dataset == null)
-    return null
+  if (dataset == null) return null
 
   return (
     <Drawer
@@ -58,33 +60,36 @@ export default function FiltersModal({dash, dashboardId, dataset, filters, open,
       destroyOnClose
       open={open}
       width="60%"
-      title={(
+      title={
         <Space style={{fontSize: 16}}>
           {t('Filters')}
           <Tooltip
             placement="rightBottom"
             overlayInnerStyle={{width: 600}}
-            title={<>{getCustomFunctionsInfo().map((s, i) => <div key={i}>{s}</div>)}</>}
+            title={
+              <>
+                {getCustomFunctionsInfo().map((s, i) => (
+                  <div key={i}>{s}</div>
+                ))}
+              </>
+            }
           >
-            <QuestionCircleOutlined className="blue"/>
+            <QuestionCircleOutlined className="blue" />
           </Tooltip>
         </Space>
-      )}
+      }
       extra={
         <Space>
           <Button onClick={cancelEdit}>{t('Cancel')}</Button>
-          <Button type="primary" onClick={() => form.submit()}>OK</Button>
+          <Button type="primary" onClick={() => form.submit()}>
+            OK
+          </Button>
         </Space>
       }
       // onOk={() => filtersForm.submit()}
       onClose={onClose}
     >
-      <Form
-        form={form}
-        size="small"
-        layout="vertical"
-        onFinish={handleFormFinish}
-      >
+      <Form form={form} size="small" layout="vertical" onFinish={handleFormFinish}>
         <DashFilters
           namePrefix={['filters']}
           dataset={dataset}

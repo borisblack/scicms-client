@@ -17,10 +17,8 @@ const EXPANDED_EDITOR_HEIGHT = '90vh'
 
 const FormItem = Form.Item
 
-
 const TextAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, form, attrName, attribute, value}) => {
-  if (attribute.type !== FieldType.text)
-    throw new Error('Illegal attribute')
+  if (attribute.type !== FieldType.text) throw new Error('Illegal attribute')
 
   const uniqueKey = generateKey(dataWrapper)
   const {item, data} = dataWrapper
@@ -32,18 +30,19 @@ const TextAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, form, a
   const canEdit = useMemo(() => acl.canWrite && !attribute.readOnly, [acl.canWrite, attribute.readOnly])
 
   const mode = useMemo(() => {
-    if (!attribute.format)
-      return undefined
+    if (!attribute.format) return undefined
 
-    if (!Object.values(EditorMode).includes(attribute.format as EditorMode))
-      return undefined
+    if (!Object.values(EditorMode).includes(attribute.format as EditorMode)) return undefined
 
     return attribute.format as EditorMode
   }, [attribute.format])
 
-  const handleChange = useCallback((val: string | null | undefined) => {
-    form.setFieldValue(attrName, val)
-  }, [attrName, form])
+  const handleChange = useCallback(
+    (val: string | null | undefined) => {
+      form.setFieldValue(attrName, val)
+    },
+    [attrName, form]
+  )
 
   function toggleExpanded(expanded: boolean) {
     setHeight(expanded ? EXPANDED_EDITOR_HEIGHT : editorHeight)
@@ -59,7 +58,7 @@ const TextAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, form, a
         initialValue={value ?? attribute.defaultValue}
         rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
       >
-        <Input id={`${uniqueKey}#${attrName}`} hidden/>
+        <Input id={`${uniqueKey}#${attrName}`} hidden />
       </FormItem>
 
       {!attribute.fieldHidden && (

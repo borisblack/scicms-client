@@ -21,9 +21,9 @@ import util from 'util'
 import i18n from '../i18n'
 
 interface FilteredItemData {
-    majorRev?: string
-    locale?: string | null
-    state?: string | null
+  majorRev?: string
+  locale?: string | null
+  state?: string | null
 }
 
 interface ParseValuesParams {
@@ -55,25 +55,19 @@ export async function parseValues({item, data, values, timezone}: ParseValuesPar
   const {attributes} = item.spec
 
   for (const key in values) {
-    if (!values.hasOwnProperty(key) || !attributes.hasOwnProperty(key))
-      continue
+    if (!values.hasOwnProperty(key) || !attributes.hasOwnProperty(key)) continue
 
-    if (!item.versioned && key === MINOR_REV_ATTR_NAME)
-      continue
+    if (!item.versioned && key === MINOR_REV_ATTR_NAME) continue
 
     const attribute = attributes[key]
-    if (attribute.readOnly || attribute.type === FieldType.sequence)
-      continue
+    if (attribute.readOnly || attribute.type === FieldType.sequence) continue
 
     const value = values[key]
-    if (attribute.type === FieldType.password && value === PASSWORD_PLACEHOLDER)
-      continue
+    if (attribute.type === FieldType.password && value === PASSWORD_PLACEHOLDER) continue
 
-    if (attribute.type === FieldType.string && key === STATE_ATTR_NAME)
-      continue
+    if (attribute.type === FieldType.string && key === STATE_ATTR_NAME) continue
 
-    if (value === undefined && attribute.type !== FieldType.media)
-      continue
+    if (value === undefined && attribute.type !== FieldType.media) continue
 
     parsedValues[key] = await parseValue({item, attrName: key, attribute, data, values, timezone})
   }
@@ -105,8 +99,7 @@ async function parseValue({item, attrName, attribute, data, values, timezone}: P
 
 function parseTime(attrName: string, values: any): string | null {
   const value = values[attrName]
-  if (!value)
-    return null
+  if (!value) return null
 
   const isChanged = values[`${attrName}.changed`]
   const iso = (value as Dayjs).toISOString()
@@ -116,8 +109,7 @@ function parseTime(attrName: string, values: any): string | null {
 
 function parseDateTime(attrName: string, values: any, timezone: string): string | null {
   const value = values[attrName]
-  if (!value)
-    return null
+  if (!value) return null
 
   const isChanged = values[`${attrName}.changed`]
   const iso = (value as Dayjs).toISOString()
@@ -159,11 +151,15 @@ export const requiredFieldRule = (required: boolean = true, message?: string) =>
   message: i18n.t(message ?? 'Required field')
 })
 
-export const regExpRule = (regExp: RegExp, message?: string): FormRule => () => ({
-  validator(_, value) {
-    if (value == null || value.match(regExp))
-      return Promise.resolve()
+export const regExpRule =
+  (regExp: RegExp, message?: string): FormRule =>
+  () => ({
+    validator(_, value) {
+      if (value == null || value.match(regExp)) return Promise.resolve()
 
-    const msg = message ?? regExpMessages[regExp.toString()]
-    return Promise.reject(new Error(msg == null ? util.format(i18n.t('String does not match pattern %s'), regExp) : i18n.t(msg)))
-  }})
+      const msg = message ?? regExpMessages[regExp.toString()]
+      return Promise.reject(
+        new Error(msg == null ? util.format(i18n.t('String does not match pattern %s'), regExp) : i18n.t(msg))
+      )
+    }
+  })

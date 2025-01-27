@@ -8,8 +8,7 @@ import {FlaggedResponse, Item, ItemData, ItemModel} from 'src/types/schema'
 import {ApiMiddlewareContext, ApiOperation} from '../types'
 
 export async function handleItemApiOperation(operation: ApiOperation, context: ApiMiddlewareContext, next: () => any) {
-  if (context.item.name !== ITEM_ITEM_NAME)
-    throw new Error('Illegal argument')
+  if (context.item.name !== ITEM_ITEM_NAME) throw new Error('Illegal argument')
 
   switch (operation) {
     case ApiOperation.CREATE:
@@ -56,7 +55,7 @@ const mapItem = (item: Item): ItemModel => ({
     displayName: item.displayName,
     pluralName: item.pluralName,
     displayPluralName: item.displayPluralName,
-    dataSource: _.isString(item.datasource) ? item.datasource : (item.datasource?.data?.id ?? MAIN_DATASOURCE_NAME),
+    dataSource: _.isString(item.datasource) ? item.datasource : item.datasource?.data?.id ?? MAIN_DATASOURCE_NAME,
     tableName: item.tableName,
     query: item.query,
     cacheTtl: item.cacheTtl,

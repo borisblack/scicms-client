@@ -7,57 +7,57 @@ import {Pagination, PaginationInput} from '../types'
 import {AggregateType, Dataset, DatasetFiltersInput} from '../types/bi'
 
 export interface DatasetInput<T> {
-    fields?: DatasetFieldInput[]
-    filters?: DatasetFiltersInput<T>
-    sort?: string[]
-    pagination?: PaginationInput
-    aggregate?: AggregateType
-    aggregateField?: string
-    groupFields?: string[]
+  fields?: DatasetFieldInput[]
+  filters?: DatasetFiltersInput<T>
+  sort?: string[]
+  pagination?: PaginationInput
+  aggregate?: AggregateType
+  aggregateField?: string
+  groupFields?: string[]
 }
 
 export interface DatasetFieldInput {
-    name: string
-    custom: boolean
-    source?: string
-    formula?: string
-    aggregate?: AggregateType
+  name: string
+  custom: boolean
+  source?: string
+  formula?: string
+  aggregate?: AggregateType
 }
 
 interface DatasetResponse<T> {
-    data: T[]
-    query?: string
-    params?: Record<string, any>
-    timeMs?: number
-    cacheHit?: boolean
-    meta: DatasetResponseMeta
+  data: T[]
+  query?: string
+  params?: Record<string, any>
+  timeMs?: number
+  cacheHit?: boolean
+  meta: DatasetResponseMeta
 }
 
 interface DatasetResponseMeta {
-    pagination?: Pagination
+  pagination?: Pagination
 }
 
 // TODO: Add cacheTtl field after scicms-core updating
 const FIND_ALL_QUERY = gql`
-    query findAllDatasets {
-        datasets {
-            data {
-                id
-                name
-                datasource {
-                    data {
-                        id
-                        name
-                    }
-                }
-                tableName
-                query
-                description
-                spec
-                hash
-            }
+  query findAllDatasets {
+    datasets {
+      data {
+        id
+        name
+        datasource {
+          data {
+            id
+            name
+          }
         }
+        tableName
+        query
+        description
+        spec
+        hash
+      }
     }
+  }
 `
 
 export async function fetchDatasets(): Promise<Dataset[]> {
