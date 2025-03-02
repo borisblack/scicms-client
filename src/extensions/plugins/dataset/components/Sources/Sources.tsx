@@ -109,7 +109,6 @@ export function Sources({form, data: dataWrapper, buffer, onBufferChange}: Custo
 
   function handleSourcesChange(newSources: DatasetSources, buildResult: SourcesQueryBuildResult) {
     onBufferChange({
-      ...buffer,
       tableName: buildResult.tableName,
       query: buildResult.query,
       spec: {
@@ -121,7 +120,6 @@ export function Sources({form, data: dataWrapper, buffer, onBufferChange}: Custo
 
   const handleUseDesignerCheck = (e: CheckboxChangeEvent) =>
     onBufferChange({
-      ...buffer,
       spec: {
         ...spec,
         // sources: e.target.checked ? spec.sources : initialSources,
@@ -133,7 +131,6 @@ export function Sources({form, data: dataWrapper, buffer, onBufferChange}: Custo
     if (value === editorValue) return
 
     onBufferChange({
-      ...buffer,
       tableName: null,
       query: value
     })

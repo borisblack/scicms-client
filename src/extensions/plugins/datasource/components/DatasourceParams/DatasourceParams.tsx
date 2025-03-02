@@ -35,7 +35,6 @@ export function DatasourceParams({form, data: dataWrapper, buffer, onBufferChang
 
   function handleDelimiterSelect(newDelimiter: string) {
     onBufferChange({
-      ...buffer,
       params: {
         ...params,
         delimiter: newDelimiter
@@ -45,7 +44,6 @@ export function DatasourceParams({form, data: dataWrapper, buffer, onBufferChang
 
   const handleFirstLineIsAHeadingCheck = (e: CheckboxChangeEvent) =>
     onBufferChange({
-      ...buffer,
       params: {
         ...params,
         firstLineIsAHeading: e.target.checked

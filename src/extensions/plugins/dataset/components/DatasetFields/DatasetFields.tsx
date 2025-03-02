@@ -83,7 +83,6 @@ export function DatasetFields({data: dataWrapper, buffer, onBufferChange}: Custo
     }
 
     onBufferChange({
-      ...buffer,
       spec: {
         ...spec,
         columns: newFields
@@ -164,7 +163,6 @@ export function DatasetFields({data: dataWrapper, buffer, onBufferChange}: Custo
     }
 
     onBufferChange({
-      ...buffer,
       spec: {
         ...spec,
         columns: newFields
