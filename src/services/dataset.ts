@@ -37,7 +37,6 @@ interface DatasetResponseMeta {
   pagination?: Pagination
 }
 
-// TODO: Add cacheTtl field after scicms-core updating
 const FIND_ALL_QUERY = gql`
   query findAllDatasets {
     datasets {
@@ -52,6 +51,7 @@ const FIND_ALL_QUERY = gql`
         }
         tableName
         query
+        cacheTtl
         description
         spec
         hash

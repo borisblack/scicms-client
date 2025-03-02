@@ -102,8 +102,8 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, for
   const [currentId, setCurrentId] = useState(value?.data?.id)
   const targetItem = itemMap[target]
   const referencedBy = useMemo(
-    () => `${attribute.referencedBy || item.idAttribute}`,
-    [attribute.referencedBy, item.idAttribute]
+    () => `${attribute.referencedBy || targetItem.idAttribute}`,
+    [attribute.referencedBy, targetItem.idAttribute]
   )
   const initialData = useMemo(() => value?.data ?? {id: attribute.defaultValue}, [attribute.defaultValue, value?.data])
   const extraFiltersInput: ItemFiltersInput<ItemData> = useMemo(() => {

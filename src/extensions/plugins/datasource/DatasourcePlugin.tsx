@@ -6,10 +6,12 @@ import {
   DatasourceMediaAttributeField,
   MinIdleAttributeField,
   DatasourcePasswordAttributeField,
-  UsernameAttributeField
+  UsernameAttributeField,
+  SourceTypeAttributeField
 } from './attributeFields'
 import {DatasourceParams} from './components'
 
+const SOURCE_TYPE_ATTRIBUTE_FIELD_ID = 'sourceType'
 const CONNECTION_STRING_ATTRIBUTE_FIELD_ID = 'connectionString'
 const USERNAME_ATTRIBUTE_FIELD_ID = 'username'
 const PASSWORD_ATTRIBUTE_FIELD_ID = 'password'
@@ -21,6 +23,12 @@ const DATASOURCE_PARAMS_COMPONENT_ID = 'datasourceParams'
 export class DatasourcePlugin extends Plugin {
   override onLoad() {
     // Attribute fields
+    this.addAttributeField({
+      id: SOURCE_TYPE_ATTRIBUTE_FIELD_ID,
+      mountPoint: `${DATASOURCE_ITEM_NAME}.${SOURCE_TYPE_ATTRIBUTE_FIELD_ID}`,
+      render: ({context}) => <SourceTypeAttributeField {...context} />
+    })
+
     this.addAttributeField({
       id: CONNECTION_STRING_ATTRIBUTE_FIELD_ID,
       mountPoint: `${DATASOURCE_ITEM_NAME}.${CONNECTION_STRING_ATTRIBUTE_FIELD_ID}`,

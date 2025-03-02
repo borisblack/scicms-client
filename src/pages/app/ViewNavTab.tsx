@@ -163,6 +163,7 @@ function ViewNavTab({data: dataWrapper}: Props) {
     let parsedValues: ItemData
     try {
       parsedValues = await parseValues({
+        itemMap,
         item,
         data,
         values: {...values, ...buffer},

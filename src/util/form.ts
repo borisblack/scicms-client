@@ -19,6 +19,7 @@ import {tryParseJson} from './index'
 import {FormRule} from 'antd'
 import util from 'util'
 import i18n from '../i18n'
+import {ItemMap} from 'src/services/item'
 
 interface FilteredItemData {
   majorRev?: string
@@ -27,6 +28,7 @@ interface FilteredItemData {
 }
 
 interface ParseValuesParams {
+  itemMap: ItemMap
   item: Item
   data: ItemData | null | undefined
   values: any
@@ -34,6 +36,7 @@ interface ParseValuesParams {
 }
 
 interface ParseValueParams {
+  itemMap: ItemMap
   item: Item
   attrName: string
   attribute: Attribute
@@ -47,7 +50,7 @@ const regExpMessages: Record<string, string> = {
   [LOWERCASE_NO_WHITESPACE_PATTERN.toString()]: LOWERCASE_NO_WHITESPACE_MESSAGE
 }
 
-export async function parseValues({item, data, values, timezone}: ParseValuesParams): Promise<ItemData> {
+export async function parseValues({itemMap, item, data, values, timezone}: ParseValuesParams): Promise<ItemData> {
   const hiddenFields = Object.entries(item.spec.attributes)
     .filter(([attrName, attr]) => attr.fieldHidden && !attr.readOnly)
     .map(([attrName, attr]) => attrName)
@@ -69,13 +72,21 @@ export async function parseValues({item, data, values, timezone}: ParseValuesPar
 
     if (value === undefined && attribute.type !== FieldType.media) continue
 
-    parsedValues[key] = await parseValue({item, attrName: key, attribute, data, values, timezone})
+    parsedValues[key] = await parseValue({itemMap, item, attrName: key, attribute, data, values, timezone})
   }
 
   return parsedValues as ItemData
 }
 
-async function parseValue({item, attrName, attribute, data, values, timezone}: ParseValueParams): Promise<any> {
+async function parseValue({
+  itemMap,
+  item,
+  attrName,
+  attribute,
+  data,
+  values,
+  timezone
+}: ParseValueParams): Promise<any> {
   const value = values[attrName]
   switch (attribute.type) {
     case FieldType.date:
@@ -91,7 +102,8 @@ async function parseValue({item, attrName, attribute, data, values, timezone}: P
     case FieldType.json:
       return _.isString(value) ? JSON.parse(value) : value
     case FieldType.relation:
-      return values[`${attrName}.${attribute.referencedBy || item.idAttribute}`]
+      const target = itemMap[attribute.target as string]
+      return values[`${attrName}.${attribute.referencedBy || target.idAttribute}`]
     default:
       return value
   }

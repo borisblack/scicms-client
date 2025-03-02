@@ -3,7 +3,7 @@ import {gql} from '@apollo/client'
 import i18n from '../i18n'
 
 import {Lifecycle} from '../types/schema'
-import {apolloClient, extractGraphQLErrorMessages} from './index'
+import {apolloClient, extractGraphQLErrorMessages} from '.'
 
 export type LifecycleMap = Record<string, Lifecycle>
 

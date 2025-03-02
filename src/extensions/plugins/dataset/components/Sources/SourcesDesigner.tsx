@@ -13,6 +13,7 @@ import styles from './SourcesDesigner.module.css'
 interface SourcesDesignerProps {
   sources: DatasetSources
   canEdit: boolean
+  isSingleTable?: boolean
   onChange: (sources: DatasetSources, buildResult: SourcesQueryBuildResult) => void
 }
 
@@ -24,7 +25,7 @@ const VERTICAL_SPACE = 12
 
 const queryBuilder = new SourcesQueryBuilder()
 
-export default function SourcesDesigner({sources, canEdit, onChange}: SourcesDesignerProps) {
+export default function SourcesDesigner({sources, canEdit, isSingleTable, onChange}: SourcesDesignerProps) {
   const [isValid, setValid] = useState<boolean>(true)
   const [currentJoinedTable, setCurrentJoinedTable] = useState<JoinedTable>()
   const [openModal, setOpenModal] = useState(false)
@@ -47,6 +48,8 @@ export default function SourcesDesigner({sources, canEdit, onChange}: SourcesDes
 
   function handleCanDrop(table: Table): boolean {
     if (!canEdit) return false
+
+    if (isSingleTable && sources.mainTable) return false
 
     if (table.name === sources.mainTable?.name) return false
 

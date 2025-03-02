@@ -12,8 +12,7 @@ export const DatasourcePasswordAttributeField: FC<CustomAttributeFieldContext> =
   if (attrName !== PASSWORD_ATTR_NAME || attribute.type !== FieldType.password) throw new Error('Illegal attribute')
 
   const sourceType = Form.useWatch(SOURCE_TYPE_ATTR_NAME, form)
+  const isDatabaseType = sourceType === DatasourceType.DATABASE
 
-  return (
-    <PasswordAttributeField {...ctx} attribute={{...attribute, readOnly: sourceType !== DatasourceType.DATABASE}} />
-  )
+  return <PasswordAttributeField {...ctx} attribute={{...attribute, readOnly: !isDatabaseType}} />
 }

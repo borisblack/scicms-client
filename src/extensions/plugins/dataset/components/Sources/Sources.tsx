@@ -9,7 +9,7 @@ import {Split} from 'src/uiKit/Split'
 import {DATASET_ITEM_NAME, MAIN_DATASOURCE_NAME} from 'src/config/constants'
 import {Pagination as IPagination} from 'src/types'
 import {Dataset, DatasetSources, DatasetSpec, Table} from 'src/types/bi'
-import {loadDatasourceTables} from 'src/services/datasource'
+import {findDatasourceById, loadDatasourceTables} from 'src/services/datasource'
 import {useAcl, useAppProperties} from 'src/util/hooks'
 import TableItem from './TableItem'
 import SourcesDesigner from './SourcesDesigner'
@@ -19,6 +19,7 @@ import CodeEditor from 'src/uiKit/Editor'
 import {EditorMode} from 'src/uiKit/Editor/constants'
 import styles from './Sources.module.css'
 import {CustomComponentContext} from 'src/extensions/plugins/types'
+import {Datasource, DatasourceType} from 'src/types/schema'
 
 const MIN_LEFT_PANE_SIZE = '600px'
 const MIN_RIGHT_PANE_SIZE = '700px'
@@ -42,7 +43,10 @@ export function Sources({form, data: dataWrapper, buffer, onBufferChange}: Custo
   const {t} = useTranslation()
   const appProps = useAppProperties()
   const acl = useAcl(item, data)
-  const datasource = Form.useWatch('datasource', form as FormInstance)
+  const datasourceId = Form.useWatch('datasource.id', form as FormInstance)
+  const datasourceName = Form.useWatch('datasource', form as FormInstance)
+  const [datasource, setDatasource] = useState<Datasource | undefined>()
+  const isDatabase = datasource?.sourceType === DatasourceType.DATABASE
   const spec: DatasetSpec = useMemo(() => buffer.spec ?? {}, [buffer])
   const sources: DatasetSources = useMemo(() => spec.sources ?? initialSources, [spec])
   const [loading, setLoading] = useState<boolean>(false)
@@ -74,14 +78,23 @@ export function Sources({form, data: dataWrapper, buffer, onBufferChange}: Custo
 
   useEffect(() => {
     setLoading(true)
-    loadDatasourceTables(datasource ?? MAIN_DATASOURCE_NAME, {schema, q, pagination})
+    loadDatasourceTables(datasourceName ?? MAIN_DATASOURCE_NAME, {schema, q, pagination})
       .then(res => {
         setTables(res.data)
 
         if (res.meta.pagination != null) setPagination(res.meta.pagination)
       })
       .finally(() => setLoading(false))
-  }, [datasource, schema, q, pagination.page, pagination.pageSize, pagination.total])
+  }, [datasourceName, schema, q, pagination.page, pagination.pageSize, pagination.total])
+
+  useEffect(() => {
+    if (!datasourceId) return
+
+    setLoading(true)
+    findDatasourceById(datasourceId)
+      .then(setDatasource)
+      .finally(() => setLoading(false))
+  }, [datasourceId])
 
   const handleSchemaChange = _.debounce(async (e: ChangeEvent<HTMLInputElement>) => {
     setSchema(e.target.value)
@@ -194,33 +207,37 @@ export function Sources({form, data: dataWrapper, buffer, onBufferChange}: Custo
           <Checkbox
             className={styles.useDesignerCheckbox}
             disabled={!acl.canWrite}
-            checked={useDesigner}
+            checked={useDesigner || !isDatabase}
             onChange={handleUseDesignerCheck}
           >
             <Text strong>{t('Use designer')}</Text>
           </Checkbox>
 
-          <Split
-            horizontal
-            minPrimarySize={MIN_TOP_PANE_SIZE}
-            initialPrimarySize={MIN_TOP_PANE_SIZE}
-            minSecondarySize={MIN_BOTTOM_PANE_SIZE}
-            defaultSplitterColors={splitConfig.defaultSplitterColors}
-            splitterSize={splitConfig.splitterSize}
-            resetOnDoubleClick
-          >
-            <SourcesDesigner sources={sources} canEdit={acl.canWrite && useDesigner} onChange={handleSourcesChange} />
-            <div>
-              <CodeEditor
-                value={editorValue}
-                mode={EditorMode.SQL}
-                height={MIN_BOTTOM_PANE_SIZE}
-                lineNumbers
-                canEdit={acl.canWrite && !useDesigner}
-                onChange={handleEditorValueChange}
-              />
-            </div>
-          </Split>
+          {isDatabase ? (
+            <Split
+              horizontal
+              minPrimarySize={MIN_TOP_PANE_SIZE}
+              initialPrimarySize={MIN_TOP_PANE_SIZE}
+              minSecondarySize={MIN_BOTTOM_PANE_SIZE}
+              defaultSplitterColors={splitConfig.defaultSplitterColors}
+              splitterSize={splitConfig.splitterSize}
+              resetOnDoubleClick
+            >
+              <SourcesDesigner sources={sources} canEdit={acl.canWrite && useDesigner} onChange={handleSourcesChange} />
+              <div>
+                <CodeEditor
+                  value={editorValue}
+                  mode={EditorMode.SQL}
+                  height={MIN_BOTTOM_PANE_SIZE}
+                  lineNumbers
+                  canEdit={acl.canWrite && !useDesigner}
+                  onChange={handleEditorValueChange}
+                />
+              </div>
+            </Split>
+          ) : (
+            <SourcesDesigner sources={sources} canEdit={acl.canWrite} isSingleTable onChange={handleSourcesChange} />
+          )}
         </div>
       </Split>
     </Spin>

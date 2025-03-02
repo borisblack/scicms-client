@@ -1,3 +1,4 @@
+export {SourceTypeAttributeField} from './SourceTypeAttributeField'
 export {ConnectionStringAttributeField} from './ConnectionStringAttributeField'
 export {UsernameAttributeField} from './UsernameAttributeField'
 export {DatasourcePasswordAttributeField} from './DatasourcePasswordAttributeField'

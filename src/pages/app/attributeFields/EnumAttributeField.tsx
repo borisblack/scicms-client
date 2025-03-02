@@ -1,4 +1,4 @@
-import {FC, useMemo} from 'react'
+import {FC, useCallback, useMemo} from 'react'
 import {Form, Select} from 'antd'
 import {useTranslation} from 'react-i18next'
 import {AttributeFieldProps} from '.'
@@ -8,7 +8,14 @@ import styles from './AttributeField.module.css'
 
 const FormItem = Form.Item
 
-const EnumAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrName, attribute, value}) => {
+const EnumAttributeField: FC<AttributeFieldProps> = ({
+  form,
+  data: dataWrapper,
+  attrName,
+  attribute,
+  value,
+  onChange
+}) => {
   if (attribute.type !== FieldType.enum || !attribute.enumSet) throw new Error('Illegal attribute')
 
   const uniqueKey = generateKey(dataWrapper)
@@ -20,6 +27,11 @@ const EnumAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrNam
 
     return additionalProps
   }, [isDisabled])
+
+  function handleChange(val: string) {
+    form.setFieldValue(attrName, val)
+    onChange(val)
+  }
 
   return (
     <FormItem
@@ -34,6 +46,7 @@ const EnumAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrNam
         id={`${uniqueKey}#${attrName}`}
         allowClear
         options={attribute.enumSet.map(entry => ({label: t(entry), value: entry}))}
+        onSelect={handleChange}
         {...additionalProps}
       />
     </FormItem>
