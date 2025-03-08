@@ -2,7 +2,7 @@ import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {Col, Collapse, Form, Modal, notification, Row, Spin, Tabs} from 'antd'
 import {Tab} from 'rc-tabs/lib/interface'
 import {FieldType, IBuffer, ViewState} from 'src/types'
-import {Attribute, ItemData, ItemDataWrapper, RelType} from 'src/types/schema'
+import {Attribute, ItemData, ItemTab, RelType} from 'src/types/schema'
 import {useTranslation} from 'react-i18next'
 import AttributeFieldWrapper from './AttributeFieldWrapper'
 import {filterValues, parseValues} from 'src/util/form'
@@ -42,16 +42,16 @@ import {pluginEngine} from 'src/extensions/plugins'
 import {clientConfig} from 'src/config'
 
 interface Props {
-  data: ItemDataWrapper
+  itemTab: ItemTab
 }
 
 const {confirm} = Modal
 
-function ViewNavTab({data: dataWrapper}: Props) {
+function ViewNavTab({itemTab}: Props) {
   const {me, logout} = useAuth()
   const {coreConfig, items: itemMap, itemTemplates, reset: resetRegistry} = useRegistry()
-  const ctx = useMDIContext<ItemDataWrapper>()
-  const {item, data} = dataWrapper
+  const ctx = useMDIContext<ItemTab>()
+  const {item, data} = itemTab
   const isNew = !data?.id
   const isSystemItem = item.name === ITEM_TEMPLATE_ITEM_NAME || item.name === ITEM_ITEM_NAME
   const {t} = useTranslation()
@@ -70,7 +70,7 @@ function ViewNavTab({data: dataWrapper}: Props) {
           : ViewState.UPDATE
         : ViewState.VIEW
   )
-  const [buffer, setBuffer] = useState<IBuffer>({})
+  const [buffer, setBuffer] = useState<IBuffer>(data ?? {})
   const headerRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const contentFormRef = useRef<HTMLDivElement>(null)
@@ -93,17 +93,18 @@ function ViewNavTab({data: dataWrapper}: Props) {
 
   const customComponentContext: CustomComponentContext = useMemo(
     () => ({
-      data: dataWrapper,
+      itemTab,
       form,
       buffer,
       onBufferChange: handleBufferChange
     }),
-    [dataWrapper, form, buffer, handleBufferChange]
+    [itemTab, form, buffer, handleBufferChange]
   )
 
   useEffect(() => {
-    if (DEBUG) console.log('Fields reset')
+    if (DEBUG) console.log('ViewNavTab buffer and fields reset')
 
+    setBuffer(data ?? {})
     form.resetFields()
   }, [form, data])
 
@@ -224,7 +225,7 @@ function ViewNavTab({data: dataWrapper}: Props) {
       } else {
         created = await doCreate()
       }
-      const createdDataWrapper: ItemDataWrapper = {...dataWrapper, data: created}
+      const createdDataWrapper: ItemTab = {...itemTab, data: created}
       ctx.updateActiveTab(createdDataWrapper, generateKey(createdDataWrapper))
 
       if (isLockable) {
@@ -275,7 +276,7 @@ function ViewNavTab({data: dataWrapper}: Props) {
       } else {
         createdVersion = await doCreateVersion()
       }
-      const createdVersionDataWrapper: ItemDataWrapper = {...dataWrapper, data: createdVersion}
+      const createdVersionDataWrapper: ItemTab = {...itemTab, data: createdVersion}
       ctx.updateActiveTab(createdVersionDataWrapper, generateKey(createdVersionDataWrapper))
 
       if (isLockable) {
@@ -322,7 +323,7 @@ function ViewNavTab({data: dataWrapper}: Props) {
       } else {
         createdLocalization = await doCreateLocalization()
       }
-      const createdLocalizationDataWrapper: ItemDataWrapper = {...dataWrapper, data: createdLocalization}
+      const createdLocalizationDataWrapper: ItemTab = {...itemTab, data: createdLocalization}
       ctx.updateActiveTab(createdLocalizationDataWrapper, generateKey(createdLocalizationDataWrapper))
 
       if (isLockable) {
@@ -355,7 +356,7 @@ function ViewNavTab({data: dataWrapper}: Props) {
       } else {
         updated = await doUpdate()
       }
-      ctx.updateActiveTab({...dataWrapper, data: updated})
+      ctx.updateActiveTab({...itemTab, data: updated})
 
       if (isLockable) {
         setLockedByMe(false)
@@ -406,7 +407,7 @@ function ViewNavTab({data: dataWrapper}: Props) {
         const attributeContent = (
           <AttributeFieldWrapper
             key={attrName}
-            data={dataWrapper}
+            itemTab={itemTab}
             form={form}
             attrName={attrName}
             attribute={attr}
@@ -443,7 +444,7 @@ function ViewNavTab({data: dataWrapper}: Props) {
         if (existingLocalization) {
           if (viewState === ViewState.UPDATE) setViewState(ViewState.CREATE_LOCALIZATION)
 
-          ctx.updateActiveTab({...dataWrapper, data: existingLocalization})
+          ctx.updateActiveTab({...itemTab, data: existingLocalization})
         } else {
           setViewState(ViewState.CREATE_LOCALIZATION)
         }
@@ -555,7 +556,7 @@ function ViewNavTab({data: dataWrapper}: Props) {
                   {title}
                 </span>
               ),
-              children: <RelationsDataGridWrapper data={dataWrapper} relAttrName={key} relAttribute={attribute} />
+              children: <RelationsDataGridWrapper itemTab={itemTab} relAttrName={key} relAttribute={attribute} />
             }
           })
         )
@@ -567,7 +568,7 @@ function ViewNavTab({data: dataWrapper}: Props) {
 
       return tabs
     },
-    [getComponentTabs, item, isNew, itemMap, t, dataWrapper]
+    [getComponentTabs, item, isNew, itemMap, t, itemTab]
   )
 
   const renderTabs = useCallback(() => {
@@ -635,7 +636,7 @@ function ViewNavTab({data: dataWrapper}: Props) {
 
       {!pluginEngine.hasComponents('view.header', `${item.name}.view.header`) && !hasHeaderPlugins && (
         <ViewNavTabHeader
-          data={dataWrapper}
+          itemTab={itemTab}
           form={form}
           buffer={buffer}
           canCreate={acl.canCreate}

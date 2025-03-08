@@ -8,7 +8,7 @@ import styles from './AttributeField.module.css'
 
 const FormItem = Form.Item
 
-const NumberAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrName, attribute, value}) => {
+const NumberAttributeField: FC<AttributeFieldProps> = ({itemTab: dataWrapper, attrName, attribute, value}) => {
   if (
     attribute.type !== FieldType.int &&
     attribute.type !== FieldType.long &&

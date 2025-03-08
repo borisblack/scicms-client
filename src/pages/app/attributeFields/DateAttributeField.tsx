@@ -13,7 +13,7 @@ dayjs.extend(utc)
 
 const FormItem = Form.Item
 
-const DateAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrName, attribute, value}) => {
+const DateAttributeField: FC<AttributeFieldProps> = ({itemTab: dataWrapper, attrName, attribute, value}) => {
   const appProps = useAppProperties()
   const {momentDisplayDateFormatString} = appProps.dateTime
 

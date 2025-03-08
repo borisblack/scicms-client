@@ -18,7 +18,7 @@ const ICONS_MODAL_WIDTH = 1100
 const ICONS_COMPONENT_HEIGHT = 600
 
 export const IconAttributeField: FC<CustomAttributeFieldContext> = ({
-  data: dataWrapper,
+  itemTab: dataWrapper,
   form,
   attrName,
   attribute,

@@ -35,7 +35,7 @@ const initialSources: DatasetSources = {
   joinedTables: []
 }
 
-export function Sources({form, data: dataWrapper, buffer, onBufferChange}: CustomComponentContext) {
+export function Sources({form, itemTab: dataWrapper, buffer, onBufferChange}: CustomComponentContext) {
   const data = dataWrapper.data as Dataset | undefined
   const {item} = dataWrapper
   if (item.name !== DATASET_ITEM_NAME) throw new Error('Illegal argument')
@@ -67,14 +67,6 @@ export function Sources({form, data: dataWrapper, buffer, onBufferChange}: Custo
     () => spec.useDesigner ?? false /*!editorValue*/,
     [/*editorValue,*/ spec.useDesigner]
   )
-
-  useEffect(() => {
-    onBufferChange({
-      tableName: data?.tableName,
-      query: data?.query,
-      spec: data?.spec ?? {}
-    })
-  }, [data])
 
   useEffect(() => {
     setLoading(true)

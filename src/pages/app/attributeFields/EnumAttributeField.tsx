@@ -10,7 +10,7 @@ const FormItem = Form.Item
 
 const EnumAttributeField: FC<AttributeFieldProps> = ({
   form,
-  data: dataWrapper,
+  itemTab: dataWrapper,
   attrName,
   attribute,
   value,

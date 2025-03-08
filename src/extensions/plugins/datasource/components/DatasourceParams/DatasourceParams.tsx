@@ -15,7 +15,7 @@ const delimiterOptions: DefaultOptionType[] = [
   {label: ';', value: ';'}
 ]
 
-export function DatasourceParams({form, data: dataWrapper, buffer, onBufferChange}: CustomComponentContext) {
+export function DatasourceParams({form, itemTab: dataWrapper, buffer, onBufferChange}: CustomComponentContext) {
   const data = dataWrapper.data as Datasource | undefined
   const {item} = dataWrapper
   if (item.name !== DATASOURCE_ITEM_NAME) throw new Error('Illegal argument')
@@ -26,12 +26,6 @@ export function DatasourceParams({form, data: dataWrapper, buffer, onBufferChang
   const params: Record<string, any> = useMemo(() => buffer.params ?? {}, [buffer])
   const delimiter: string = useMemo(() => params.delimiter ?? ',', [params])
   const firstLineIsAHeading: boolean = useMemo(() => params.firstLineIsAHeading ?? true, [params])
-
-  useEffect(() => {
-    onBufferChange({
-      params: data?.params ?? {}
-    })
-  }, [data])
 
   function handleDelimiterSelect(newDelimiter: string) {
     onBufferChange({

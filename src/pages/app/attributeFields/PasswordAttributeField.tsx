@@ -9,7 +9,7 @@ import {generateKey} from 'src/util/mdi'
 const FormItem = Form.Item
 const {Password} = Input
 
-const PasswordAttributeField: FC<AttributeFieldProps> = ({form, data: dataWrapper, attrName, attribute, value}) => {
+const PasswordAttributeField: FC<AttributeFieldProps> = ({form, itemTab: dataWrapper, attrName, attribute, value}) => {
   if (attribute.type !== FieldType.password) throw new Error('Illegal attribute')
 
   const uniqueKey = generateKey(dataWrapper)

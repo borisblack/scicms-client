@@ -8,7 +8,7 @@ import styles from './AttributeField.module.css'
 
 const FormItem = Form.Item
 
-const BoolAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrName, attribute, value}) => {
+const BoolAttributeField: FC<AttributeFieldProps> = ({itemTab: dataWrapper, attrName, attribute, value}) => {
   if (attribute.type !== FieldType.bool) throw new Error('Illegal attribute')
 
   const uniqueKey = generateKey(dataWrapper)

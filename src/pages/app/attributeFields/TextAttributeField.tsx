@@ -17,7 +17,7 @@ const EXPANDED_EDITOR_HEIGHT = '90vh'
 
 const FormItem = Form.Item
 
-const TextAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, form, attrName, attribute, value}) => {
+const TextAttributeField: FC<AttributeFieldProps> = ({itemTab: dataWrapper, form, attrName, attribute, value}) => {
   if (attribute.type !== FieldType.text) throw new Error('Illegal attribute')
 
   const uniqueKey = generateKey(dataWrapper)

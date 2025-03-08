@@ -4,7 +4,7 @@ import {FormInstance} from 'antd'
 import {AttributeFieldProps} from 'src/pages/app/attributeFields'
 import {ItemMap} from 'src/services/item'
 import {IBuffer, UserInfo} from 'src/types'
-import {Item, ItemData, ItemDataWrapper} from 'src/types/schema'
+import {Item, ItemData, ItemTab} from 'src/types/schema'
 
 /**
  * Render mount points:
@@ -83,7 +83,7 @@ export interface CustomComponentProps {
 }
 
 export interface CustomComponentContext {
-  data: ItemDataWrapper
+  itemTab: ItemTab
   form?: FormInstance
   buffer: IBuffer
   onBufferChange: (buffer: IBuffer) => void

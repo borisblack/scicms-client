@@ -8,7 +8,7 @@ import {FolderOutlined, FundOutlined} from '@ant-design/icons'
 import {useAuth, useRegistry} from 'src/util/hooks'
 import * as DashboardService from 'src/services/dashboard'
 import {ViewType} from 'src/types'
-import {ItemDataWrapper} from 'src/types/schema'
+import {ItemTab} from 'src/types/schema'
 import {Dashboard, DashboardCategory, DashboardExtra} from 'src/types/bi'
 import * as DashboardCategoryService from 'src/services/dashboard-category'
 import {DASHBOARD_ITEM_NAME, EMPTY_ARRAY} from 'src/config/constants'
@@ -27,7 +27,7 @@ function Bi() {
   const {t} = useTranslation()
   const {me, isExpired} = useAuth()
   const {isInitialized, items: itemMap, initializeIfNeeded} = useRegistry()
-  const mdiContext = useNewMDIContextRedux<ItemDataWrapper>(EMPTY_ARRAY)
+  const mdiContext = useNewMDIContextRedux<ItemTab>(EMPTY_ARRAY)
   const [dashboardMap, setDashboardMap] = useState<Record<string, Dashboard>>({})
   const [dashboardCategoryMap, setDashboardCategoryMap] = useState<Record<string, DashboardCategory>>({})
   const [loading, setLoading] = useState<boolean>(false)
@@ -115,9 +115,9 @@ function Bi() {
     }))
   ]
 
-  const renderDashboard = (data: ItemDataWrapper): ReactNode => (
+  const renderDashboard = (itemTab: ItemTab): ReactNode => (
     <div className="Bi-page-content">
-      <DashboardSpec data={data} readOnly buffer={{}} onBufferChange={() => {}} />
+      <DashboardSpec itemTab={itemTab} readOnly buffer={{}} onBufferChange={() => {}} />
     </div>
   )
 

@@ -15,7 +15,7 @@ const EXPANDED_EDITOR_HEIGHT = '90vh'
 
 const FormItem = Form.Item
 
-const JsonAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, form, attrName, attribute, value}) => {
+const JsonAttributeField: FC<AttributeFieldProps> = ({itemTab: dataWrapper, form, attrName, attribute, value}) => {
   if (attribute.type !== FieldType.json && attribute.type !== FieldType.array) throw new Error('Illegal attribute')
 
   const uniqueKey = generateKey(dataWrapper)

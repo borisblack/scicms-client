@@ -8,12 +8,12 @@ import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design
 import {PageHeader} from '@ant-design/pro-layout'
 
 import {IBuffer} from 'src/types'
-import {ItemData, ItemDataWrapper} from 'src/types/schema'
+import {ItemData, ItemTab} from 'src/types/schema'
 import {type RequestParams, DataGrid} from '../../uiKit/DataGrid'
 import * as ACL from 'src/util/acl'
 import {findAll, getColumns, getHiddenColumns, getInitialData} from 'src/util/datagrid'
 import {ExtRequestParams} from 'src/services/query'
-import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME, MEDIA_ITEM_NAME} from 'src/config/constants'
+import {DEBUG, ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME, MEDIA_ITEM_NAME} from 'src/config/constants'
 import {useAppProperties, useAuth, useItemOperations, useMutationManager, useRegistry} from 'src/util/hooks'
 import {getTitle} from 'src/util/mdi'
 import IconSuspense from 'src/uiKit/icons/IconSuspense'
@@ -35,15 +35,15 @@ import {
 } from 'src/util/schema'
 
 interface Props {
-  data: ItemDataWrapper
+  itemTab: ItemTab
 }
 
 const {confirm} = Modal
 
-function DefaultNavTab({data: dataWrapper}: Props) {
+function DefaultNavTab({itemTab}: Props) {
   const {me, logout} = useAuth()
   const {items: itemMap, permissions: permissionMap, reset: resetRegistry} = useRegistry()
-  const ctx = useMDIContext<ItemDataWrapper>()
+  const ctx = useMDIContext<ItemTab>()
   const {create: createItem, open: openItem, close: closeItem} = useItemOperations()
   const mutationManager = useMutationManager()
   const {t} = useTranslation()
@@ -59,8 +59,8 @@ function DefaultNavTab({data: dataWrapper}: Props) {
   const headerRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const footerRef = useRef<HTMLDivElement>(null)
-  const [buffer, setBuffer] = useState<IBuffer>({})
-  const {item} = dataWrapper
+  const [buffer, setBuffer] = useState<IBuffer>(data ?? {})
+  const {item} = itemTab
   const isSystemItem = item.name === ITEM_TEMPLATE_ITEM_NAME || item.name === ITEM_ITEM_NAME
   const canVersion =
     item.versioned &&
@@ -103,12 +103,18 @@ function DefaultNavTab({data: dataWrapper}: Props) {
 
   const customComponentContext: CustomComponentContext = useMemo(
     () => ({
-      data: dataWrapper,
+      itemTab,
       buffer,
       onBufferChange: handleBufferChange
     }),
-    [dataWrapper, buffer, handleBufferChange]
+    [itemTab, buffer, handleBufferChange]
   )
+
+  useEffect(() => {
+    if (DEBUG) console.log('DefaultNavTab buffer reset')
+
+    setBuffer(data ?? {})
+  }, [data])
 
   useEffect(() => {
     const headerNode = headerRef.current
@@ -276,7 +282,7 @@ function DefaultNavTab({data: dataWrapper}: Props) {
         title={
           <span>
             <IconSuspense iconName={item.icon} />
-            &nbsp;&nbsp;{getTitle(dataWrapper)}
+            &nbsp;&nbsp;{getTitle(itemTab)}
           </span>
         }
         extra={
@@ -288,7 +294,7 @@ function DefaultNavTab({data: dataWrapper}: Props) {
         }
       />
     )
-  }, [handleCreate, item, me, permissionMap, t, dataWrapper])
+  }, [handleCreate, item, me, permissionMap, t, itemTab])
 
   const handleLocalizationsCheckBoxChange = useCallback((e: CheckboxChangeEvent) => {
     showAllLocalesRef.current = e.target.checked

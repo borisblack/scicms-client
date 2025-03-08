@@ -132,7 +132,7 @@ export class PluginEngine {
     context: CustomAttributeFieldContext,
     defaultRender: FC<CustomAttributeFieldContext>
   ): ReactElement | null {
-    const attributeField = this.getAttributeField(context.data.item.name, context.attrName)
+    const attributeField = this.getAttributeField(context.itemTab.item.name, context.attrName)
 
     return <>{attributeField ? attributeField.render({context}) : defaultRender(context)}</>
   }

@@ -94,7 +94,7 @@ export enum ViewState {
 }
 
 export interface IBuffer {
-  [name: string]: any
+  [key: string]: any
 }
 
 export interface PaginationInput {

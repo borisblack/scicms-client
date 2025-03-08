@@ -13,7 +13,7 @@ import styles from './AttributeField.module.css'
 const {Item: FormItem} = Form
 
 const MediaAttributeField: FC<AttributeFieldProps> = ({
-  data: dataWrapper,
+  itemTab: dataWrapper,
   form,
   attrName,
   attribute,

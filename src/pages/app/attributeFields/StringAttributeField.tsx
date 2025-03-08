@@ -12,7 +12,7 @@ import {generateKey} from 'src/util/mdi'
 
 const FormItem = Form.Item
 
-const StringAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrName, attribute, value}) => {
+const StringAttributeField: FC<AttributeFieldProps> = ({itemTab: dataWrapper, attrName, attribute, value}) => {
   if (
     attribute.type !== FieldType.string &&
     attribute.type !== FieldType.uuid &&

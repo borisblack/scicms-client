@@ -7,7 +7,7 @@ import {notification} from 'antd'
 import type {AppDispatch, RootState} from 'src/store'
 import PermissionManager, {Acl} from 'src/services/permission'
 import {UserInfo, ViewType} from 'src/types'
-import {Item, ItemData, ItemDataWrapper} from 'src/types/schema'
+import {Item, ItemData, ItemTab} from 'src/types/schema'
 import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME} from 'src/config/constants'
 import {logout as doLogout, selectIsExpired, selectMe} from 'src/features/auth/authSlice'
 import {
@@ -175,7 +175,7 @@ export function useMutationManager(): MutationManager {
 }
 
 export function useItemOperations() {
-  const ctx = useMDIContext<ItemDataWrapper>()
+  const ctx = useMDIContext<ItemTab>()
   const queryManager = useQueryManager()
   const {t} = useTranslation()
 
@@ -184,8 +184,8 @@ export function useItemOperations() {
       item: Item,
       initialData?: ItemData,
       extra?: Record<string, any>,
-      onUpdate?: (updatedData: ItemDataWrapper) => void,
-      onClose?: (closedData: ItemDataWrapper, remove: boolean) => void
+      onUpdate?: (updatedTab: ItemTab) => void,
+      onClose?: (closedTab: ItemTab, remove: boolean) => void
     ) => {
       ctx.openTab(createMDITab(item, ViewType.view, initialData, extra, onUpdate, onClose))
     },
@@ -197,8 +197,8 @@ export function useItemOperations() {
       item: Item,
       id: string,
       extra?: Record<string, any>,
-      onUpdate?: (updatedData: ItemDataWrapper) => void,
-      onClose?: (closedData: ItemDataWrapper, remove: boolean) => void
+      onUpdate?: (updatedTab: ItemTab) => void,
+      onClose?: (closedTab: ItemTab, remove: boolean) => void
     ) => {
       const actualData = await queryManager.findById(item, id)
       if (actualData.data) {

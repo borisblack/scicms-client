@@ -66,7 +66,7 @@ function getDefaultPermission(itemName: string): string {
   return DEFAULT_PERMISSION_ID
 }
 
-const RelationAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, form, attrName, attribute, value}) => {
+const RelationAttributeField: FC<AttributeFieldProps> = ({itemTab: dataWrapper, form, attrName, attribute, value}) => {
   if (
     attribute.type !== FieldType.relation ||
     attribute.relType === RelType.oneToMany ||

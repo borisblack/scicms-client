@@ -7,7 +7,7 @@ import * as MediaService from 'src/services/media'
 import {CustomAttributeFieldContext} from '../../types'
 
 export const MediaFileAttributeField: FC<CustomAttributeFieldContext> = ({
-  data: dataWrapper,
+  itemTab: dataWrapper,
   attrName,
   attribute,
   value

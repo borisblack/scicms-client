@@ -312,7 +312,7 @@ export interface Property extends DefaultItemTemplate {
 }
 
 export interface ItemData extends DefaultItemTemplate {
-  [name: string]: any
+  [key: string]: any
 }
 
 export interface Response {
@@ -333,7 +333,7 @@ interface ResponseCollectionMeta {
   pagination: Pagination
 }
 
-export interface ItemDataWrapper {
+export interface ItemTab {
   item: Item
   viewType: ViewType
   id?: string

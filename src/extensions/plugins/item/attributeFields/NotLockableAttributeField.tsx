@@ -13,7 +13,7 @@ import styles from 'src/pages/app/attributeFields/AttributeField.module.css'
 const FormItem = Form.Item
 
 export const NotLockableAttributeField: FC<CustomAttributeFieldContext> = ({
-  data: dataWrapper,
+  itemTab: dataWrapper,
   form,
   attrName,
   attribute,

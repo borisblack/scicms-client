@@ -48,7 +48,7 @@ const initialSpec: () => IDashboardSpec = () => ({
 })
 let seqNum = 0
 
-function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: DashboardSpecProps) {
+function DashboardSpec({itemTab: dataWrapper, buffer, readOnly, onBufferChange}: DashboardSpecProps) {
   const {item, data, extra} = dataWrapper
   if (item.name !== DASHBOARD_ITEM_NAME) throw new Error('Illegal argument')
 
@@ -70,7 +70,7 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
   const acl = useAcl(item, data)
   const {datasets, dashboards} = useBIData({withDatasets: true, withDashboards: true})
   const datasetMap = useMemo(() => _.mapKeys(datasets, ds => ds.name), [datasets])
-  const spec: IDashboardSpec = useMemo(() => buffer.spec ?? data?.spec ?? initialSpec(), [buffer.spec, data?.spec])
+  const spec: IDashboardSpec = useMemo(() => buffer.spec ?? initialSpec(), [buffer.spec])
   const dashboardLayout: DashboardLayoutItem[] = useMemo(
     () =>
       spec.layout ??
@@ -98,12 +98,6 @@ function DashboardSpec({data: dataWrapper, buffer, readOnly, onBufferChange}: Da
   const isGridEditable = useMemo(() => !readOnly && acl.canWrite && !isLocked, [acl.canWrite, isLocked, readOnly])
   const thisDashboard = {...data, spec} as Dashboard
   const isNew = !thisDashboard.id
-
-  useEffect(() => {
-    onBufferChange({
-      spec: data?.spec ?? initialSpec()
-    })
-  }, [data])
 
   if (isNew) return null
 

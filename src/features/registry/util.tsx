@@ -6,12 +6,12 @@ import {MenuItem, SubMenu} from 'src/config/menu'
 import IconSuspense from 'src/uiKit/icons/IconSuspense'
 import {ItemMap} from 'src/services/item'
 import {MDIContext} from 'src/uiKit/MDITabs'
-import {Item, ItemDataWrapper} from 'src/types/schema'
+import {Item, ItemTab} from 'src/types/schema'
 import {createMDITab} from 'src/util/mdi'
 import {UserInfo, ViewType} from 'src/types'
 
 interface ToAntdMenuItemsParams {
-  ctx: MDIContext<ItemDataWrapper>
+  ctx: MDIContext<ItemTab>
   me: UserInfo | null
   items: ItemMap
   menuItems: (SubMenu | MenuItem)[]
@@ -48,6 +48,6 @@ export const toAntdMenuItems = ({me, ctx, items, menuItems}: ToAntdMenuItemsPara
       }
     })
 
-function handleItemClick(ctx: MDIContext<ItemDataWrapper>, item: Item) {
+function handleItemClick(ctx: MDIContext<ItemTab>, item: Item) {
   ctx.openTab(createMDITab(item, ViewType.default))
 }

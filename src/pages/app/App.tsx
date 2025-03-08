@@ -5,7 +5,7 @@ import {Layout} from 'antd'
 import {useAuth, useMenuProperties, useRegistry} from 'src/util/hooks'
 import Navbar from 'src/features/registry/Navbar'
 import {ViewType} from 'src/types'
-import {ItemDataWrapper} from 'src/types/schema'
+import {ItemTab} from 'src/types/schema'
 import MDITabs from 'src/uiKit/MDITabs'
 import ViewNavTab from './ViewNavTab'
 import DefaultNavTab from './DefaultNavTab'
@@ -20,7 +20,7 @@ const {Content} = Layout
 function App() {
   const {me, isExpired} = useAuth()
   const {isInitialized, initializeIfNeeded, items} = useRegistry()
-  const mdiContext = useNewMDIContextRedux<ItemDataWrapper>(EMPTY_ARRAY)
+  const mdiContext = useNewMDIContextRedux<ItemTab>(EMPTY_ARRAY)
   const menuItems = useMenuProperties().items
 
   useEffect(() => {
@@ -29,8 +29,8 @@ function App() {
     }
   }, [me, initializeIfNeeded])
 
-  const renderItem = (data: ItemDataWrapper): ReactNode =>
-    data.viewType === ViewType.view ? <ViewNavTab data={data} /> : <DefaultNavTab data={data} />
+  const renderItem = (itemTab: ItemTab): ReactNode =>
+    itemTab.viewType === ViewType.view ? <ViewNavTab itemTab={itemTab} /> : <DefaultNavTab itemTab={itemTab} />
 
   if (!me || isExpired) return <Navigate to="/login?targetUrl=/" />
 

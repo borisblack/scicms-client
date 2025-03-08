@@ -103,7 +103,7 @@ export interface CustomComponentProps {
 }
 
 export interface CustomComponentContext {
-  data: ItemDataWrapper
+  itemTab: ItemTab
   form?: FormInstance | null
   buffer: IBuffer
   onBufferChange: (buffer: IBuffer) => void

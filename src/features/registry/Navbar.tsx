@@ -8,14 +8,14 @@ import {ItemType} from 'antd/lib/menu/hooks/useItems'
 
 import {useAuth, useModal, useRegistry} from 'src/util/hooks'
 import {AuthType} from 'src/types'
-import {ItemDataWrapper} from 'src/types/schema'
+import {ItemTab} from 'src/types/schema'
 import {MDIContext} from 'src/uiKit/MDITabs'
 import logo from 'src/logo.svg'
 import ChangePasswordModal from '../auth/ChangePasswordModal'
 import styles from './Navbar.module.css'
 
 type NavbarProps = {
-  ctx: MDIContext<ItemDataWrapper>
+  ctx: MDIContext<ItemTab>
   menuItems: ItemType[]
   isLoading?: boolean
   appPrefix?: string

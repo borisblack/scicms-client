@@ -14,7 +14,7 @@ dayjs.extend(timezone)
 
 const FormItem = Form.Item
 
-const TimeAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, form, attrName, attribute, value}) => {
+const TimeAttributeField: FC<AttributeFieldProps> = ({itemTab: dataWrapper, form, attrName, attribute, value}) => {
   const appProps = useAppProperties()
   const {momentDisplayTimeFormatString} = appProps.dateTime
 

@@ -11,7 +11,7 @@ import {useAppProperties} from 'src/util/hooks'
 const FormItem = Form.Item
 const {TextArea} = Input
 
-const ArrayAttributeField: FC<AttributeFieldProps> = ({data: dataWrapper, attrName, attribute, value}) => {
+const ArrayAttributeField: FC<AttributeFieldProps> = ({itemTab: dataWrapper, attrName, attribute, value}) => {
   const appProps = useAppProperties()
   if (attribute.type !== FieldType.array) throw new Error('Illegal attribute')
 

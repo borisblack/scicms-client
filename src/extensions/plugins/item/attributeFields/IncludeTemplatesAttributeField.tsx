@@ -15,7 +15,7 @@ import styles from 'src/pages/app/attributeFields/AttributeField.module.css'
 const FormItem = Form.Item
 
 export const IncludeTemplatesAttributeField: FC<CustomAttributeFieldContext> = ({
-  data: dataWrapper,
+  itemTab: dataWrapper,
   form,
   attrName,
   attribute,

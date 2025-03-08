@@ -17,7 +17,7 @@ import {
 } from '@ant-design/icons'
 
 import {IBuffer, ViewState} from 'src/types'
-import {FlaggedResponse, ItemData, ItemDataWrapper, ResponseCollection} from 'src/types/schema'
+import {FlaggedResponse, ItemData, ItemTab, ResponseCollection} from 'src/types/schema'
 import {useTranslation} from 'react-i18next'
 import SearchDataGridWrapper from './SearchDataGridWrapper'
 import {ItemFiltersInput} from 'src/services/query'
@@ -45,7 +45,7 @@ import {
 } from 'src/util/schema'
 
 interface Props {
-  data: ItemDataWrapper
+  itemTab: ItemTab
   form: FormInstance
   buffer: IBuffer
   canCreate: boolean
@@ -65,7 +65,7 @@ const VERSIONS_MODAL_WIDTH = 800
 const {confirm} = Modal
 
 export default function ViewNavTabHeader({
-  data: dataWrapper,
+  itemTab,
   form,
   buffer,
   canCreate,
@@ -79,7 +79,7 @@ export default function ViewNavTabHeader({
   onHtmlExport,
   logoutIfNeed
 }: Props) {
-  const {item, data} = dataWrapper
+  const {item, data} = itemTab
   const canVersion =
     item.versioned &&
     hasConfigIdAttribute(item) &&
@@ -90,7 +90,7 @@ export default function ViewNavTabHeader({
   const isLockable = isItemLockable(item)
   const {me} = useAuth()
   const {items: itemMap} = useRegistry()
-  const ctx = useMDIContext<ItemDataWrapper>()
+  const ctx = useMDIContext<ItemTab>()
   const {open: openItem} = useItemOperations()
   const isNew = !data?.id
   const isLocked = data?.lockedBy?.data?.id != null
@@ -121,7 +121,7 @@ export default function ViewNavTabHeader({
       } else {
         locked = await doLock()
       }
-      if (locked.success) ctx.updateActiveTab({...dataWrapper, data: locked.data})
+      if (locked.success) ctx.updateActiveTab({...itemTab, data: locked.data})
       else
         notification.warning({
           message: 'Locking error',
@@ -163,7 +163,7 @@ export default function ViewNavTabHeader({
         unlocked = await doUnlock()
       }
       if (unlocked.success) {
-        ctx.updateActiveTab({...dataWrapper, data: unlocked.data})
+        ctx.updateActiveTab({...itemTab, data: unlocked.data})
       } else {
         notification.warning({
           message: 'Cancellation error',
@@ -199,7 +199,7 @@ export default function ViewNavTabHeader({
       } else {
         deleted = await doDelete()
       }
-      ctx.updateActiveTab({...dataWrapper, data: deleted.data})
+      ctx.updateActiveTab({...itemTab, data: deleted.data})
 
       if (isLockable) setLockedByMe(false)
 
@@ -233,7 +233,7 @@ export default function ViewNavTabHeader({
         purged = await doPurge()
       }
       const deleted = purged.data.find(it => it.id === id) as ItemData
-      ctx.updateActiveTab({...dataWrapper, data: deleted})
+      ctx.updateActiveTab({...itemTab, data: deleted})
 
       if (isLockable) setLockedByMe(false)
 
@@ -270,7 +270,7 @@ export default function ViewNavTabHeader({
       } else {
         promoted = await doPromote()
       }
-      ctx.updateActiveTab({...dataWrapper, data: promoted})
+      ctx.updateActiveTab({...itemTab, data: promoted})
       setPromoteModalVisible(false)
     } catch (e: any) {
       console.error(e.message)
@@ -437,7 +437,7 @@ export default function ViewNavTabHeader({
     setVersionsModalVisible(false)
   }
 
-  const title = getTitle(dataWrapper)
+  const title = getTitle(itemTab)
   return (
     <>
       {viewState === ViewState.CREATE_VERSION && (

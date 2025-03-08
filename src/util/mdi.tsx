@@ -3,7 +3,7 @@ import md5 from 'crypto-js/md5'
 import {ExclamationCircleOutlined, SearchOutlined} from '@ant-design/icons'
 
 import {ViewType} from '../types'
-import {Item, ItemData, ItemDataWrapper} from '../types/schema'
+import {Item, ItemData, ItemTab} from '../types/schema'
 import {ID_ATTR_NAME} from '../config/constants'
 import i18n from '../i18n'
 import {MDITabObservable} from '../uiKit/MDITabs'
@@ -18,11 +18,11 @@ function generateId(itemName: string) {
   return tempId.toString()
 }
 
-export function generateKey(data: ItemDataWrapper): string {
-  const {item, viewType, data: itemData, extra} = data
+export function generateKey(itemTab: ItemTab): string {
+  const {item, viewType, data: itemData, extra} = itemTab
   const itemName = item.name
 
-  return generateKeyById(itemName, viewType, itemData?.id ?? data.id, extra)
+  return generateKeyById(itemName, viewType, itemData?.id ?? itemTab.id, extra)
 }
 
 export function generateKeyById(
@@ -42,9 +42,9 @@ export function generateKeyById(
   return suffix == null ? key : `${key}#${suffix}`
 }
 
-export function generateLabel(data: ItemDataWrapper): ReactNode {
-  const {item, viewType, extra} = data
-  const title = getTitle(data)
+export function generateLabel(itemTab: ItemTab): ReactNode {
+  const {item, viewType, extra} = itemTab
+  const title = getTitle(itemTab)
 
   return (
     <span className="mdi-tab-label" title={title}>
@@ -55,9 +55,9 @@ export function generateLabel(data: ItemDataWrapper): ReactNode {
   )
 }
 
-export function getTitle(data: ItemDataWrapper): string {
-  const {item, viewType, data: itemData} = data
-  const key = generateKey(data)
+export function getTitle(itemTab: ItemTab): string {
+  const {item, viewType, data: itemData} = itemTab
+  const key = generateKey(itemTab)
   switch (viewType) {
     case ViewType.view:
       if (itemData?.[item.idAttribute]) {
@@ -79,10 +79,10 @@ export function createMDITab(
   viewType: ViewType,
   data?: ItemData,
   extra?: Record<string, any>,
-  onUpdate?: (updatedData: ItemDataWrapper) => void,
-  onClose?: (closedData: ItemDataWrapper, remove: boolean) => void
-): MDITabObservable<ItemDataWrapper> {
-  const itemDataWrapper = {
+  onUpdate?: (updatedData: ItemTab) => void,
+  onClose?: (closedData: ItemTab, remove: boolean) => void
+): MDITabObservable<ItemTab> {
+  const itemTab = {
     item,
     viewType,
     id: viewType === ViewType.view && data?.id == null ? generateId(item.name) : undefined,
@@ -91,8 +91,8 @@ export function createMDITab(
   }
 
   return {
-    key: generateKey(itemDataWrapper),
-    data: itemDataWrapper,
+    key: generateKey(itemTab),
+    data: itemTab,
     onUpdate: onUpdate == null ? [] : [onUpdate],
     onClose: onClose == null ? [] : [onClose]
   }

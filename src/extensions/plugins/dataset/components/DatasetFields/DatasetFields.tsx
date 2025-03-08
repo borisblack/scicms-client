@@ -28,7 +28,7 @@ const toNamedFields = (fields: Record<string, Column>): NamedColumn[] =>
 
 let customFieldCounter: number = 0
 
-export function DatasetFields({data: dataWrapper, buffer, onBufferChange}: CustomComponentContext) {
+export function DatasetFields({itemTab: dataWrapper, buffer, onBufferChange}: CustomComponentContext) {
   const data = dataWrapper.data as Dataset | undefined
   const {item} = dataWrapper
   if (item.name !== DATASET_ITEM_NAME) throw new Error('Illegal argument')
@@ -49,12 +49,8 @@ export function DatasetFields({data: dataWrapper, buffer, onBufferChange}: Custo
   const isNew = !data?.id
 
   useEffect(() => {
-    const newSpec = data?.spec ?? ({} as Partial<DatasetSpec>)
-    setNamedFields(toNamedFields(newSpec.columns ?? {}))
-    onBufferChange({
-      spec: newSpec
-    })
-  }, [data])
+    setNamedFields(toNamedFields(spec.columns ?? {}))
+  }, [spec])
 
   useEffect(() => {
     setVersion(prevVersion => prevVersion + 1)

@@ -11,7 +11,7 @@ import styles from 'src/pages/app/attributeFields/AttributeField.module.css'
 const FormItem = Form.Item
 
 export const AccessMaskAttributeField: FC<CustomAttributeFieldContext> = ({
-  data: dataWrapper,
+  itemTab: dataWrapper,
   form,
   attrName,
   attribute,

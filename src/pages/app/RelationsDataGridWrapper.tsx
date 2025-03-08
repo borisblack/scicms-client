@@ -6,7 +6,7 @@ import {ItemType} from 'antd/es/menu/hooks/useItems'
 import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined, SelectOutlined} from '@ant-design/icons'
 import {type RequestParams, DataGrid} from 'src/uiKit/DataGrid'
 import {findAllRelated, getColumns, getHiddenColumns, getInitialData} from 'src/util/datagrid'
-import {Attribute, ItemData, ItemDataWrapper, RelType} from 'src/types/schema'
+import {Attribute, ItemData, ItemTab, RelType} from 'src/types/schema'
 import {ID_ATTR_NAME, ITEM_ITEM_NAME, SOURCE_ATTR_NAME, TARGET_ATTR_NAME} from 'src/config/constants'
 import MutationManager from 'src/services/mutation'
 import QueryManager, {ItemFiltersInput} from 'src/services/query'
@@ -15,20 +15,20 @@ import * as ACL from 'src/util/acl'
 import {useAcl, useAppProperties, useAuth, useItemOperations, useRegistry} from 'src/util/hooks'
 
 interface Props {
-  data: ItemDataWrapper
+  itemTab: ItemTab
   relAttrName: string
   relAttribute: Attribute
 }
 
 const SELECTION_MODAL_WIDTH = 800
 
-export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName, relAttribute}: Props) {
+export default function RelationsDataGridWrapper({itemTab, relAttrName, relAttribute}: Props) {
   const appProps = useAppProperties()
   const {defaultPageSize} = appProps.query
   const {luxonDisplayDateFormatString, luxonDisplayTimeFormatString, luxonDisplayDateTimeFormatString} =
     appProps.dateTime
   const {maxTextLength, colWidth: defaultColWidth} = appProps.ui.dataGrid
-  const {item, data: itemData} = dataWrapper
+  const {item, data: itemData} = itemTab
   const {me} = useAuth()
   const {items: itemMap, permissions: permissionMap} = useRegistry()
   const {create: createItem, open: openItem, close: closeItem} = useItemOperations()
@@ -145,7 +145,7 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
   const refresh = () => setVersion(prevVersion => prevVersion + 1)
 
   const processExistingManyToManyRelation = useCallback(
-    async (updatedItem: ItemDataWrapper, remove: boolean = false) => {
+    async (updatedItem: ItemTab, remove: boolean = false) => {
       if (relAttribute.relType !== RelType.manyToMany || !intermediate) throw new Error('Illegal attribute.')
 
       const updatedId = updatedItem.data?.[targetReferencedAttrName]
@@ -185,12 +185,12 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
   )
 
   const processCreatedManyToManyRelation = useCallback(
-    async (updatedItem: ItemDataWrapper, remove: boolean = false) => {
+    async (updatedItemTab: ItemTab, remove: boolean = false) => {
       if (itemId == null) throw new Error('Item ID is null.')
 
       if (relAttribute.relType !== RelType.manyToMany || !intermediate) throw new Error('Illegal attribute.')
 
-      const id = updatedItem.data?.[targetReferencedAttrName]
+      const id = updatedItemTab.data?.[targetReferencedAttrName]
       if (id == null) {
         console.debug('Created item is not saved.')
         return
@@ -216,7 +216,7 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
         }
       }
 
-      await processExistingManyToManyRelation(updatedItem, remove)
+      await processExistingManyToManyRelation(updatedItemTab, remove)
     },
     [
       itemData,
@@ -285,7 +285,7 @@ export default function RelationsDataGridWrapper({data: dataWrapper, relAttrName
   const openTarget = useCallback(
     async (id: string) => {
       const updateFn = isOneToMany ? refresh : processExistingManyToManyRelation
-      const closeFn = async (closedData: ItemDataWrapper, remove?: boolean) => {
+      const closeFn = async (closedData: ItemTab, remove?: boolean) => {
         if (!remove) return
 
         if (isOneToMany) refresh()

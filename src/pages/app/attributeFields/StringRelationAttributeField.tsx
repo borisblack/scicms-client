@@ -22,7 +22,7 @@ interface StringRelationAttributeFieldProps extends AttributeFieldProps {
 }
 
 const StringRelationAttributeField: FC<StringRelationAttributeFieldProps> = ({
-  data: dataWrapper,
+  itemTab: dataWrapper,
   form,
   attrName,
   attribute,
