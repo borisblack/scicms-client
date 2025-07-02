@@ -82,6 +82,19 @@ To the right of the **Preview** header there is a button for opening statistics 
 
 ![Query execution statistics](img/query_statistic.png "Query execution statistics")
 
+### Row-level security (RLS)
+
+SciCMS allows to restrict access to data for users or roles within a single dataset using the RLS (Row-level security) mechanism. The logic of RLS is similar to solutions for other BI products, for example, [Yandex DataLens](https://datalens.yandex.cloud).
+The dataset's string fields have a **Row-level access** property, which contains a description of the RLS rules.
+Each rule starts on a new line.
+Empty lines and spaces outside the quotation marks are ignored.
+Inactive rules start with the # symbol.
+A rule consists of a field value in single quotation marks, a colon, and a list of users and/or roles separated by commas. The role name must begin with the '@role:' prefix. An asterisk to the left of the colon means any field value. An asterisk to the right means any user or any role. An asterisk cannot be on the left and right at the same time. Examples of RLS rules:
+- `'value1': user1, user2, @role:ROLE_MANAGER` - access to rows with the field value 'value1' is allowed to users `user1`, `user2`, and all users with the role `ROLE_MANAGER`;
+- `*: user3, user4` - users `user3`, `user4` are allowed to access a row with any field value;
+- `# 'value2': user5` - commented-out (inactive) rule;
+- `value3': *` - access to rows with the field value 'value3' is allowed to users.
+
 ## Dashboards
 
 A dashboard is a set of interactive data visualization elements.

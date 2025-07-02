@@ -1,8 +1,10 @@
 import _ from 'lodash'
-import React, {useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 import {useTranslation} from 'react-i18next'
-import {Checkbox, Form, Input, InputNumber, Select, Tabs} from 'antd'
+import {Checkbox, Form, Input, InputNumber, Popover, Select, Space, Tabs} from 'antd'
 import {FormInstance, RuleObject, RuleRender} from 'rc-field-form/es/interface'
+import {CheckboxChangeEvent} from 'antd/es/checkbox'
+import {QuestionCircleOutlined} from '@ant-design/icons'
 
 import {NamedColumn} from 'src/types/bi'
 import {usePrevious} from 'src/util/hooks'
@@ -20,16 +22,21 @@ import FieldName from 'src/components/FieldName'
 import CodeEditor from 'src/uiKit/Editor'
 import {EditorMode} from 'src/uiKit/Editor/constants'
 import {LETTER_NO_WHITESPACE_PATTERN} from 'src/config/constants'
-import {CheckboxChangeEvent} from 'antd/es/checkbox'
+import * as RlsService from 'src/services/rls'
+import RlsHelp from './RlsHelp'
 import styles from './FieldForm.module.css'
 
 interface ColumnFormProps {
   field: NamedColumn
   allFields: Record<string, Column>
   canEdit: boolean
+  showRls?: boolean
 }
 
-export default function FieldForm({field, allFields, canEdit}: ColumnFormProps) {
+const {Item: FormItem} = Form
+const {TextArea} = Input
+
+export default function FieldForm({field, allFields, canEdit, showRls = false}: ColumnFormProps) {
   const prevField = usePrevious(field)
   const form = Form.useFormInstance()
   const {t} = useTranslation()
@@ -47,6 +54,19 @@ export default function FieldForm({field, allFields, canEdit}: ColumnFormProps) 
       if (value === field.name || !allFields.hasOwnProperty(value)) return Promise.resolve()
 
       return Promise.reject(new Error(t('Name is not unique')))
+    }
+  })
+
+  const rlsRule: RuleRender = ({setFieldValue}: FormInstance): RuleObject => ({
+    validator(_, value) {
+      try {
+        const rls = RlsService.parseRls(value)
+        setFieldValue('rls', rls)
+      } catch (err: any) {
+        return Promise.reject(new Error(err.message))
+      }
+
+      return Promise.resolve()
     }
   })
 
@@ -108,21 +128,21 @@ export default function FieldForm({field, allFields, canEdit}: ColumnFormProps) 
 
   return (
     <>
-      <Form.Item
+      <FormItem
         name="name"
         label={t('Name')}
         rules={[requiredFieldRule(), regExpRule(LETTER_NO_WHITESPACE_PATTERN), uniqueNameRule]}
       >
         <Input disabled={!canEdit || !field.custom} />
-      </Form.Item>
+      </FormItem>
 
-      <Form.Item
+      <FormItem
         name="type"
         label={t('Type')}
         rules={[{required: true, message: t('Cannot resolve type. Eihther Source or Formula field must be set.')}]}
       >
         <Select disabled options={datasetFieldTypeOptions} />
-      </Form.Item>
+      </FormItem>
 
       <Tabs
         defaultActiveKey={field.formula ? 'formula' : 'source'}
@@ -134,7 +154,7 @@ export default function FieldForm({field, allFields, canEdit}: ColumnFormProps) 
             label: t('Source'),
             children: (
               <>
-                <Form.Item name="source" label={t('Source')}>
+                <FormItem name="source" label={t('Source')}>
                   <Select
                     allowClear
                     disabled={!canEdit || !field.custom}
@@ -156,9 +176,9 @@ export default function FieldForm({field, allFields, canEdit}: ColumnFormProps) 
                     onSelect={handleSourceChange}
                     onClear={() => handleSourceChange(undefined)}
                   />
-                </Form.Item>
+                </FormItem>
 
-                <Form.Item name="aggregate" label={t('Aggregate')}>
+                <FormItem name="aggregate" label={t('Aggregate')}>
                   <Select
                     allowClear
                     disabled={!canEdit || !field.custom || !source}
@@ -166,7 +186,7 @@ export default function FieldForm({field, allFields, canEdit}: ColumnFormProps) 
                     onSelect={handleAggregateChange}
                     onClear={() => handleAggregateChange(undefined)}
                   />
-                </Form.Item>
+                </FormItem>
               </>
             )
           },
@@ -175,9 +195,9 @@ export default function FieldForm({field, allFields, canEdit}: ColumnFormProps) 
             label: t('Formula'),
             children: (
               <>
-                <Form.Item name="formula" hidden>
+                <FormItem name="formula" hidden>
                   <Input />
-                </Form.Item>
+                </FormItem>
 
                 <div className={styles.formulaEditor}>
                   <CodeEditor
@@ -195,24 +215,52 @@ export default function FieldForm({field, allFields, canEdit}: ColumnFormProps) 
         onChange={handleTabsChange}
       />
 
-      <Form.Item name="hidden" hidden valuePropName="checked">
+      <FormItem name="hidden" hidden valuePropName="checked">
         <Checkbox disabled={!canEdit}>{t('Hide')}</Checkbox>
-      </Form.Item>
+      </FormItem>
       <Checkbox disabled={!canEdit} defaultChecked={!field.hidden} onChange={handleVisibilityChange}>
         {t('Show')}
       </Checkbox>
 
-      <Form.Item name="alias" label={t('Alias')}>
+      <FormItem name="alias" label={t('Alias')}>
         <Input disabled={!canEdit} />
-      </Form.Item>
+      </FormItem>
 
-      <Form.Item name="format" label={t('Format')}>
+      <FormItem name="format" label={t('Format')}>
         <Select allowClear disabled={!canEdit} options={fieldType ? getFormatOptions(fieldType) : []} />
-      </Form.Item>
+      </FormItem>
 
-      <Form.Item name="colWidth" label={t('Column Width')}>
+      <FormItem name="colWidth" label={t('Column Width')}>
         <InputNumber disabled={!canEdit} min={0} />
-      </Form.Item>
+      </FormItem>
+
+      {showRls && fieldType === FieldType.string && (
+        <>
+          <FormItem name="rls" hidden>
+            <Input />
+          </FormItem>
+
+          <FormItem
+            name="rawRls"
+            label={
+              <Space>
+                {t('Row-level security')}
+                <Popover
+                  arrow={false}
+                  placement="bottom"
+                  content={<RlsHelp height={350} />}
+                  overlayInnerStyle={{width: 800}}
+                >
+                  <QuestionCircleOutlined className="blue" />
+                </Popover>
+              </Space>
+            }
+            rules={[rlsRule]}
+          >
+            <TextArea rows={5} />
+          </FormItem>
+        </>
+      )}
     </>
   )
 }

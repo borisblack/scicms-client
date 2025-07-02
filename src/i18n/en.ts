@@ -203,6 +203,12 @@ const en = {
     'Intermediate Item': 'Intermediate Item',
     'Internal server error': 'Internal server error',
     'Invalid filter format': 'Invalid filter format',
+    'Invalid rule: [%s]. Any value cannot be allowed for any identity.':
+      'Invalid rule: [%s]. Any value cannot be allowed for any identity.',
+    'Invalid identities definition: [%s]. All identities are allowed, but the user and/or role lists are not empty.':
+      'Invalid identities definition: [%s]. All identities are allowed, but the user and/or role lists are not empty.',
+    'Invalid identities definition: [%s]. Only one star placeholder is allowed.':
+      'Invalid identities definition: [%s]. Only one star placeholder is allowed.',
     'Invalid username and/or password': 'Invalid username and/or password',
     'Inversed By': 'Inversed By',
     'Is File': 'Is File',
@@ -362,11 +368,15 @@ const en = {
     'Revision Policies': 'Revision Policies',
     Revisions: 'Revisions',
     'Right value': 'Right value',
+    'RLS help description':
+      "Every rule starts on a new line.\nEmpty lines and spaces outside quotes are ignored.\nInactive rules start with the # symbol.\nA rule consists of a field value in single quotes, a colon, and a comma-separated list of users and/or roles. The role name must start with the '@role:' prefix.\nAn asterisk to the left of a colon means any field value. An asterisk to the right means any user or role. There cannot be an asterisk to the left and to the right at the same time.",
     Role: 'Role',
     Roles: 'Roles',
+    'Row-level security': 'Row-level security',
+    'Rule parse error': 'Rule parse error',
     Rules: 'Rules',
     'Rules help description':
-      'The new rule starts on a new line.\nEmpty lines and whitespaces are ignored.\nA comment line starts with a # character.\nCells are named after the field name in the row. You can select the entire row using an asterisk.',
+      'Every rule starts on a new line.\nEmpty lines and whitespaces are ignored.\nA comment line starts with a # character.\nCells are named after the field name in the row. You can select the entire row using an asterisk.',
     'restart the program': 'restart the program',
     SPREADSHEET: 'Spreadsheet (xls, xlsx file)',
     'SQL query': 'SQL query',

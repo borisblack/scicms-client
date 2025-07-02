@@ -1,5 +1,4 @@
-import React from 'react'
-import {Col, Form, Input, InputNumber, Popover, Row, Select, Space} from 'antd'
+import {Col, Form, Input, InputNumber, Popover, Row, Space} from 'antd'
 import {QuestionCircleOutlined} from '@ant-design/icons'
 import {useTranslation} from 'react-i18next'
 

@@ -3,7 +3,7 @@ import {useTranslation} from 'react-i18next'
 import {Button, Drawer, Form, Space} from 'antd'
 
 import {NamedColumn} from 'src/types/bi'
-import FieldForm from './FieldForm'
+import FieldForm from './FieldForm/FieldForm'
 import {Column} from 'src/types/bi'
 
 interface DashFieldModalProps {

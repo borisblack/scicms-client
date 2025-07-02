@@ -1,10 +1,10 @@
-import React from 'react'
 import {useTranslation} from 'react-i18next'
 import {Form, Modal} from 'antd'
 
 import {NamedColumn} from 'src/types/bi'
-import FieldForm from 'src/bi/FieldForm'
+import FieldForm from 'src/bi/FieldForm/FieldForm'
 import {Column} from 'src/types/bi'
+import * as RlsService from 'src/services/rls'
 
 interface DatasetFieldModalProps {
   field: NamedColumn
@@ -31,6 +31,7 @@ export default function DatasetFieldModal({
   function handleFormFinish(values: FieldFormValues) {
     if (!canEdit) return
 
+    delete (values as any).rawRls
     onChange({...field, ...values}, field.name)
     onClose()
   }
@@ -38,6 +39,7 @@ export default function DatasetFieldModal({
   return (
     <Modal
       title={t('Field')}
+      width={620}
       open={open}
       destroyOnClose
       okButtonProps={{disabled: !canEdit, size: 'small'}}
@@ -52,10 +54,10 @@ export default function DatasetFieldModal({
         layout="horizontal"
         size="small"
         disabled={!canEdit}
-        initialValues={field}
+        initialValues={{...field, rawRls: field.rls ? RlsService.serializeRls(field.rls) : ''}}
         onFinish={handleFormFinish}
       >
-        <FieldForm field={field} allFields={allFields} canEdit={canEdit} />
+        <FieldForm field={field} allFields={allFields} canEdit={canEdit} showRls />
       </Form>
     </Modal>
   )

@@ -18,6 +18,24 @@ export interface DatasetSpec {
   useDesigner?: boolean
 }
 
+/** Row-level security identities */
+export interface RlsIdentities {
+  /** Allowed identities (users and roles). Roles must begin with the prefix '@role:' */
+  identities: string[]
+
+  /** Flag indicating if any user/role is allowed by rule */
+  anyIdentity: boolean
+}
+
+/** Row-level security entry */
+export interface RlsEntry extends RlsIdentities {
+  /** Checked value */
+  value: string
+
+  /** Flag indicating if rule is active */
+  active: boolean
+}
+
 export interface Column {
   type: ColumnType
   custom: boolean
@@ -28,6 +46,7 @@ export interface Column {
   alias?: string
   format?: FieldType.int | FieldType.float | FieldType.date | FieldType.time | FieldType.datetime
   colWidth?: string | number | null
+  rls?: RlsEntry[]
 }
 
 export type ColumnType =
