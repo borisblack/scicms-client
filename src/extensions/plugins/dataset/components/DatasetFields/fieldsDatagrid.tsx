@@ -126,12 +126,13 @@ export function getColumns({
       header: i18n.t('Format'),
       cell: info => {
         const {type} = info.row.original
-        if (canEdit) {
+        const formatOptions = getFormatOptions(type)
+        if (canEdit && formatOptions.length > 0) {
           return (
             <SelectableCell
               value={info.getValue()}
               allowClear
-              options={getFormatOptions(type)}
+              options={formatOptions}
               onChange={format => onChange({...info.row.original, format}, info.row.original.name)}
             />
           )

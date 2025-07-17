@@ -44,6 +44,7 @@ export default function FieldForm({field, allFields, canEdit, showRls = false}: 
   const [fieldType, setFieldType] = useState<FieldType | undefined>(field.type)
   const [formula, setFormula] = useState<string | undefined>(field.formula)
   const ownFields = _.pickBy(allFields, c => !c.custom)
+  const formatOptions = fieldType ? getFormatOptions(fieldType) : []
 
   useEffect(() => {
     if (field.name !== prevField?.name) form.resetFields()
@@ -218,7 +219,12 @@ export default function FieldForm({field, allFields, canEdit, showRls = false}: 
       <FormItem name="hidden" hidden valuePropName="checked">
         <Checkbox disabled={!canEdit}>{t('Hide')}</Checkbox>
       </FormItem>
-      <Checkbox disabled={!canEdit} defaultChecked={!field.hidden} onChange={handleVisibilityChange}>
+      <Checkbox
+        className={styles.showCheckBox}
+        disabled={!canEdit}
+        defaultChecked={!field.hidden}
+        onChange={handleVisibilityChange}
+      >
         {t('Show')}
       </Checkbox>
 
@@ -226,9 +232,11 @@ export default function FieldForm({field, allFields, canEdit, showRls = false}: 
         <Input disabled={!canEdit} />
       </FormItem>
 
-      <FormItem name="format" label={t('Format')}>
-        <Select allowClear disabled={!canEdit} options={fieldType ? getFormatOptions(fieldType) : []} />
-      </FormItem>
+      {formatOptions.length > 0 && (
+        <FormItem name="format" label={t('Format')}>
+          <Select allowClear disabled={!canEdit} options={formatOptions} />
+        </FormItem>
+      )}
 
       <FormItem name="colWidth" label={t('Column Width')}>
         <InputNumber disabled={!canEdit} min={0} />
