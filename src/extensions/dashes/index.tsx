@@ -6,7 +6,7 @@ import {Plot} from '@antv/g2plot'
 import dashConfig from 'src/config/dash'
 import {Dataset} from 'src/types/bi'
 import {FormInstance} from 'antd'
-import {DashWrapperProps} from '../../bi/DashWrapper'
+import {DashWrapperProps} from '../../bi/DashWrapper/DashWrapper'
 
 export interface Dash {
   id: string

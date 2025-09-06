@@ -5,7 +5,7 @@ import {Pie, PieConfig} from '@ant-design/charts'
 import {v4 as uuidv4} from 'uuid'
 
 import {DashEventHandler, DashRenderContext} from '..'
-import {defaultDashColors, columnType, formatValue, toPercent} from 'src/bi/util'
+import {defaultDashColors, columnType, formatValue, toPercent} from 'src/bi/util/util'
 import {LegendPosition} from '../util'
 import * as RulesService from 'src/services/rules'
 import {useBIData, useBiProperties} from 'src/bi/util/hooks'

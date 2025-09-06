@@ -6,7 +6,7 @@ import {useTranslation} from 'react-i18next'
 
 import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME} from 'src/config/constants'
 import {Index, ItemSpec} from 'src/types/schema'
-import {type DataWithPagination, type RequestParams, DataGrid} from 'src/uiKit/DataGrid'
+import {type DataWithPagination, type RequestParams, DataGrid} from 'src/uiKit/DataGrid/DataGrid'
 import {getInitialData, processLocal} from 'src/util/datagrid'
 import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design/icons'
 import {ItemType} from 'antd/es/menu/hooks/useItems'

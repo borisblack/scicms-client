@@ -14,11 +14,11 @@ import {
   datasetFieldTypeOptions,
   getAggregateOptions,
   getFormatOptions
-} from 'src/bi/util'
+} from 'src/bi/util/util'
 import {AggregateType, Column} from 'src/types/bi'
 import {FieldType} from 'src/types'
-import FieldTypeIcon from 'src/components/FieldTypeIcon'
-import FieldName from 'src/components/FieldName'
+import FieldTypeIcon from 'src/components/FieldTypeIcon/FieldTypeIcon'
+import FieldName from 'src/components/FieldName/FieldName'
 import CodeEditor from 'src/uiKit/Editor'
 import {EditorMode} from 'src/uiKit/Editor/constants'
 import {LETTER_NO_WHITESPACE_PATTERN} from 'src/config/constants'

@@ -4,7 +4,7 @@ import {useTranslation} from 'react-i18next'
 
 import {FieldType} from 'src/types'
 import {CustomAttributeFieldContext} from '../../types'
-import FieldTypeIcon from 'src/components/FieldTypeIcon'
+import FieldTypeIcon from 'src/components/FieldTypeIcon/FieldTypeIcon'
 import {PropertyType} from 'src/types/schema'
 import styles from 'src/pages/app/attributeFields/AttributeField.module.css'
 

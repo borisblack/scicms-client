@@ -4,7 +4,7 @@ import {Alert} from 'antd'
 import {Scatter, ScatterConfig} from '@ant-design/charts'
 import {v4 as uuidv4} from 'uuid'
 
-import {defaultDashColor, defaultDashColors, columnType, formatValue, isTemporal} from 'src/bi/util'
+import {defaultDashColor, defaultDashColors, columnType, formatValue, isTemporal} from 'src/bi/util/util'
 import {DashEventHandler, DashRenderContext} from '..'
 import {LegendPosition} from '../util'
 import * as RulesService from 'src/services/rules'

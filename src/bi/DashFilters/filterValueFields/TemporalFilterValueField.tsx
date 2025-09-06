@@ -11,7 +11,7 @@ import {
   temporalPeriodTitles,
   temporalUnitTitles,
   timeTemporalUnits
-} from 'src/bi/util'
+} from 'src/bi/util/util'
 import {FieldType} from 'src/types'
 import {QueryOp, TemporalPeriod, TemporalType} from 'src/types/bi'
 import styles from '../DashFilters.module.css'

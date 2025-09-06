@@ -3,7 +3,7 @@ import {useTranslation} from 'react-i18next'
 import {Row} from '@tanstack/react-table'
 import {Checkbox, notification} from 'antd'
 
-import {RequestParams, DataGrid} from 'src/uiKit/DataGrid'
+import {RequestParams, DataGrid} from 'src/uiKit/DataGrid/DataGrid'
 import {findAll, getColumns, getHiddenColumns, getInitialData} from 'src/util/datagrid'
 import {Item, ItemData} from 'src/types/schema'
 import {ExtRequestParams, ItemFiltersInput} from 'src/services/query'

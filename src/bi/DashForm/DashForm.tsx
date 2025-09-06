@@ -4,8 +4,8 @@ import {Col, Collapse, Form, Input, InputNumber, Popover, Row, Select, Space, To
 import {FolderOpenOutlined, QuestionCircleOutlined} from '@ant-design/icons'
 
 import {Column, Dashboard, Dataset, IDash, NamedColumn, QueryBlock} from 'src/types/bi'
-import {generateQueryBlock, getCustomFunctionsInfo, toFormQueryBlock} from '../util'
-import DashFilters from '../DashFilters'
+import {generateQueryBlock, getCustomFunctionsInfo, toFormQueryBlock} from '../util/util'
+import DashFilters from '../DashFilters/DashFilters'
 import {Dash, getDash, getDashIds} from 'src/extensions/dashes'
 import {useBIData, useBiProperties} from '../util/hooks'
 import {Split} from 'src/uiKit/Split'

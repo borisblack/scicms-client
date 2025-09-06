@@ -24,7 +24,7 @@ import {
   toDatasetFiltersInput,
   toSingleDatasetFiltersInput,
   toSingleSelectorFiltersInput
-} from '../util'
+} from '../util/util'
 import {Dash, getDash} from 'src/extensions/dashes'
 import {
   Column,

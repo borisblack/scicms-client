@@ -6,9 +6,9 @@ import {FieldType} from 'src/types'
 import {NamedColumn} from 'src/types/bi'
 import {CheckboxCell, ClickableCell, EditableCell, EditableNumberCell, SelectableCell} from 'src/uiKit/DataGrid'
 import {AggregateType, Column} from 'src/types/bi'
-import {getFormatOptions} from 'src/bi/util'
-import FieldTypeIcon from 'src/components/FieldTypeIcon'
-import FieldName, {TagType} from 'src/components/FieldName'
+import {getFormatOptions} from 'src/bi/util/util'
+import FieldTypeIcon from 'src/components/FieldTypeIcon/FieldTypeIcon'
+import FieldName, {TagType} from 'src/components/FieldName/FieldName'
 
 interface GetColumnsProps {
   ownColumns: Record<string, Column>

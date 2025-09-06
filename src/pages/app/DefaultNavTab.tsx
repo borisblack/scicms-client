@@ -9,7 +9,7 @@ import {PageHeader} from '@ant-design/pro-layout'
 
 import {IBuffer} from 'src/types'
 import {ItemData, ItemTab} from 'src/types/schema'
-import {type RequestParams, DataGrid} from '../../uiKit/DataGrid'
+import {type RequestParams, DataGrid} from '../../uiKit/DataGrid/DataGrid'
 import * as ACL from 'src/util/acl'
 import {findAll, getColumns, getHiddenColumns, getInitialData} from 'src/util/datagrid'
 import {ExtRequestParams} from 'src/services/query'

@@ -4,7 +4,7 @@ import {v4 as uuidv4} from 'uuid'
 import {Dataset, QueryBlock} from 'src/types/bi'
 import React from 'react'
 import {useTranslation} from 'react-i18next'
-import {generateQueryBlock, logicalOpTitles, positiveLogicalOps} from '../util'
+import {generateQueryBlock, logicalOpTitles, positiveLogicalOps} from '../util/util'
 import DashFilter from './DashFilter'
 import styles from './DashFilters.module.css'
 

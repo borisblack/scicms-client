@@ -4,7 +4,7 @@ import {Button, Form, Select, Space} from 'antd'
 import {DefaultOptionType} from 'rc-select/lib/Select'
 
 import {Column, Dataset, ISelector, QueryOp, SelectorFilter} from 'src/types/bi'
-import {queryOpTitles} from 'src/bi/util'
+import {queryOpTitles} from 'src/bi/util/util'
 import {requiredFieldRule} from 'src/util/form'
 import FilterValueFieldWrapper from '../DashFilters/FilterValueFieldWrapper'
 import {usePrevious} from 'src/util/hooks'

@@ -2,8 +2,8 @@ import {useTranslation} from 'react-i18next'
 import {Button, Drawer, Form, Space, Tooltip} from 'antd'
 import {QuestionCircleOutlined} from '@ant-design/icons'
 
-import {fromFormQueryBlock, getCustomFunctionsInfo, saveSessionFilters, toFormQueryBlock} from './util'
-import DashFilters from './DashFilters'
+import {fromFormQueryBlock, getCustomFunctionsInfo, saveSessionFilters, toFormQueryBlock} from './util/util'
+import DashFilters from './DashFilters/DashFilters'
 import {Dataset, IDash, QueryBlock} from '../types/bi'
 import {useAppProperties} from 'src/util/hooks'
 

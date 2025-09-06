@@ -3,7 +3,7 @@ import {useTranslation} from 'react-i18next'
 import {Button, Drawer, Form, Space} from 'antd'
 
 import {IText} from '../types/bi'
-import TextForm, {TextFormValues} from './TextForm'
+import TextForm, {TextFormValues} from './TextForm/TextForm'
 
 interface TextFormModalProps {
   text: IText

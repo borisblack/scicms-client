@@ -22,7 +22,7 @@ import {
   LUXON_YEAR_MONTH_FORMAT_STRING,
   MEDIA_ITEM_NAME
 } from '../config/constants'
-import {RequestParams} from '../uiKit/DataGrid'
+import {RequestParams} from '../uiKit/DataGrid/DataGrid'
 import ItemManager, {ItemMap} from './item'
 
 export interface ExtRequestParams extends RequestParams {

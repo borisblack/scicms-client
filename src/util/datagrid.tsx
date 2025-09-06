@@ -6,7 +6,7 @@ import {DateTime} from 'luxon'
 
 import {FieldType} from '../types'
 import {Attribute, Item, ItemData, Media, RelType} from '../types/schema'
-import {DataWithPagination, RequestParams} from '../uiKit/DataGrid'
+import {DataWithPagination, RequestParams} from '../uiKit/DataGrid/DataGrid'
 import QueryManager, {ExtRequestParams, ItemFiltersInput} from '../services/query'
 import {ACCESS_ITEM_NAME, FILENAME_ATTR_NAME, MASK_ATTR_NAME, MEDIA_ITEM_NAME, UTC} from '../config/constants'
 import i18n from '../i18n'

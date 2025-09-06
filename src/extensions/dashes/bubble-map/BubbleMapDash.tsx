@@ -6,7 +6,7 @@ import L, {LatLngExpression} from 'leaflet'
 
 import {DashRenderContext} from '../index'
 import * as RulesService from 'src/services/rules'
-import {defaultDashColor, defaultDashColors} from 'src/bi/util'
+import {defaultDashColor, defaultDashColors} from 'src/bi/util/util'
 import {MAX_LAT, MAX_LNG, MIN_LAT, MIN_LNG} from '.'
 import {QueryFilter, QueryOp} from 'src/types/bi'
 import {useBIData, useBiProperties} from 'src/bi/util/hooks'

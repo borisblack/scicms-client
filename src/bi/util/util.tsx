@@ -28,7 +28,7 @@ import {
 } from 'src/types/bi'
 import i18n from 'src/i18n'
 import {extractSessionData} from 'src/util'
-import FieldTypeIcon from 'src/components/FieldTypeIcon'
+import FieldTypeIcon from 'src/components/FieldTypeIcon/FieldTypeIcon'
 
 interface FormatParams {
   dateFormatString: string

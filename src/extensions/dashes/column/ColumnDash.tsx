@@ -5,7 +5,7 @@ import {Column, ColumnConfig} from '@ant-design/charts'
 import {v4 as uuidv4} from 'uuid'
 
 import {DashEventHandler, DashRenderContext} from 'src/extensions/dashes'
-import {defaultDashColor, defaultDashColors, columnType, formatValue} from 'src/bi/util'
+import {defaultDashColor, defaultDashColors, columnType, formatValue} from 'src/bi/util/util'
 import {LegendPosition} from '../util'
 import * as RulesService from 'src/services/rules'
 import {useBIData, useBiProperties} from 'src/bi/util/hooks'

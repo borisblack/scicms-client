@@ -20,13 +20,13 @@ import {
   IText,
   QueryOp
 } from 'src/types/bi'
-import {generateQueryBlock, printSingleQueryFilter} from '../util'
-import DashWrapper from '../DashWrapper'
+import {generateQueryBlock, printSingleQueryFilter} from '../util/util'
+import DashWrapper from '../DashWrapper/DashWrapper'
 import {useAcl} from 'src/util/hooks'
 import {generateKey} from 'src/util/mdi'
 import {useBIData, useBiProperties, useSelectors} from '../util/hooks'
-import Text from '../Text'
-import Selector from '../Selector'
+import Text from '../Text/Text'
+import Selector from '../Selector/Selector'
 import './DashboardSpec.css'
 import styles from './DashboardSpec.module.css'
 import {CustomComponentContext} from 'src/extensions/plugins/types'

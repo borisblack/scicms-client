@@ -3,7 +3,7 @@ import {Alert, Table} from 'antd'
 import {v4 as uuidv4} from 'uuid'
 import {ColumnsType} from 'antd/es/table'
 import {DashRenderContext} from '..'
-import {columnType, formatValue} from 'src/bi/util'
+import {columnType, formatValue} from 'src/bi/util/util'
 import * as RulesService from 'src/services/rules'
 import {useBiProperties} from 'src/bi/util/hooks'
 

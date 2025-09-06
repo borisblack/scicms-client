@@ -11,7 +11,7 @@ import * as SequenceService from 'src/services/sequence'
 import {NamedAttribute} from './types'
 import {useAppProperties, useRegistry} from 'src/util/hooks'
 import styles from './Attributes.module.css'
-import FieldTypeIcon from 'src/components/FieldTypeIcon'
+import FieldTypeIcon from 'src/components/FieldTypeIcon/FieldTypeIcon'
 
 interface Props {
   form: FormInstance

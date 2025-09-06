@@ -4,13 +4,13 @@ import {Button, Dropdown, Form, Space} from 'antd'
 import {ClearOutlined, DeleteOutlined, EditOutlined, SettingOutlined} from '@ant-design/icons'
 import {PageHeader} from '@ant-design/pro-layout'
 
-import {Dataset, IDash, ISelector} from 'src/types/bi'
+import {Dataset, IDash, ISelector, QueryOp} from 'src/types/bi'
 import {useAppProperties, useModal} from 'src/util/hooks'
 import SelectorModal from '../SelectorModal'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
 import styles from './Selector.module.css'
 import SelectorValue, {SelectorValueFormValues} from './SelectorValue'
-import {fromFormSelectorFilter, toFormSelectorFilter} from '../util'
+import {fromFormSelectorFilter, toFormSelectorFilter} from '../util/util'
 
 interface SelectorProps {
   selector: ISelector
@@ -52,10 +52,11 @@ export default function Selector({
   }
 
   function handleSelectorValueFormFinish(values: SelectorValueFormValues) {
-    const filter = fromFormSelectorFilter(values.selectorFilter, timeZone)
+    const filter = fromFormSelectorFilter({...values.selectorFilter, type: selector.type}, timeZone)
     onChange({
       ...selector,
-      value: filter.value
+      value: filter.op === QueryOp.$between ? [filter.extra?.left, filter.extra?.right] : filter.value,
+      extra: filter.extra
     })
   }
 
@@ -68,9 +69,9 @@ export default function Selector({
 
     if (!readOnly) {
       menuItems.push(
-        /*{
-                    type: 'divider'
-                },*/
+        // {
+        //   type: 'divider'
+        // },
         {
           key: 'edit',
           label: (

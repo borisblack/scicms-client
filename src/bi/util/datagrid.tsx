@@ -5,7 +5,7 @@ import {Checkbox} from 'antd'
 import {DateTime} from 'luxon'
 
 import {FieldType, Pagination, PrimitiveFilterInput} from 'src/types'
-import {type DataWithPagination, type RequestParams} from 'src/uiKit/DataGrid'
+import {type DataWithPagination, type RequestParams} from 'src/uiKit/DataGrid/DataGrid'
 import {
   LUXON_DATE_FORMAT_STRING,
   LUXON_DATE_HOURS_FORMAT_STRING,

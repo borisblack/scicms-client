@@ -6,7 +6,7 @@ import {FormInstance, RuleObject, RuleRender} from 'rc-field-form/es/interface'
 
 import {JoinedTable, JoinType, QueryOp, Table} from 'src/types/bi'
 import {usePrevious} from 'src/util/hooks'
-import FieldTypeIcon from 'src/components/FieldTypeIcon'
+import FieldTypeIcon from 'src/components/FieldTypeIcon/FieldTypeIcon'
 import {regExpRule} from 'src/util/form'
 import styles from './JoinedTableForm.module.css'
 

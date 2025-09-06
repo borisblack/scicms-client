@@ -6,7 +6,7 @@ import {useTranslation} from 'react-i18next'
 
 import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME} from 'src/config/constants'
 import {Attribute, ItemSpec} from 'src/types/schema'
-import {type DataWithPagination, type RequestParams, DataGrid} from 'src/uiKit/DataGrid'
+import {type DataWithPagination, type RequestParams, DataGrid} from 'src/uiKit/DataGrid/DataGrid'
 import {processLocal} from 'src/util/datagrid'
 import AttributeForm from './AttributeForm'
 import {CopyOutlined, DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design/icons'
