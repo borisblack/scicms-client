@@ -47,7 +47,7 @@ export function Attributes({itemTab: dataWrapper, form, buffer, onBufferChange}:
   const isCoreItem = useMemo(() => data?.core ?? false, [data?.core])
   const columns = useMemo(() => getAttributeColumns(isCoreItem, defaultColWidth), [isCoreItem, defaultColWidth])
   const hiddenColumns = useMemo(() => getHiddenAttributeColumns(), [])
-  const spec: ItemSpec = useMemo(() => buffer.spec ?? {}, [buffer.spec])
+  const spec: ItemSpec = useMemo(() => buffer.spec ?? data?.spec ?? {}, [buffer.spec, data?.spec])
   const includeTemplates: string[] | undefined = Form.useWatch('includeTemplates', form)
 
   const initialNamedAttributes = useMemo((): NamedAttribute[] => {

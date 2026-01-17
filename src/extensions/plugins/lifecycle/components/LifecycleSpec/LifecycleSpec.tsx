@@ -42,7 +42,8 @@ export default function LifecycleSpec({itemTab: dataWrapper, buffer, onBufferCha
       m = new Viewer(props)
     }
 
-    if (buffer.spec) m.importXML(buffer.spec)
+    const spec = buffer.spec ?? data?.spec
+    if (spec) m.importXML(spec)
     else m.createDiagram()
 
     modeler.current = m
@@ -52,7 +53,7 @@ export default function LifecycleSpec({itemTab: dataWrapper, buffer, onBufferCha
       m = null
       modeler.current = null
     }
-  }, [acl.canWrite, buffer.spec])
+  }, [acl.canWrite, buffer.spec, data])
 
   return (
     <div className={styles.bpmnDiagramWrapper}>

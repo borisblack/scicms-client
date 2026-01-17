@@ -30,7 +30,7 @@ export function Indexes({itemTab: dataWrapper, buffer, onBufferChange}: CustomCo
   const acl = useItemAcl(item, data)
   const columns = useMemo(() => getIndexColumns(defaultColWidth), [defaultColWidth])
   const hiddenColumns = useMemo(() => getHiddenIndexColumns(), [])
-  const spec: ItemSpec = useMemo(() => buffer.spec ?? {}, [buffer.spec])
+  const spec: ItemSpec = useMemo(() => buffer.spec ?? data?.spec ?? {}, [buffer.spec, data?.spec])
 
   const initialNamedIndexes = useMemo((): NamedIndex[] => {
     const indexes = spec.indexes ?? {}

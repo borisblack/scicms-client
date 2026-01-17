@@ -59,7 +59,7 @@ function DefaultNavTab({itemTab}: Props) {
   const headerRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const footerRef = useRef<HTMLDivElement>(null)
-  const [buffer, setBuffer] = useState<IBuffer>(data ?? {})
+  const [buffer, setBuffer] = useState<IBuffer>({})
   const {item} = itemTab
   const isSystemItem = item.name === ITEM_TEMPLATE_ITEM_NAME || item.name === ITEM_ITEM_NAME
   const canVersion =
@@ -113,7 +113,7 @@ function DefaultNavTab({itemTab}: Props) {
   useEffect(() => {
     if (DEBUG) console.log('DefaultNavTab buffer reset')
 
-    setBuffer(data ?? {})
+    setBuffer({})
   }, [data])
 
   useEffect(() => {

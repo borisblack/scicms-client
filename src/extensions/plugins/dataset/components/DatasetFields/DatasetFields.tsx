@@ -38,7 +38,7 @@ export function DatasetFields({itemTab: dataWrapper, buffer, onBufferChange}: Cu
   const splitConfig = appProps.ui.split
   const {defaultPageSize, minPageSize, maxPageSize} = appProps.query
   const acl = useAcl(item, data)
-  const spec: DatasetSpec = useMemo(() => buffer.spec ?? {}, [buffer])
+  const spec: DatasetSpec = useMemo(() => buffer.spec ?? data?.spec ?? {}, [buffer.spec, data?.spec])
   const allFields = useMemo(() => spec.columns ?? {}, [spec])
   const ownFields = useMemo(() => _.pickBy(allFields, col => !col.custom), [allFields])
   const [namedFields, setNamedFields] = useState(toNamedFields(allFields))

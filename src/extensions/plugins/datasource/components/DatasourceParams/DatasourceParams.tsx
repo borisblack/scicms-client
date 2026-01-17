@@ -23,7 +23,7 @@ export function DatasourceParams({form, itemTab: dataWrapper, buffer, onBufferCh
   const {t} = useTranslation()
   const acl = useAcl(item, data)
   const sourceType = Form.useWatch('sourceType', form as FormInstance)
-  const params: Record<string, any> = useMemo(() => buffer.params ?? {}, [buffer])
+  const params: Record<string, any> = useMemo(() => buffer.params ?? data?.params ?? {}, [buffer.params, data?.params])
   const delimiter: string = useMemo(() => params.delimiter ?? ',', [params])
   const firstLineIsAHeading: boolean = useMemo(() => params.firstLineIsAHeading ?? true, [params])
 

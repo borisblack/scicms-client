@@ -47,7 +47,7 @@ export function Sources({form, itemTab: dataWrapper, buffer, onBufferChange}: Cu
   const datasourceName = Form.useWatch('datasource', form as FormInstance)
   const [datasource, setDatasource] = useState<Datasource | undefined>()
   const isDatabase = datasource?.sourceType === DatasourceType.DATABASE
-  const spec: DatasetSpec = useMemo(() => buffer.spec ?? {}, [buffer])
+  const spec: DatasetSpec = useMemo(() => buffer.spec ?? data?.spec ?? {columns: {}}, [buffer.spec, data?.spec])
   const sources: DatasetSources = useMemo(() => spec.sources ?? initialSources, [spec])
   const [loading, setLoading] = useState<boolean>(false)
   const [tables, setTables] = useState<Table[]>([])
@@ -59,10 +59,10 @@ export function Sources({form, itemTab: dataWrapper, buffer, onBufferChange}: Cu
     total: 0
   }
   const [pagination, setPagination] = useState<IPagination>(defaultPagination)
-  const editorValue = useMemo(
-    () => (buffer.tableName ? `SELECT * FROM ${buffer.tableName}` : buffer.query ?? ''),
-    [buffer.query, buffer.tableName]
-  )
+  const editorValue = useMemo(() => {
+    const tableName = buffer.tableName ?? data?.tableName
+    return tableName ? `SELECT * FROM ${tableName}` : data?.query ?? buffer.query ?? ''
+  }, [buffer.tableName, buffer.query, data?.tableName, data?.query])
   const useDesigner: boolean = useMemo(
     () => spec.useDesigner ?? false /*!editorValue*/,
     [/*editorValue,*/ spec.useDesigner]

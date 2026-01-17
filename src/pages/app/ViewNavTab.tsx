@@ -70,7 +70,7 @@ function ViewNavTab({itemTab}: Props) {
           : ViewState.UPDATE
         : ViewState.VIEW
   )
-  const [buffer, setBuffer] = useState<IBuffer>(data ?? {})
+  const [buffer, setBuffer] = useState<IBuffer>({})
   const headerRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const contentFormRef = useRef<HTMLDivElement>(null)
@@ -104,7 +104,7 @@ function ViewNavTab({itemTab}: Props) {
   useEffect(() => {
     if (DEBUG) console.log('ViewNavTab buffer and fields reset')
 
-    setBuffer(data ?? {})
+    setBuffer({})
     form.resetFields()
   }, [form, data])
 
