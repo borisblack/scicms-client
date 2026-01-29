@@ -117,7 +117,12 @@ function Bi() {
 
   const renderDashboard = (itemTab: ItemTab): ReactNode => (
     <div className="Bi-page-content">
-      <DashboardSpec itemTab={itemTab} readOnly buffer={{}} onBufferChange={() => {}} />
+      <DashboardSpec
+        itemTab={itemTab}
+        readOnly
+        getValue={(path, defaultValue) => defaultValue}
+        onBufferChange={() => {}}
+      />
     </div>
   )
 

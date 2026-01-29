@@ -1,4 +1,4 @@
-import {useEffect, useMemo} from 'react'
+import {useMemo} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Checkbox, Col, Form, FormInstance, Row, Select, Typography} from 'antd'
 import {CheckboxChangeEvent} from 'antd/es/checkbox'
@@ -15,7 +15,7 @@ const delimiterOptions: DefaultOptionType[] = [
   {label: ';', value: ';'}
 ]
 
-export function DatasourceParams({form, itemTab: dataWrapper, buffer, onBufferChange}: CustomComponentContext) {
+export function DatasourceParams({form, itemTab: dataWrapper, getValue, onBufferChange}: CustomComponentContext) {
   const data = dataWrapper.data as Datasource | undefined
   const {item} = dataWrapper
   if (item.name !== DATASOURCE_ITEM_NAME) throw new Error('Illegal argument')
@@ -23,7 +23,7 @@ export function DatasourceParams({form, itemTab: dataWrapper, buffer, onBufferCh
   const {t} = useTranslation()
   const acl = useAcl(item, data)
   const sourceType = Form.useWatch('sourceType', form as FormInstance)
-  const params: Record<string, any> = useMemo(() => buffer.params ?? data?.params ?? {}, [buffer.params, data?.params])
+  const params: Record<string, any> = useMemo(() => getValue('params', {}), [getValue])
   const delimiter: string = useMemo(() => params.delimiter ?? ',', [params])
   const firstLineIsAHeading: boolean = useMemo(() => params.firstLineIsAHeading ?? true, [params])
 

@@ -28,7 +28,7 @@ const toNamedFields = (fields: Record<string, Column>): NamedColumn[] =>
 
 let customFieldCounter: number = 0
 
-export function DatasetFields({itemTab: dataWrapper, buffer, onBufferChange}: CustomComponentContext) {
+export function DatasetFields({itemTab: dataWrapper, getValue, onBufferChange}: CustomComponentContext) {
   const data = dataWrapper.data as Dataset | undefined
   const {item} = dataWrapper
   if (item.name !== DATASET_ITEM_NAME) throw new Error('Illegal argument')
@@ -38,7 +38,7 @@ export function DatasetFields({itemTab: dataWrapper, buffer, onBufferChange}: Cu
   const splitConfig = appProps.ui.split
   const {defaultPageSize, minPageSize, maxPageSize} = appProps.query
   const acl = useAcl(item, data)
-  const spec: DatasetSpec = useMemo(() => buffer.spec ?? data?.spec ?? {}, [buffer.spec, data?.spec])
+  const spec: DatasetSpec = useMemo(() => getValue('spec', {}), [getValue])
   const allFields = useMemo(() => spec.columns ?? {}, [spec])
   const ownFields = useMemo(() => _.pickBy(allFields, col => !col.custom), [allFields])
   const [namedFields, setNamedFields] = useState(toNamedFields(allFields))

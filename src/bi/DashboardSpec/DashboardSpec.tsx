@@ -48,8 +48,8 @@ const initialSpec: () => IDashboardSpec = () => ({
 })
 let seqNum = 0
 
-function DashboardSpec({itemTab: dataWrapper, buffer, readOnly, onBufferChange}: DashboardSpecProps) {
-  const {item, data, extra} = dataWrapper
+function DashboardSpec({itemTab, readOnly, getValue, onBufferChange}: DashboardSpecProps) {
+  const {item, data, extra} = itemTab
   if (item.name !== DASHBOARD_ITEM_NAME) throw new Error('Illegal argument')
 
   const biProps = useBiProperties()
@@ -65,12 +65,12 @@ function DashboardSpec({itemTab: dataWrapper, buffer, readOnly, onBufferChange}:
     defaultDashType,
     defaultRefreshIntervalSeconds
   } = biProps
-  const uniqueKey = generateKey(dataWrapper)
+  const uniqueKey = generateKey(itemTab)
   const {t} = useTranslation()
   const acl = useAcl(item, data)
   const {datasets, dashboards} = useBIData({withDatasets: true, withDashboards: true})
   const datasetMap = useMemo(() => _.mapKeys(datasets, ds => ds.name), [datasets])
-  const spec: IDashboardSpec = useMemo(() => buffer.spec ?? initialSpec(), [buffer.spec])
+  const spec: IDashboardSpec = useMemo(() => getValue('spec', initialSpec()), [getValue])
   const dashboardLayout: DashboardLayoutItem[] = useMemo(
     () =>
       spec.layout ??

@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {Col, Collapse, Form, Modal, notification, Row, Spin, Tabs} from 'antd'
 import {Tab} from 'rc-tabs/lib/interface'
@@ -80,25 +81,31 @@ function ViewNavTab({itemTab}: Props) {
   const queryManager = useQueryManager()
   const mutationManager = useMutationManager()
   const acl = useFormAcl(item, data)
-  const handleBufferChange = useCallback((bufferChanges: IBuffer) => setBuffer({...buffer, ...bufferChanges}), [buffer])
+  const handleGetValue = useCallback(
+    (path: string | string[], defaultValue?: any) => _.get(buffer, path) ?? _.get(data ?? {}, path, defaultValue),
+    [data, buffer]
+  )
+  const handleBufferChange = useCallback(
+    (bufferChanges: Partial<IBuffer>) => setBuffer(prevBuffer => ({...prevBuffer, ...bufferChanges})),
+    []
+  )
   const renderContext: CustomRendererContext = useMemo(
     () => ({
       item,
-      buffer,
-      data,
+      getValue: handleGetValue,
       onBufferChange: handleBufferChange
     }),
-    [buffer, data, handleBufferChange, item]
+    [item, handleGetValue, handleBufferChange]
   )
 
   const customComponentContext: CustomComponentContext = useMemo(
     () => ({
       itemTab,
       form,
-      buffer,
+      getValue: handleGetValue,
       onBufferChange: handleBufferChange
     }),
-    [itemTab, form, buffer, handleBufferChange]
+    [itemTab, form, handleGetValue, handleBufferChange]
   )
 
   useEffect(() => {

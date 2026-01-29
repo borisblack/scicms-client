@@ -46,9 +46,21 @@ export interface CustomRendererProps {
 
 export interface CustomRendererContext {
   item: Item
-  buffer: IBuffer
-  data?: ItemData | null
-  onBufferChange: (buffer: IBuffer) => void
+
+  /**
+   * Returns value from buffer or data. If the resolved value is undefined, the defaultValue is returned in its place.
+   * Function doesn't get value from the Form instance.
+   * @param path The path of the property to get
+   * @param defaultValue The value returned for undefined resolved values
+   * @returns The value at path of buffer or data
+   */
+  getValue: (path: string | string[], defaultValue?: any) => any
+
+  /**
+   * Applies changes to the buffer.
+   * @param bufferChanges Changes to apply
+   */
+  onBufferChange: (bufferChanges: Partial<IBuffer>) => void
 }
 
 /**
@@ -85,8 +97,20 @@ export interface CustomComponentProps {
 export interface CustomComponentContext {
   itemTab: ItemTab
   form?: FormInstance
-  buffer: IBuffer
-  onBufferChange: (buffer: IBuffer) => void
+  /**
+   * Returns value from buffer or data. If the resolved value is undefined, the defaultValue is returned in its place.
+   * Function doesn't get value from the Form instance.
+   * @param path The path of the property to get
+   * @param defaultValue The value returned for undefined resolved values
+   * @returns The value at path of buffer or data
+   */
+  getValue: (path: string | string[], defaultValue?: any) => any
+
+  /**
+   * Applies changes to the buffer.
+   * @param bufferChanges Changes to apply
+   */
+  onBufferChange: (bufferChanges: Partial<IBuffer>) => void
 }
 
 /**

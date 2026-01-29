@@ -15,7 +15,7 @@ const customTranslateModule = {
   translate: ['value', customTranslate]
 }
 
-export default function LifecycleSpec({itemTab: dataWrapper, buffer, onBufferChange}: CustomComponentContext) {
+export default function LifecycleSpec({itemTab: dataWrapper, getValue, onBufferChange}: CustomComponentContext) {
   const {item, data} = dataWrapper
   if (item.name !== LIFECYCLE_ITEM_NAME) throw new Error('Illegal argument')
 
@@ -42,7 +42,7 @@ export default function LifecycleSpec({itemTab: dataWrapper, buffer, onBufferCha
       m = new Viewer(props)
     }
 
-    const spec = buffer.spec ?? data?.spec
+    const spec = getValue('spec')
     if (spec) m.importXML(spec)
     else m.createDiagram()
 
@@ -53,7 +53,7 @@ export default function LifecycleSpec({itemTab: dataWrapper, buffer, onBufferCha
       m = null
       modeler.current = null
     }
-  }, [acl.canWrite, buffer.spec, data])
+  }, [acl.canWrite, data, getValue, onBufferChange])
 
   return (
     <div className={styles.bpmnDiagramWrapper}>

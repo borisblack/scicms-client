@@ -32,9 +32,8 @@ function calculateColumnWidth(viewMode: ViewMode) {
   return DEFAULT_COLUMN_WIDTH
 }
 
-export function ProjectGantt({itemTab: dataWrapper}: CustomComponentContext) {
-  const appProps = useAppProperties()
-  const {item, data, extra} = dataWrapper
+export function ProjectGantt({itemTab}: CustomComponentContext) {
+  const {item, data, extra} = itemTab
   const {parentId} = extra ?? {}
   const [loading, setLoading] = useState<boolean>(false)
   const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.Day)

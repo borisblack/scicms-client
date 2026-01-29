@@ -16,7 +16,7 @@ import {getHiddenIndexColumns, getIndexColumns} from './indexColumns'
 import {NamedIndex} from './types'
 import {CustomComponentContext} from 'src/extensions/plugins/types'
 
-export function Indexes({itemTab: dataWrapper, buffer, onBufferChange}: CustomComponentContext) {
+export function Indexes({itemTab: dataWrapper, getValue, onBufferChange}: CustomComponentContext) {
   const {item, data} = dataWrapper
   if (item.name !== ITEM_TEMPLATE_ITEM_NAME && item.name !== ITEM_ITEM_NAME) throw new Error('Illegal argument')
 
@@ -30,7 +30,7 @@ export function Indexes({itemTab: dataWrapper, buffer, onBufferChange}: CustomCo
   const acl = useItemAcl(item, data)
   const columns = useMemo(() => getIndexColumns(defaultColWidth), [defaultColWidth])
   const hiddenColumns = useMemo(() => getHiddenIndexColumns(), [])
-  const spec: ItemSpec = useMemo(() => buffer.spec ?? data?.spec ?? {}, [buffer.spec, data?.spec])
+  const spec: ItemSpec = useMemo(() => getValue('spec', {}), [getValue])
 
   const initialNamedIndexes = useMemo((): NamedIndex[] => {
     const indexes = spec.indexes ?? {}

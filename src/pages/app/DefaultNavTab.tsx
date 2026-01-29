@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import {memo, ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Row} from '@tanstack/react-table'
@@ -91,23 +92,30 @@ function DefaultNavTab({itemTab}: Props) {
     ]
   )
   const hiddenColumnsMemoized = useMemo(() => getHiddenColumns(item), [item])
-  const handleBufferChange = useCallback((bufferChanges: IBuffer) => setBuffer({...buffer, ...bufferChanges}), [buffer])
+  const handleGetValue = useCallback(
+    (path: string | string[], defaultValue?: any) => _.get(buffer, path) ?? _.get(data ?? {}, path, defaultValue),
+    [data, buffer]
+  )
+  const handleBufferChange = useCallback(
+    (bufferChanges: Partial<IBuffer>) => setBuffer(prevBuffer => ({...prevBuffer, ...bufferChanges})),
+    []
+  )
   const renderContext: CustomRendererContext = useMemo(
     () => ({
       item,
-      buffer,
+      getValue: handleGetValue,
       onBufferChange: handleBufferChange
     }),
-    [buffer, handleBufferChange, item]
+    [item, handleGetValue, handleBufferChange]
   )
 
   const customComponentContext: CustomComponentContext = useMemo(
     () => ({
       itemTab,
-      buffer,
+      getValue: handleGetValue,
       onBufferChange: handleBufferChange
     }),
-    [itemTab, buffer, handleBufferChange]
+    [itemTab, handleGetValue, handleBufferChange]
   )
 
   useEffect(() => {

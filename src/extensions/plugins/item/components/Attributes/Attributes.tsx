@@ -32,7 +32,7 @@ const getInitialAttributesData: () => DataWithPagination<NamedAttribute> = () =>
   }
 })
 
-export function Attributes({itemTab: dataWrapper, form, buffer, onBufferChange}: CustomComponentContext) {
+export function Attributes({itemTab: dataWrapper, form, getValue, onBufferChange}: CustomComponentContext) {
   const {item, data} = dataWrapper
   if (item.name !== ITEM_TEMPLATE_ITEM_NAME && item.name !== ITEM_ITEM_NAME) throw new Error('Illegal argument')
 
@@ -47,7 +47,7 @@ export function Attributes({itemTab: dataWrapper, form, buffer, onBufferChange}:
   const isCoreItem = useMemo(() => data?.core ?? false, [data?.core])
   const columns = useMemo(() => getAttributeColumns(isCoreItem, defaultColWidth), [isCoreItem, defaultColWidth])
   const hiddenColumns = useMemo(() => getHiddenAttributeColumns(), [])
-  const spec: ItemSpec = useMemo(() => buffer.spec ?? data?.spec ?? {}, [buffer.spec, data?.spec])
+  const spec: ItemSpec = useMemo(() => getValue('spec', {}), [getValue])
   const includeTemplates: string[] | undefined = Form.useWatch('includeTemplates', form)
 
   const initialNamedAttributes = useMemo((): NamedAttribute[] => {
