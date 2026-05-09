@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import {FC, ReactElement} from 'react'
-import {Attribute} from 'src/types/schema'
+import {ItemData} from 'src/types/schema'
 import type {Plugin} from './Plugin'
 import {
   ApiMiddleware,
@@ -8,7 +8,6 @@ import {
   ApiOperation,
   CustomAttributeField,
   CustomAttributeFieldContext,
-  CustomAttributeFieldMountPoint,
   CustomComponent,
   CustomComponentContext,
   CustomRenderer,
@@ -38,12 +37,12 @@ const attributeFieldSorter = (a: CustomAttributeField, b: CustomAttributeField) 
 
 export class PluginEngine {
   private isLoaded: boolean = false
-  private renderersByMountPoint: Record<string, CustomRenderer[]> = {}
-  private componentsByMountPoint: Record<string, CustomComponent[]> = {}
+  private renderersByMountPoint: Record<string, CustomRenderer<ItemData>[]> = {}
+  private componentsByMountPoint: Record<string, CustomComponent<ItemData>[]> = {}
   private attributeFields: CustomAttributeField[] = []
-  private apiMiddlewareByItemName: Record<string, ApiMiddleware[]> = {}
+  private apiMiddlewareByItemName: Record<string, ApiMiddleware<ItemData>[]> = {}
 
-  constructor(private plugins: Plugin[]) {}
+  constructor(private plugins: Plugin<ItemData>[]) {}
 
   onLoad() {
     if (this.isLoaded) return
@@ -54,12 +53,12 @@ export class PluginEngine {
     }
 
     // Renderers
-    const renderers: CustomRenderer[] = this.plugins.flatMap(p => p.renderers).sort(prioritySorter)
+    const renderers: CustomRenderer<ItemData>[] = this.plugins.flatMap(p => p.renderers).sort(prioritySorter)
 
     this.renderersByMountPoint = _.groupBy(renderers, renderer => renderer.mountPoint)
 
     // Custom components
-    const components: CustomComponent[] = this.plugins.flatMap(p => p.components).sort(prioritySorter)
+    const components: CustomComponent<ItemData>[] = this.plugins.flatMap(p => p.components).sort(prioritySorter)
 
     this.componentsByMountPoint = _.groupBy(components, component => component.mountPoint)
 
@@ -67,7 +66,7 @@ export class PluginEngine {
     this.attributeFields = this.plugins.flatMap(p => p.attributeFields).sort(attributeFieldSorter)
 
     // API middleware
-    const apiMiddlewares: ApiMiddleware[] = this.plugins.flatMap(p => p.apiMiddlewares).sort(prioritySorter)
+    const apiMiddlewares: ApiMiddleware<ItemData>[] = this.plugins.flatMap(p => p.apiMiddlewares).sort(prioritySorter)
 
     this.apiMiddlewareByItemName = _.groupBy(apiMiddlewares, apiMiddleware => apiMiddleware.itemName)
 
@@ -92,7 +91,7 @@ export class PluginEngine {
     return false
   }
 
-  render(mountPoint: string, node: HTMLElement, context: CustomRendererContext) {
+  render(mountPoint: string, node: HTMLElement, context: CustomRendererContext<ItemData>) {
     const renderers = this.renderersByMountPoint[mountPoint]
     renderers?.forEach(renderer => {
       renderer.render({node, context})
@@ -107,9 +106,9 @@ export class PluginEngine {
     return false
   }
 
-  getComponents = (mountPoint: string): CustomComponent[] => this.componentsByMountPoint[mountPoint] ?? []
+  getComponents = (mountPoint: string): CustomComponent<ItemData>[] => this.componentsByMountPoint[mountPoint] ?? []
 
-  renderComponents(mountPoint: string, context: CustomComponentContext): ReactElement | null {
+  renderComponents(mountPoint: string, context: CustomComponentContext<ItemData>): ReactElement | null {
     const components = this.componentsByMountPoint[mountPoint]
     if (!components) return null
 
@@ -144,7 +143,7 @@ export class PluginEngine {
   async handleApiMiddleware(
     itemName: string,
     operation: ApiOperation,
-    context: ApiMiddlewareContext,
+    context: ApiMiddlewareContext<ItemData>,
     next: () => any
   ): Promise<any> {
     const apiMiddlewares = [
@@ -157,9 +156,9 @@ export class PluginEngine {
   }
 
   async handleApiMiddlewares(
-    list: ApiMiddleware[],
+    list: ApiMiddleware<ItemData>[],
     operation: ApiOperation,
-    context: ApiMiddlewareContext,
+    context: ApiMiddlewareContext<ItemData>,
     next: () => any
   ): Promise<any> {
     if (list.length === 0) return await next()

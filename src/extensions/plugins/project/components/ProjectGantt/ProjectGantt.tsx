@@ -32,7 +32,7 @@ function calculateColumnWidth(viewMode: ViewMode) {
   return DEFAULT_COLUMN_WIDTH
 }
 
-export function ProjectGantt({itemTab}: CustomComponentContext) {
+export function ProjectGantt({itemTab}: CustomComponentContext<Project>) {
   const {item, data, extra} = itemTab
   const {parentId} = extra ?? {}
   const [loading, setLoading] = useState<boolean>(false)

@@ -16,7 +16,7 @@ import {
   UnlockOutlined
 } from '@ant-design/icons'
 
-import {IBuffer, ViewState} from 'src/types'
+import {ViewState} from 'src/types'
 import {FlaggedResponse, ItemData, ItemTab, ResponseCollection} from 'src/types/schema'
 import {useTranslation} from 'react-i18next'
 import SearchDataGridWrapper from './SearchDataGridWrapper'
@@ -47,7 +47,6 @@ import {
 interface Props {
   itemTab: ItemTab
   form: FormInstance
-  buffer: IBuffer
   canCreate: boolean
   canEdit: boolean
   canDelete: boolean
@@ -56,6 +55,14 @@ interface Props {
   isLockedByMe: boolean
   setLockedByMe: (isLockedByMe: boolean) => void
   setLoading: (loading: boolean) => void
+  /**
+   * Returns value from data buffer. If the resolved value is undefined, the defaultValue is returned in its place.
+   * Function doesn't get value from the Form instance.
+   * @param path The path of the property to get
+   * @param defaultValue The value returned for undefined resolved values
+   * @returns The value at path of data buffer
+   */
+  getValue: (path: keyof ItemData, defaultValue?: any) => any
   onHtmlExport: () => void
   logoutIfNeed: () => void
 }
@@ -67,7 +74,6 @@ const {confirm} = Modal
 export default function ViewNavTabHeader({
   itemTab,
   form,
-  buffer,
   canCreate,
   canEdit,
   canDelete,
@@ -76,6 +82,7 @@ export default function ViewNavTabHeader({
   isLockedByMe,
   setLockedByMe,
   setLoading,
+  getValue,
   onHtmlExport,
   logoutIfNeed
 }: Props) {
@@ -112,11 +119,11 @@ export default function ViewNavTabHeader({
 
     setLoading(true)
     try {
-      const id = data?.[item.idAttribute] as string
+      const id = getValue(item.idAttribute) as string
       const doLock = async () => await mutationManager.lock(item, id)
       let locked: FlaggedResponse
       if (pluginEngine.hasApiMiddleware(item.name)) {
-        const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values: {id}}
+        const apiMiddlewareContext: ApiMiddlewareContext<ItemData> = {me, items: itemMap, item, getValue}
         locked = await pluginEngine.handleApiMiddleware(item.name, ApiOperation.LOCK, apiMiddlewareContext, doLock)
       } else {
         locked = await doLock()
@@ -152,7 +159,7 @@ export default function ViewNavTabHeader({
       const doUnlock = async () => await mutationManager.unlock(item, id)
       let unlocked
       if (pluginEngine.hasApiMiddleware(item.name)) {
-        const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values: {id}}
+        const apiMiddlewareContext: ApiMiddlewareContext<ItemData> = {me, items: itemMap, item, getValue}
         unlocked = await pluginEngine.handleApiMiddleware(
           item.name,
           ApiOperation.UNLOCK,
@@ -194,7 +201,7 @@ export default function ViewNavTabHeader({
       const doDelete = async () => await mutationManager.remove(item, id, appProps.mutation.deletingStrategy)
       let deleted: ItemData
       if (pluginEngine.hasApiMiddleware(item.name)) {
-        const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values: {id}}
+        const apiMiddlewareContext: ApiMiddlewareContext<ItemData> = {me, items: itemMap, item, getValue}
         deleted = await pluginEngine.handleApiMiddleware(item.name, ApiOperation.DELETE, apiMiddlewareContext, doDelete)
       } else {
         deleted = await doDelete()
@@ -227,7 +234,7 @@ export default function ViewNavTabHeader({
       const doPurge = async () => await mutationManager.purge(item, id, appProps.mutation.deletingStrategy)
       let purged: ResponseCollection<ItemData>
       if (pluginEngine.hasApiMiddleware(item.name)) {
-        const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values: {id}}
+        const apiMiddlewareContext: ApiMiddlewareContext<ItemData> = {me, items: itemMap, item, getValue}
         purged = await pluginEngine.handleApiMiddleware(item.name, ApiOperation.PURGE, apiMiddlewareContext, doPurge)
       } else {
         purged = await doPurge()
@@ -260,7 +267,7 @@ export default function ViewNavTabHeader({
       const doPromote = async () => await mutationManager.promote(item, id, state)
       let promoted: ItemData
       if (pluginEngine.hasApiMiddleware(item.name)) {
-        const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values: {id}}
+        const apiMiddlewareContext: ApiMiddlewareContext<ItemData> = {me, items: itemMap, item, getValue}
         promoted = await pluginEngine.handleApiMiddleware(
           item.name,
           ApiOperation.PROMOTE,
@@ -391,7 +398,7 @@ export default function ViewNavTabHeader({
         canEdit &&
         canPromote &&
         isLockedByMe /*&& viewState !== ViewState.VIEW*/ &&
-        data?.lifecycle.data &&
+        data?.lifecycle?.data &&
         item.name !== ITEM_ITEM_NAME &&
         item.name !== ITEM_TEMPLATE_ITEM_NAME
       ) {

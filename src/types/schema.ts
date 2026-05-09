@@ -311,6 +311,9 @@ export interface Property extends DefaultItemTemplate {
   scope: PropertyScope | null
 }
 
+/**
+ * Item data type. In fact, even required fields may be missing for custom items.
+ */
 export interface ItemData extends DefaultItemTemplate {
   [key: string]: any
 }
@@ -337,6 +340,6 @@ export interface ItemTab {
   item: Item
   viewType: ViewType
   id?: string
-  data?: ItemData
+  data?: Partial<ItemData>
   extra?: Record<string, any>
 }

@@ -5,7 +5,7 @@ import {Button, Form, Modal, Space} from 'antd'
 import {useTranslation} from 'react-i18next'
 
 import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME} from 'src/config/constants'
-import {Index, ItemSpec} from 'src/types/schema'
+import {Index, Item, ItemSpec} from 'src/types/schema'
 import {type DataWithPagination, type RequestParams, DataGrid} from 'src/uiKit/DataGrid/DataGrid'
 import {getInitialData, processLocal} from 'src/util/datagrid'
 import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design/icons'
@@ -16,7 +16,7 @@ import {getHiddenIndexColumns, getIndexColumns} from './indexColumns'
 import {NamedIndex} from './types'
 import {CustomComponentContext} from 'src/extensions/plugins/types'
 
-export function Indexes({itemTab: dataWrapper, getValue, onBufferChange}: CustomComponentContext) {
+export function Indexes({itemTab: dataWrapper, getValue, setValue}: CustomComponentContext<Item>) {
   const {item, data} = dataWrapper
   if (item.name !== ITEM_TEMPLATE_ITEM_NAME && item.name !== ITEM_ITEM_NAME) throw new Error('Illegal argument')
 
@@ -30,7 +30,7 @@ export function Indexes({itemTab: dataWrapper, getValue, onBufferChange}: Custom
   const acl = useItemAcl(item, data)
   const columns = useMemo(() => getIndexColumns(defaultColWidth), [defaultColWidth])
   const hiddenColumns = useMemo(() => getHiddenIndexColumns(), [])
-  const spec: ItemSpec = useMemo(() => getValue('spec', {}), [getValue])
+  const spec: ItemSpec = useMemo(() => getValue('spec', {attributes: {}, indexes: {}}), [getValue])
 
   const initialNamedIndexes = useMemo((): NamedIndex[] => {
     const indexes = spec.indexes ?? {}
@@ -47,6 +47,7 @@ export function Indexes({itemTab: dataWrapper, getValue, onBufferChange}: Custom
 
     return namedIndexes
   }, [data?.includeTemplates, isNew, item.name, itemTemplates, spec.indexes])
+
   const [namedIndexes, setNamedIndexes] = useState<NamedIndex[]>(initialNamedIndexes)
   const [filteredData, setFilteredData] = useState<DataWithPagination<NamedIndex>>(getInitialData(defaultPageSize))
   const [selectedIndex, setSelectedIndex] = useState<NamedIndex | null>(null)
@@ -64,12 +65,13 @@ export function Indexes({itemTab: dataWrapper, getValue, onBufferChange}: Custom
       })
 
       const newSpec = {
+        ...spec,
         indexes: newIndexes
       }
 
-      onBufferChange({spec: newSpec})
+      setValue({spec: newSpec})
     },
-    [onBufferChange]
+    [spec, setValue]
   )
 
   const handleRequest = useCallback(

@@ -35,7 +35,7 @@ const initialSources: DatasetSources = {
   joinedTables: []
 }
 
-export function Sources({form, itemTab: dataWrapper, getValue, onBufferChange}: CustomComponentContext) {
+export function Sources({form, itemTab: dataWrapper, getValue, setValue}: CustomComponentContext<Dataset>) {
   const data = dataWrapper.data as Dataset | undefined
   const {item} = dataWrapper
   if (item.name !== DATASET_ITEM_NAME) throw new Error('Illegal argument')
@@ -59,9 +59,9 @@ export function Sources({form, itemTab: dataWrapper, getValue, onBufferChange}: 
     total: 0
   }
   const [pagination, setPagination] = useState<IPagination>(defaultPagination)
-  const editorValue = useMemo(() => {
+  const editorValue: string = useMemo(() => {
     const tableName = getValue('tableName')
-    return tableName ? `SELECT * FROM ${tableName}` : getValue('query', '')
+    return tableName ? `SELECT * FROM ${tableName}` : (getValue('query', '') as string)
   }, [getValue])
   const useDesigner: boolean = useMemo(
     () => spec.useDesigner ?? false /*!editorValue*/,
@@ -100,7 +100,7 @@ export function Sources({form, itemTab: dataWrapper, getValue, onBufferChange}: 
     setPagination(prevPagination => ({...prevPagination, page, pageSize}))
 
   function handleSourcesChange(newSources: DatasetSources, buildResult: SourcesQueryBuildResult) {
-    onBufferChange({
+    setValue({
       tableName: buildResult.tableName,
       query: buildResult.query,
       spec: {
@@ -111,7 +111,7 @@ export function Sources({form, itemTab: dataWrapper, getValue, onBufferChange}: 
   }
 
   const handleUseDesignerCheck = (e: CheckboxChangeEvent) =>
-    onBufferChange({
+    setValue({
       spec: {
         ...spec,
         // sources: e.target.checked ? spec.sources : initialSources,
@@ -122,7 +122,7 @@ export function Sources({form, itemTab: dataWrapper, getValue, onBufferChange}: 
   function handleEditorValueChange(value: string) {
     if (value === editorValue) return
 
-    onBufferChange({
+    setValue({
       tableName: null,
       query: value
     })

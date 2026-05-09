@@ -1,9 +1,10 @@
+import {Lifecycle} from 'src/types/schema'
 import {Plugin} from '../Plugin'
 import {LifecycleSpecSuspense} from './components'
 
 const LIFECYCLE_SPEC_COMPONENT_ID = 'lifecycleSpec'
 
-export class LifecyclePlugin extends Plugin {
+export class LifecyclePlugin extends Plugin<Lifecycle> {
   override onLoad() {
     this.addComponent({
       id: LIFECYCLE_SPEC_COMPONENT_ID,

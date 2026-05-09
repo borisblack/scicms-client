@@ -10,12 +10,13 @@ import {LIFECYCLE_ITEM_NAME} from 'src/config/constants'
 import {useAcl} from 'src/util/hooks'
 import 'src/lib/diagram/bpmn-js.css'
 import styles from './LifecycleSpec.module.css'
+import {Lifecycle} from 'src/types/schema'
 
 const customTranslateModule = {
   translate: ['value', customTranslate]
 }
 
-export default function LifecycleSpec({itemTab: dataWrapper, getValue, onBufferChange}: CustomComponentContext) {
+export default function LifecycleSpec({itemTab: dataWrapper, getValue, setValue}: CustomComponentContext<Lifecycle>) {
   const {item, data} = dataWrapper
   if (item.name !== LIFECYCLE_ITEM_NAME) throw new Error('Illegal argument')
 
@@ -35,7 +36,7 @@ export default function LifecycleSpec({itemTab: dataWrapper, getValue, onBufferC
       const eventBus = m.get('eventBus')
       eventBus.on('elements.changed', (context: any) => {
         m.saveXML({format: true}).then((xml: any) => {
-          onBufferChange({spec: xml.xml})
+          setValue({spec: xml.xml})
         })
       })
     } else {
@@ -53,7 +54,7 @@ export default function LifecycleSpec({itemTab: dataWrapper, getValue, onBufferC
       m = null
       modeler.current = null
     }
-  }, [acl.canWrite, data, getValue, onBufferChange])
+  }, [acl.canWrite, data, getValue, setValue])
 
   return (
     <div className={styles.bpmnDiagramWrapper}>

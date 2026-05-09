@@ -1,9 +1,10 @@
 import DashboardSpec from 'src/bi/DashboardSpec/DashboardSpec'
+import {Dashboard} from 'src/types/bi'
 import {Plugin} from '../Plugin'
 
 const DASHBOARD_SPEC_COMPONENT_ID = 'dashboardSpec'
 
-export class DashboardPlugin extends Plugin {
+export class DashboardPlugin extends Plugin<Dashboard> {
   override onLoad() {
     this.addComponent({
       id: DASHBOARD_SPEC_COMPONENT_ID,

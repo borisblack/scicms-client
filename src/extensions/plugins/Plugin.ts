@@ -1,20 +1,21 @@
+import {ItemData} from 'src/types/schema'
 import {ApiMiddleware, CustomAttributeField, CustomComponent, CustomRenderer} from './types'
 
-export abstract class Plugin {
-  renderers: CustomRenderer[] = []
-  components: CustomComponent[] = []
+export abstract class Plugin<T extends ItemData> {
+  renderers: CustomRenderer<T>[] = []
+  components: CustomComponent<T>[] = []
   attributeFields: CustomAttributeField[] = []
-  apiMiddlewares: ApiMiddleware[] = []
+  apiMiddlewares: ApiMiddleware<T>[] = []
 
   abstract onLoad(): void
 
   abstract onUnload(): void
 
-  addRenderer(renderer: CustomRenderer) {
+  addRenderer(renderer: CustomRenderer<T>) {
     this.renderers.push(renderer)
   }
 
-  addComponent(component: CustomComponent) {
+  addComponent(component: CustomComponent<T>) {
     this.components.push(component)
   }
 
@@ -22,7 +23,7 @@ export abstract class Plugin {
     this.attributeFields.push(attributeField)
   }
 
-  addApiMiddleware(apiMiddleware: ApiMiddleware) {
+  addApiMiddleware(apiMiddleware: ApiMiddleware<T>) {
     this.apiMiddlewares.push(apiMiddleware)
   }
 }

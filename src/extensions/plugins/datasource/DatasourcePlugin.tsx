@@ -1,4 +1,5 @@
 import {DATASOURCE_ITEM_NAME} from 'src/config/constants'
+import {Datasource} from 'src/types/schema'
 import {Plugin} from '../Plugin'
 import {
   ConnectionStringAttributeField,
@@ -20,7 +21,7 @@ const MIN_IDLE_ATTRIBUTE_FIELD_ID = 'minIdle'
 const MEDIA_ATTRIBUTE_FIELD_ID = 'media'
 const DATASOURCE_PARAMS_COMPONENT_ID = 'datasourceParams'
 
-export class DatasourcePlugin extends Plugin {
+export class DatasourcePlugin extends Plugin<Datasource> {
   override onLoad() {
     // Attribute fields
     this.addAttributeField({

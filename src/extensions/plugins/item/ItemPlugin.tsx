@@ -4,6 +4,7 @@ import {
   ITEM_ITEM_NAME,
   NOT_LOCKABLE_ATTR_NAME
 } from 'src/config/constants'
+import {Item} from 'src/types/schema'
 import {Plugin} from '../Plugin'
 import {
   DefaultSortOrderAttributeField,
@@ -20,7 +21,7 @@ const DEFAULT_SORT_ORDER_ATTRIBUTE_FIELD_ID = 'defaultSortOrder'
 const INCLUDE_TEMPLATES_ATTRIBUTE_FIELD_ID = 'includeTemplates'
 const NOT_LOCKABLE_ATTRIBUTE_FIELD_ID = 'notLockable'
 
-export class ItemPlugin extends Plugin {
+export class ItemPlugin extends Plugin<Item> {
   override onLoad() {
     // Components
     this.addComponent({

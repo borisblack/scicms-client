@@ -5,7 +5,7 @@ import {Button, Form, Modal, Space} from 'antd'
 import {useTranslation} from 'react-i18next'
 
 import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME} from 'src/config/constants'
-import {Attribute, ItemSpec} from 'src/types/schema'
+import {Attribute, Item, ItemSpec} from 'src/types/schema'
 import {type DataWithPagination, type RequestParams, DataGrid} from 'src/uiKit/DataGrid/DataGrid'
 import {processLocal} from 'src/util/datagrid'
 import AttributeForm from './AttributeForm'
@@ -32,7 +32,7 @@ const getInitialAttributesData: () => DataWithPagination<NamedAttribute> = () =>
   }
 })
 
-export function Attributes({itemTab: dataWrapper, form, getValue, onBufferChange}: CustomComponentContext) {
+export function Attributes({itemTab: dataWrapper, form, getValue, setValue}: CustomComponentContext<Item>) {
   const {item, data} = dataWrapper
   if (item.name !== ITEM_TEMPLATE_ITEM_NAME && item.name !== ITEM_ITEM_NAME) throw new Error('Illegal argument')
 
@@ -47,7 +47,7 @@ export function Attributes({itemTab: dataWrapper, form, getValue, onBufferChange
   const isCoreItem = useMemo(() => data?.core ?? false, [data?.core])
   const columns = useMemo(() => getAttributeColumns(isCoreItem, defaultColWidth), [isCoreItem, defaultColWidth])
   const hiddenColumns = useMemo(() => getHiddenAttributeColumns(), [])
-  const spec: ItemSpec = useMemo(() => getValue('spec', {}), [getValue])
+  const spec: ItemSpec = useMemo(() => getValue('spec', {attributes: {}, indexes: {}}), [getValue])
   const includeTemplates: string[] | undefined = Form.useWatch('includeTemplates', form)
 
   const initialNamedAttributes = useMemo((): NamedAttribute[] => {
@@ -63,6 +63,7 @@ export function Attributes({itemTab: dataWrapper, form, getValue, onBufferChange
 
     return namedAttributes
   }, [itemTemplates, includeTemplates, spec.attributes])
+
   const [namedAttributes, setNamedAttributes] = useState<NamedAttribute[]>(initialNamedAttributes)
   const [filteredData, setFilteredData] = useState<DataWithPagination<NamedAttribute>>(getInitialAttributesData())
   const [selectedAttribute, setSelectedAttribute] = useState<NamedAttribute | null>(null)
@@ -86,12 +87,13 @@ export function Attributes({itemTab: dataWrapper, form, getValue, onBufferChange
       })
 
       const newSpec = {
+        ...spec,
         attributes: newAttributes
       }
 
-      onBufferChange({spec: newSpec})
+      setValue({spec: newSpec})
     },
-    [onBufferChange]
+    [spec, setValue]
   )
 
   const handleRequest = useCallback(

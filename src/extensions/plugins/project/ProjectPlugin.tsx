@@ -1,9 +1,10 @@
 import {Plugin} from '../Plugin'
 import {ProjectGantt} from './components'
+import {Project} from './components/ProjectGantt/types'
 
 const PROJECT_GANTT_COMPONENT_ID = 'projectGantt'
 
-export class ProjectPlugin extends Plugin {
+export class ProjectPlugin extends Plugin<Project> {
   override onLoad() {
     this.addComponent({
       id: PROJECT_GANTT_COMPONENT_ID,

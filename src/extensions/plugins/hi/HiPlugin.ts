@@ -1,6 +1,7 @@
+import {ItemData} from 'src/types/schema'
 import {Plugin} from '../Plugin'
 
-export class HiPlugin extends Plugin {
+export class HiPlugin extends Plugin<ItemData> {
   override onLoad(): void {
     this.addRenderer({
       mountPoint: 'itemTemplate.view.footer',

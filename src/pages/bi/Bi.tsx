@@ -120,8 +120,8 @@ function Bi() {
       <DashboardSpec
         itemTab={itemTab}
         readOnly
-        getValue={(path, defaultValue) => defaultValue}
-        onBufferChange={() => {}}
+        getValue={<K extends keyof Dashboard>(name: K, defaultValue?: Dashboard[K]) => defaultValue as Dashboard[K]}
+        setValue={() => {}}
       />
     </div>
   )

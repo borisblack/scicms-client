@@ -121,7 +121,7 @@ export function useRegistry(): UseRegistry {
   }
 }
 
-export function useAcl(item: Item, data?: ItemData | null): Acl {
+export function useAcl(item: Item, data?: Partial<ItemData> | null): Acl {
   const {me} = useAuth()
   const {permissions} = useRegistry()
   const isNew = !data?.id
@@ -135,7 +135,7 @@ export function useAcl(item: Item, data?: ItemData | null): Acl {
   }, [data, isLockedByMe, isNew, item, me, permissionManager])
 }
 
-export function useItemAcl(item: Item, data?: ItemData | null): Acl {
+export function useItemAcl(item: Item, data?: Partial<ItemData> | null): Acl {
   const {me} = useAuth()
   const {permissions} = useRegistry()
   const isNew = !data?.id
@@ -148,7 +148,7 @@ export function useItemAcl(item: Item, data?: ItemData | null): Acl {
   }, [data, isLockedByMe, isNew, item, me, permissionManager])
 }
 
-export function useFormAcl(item: Item, data?: ItemData | null): Acl {
+export function useFormAcl(item: Item, data?: Partial<ItemData> | null): Acl {
   const {me} = useAuth()
   const {permissions} = useRegistry()
   const permissionManager = useMemo(() => new PermissionManager(permissions), [permissions])

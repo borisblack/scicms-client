@@ -1,13 +1,19 @@
-import {ITEM_TEMPLATE_ITEM_NAME, ITEM_TEMPLATE_MODEL_KIND} from 'src/config/constants'
-import {FlaggedResponse, ItemData, ItemTemplate, ItemTemplateModel} from 'src/types/schema'
+import {
+  CORE_ATTR_NAME,
+  ITEM_TEMPLATE_ITEM_NAME,
+  ITEM_TEMPLATE_MODEL_KIND,
+  NAME_ATTR_NAME,
+  SPEC_ATTR_NAME
+} from 'src/config/constants'
+import {FlaggedResponse, ItemData, ItemTemplateModel} from 'src/types/schema'
 import axios from 'axios'
 import {extractAxiosErrorMessage} from 'src/services'
 import QueryManager from 'src/services/query'
 import {ApiMiddlewareContext, ApiOperation} from '../types'
 
-export async function handleItemTemplateApiOperation(
+export async function handleItemTemplateApiOperation<T extends ItemData>(
   operation: ApiOperation,
-  context: ApiMiddlewareContext,
+  context: ApiMiddlewareContext<T>,
   next: () => any
 ) {
   if (context.item.name !== ITEM_TEMPLATE_ITEM_NAME) throw new Error('Illegal argument')
@@ -31,11 +37,11 @@ export async function handleItemTemplateApiOperation(
   }
 }
 
-async function apply({items, item, values}: ApiMiddlewareContext): Promise<ItemData> {
+async function apply<T extends ItemData>({items, item, getValue}: ApiMiddlewareContext<T>): Promise<ItemData> {
   const queryManager = new QueryManager(items)
   let id: string
   try {
-    const res = await axios.post('/api/model/apply', mapItemTemplate(values))
+    const res = await axios.post('/api/model/apply', toItemTemplateModel(getValue))
     id = res.data
   } catch (e: any) {
     throw new Error(extractAxiosErrorMessage(e))
@@ -46,19 +52,21 @@ async function apply({items, item, values}: ApiMiddlewareContext): Promise<ItemD
   return data.data
 }
 
-const mapItemTemplate = (item: ItemTemplate): ItemTemplateModel => ({
+const toItemTemplateModel = <T extends ItemData>(
+  getValue: (path: keyof T, defaultValue?: any) => any
+): ItemTemplateModel => ({
   coreVersion: 'v1',
   kind: ITEM_TEMPLATE_MODEL_KIND,
   metadata: {
-    name: item.name,
-    core: item.core
+    name: getValue(NAME_ATTR_NAME),
+    core: getValue(CORE_ATTR_NAME)
   },
-  spec: item.spec ?? {}
+  spec: getValue(SPEC_ATTR_NAME, {})
 })
 
-async function remove({items, item, values}: ApiMiddlewareContext): Promise<ItemData> {
+async function remove<T extends ItemData>({items, item, getValue}: ApiMiddlewareContext<T>): Promise<ItemData> {
   const queryManager = new QueryManager(items)
-  const {id} = values
+  const id: string = getValue(item.idAttribute)
   const data = await queryManager.findById(item, id)
   try {
     await axios.post(`/api/model/delete/itemTemplate/${id}`)
@@ -69,9 +77,9 @@ async function remove({items, item, values}: ApiMiddlewareContext): Promise<Item
   return data.data
 }
 
-async function lock({items, item, values}: ApiMiddlewareContext): Promise<FlaggedResponse> {
+async function lock<T extends ItemData>({items, item, getValue}: ApiMiddlewareContext<T>): Promise<FlaggedResponse> {
   const queryManager = new QueryManager(items)
-  const {id} = values
+  const id: string = getValue(item.idAttribute)
   try {
     await axios.post(`/api/model/lock/itemTemplate/${id}`)
   } catch (e: any) {
@@ -83,9 +91,9 @@ async function lock({items, item, values}: ApiMiddlewareContext): Promise<Flagge
   return {success: true, data: data.data}
 }
 
-async function unlock({items, item, values}: ApiMiddlewareContext): Promise<FlaggedResponse> {
+async function unlock<T extends ItemData>({items, item, getValue}: ApiMiddlewareContext<T>): Promise<FlaggedResponse> {
   const queryManager = new QueryManager(items)
-  const {id} = values
+  const id: string = getValue(item.idAttribute)
   try {
     await axios.post(`/api/model/unlock/itemTemplate/${id}`)
   } catch (e: any) {

@@ -1,11 +1,12 @@
 import {PROPERTY_ITEM_NAME} from 'src/config/constants'
 import {Plugin} from '../Plugin'
 import {PropertyTypeAttributeField, PropertyValueAttributeField} from './attributeFields'
+import {Property} from 'src/types/schema'
 
 const PROPERTY_TYPE_ATTRIBUTE_FIELD_ID = 'propertyType'
 const PROPERTY_VALUE_ATTRIBUTE_FIELD_ID = 'propertyValue'
 
-export class PropertyPlugin extends Plugin {
+export class PropertyPlugin extends Plugin<Property> {
   override onLoad(): void {
     // Attribute fields
     this.addAttributeField({

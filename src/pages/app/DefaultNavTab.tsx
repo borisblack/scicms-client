@@ -7,8 +7,6 @@ import {CheckboxChangeEvent} from 'antd/es/checkbox'
 import {ItemType} from 'antd/es/menu/hooks/useItems'
 import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design/icons'
 import {PageHeader} from '@ant-design/pro-layout'
-
-import {IBuffer} from 'src/types'
 import {ItemData, ItemTab} from 'src/types/schema'
 import {type RequestParams, DataGrid} from '../../uiKit/DataGrid/DataGrid'
 import * as ACL from 'src/util/acl'
@@ -60,7 +58,7 @@ function DefaultNavTab({itemTab}: Props) {
   const headerRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const footerRef = useRef<HTMLDivElement>(null)
-  const [buffer, setBuffer] = useState<IBuffer>({})
+  const [buffer, setBuffer] = useState<Partial<ItemData>>({})
   const {item} = itemTab
   const isSystemItem = item.name === ITEM_TEMPLATE_ITEM_NAME || item.name === ITEM_ITEM_NAME
   const canVersion =
@@ -93,29 +91,30 @@ function DefaultNavTab({itemTab}: Props) {
   )
   const hiddenColumnsMemoized = useMemo(() => getHiddenColumns(item), [item])
   const handleGetValue = useCallback(
-    (path: string | string[], defaultValue?: any) => _.get(buffer, path) ?? _.get(data ?? {}, path, defaultValue),
+    <K extends keyof ItemData>(name: K, defaultValue?: ItemData[K]): ItemData[K] =>
+      _.get(buffer, name) ?? _.get(data ?? {}, name, defaultValue),
     [data, buffer]
   )
-  const handleBufferChange = useCallback(
-    (bufferChanges: Partial<IBuffer>) => setBuffer(prevBuffer => ({...prevBuffer, ...bufferChanges})),
+  const handleSetValue = useCallback(
+    (changes: Partial<ItemData>) => setBuffer(prevBuffer => ({...prevBuffer, ...changes})),
     []
   )
-  const renderContext: CustomRendererContext = useMemo(
+  const renderContext: CustomRendererContext<ItemData> = useMemo(
     () => ({
       item,
       getValue: handleGetValue,
-      onBufferChange: handleBufferChange
+      setValue: handleSetValue
     }),
-    [item, handleGetValue, handleBufferChange]
+    [item, handleGetValue, handleSetValue]
   )
 
-  const customComponentContext: CustomComponentContext = useMemo(
+  const customComponentContext: CustomComponentContext<ItemData> = useMemo(
     () => ({
       itemTab,
       getValue: handleGetValue,
-      onBufferChange: handleBufferChange
+      setValue: handleSetValue
     }),
-    [itemTab, handleGetValue, handleBufferChange]
+    [itemTab, handleGetValue, handleSetValue]
   )
 
   useEffect(() => {
@@ -206,7 +205,12 @@ function DefaultNavTab({itemTab}: Props) {
         } else {
           const doDelete = async () => await mutationManager.remove(item, id, appProps.mutation.deletingStrategy)
           if (pluginEngine.hasApiMiddleware(item.name)) {
-            const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values: {id}}
+            const apiMiddlewareContext: ApiMiddlewareContext<ItemData> = {
+              me,
+              items: itemMap,
+              item,
+              getValue: handleGetValue
+            }
             await pluginEngine.handleApiMiddleware(item.name, ApiOperation.DELETE, apiMiddlewareContext, doDelete)
           } else {
             await doDelete()

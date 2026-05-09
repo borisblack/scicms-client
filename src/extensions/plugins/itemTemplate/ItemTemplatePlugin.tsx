@@ -1,8 +1,9 @@
 import {ITEM_TEMPLATE_ITEM_NAME} from 'src/config/constants'
+import {ItemTemplate} from 'src/types/schema'
 import {Plugin} from '../Plugin'
 import {handleItemTemplateApiOperation} from './itemTemplateApiHandler'
 
-export class ItemTemplatePlugin extends Plugin {
+export class ItemTemplatePlugin extends Plugin<ItemTemplate> {
   override onLoad(): void {
     // this.addApiMiddleware({
     //   id: 'itemTemplateMiddleware',

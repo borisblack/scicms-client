@@ -10,7 +10,7 @@ import {Split} from 'src/uiKit/Split'
 import {DATASET_ITEM_NAME} from 'src/config/constants'
 import {type DataWithPagination, type RequestParams, DataGrid} from 'src/uiKit/DataGrid/DataGrid'
 import {getInitialData, processLocal} from 'src/util/datagrid'
-import {Column, Dataset, DatasetSpec} from 'src/types/bi'
+import {Column, Dataset} from 'src/types/bi'
 import {NamedColumn} from 'src/types/bi'
 import {getColumns} from './fieldsDatagrid'
 import {useAcl, useAppProperties} from 'src/util/hooks'
@@ -28,7 +28,7 @@ const toNamedFields = (fields: Record<string, Column>): NamedColumn[] =>
 
 let customFieldCounter: number = 0
 
-export function DatasetFields({itemTab: dataWrapper, getValue, onBufferChange}: CustomComponentContext) {
+export function DatasetFields({itemTab: dataWrapper, getValue, setValue}: CustomComponentContext<Dataset>) {
   const data = dataWrapper.data as Dataset | undefined
   const {item} = dataWrapper
   if (item.name !== DATASET_ITEM_NAME) throw new Error('Illegal argument')
@@ -38,7 +38,7 @@ export function DatasetFields({itemTab: dataWrapper, getValue, onBufferChange}: 
   const splitConfig = appProps.ui.split
   const {defaultPageSize, minPageSize, maxPageSize} = appProps.query
   const acl = useAcl(item, data)
-  const spec: DatasetSpec = useMemo(() => getValue('spec', {}), [getValue])
+  const spec = useMemo(() => getValue('spec', {columns: {}}), [getValue])
   const allFields = useMemo(() => spec.columns ?? {}, [spec])
   const ownFields = useMemo(() => _.pickBy(allFields, col => !col.custom), [allFields])
   const [namedFields, setNamedFields] = useState(toNamedFields(allFields))
@@ -78,7 +78,7 @@ export function DatasetFields({itemTab: dataWrapper, getValue, onBufferChange}: 
       delete newField.name
     }
 
-    onBufferChange({
+    setValue({
       spec: {
         ...spec,
         columns: newFields
@@ -158,7 +158,7 @@ export function DatasetFields({itemTab: dataWrapper, getValue, onBufferChange}: 
       newFields[nf.name] = _.omit(nf, 'name')
     }
 
-    onBufferChange({
+    setValue({
       spec: {
         ...spec,
         columns: newFields

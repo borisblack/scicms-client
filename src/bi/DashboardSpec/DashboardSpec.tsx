@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import {useEffect, useMemo, useState} from 'react'
+import {useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import RGL, {Layout, WidthProvider} from 'react-grid-layout'
 import {Alert, Button, Dropdown, Space} from 'antd'
@@ -31,7 +31,7 @@ import './DashboardSpec.css'
 import styles from './DashboardSpec.module.css'
 import {CustomComponentContext} from 'src/extensions/plugins/types'
 
-interface DashboardSpecProps extends CustomComponentContext {
+interface DashboardSpecProps extends CustomComponentContext<Dashboard> {
   extra?: DashboardExtra
   readOnly?: boolean
 }
@@ -48,7 +48,7 @@ const initialSpec: () => IDashboardSpec = () => ({
 })
 let seqNum = 0
 
-function DashboardSpec({itemTab, readOnly, getValue, onBufferChange}: DashboardSpecProps) {
+function DashboardSpec({itemTab, readOnly, getValue, setValue}: DashboardSpecProps) {
   const {item, data, extra} = itemTab
   if (item.name !== DASHBOARD_ITEM_NAME) throw new Error('Illegal argument')
 
@@ -142,7 +142,7 @@ function DashboardSpec({itemTab, readOnly, getValue, onBufferChange}: DashboardS
       selectors: dashboardSelectors
     }
 
-    onBufferChange({spec: newSpec})
+    setValue({spec: newSpec})
   }
 
   function handleTextAdd() {
@@ -159,7 +159,7 @@ function DashboardSpec({itemTab, readOnly, getValue, onBufferChange}: DashboardS
       selectors: dashboardSelectors
     }
 
-    onBufferChange({spec: newSpec})
+    setValue({spec: newSpec})
   }
 
   function handleSelectorAdd() {
@@ -180,7 +180,7 @@ function DashboardSpec({itemTab, readOnly, getValue, onBufferChange}: DashboardS
       selectors: [...dashboardSelectors, newSelector]
     }
 
-    onBufferChange({spec: newSpec})
+    setValue({spec: newSpec})
   }
 
   function handleLayoutChange(layouts: Layout[]) {
@@ -202,7 +202,7 @@ function DashboardSpec({itemTab, readOnly, getValue, onBufferChange}: DashboardS
       selectors: dashboardSelectors
     }
 
-    onBufferChange({
+    setValue({
       spec: newSpec
     })
   }
@@ -229,7 +229,7 @@ function DashboardSpec({itemTab, readOnly, getValue, onBufferChange}: DashboardS
       }))
     }
 
-    onBufferChange({
+    setValue({
       spec: newSpec
     })
   }
@@ -243,7 +243,7 @@ function DashboardSpec({itemTab, readOnly, getValue, onBufferChange}: DashboardS
       texts: dashboardTexts,
       selectors: dashboardSelectors
     }
-    onBufferChange({
+    setValue({
       spec: newSpec
     })
   }
@@ -257,7 +257,7 @@ function DashboardSpec({itemTab, readOnly, getValue, onBufferChange}: DashboardS
       texts: dashboardTexts.map(text => (text.id === updatedText.id ? updatedText : text)),
       selectors: dashboardSelectors
     }
-    onBufferChange({
+    setValue({
       spec: newSpec
     })
   }
@@ -272,7 +272,7 @@ function DashboardSpec({itemTab, readOnly, getValue, onBufferChange}: DashboardS
       texts: dashboardTexts,
       selectors: dashboardSelectors.map(selector => (selector.id === updatedSelector.id ? updatedSelector : selector))
     }
-    onBufferChange({
+    setValue({
       spec: newSpec
     })
   }

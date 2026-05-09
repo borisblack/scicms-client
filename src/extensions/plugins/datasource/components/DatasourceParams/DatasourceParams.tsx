@@ -15,7 +15,12 @@ const delimiterOptions: DefaultOptionType[] = [
   {label: ';', value: ';'}
 ]
 
-export function DatasourceParams({form, itemTab: dataWrapper, getValue, onBufferChange}: CustomComponentContext) {
+export function DatasourceParams({
+  form,
+  itemTab: dataWrapper,
+  getValue,
+  setValue: onBufferChange
+}: CustomComponentContext<Datasource>) {
   const data = dataWrapper.data as Datasource | undefined
   const {item} = dataWrapper
   if (item.name !== DATASOURCE_ITEM_NAME) throw new Error('Illegal argument')

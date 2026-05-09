@@ -2,7 +2,7 @@ import _ from 'lodash'
 import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {Col, Collapse, Form, Modal, notification, Row, Spin, Tabs} from 'antd'
 import {Tab} from 'rc-tabs/lib/interface'
-import {FieldType, IBuffer, ViewState} from 'src/types'
+import {FieldType, ViewState} from 'src/types'
 import {Attribute, ItemData, ItemTab, RelType} from 'src/types/schema'
 import {useTranslation} from 'react-i18next'
 import AttributeFieldWrapper from './AttributeFieldWrapper'
@@ -71,7 +71,7 @@ function ViewNavTab({itemTab}: Props) {
           : ViewState.UPDATE
         : ViewState.VIEW
   )
-  const [buffer, setBuffer] = useState<IBuffer>({})
+  const [buffer, setBuffer] = useState<Partial<ItemData>>({})
   const headerRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const contentFormRef = useRef<HTMLDivElement>(null)
@@ -82,30 +82,31 @@ function ViewNavTab({itemTab}: Props) {
   const mutationManager = useMutationManager()
   const acl = useFormAcl(item, data)
   const handleGetValue = useCallback(
-    (path: string | string[], defaultValue?: any) => _.get(buffer, path) ?? _.get(data ?? {}, path, defaultValue),
+    <K extends keyof ItemData>(name: K, defaultValue?: ItemData[K]): ItemData[K] =>
+      _.get(buffer, name) ?? _.get(data ?? {}, name, defaultValue),
     [data, buffer]
   )
-  const handleBufferChange = useCallback(
-    (bufferChanges: Partial<IBuffer>) => setBuffer(prevBuffer => ({...prevBuffer, ...bufferChanges})),
+  const handleSetValue = useCallback(
+    (changes: Partial<ItemData>) => setBuffer(prevBuffer => ({...prevBuffer, ...changes})),
     []
   )
-  const renderContext: CustomRendererContext = useMemo(
+  const renderContext: CustomRendererContext<ItemData> = useMemo(
     () => ({
       item,
       getValue: handleGetValue,
-      onBufferChange: handleBufferChange
+      setValue: handleSetValue
     }),
-    [item, handleGetValue, handleBufferChange]
+    [item, handleGetValue, handleSetValue]
   )
 
-  const customComponentContext: CustomComponentContext = useMemo(
+  const customComponentContext: CustomComponentContext<ItemData> = useMemo(
     () => ({
       itemTab,
       form,
       getValue: handleGetValue,
-      onBufferChange: handleBufferChange
+      setValue: handleSetValue
     }),
-    [itemTab, form, handleGetValue, handleBufferChange]
+    [itemTab, form, handleGetValue, handleSetValue]
   )
 
   useEffect(() => {
@@ -227,7 +228,12 @@ function ViewNavTab({itemTab}: Props) {
       const doCreate = async () => await mutationManager.create(item, values, majorRev, locale)
       let created: ItemData
       if (pluginEngine.hasApiMiddleware(item.name)) {
-        const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values}
+        const apiMiddlewareContext: ApiMiddlewareContext<ItemData> = {
+          me,
+          items: itemMap,
+          item,
+          getValue: handleGetValue
+        }
         created = await pluginEngine.handleApiMiddleware(item.name, ApiOperation.CREATE, apiMiddlewareContext, doCreate)
       } else {
         created = await doCreate()
@@ -273,7 +279,12 @@ function ViewNavTab({itemTab}: Props) {
         )
       let createdVersion: ItemData
       if (pluginEngine.hasApiMiddleware(item.name)) {
-        const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values}
+        const apiMiddlewareContext: ApiMiddlewareContext<ItemData> = {
+          me,
+          items: itemMap,
+          item,
+          getValue: handleGetValue
+        }
         createdVersion = await pluginEngine.handleApiMiddleware(
           item.name,
           ApiOperation.CREATE_VERSION,
@@ -320,7 +331,12 @@ function ViewNavTab({itemTab}: Props) {
         )
       let createdLocalization: ItemData
       if (pluginEngine.hasApiMiddleware(item.name)) {
-        const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values}
+        const apiMiddlewareContext: ApiMiddlewareContext<ItemData> = {
+          me,
+          items: itemMap,
+          item,
+          getValue: handleGetValue
+        }
         createdLocalization = await pluginEngine.handleApiMiddleware(
           item.name,
           ApiOperation.CREATE_LOCALIZATION,
@@ -358,7 +374,12 @@ function ViewNavTab({itemTab}: Props) {
       const doUpdate = async () => await mutationManager.update(item, data[item.idAttribute], values)
       let updated: ItemData
       if (pluginEngine.hasApiMiddleware(item.name)) {
-        const apiMiddlewareContext: ApiMiddlewareContext = {me, items: itemMap, item, buffer, values}
+        const apiMiddlewareContext: ApiMiddlewareContext<ItemData> = {
+          me,
+          items: itemMap,
+          item,
+          getValue: handleGetValue
+        }
         updated = await pluginEngine.handleApiMiddleware(item.name, ApiOperation.UPDATE, apiMiddlewareContext, doUpdate)
       } else {
         updated = await doUpdate()
@@ -447,7 +468,10 @@ function ViewNavTab({itemTab}: Props) {
 
       setLoading(true)
       try {
-        const existingLocalization = await queryManager.findLocalization(item, data.configId, data.majorRev, value)
+        const {configId, majorRev} = data
+        if (configId == null || majorRev == null) throw new Error('Illegal state')
+
+        const existingLocalization = await queryManager.findLocalization(item, configId, majorRev, value)
         if (existingLocalization) {
           if (viewState === ViewState.UPDATE) setViewState(ViewState.CREATE_LOCALIZATION)
 
@@ -506,10 +530,12 @@ function ViewNavTab({itemTab}: Props) {
               <h2>${t(item.displayName)}</h2>
               <table>
                 <tbody>
-                    ${visibleAttributeNames.map(attrName => {
-                      const attribute = attributes[attrName]
-                      return `<tr><td style="font-weight: 600">${t(attribute.displayName)}</td><td>${renderValue(data[attrName])}</td></tr>`
-                    }).join('')}
+                    ${visibleAttributeNames
+                      .map(attrName => {
+                        const attribute = attributes[attrName]
+                        return `<tr><td style="font-weight: 600">${t(attribute.displayName)}</td><td>${renderValue(data[attrName])}</td></tr>`
+                      })
+                      .join('')}
                 </tbody>
               </table>
           </body>
@@ -645,7 +671,6 @@ function ViewNavTab({itemTab}: Props) {
         <ViewNavTabHeader
           itemTab={itemTab}
           form={form}
-          buffer={buffer}
           canCreate={acl.canCreate}
           canEdit={acl.canWrite}
           canDelete={acl.canDelete}
@@ -654,6 +679,7 @@ function ViewNavTab({itemTab}: Props) {
           isLockedByMe={isLockedByMe}
           setLockedByMe={setLockedByMe}
           setLoading={setLoading}
+          getValue={handleGetValue}
           onHtmlExport={handleHtmlExport}
           logoutIfNeed={logoutIfNeed}
         />

@@ -1,11 +1,12 @@
 import {ICON_ATTR_NAME, LOCALE_ATTR_NAME} from 'src/config/constants'
+import {ItemData} from 'src/types/schema'
 import {Plugin} from '../Plugin'
 import {IconAttributeField, LocaleAttributeField} from './attributeFields'
 
 const ICON_ATTRIBUTE_FIELD_ID = 'icon'
 const LOCALE_ATTRIBUTE_FIELD_ID = 'locale'
 
-export class CommonPlugin extends Plugin {
+export class CommonPlugin extends Plugin<ItemData> {
   override onLoad(): void {
     // Attribute fields
     this.addAttributeField({

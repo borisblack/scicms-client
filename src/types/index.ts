@@ -1,3 +1,5 @@
+import {ItemData} from './schema'
+
 export enum FieldType {
   uuid = 'uuid',
   string = 'string',
@@ -91,10 +93,6 @@ export enum ViewState {
   CREATE_LOCALIZATION = 'CREATE_LOCALIZATION',
   UPDATE = 'UPDATE',
   VIEW = 'VIEW'
-}
-
-export interface IBuffer {
-  [key: string]: any
 }
 
 export interface PaginationInput {

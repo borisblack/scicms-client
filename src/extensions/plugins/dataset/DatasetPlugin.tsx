@@ -1,10 +1,11 @@
+import {Dataset} from 'src/types/bi'
 import {Plugin} from '../Plugin'
 import {DatasetFields, Sources} from './components'
 
 const DATASET_SOURCES_COMPONENT_ID = 'datasetSources'
 const DATASET_FIELDS_COMPONENT_ID = 'datasetFields'
 
-export class DatasetPlugin extends Plugin {
+export class DatasetPlugin extends Plugin<Dataset> {
   override onLoad() {
     this.addComponent({
       id: DATASET_SOURCES_COMPONENT_ID,

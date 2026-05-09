@@ -30,7 +30,7 @@ interface FilteredItemData {
 interface ParseValuesParams {
   itemMap: ItemMap
   item: Item
-  data: ItemData | null | undefined
+  data: Partial<ItemData> | null | undefined
   values: any
   timezone: string
 }
@@ -40,7 +40,7 @@ interface ParseValueParams {
   item: Item
   attrName: string
   attribute: Attribute
-  data: ItemData | null | undefined
+  data: Partial<ItemData> | null | undefined
   values: any
   timezone: string
 }
@@ -129,7 +129,11 @@ function parseDateTime(attrName: string, values: any, timezone: string): string 
   return dt.setZone(timezone, {keepLocalTime: true}).toISO()
 }
 
-async function parseMedia(attrName: string, data: ItemData | null | undefined, values: any): Promise<string | null> {
+async function parseMedia(
+  attrName: string,
+  data: Partial<ItemData> | null | undefined,
+  values: any
+): Promise<string | null> {
   const value = values[attrName]
   const prevItemPermissionId = data?.permission?.data?.id
   const itemPermissionId = values['permission.id']

@@ -3,7 +3,7 @@ import {FormInstance} from 'antd'
 
 import {AttributeFieldProps} from 'src/pages/app/attributeFields'
 import {ItemMap} from 'src/services/item'
-import {IBuffer, UserInfo} from 'src/types'
+import {UserInfo} from 'src/types'
 import {Item, ItemData, ItemTab} from 'src/types/schema'
 
 /**
@@ -33,34 +33,34 @@ export type CustomRendererMountPoint =
   | 'view.content'
   | 'tabs.content'
 
-export interface CustomRenderer {
+export interface CustomRenderer<T extends ItemData> {
   mountPoint: CustomRendererMountPoint
   priority?: number
-  render: (props: CustomRendererProps) => void
+  render: (props: CustomRendererProps<T>) => void
 }
 
-export interface CustomRendererProps {
+export interface CustomRendererProps<T extends ItemData> {
   node: HTMLElement
-  context: CustomRendererContext
+  context: CustomRendererContext<T>
 }
 
-export interface CustomRendererContext {
+export interface CustomRendererContext<T extends ItemData> {
   item: Item
 
   /**
-   * Returns value from buffer or data. If the resolved value is undefined, the defaultValue is returned in its place.
+   * Returns value from data buffer. If the resolved value is undefined, the defaultValue is returned in its place.
    * Function doesn't get value from the Form instance.
-   * @param path The path of the property to get
+   * @param name The name of the property to get
    * @param defaultValue The value returned for undefined resolved values
-   * @returns The value at path of buffer or data
+   * @returns The data buffer property value or defaultValue
    */
-  getValue: (path: string | string[], defaultValue?: any) => any
+  getValue: <K extends keyof T>(name: K, defaultValue?: T[K]) => T[K]
 
   /**
-   * Applies changes to the buffer.
-   * @param bufferChanges Changes to apply
+   * Applies changes to the data buffer.
+   * @param changes Changes to apply
    */
-  onBufferChange: (bufferChanges: Partial<IBuffer>) => void
+  setValue: (changes: Partial<T>) => void
 }
 
 /**
@@ -81,36 +81,36 @@ export type CustomComponentMountPoint =
   | 'tabs.begin'
   | 'tabs.end'
 
-export interface CustomComponent {
+export interface CustomComponent<T extends ItemData> {
   id: string
   mountPoint: CustomComponentMountPoint
   priority?: number
   title?: string // for tabs rendering
   icon?: string // for tabs rendering
-  render: ({context}: CustomComponentProps) => ReactNode
+  render: (props: CustomComponentProps<T>) => ReactNode
 }
 
-export interface CustomComponentProps {
-  context: CustomComponentContext
+export interface CustomComponentProps<T extends ItemData> {
+  context: CustomComponentContext<T>
 }
 
-export interface CustomComponentContext {
+export interface CustomComponentContext<T extends ItemData> {
   itemTab: ItemTab
   form?: FormInstance
   /**
-   * Returns value from buffer or data. If the resolved value is undefined, the defaultValue is returned in its place.
+   * Returns value from data buffer. If the resolved value is undefined, the defaultValue is returned in its place.
    * Function doesn't get value from the Form instance.
-   * @param path The path of the property to get
+   * @param name The name of the property to get
    * @param defaultValue The value returned for undefined resolved values
-   * @returns The value at path of buffer or data
+   * @returns The data buffer property value or defaultValue
    */
-  getValue: (path: string | string[], defaultValue?: any) => any
+  getValue: <K extends keyof T>(name: K, defaultValue?: T[K]) => T[K]
 
   /**
-   * Applies changes to the buffer.
-   * @param bufferChanges Changes to apply
+   * Applies changes to the data buffer.
+   * @param changes Changes to apply
    */
-  onBufferChange: (bufferChanges: Partial<IBuffer>) => void
+  setValue: (changes: Partial<T>) => void
 }
 
 /**
@@ -146,17 +146,23 @@ export enum ApiOperation {
   PROMOTE = 'PROMOTE'
 }
 
-export interface ApiMiddleware {
+export interface ApiMiddleware<T extends ItemData> {
   id: string
   itemName: string | '*'
   priority?: number
-  handle: (operation: ApiOperation, context: ApiMiddlewareContext, next: () => any) => any
+  handle: (operation: ApiOperation, context: ApiMiddlewareContext<T>, next: () => any) => any
 }
 
-export interface ApiMiddlewareContext {
+export interface ApiMiddlewareContext<T extends ItemData> {
   me: UserInfo | null
   items: ItemMap
   item: Item
-  buffer: IBuffer
-  values: any
+  /**
+   * Returns value from data buffer. If the resolved value is undefined, the defaultValue is returned in its place.
+   * Function doesn't get value from the Form instance.
+   * @param name The name of the property to get
+   * @param defaultValue The value returned for undefined resolved values
+   * @returns The data buffer property value or defaultValue
+   */
+  getValue: <K extends keyof T>(name: K, defaultValue?: T[K]) => T[K]
 }

@@ -1,10 +1,11 @@
 import {FILENAME_ATTR_NAME, MEDIA_ITEM_NAME} from 'src/config/constants'
+import {Media} from 'src/types/schema'
 import {Plugin} from '../Plugin'
 import {MediaFileAttributeField} from './attributeFields'
 
 const MEDIA_FILE_ATTRIBUTE_FIELD_ID = 'mediaFile'
 
-export class MediaPlugin extends Plugin {
+export class MediaPlugin extends Plugin<Media> {
   override onLoad(): void {
     this.addAttributeField({
       id: MEDIA_FILE_ATTRIBUTE_FIELD_ID,

@@ -1,6 +1,7 @@
 import {Plugin} from '../Plugin'
+import {ItemData} from 'src/types/schema'
 
-export class HelloPlugin extends Plugin {
+export class HelloPlugin extends Plugin<ItemData> {
   override onLoad() {
     this.addRenderer({
       mountPoint: 'itemTemplate.view.header',
