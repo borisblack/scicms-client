@@ -1,24 +1,24 @@
-import _ from 'lodash'
-import {useCallback, useMemo, useRef, useState} from 'react'
-import {Row} from '@tanstack/react-table'
-import {Button, Form, Modal, Space} from 'antd'
-import {useTranslation} from 'react-i18next'
+import _ from "lodash"
+import {useCallback, useMemo, useRef, useState} from "react"
+import {Row} from "@tanstack/react-table"
+import {Button, Form, Modal, Space} from "antd"
+import {useTranslation} from "react-i18next"
 
-import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME} from 'src/config/constants'
-import {Attribute, Item, ItemSpec} from 'src/types/schema'
-import {type DataWithPagination, type RequestParams, DataGrid} from 'src/uiKit/DataGrid/DataGrid'
-import {processLocal} from 'src/util/datagrid'
-import AttributeForm from './AttributeForm'
-import {CopyOutlined, DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design/icons'
-import {ItemType} from 'antd/es/menu/hooks/useItems'
-import {useAppProperties, useItemAcl, useModal, useRegistry} from 'src/util/hooks'
-import {getAttributeColumns, getHiddenAttributeColumns} from './attributeColumns'
-import {NamedAttribute} from './types'
-import {CustomComponentContext} from 'src/extensions/plugins/types'
-import {DragEndEvent} from '@dnd-kit/core'
-import {arrayMove} from '@dnd-kit/sortable'
-import {sortAttributes} from 'src/util/schema'
-import TemplateAttributesSelection from './TemplateAttributesSelection'
+import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME} from "src/config/constants"
+import {Attribute, Item, ItemSpec} from "src/types/schema"
+import {type DataWithPagination, type RequestParams, DataGrid} from "src/uiKit/DataGrid/DataGrid"
+import {processLocal} from "src/util/datagrid"
+import AttributeForm from "./AttributeForm"
+import {CopyOutlined, DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from "@ant-design/icons"
+import {ItemType} from "antd/es/menu/hooks/useItems"
+import {useAppProperties, useItemAcl, useModal, useRegistry} from "src/util/hooks"
+import {getAttributeColumns, getHiddenAttributeColumns} from "./attributeColumns"
+import {NamedAttribute} from "./types"
+import {CustomComponentContext} from "src/extensions/plugins/types"
+import {DragEndEvent} from "@dnd-kit/core"
+import {arrayMove} from "@dnd-kit/sortable"
+import {sortAttributes} from "src/util/schema"
+import TemplateAttributesSelection from "./TemplateAttributesSelection"
 
 const EDIT_MODAL_WIDTH = 800
 const DEFAULT_PAGE_SIZE = 100
@@ -34,7 +34,7 @@ const getInitialAttributesData: () => DataWithPagination<NamedAttribute> = () =>
 
 export function Attributes({itemTab: dataWrapper, form, getValue, setValue}: CustomComponentContext<Item>) {
   const {item, data} = dataWrapper
-  if (item.name !== ITEM_TEMPLATE_ITEM_NAME && item.name !== ITEM_ITEM_NAME) throw new Error('Illegal argument')
+  if (item.name !== ITEM_TEMPLATE_ITEM_NAME && item.name !== ITEM_ITEM_NAME) throw new Error("Illegal argument")
 
   const {itemTemplates} = useRegistry()
   const isNew = !data?.id
@@ -47,8 +47,8 @@ export function Attributes({itemTab: dataWrapper, form, getValue, setValue}: Cus
   const isCoreItem = useMemo(() => data?.core ?? false, [data?.core])
   const columns = useMemo(() => getAttributeColumns(isCoreItem, defaultColWidth), [isCoreItem, defaultColWidth])
   const hiddenColumns = useMemo(() => getHiddenAttributeColumns(), [])
-  const spec: ItemSpec = useMemo(() => getValue('spec', {attributes: {}, indexes: {}}), [getValue])
-  const includeTemplates: string[] | undefined = Form.useWatch('includeTemplates', form)
+  const spec: ItemSpec = useMemo(() => getValue("spec", {attributes: {}, indexes: {}}), [getValue])
+  const includeTemplates: string[] | undefined = Form.useWatch("includeTemplates", form)
 
   const initialNamedAttributes = useMemo((): NamedAttribute[] => {
     const attributes = sortAttributes(spec.attributes ?? {})
@@ -120,8 +120,8 @@ export function Attributes({itemTab: dataWrapper, form, getValue, setValue}: Cus
     _.forOwn(values, (value, key) => {
       if (value == null) return
 
-      if (key === 'enumSet') {
-        parsedValues[key] = (value as string).split('\n')
+      if (key === "enumSet") {
+        parsedValues[key] = (value as string).split("\n")
         return
       }
 
@@ -139,7 +139,7 @@ export function Attributes({itemTab: dataWrapper, form, getValue, setValue}: Cus
 
       const parsedValues = parseValues(values)
       const {name} = parsedValues
-      if (!name) throw new Error('Illegal argument')
+      if (!name) throw new Error("Illegal argument")
 
       if (name in (spec.attributes ?? {}))
         handleNamedAttributesChange(namedAttributes.map(it => (it.name === name ? {...parsedValues} : it)))
@@ -164,20 +164,20 @@ export function Attributes({itemTab: dataWrapper, form, getValue, setValue}: Cus
             type="primary"
             size="small"
             icon={<PlusCircleOutlined />}
-            title={t('Add attribute')}
+            title={t("Add attribute")}
             onClick={handleCreate}
           >
-            {t('Add')}
+            {t("Add")}
           </Button>
         )}
         {acl.canWrite && (
           <Button
             size="small"
             icon={<CopyOutlined />}
-            title={t('Select attributes from template')}
+            title={t("Select attributes from template")}
             onClick={showTemplateAttributesModal}
           >
-            {t('From template')}
+            {t("From template")}
           </Button>
         )}
       </Space>
@@ -196,8 +196,8 @@ export function Attributes({itemTab: dataWrapper, form, getValue, setValue}: Cus
     (row: Row<NamedAttribute>) => {
       const items: ItemType[] = [
         {
-          key: 'open',
-          label: t('Open'),
+          key: "open",
+          label: t("Open"),
           icon: <FolderOpenOutlined />,
           onClick: () => openRow(row)
         }
@@ -205,8 +205,8 @@ export function Attributes({itemTab: dataWrapper, form, getValue, setValue}: Cus
 
       if (acl.canWrite) {
         items.push({
-          key: 'delete',
-          label: t('Delete'),
+          key: "delete",
+          label: t("Delete"),
           icon: <DeleteTwoTone twoToneColor="#eb2f96" />,
           onClick: () => deleteRow(row)
         })
@@ -248,7 +248,7 @@ export function Attributes({itemTab: dataWrapper, form, getValue, setValue}: Cus
   return (
     <>
       <DataGrid
-        key={acl.canWrite ? 'writable' : 'readOnly'} // need recreate for correctness of moving rows functionality
+        key={acl.canWrite ? "writable" : "readOnly"} // need recreate for correctness of moving rows functionality
         columns={columns}
         data={filteredData}
         initialState={{
@@ -256,7 +256,7 @@ export function Attributes({itemTab: dataWrapper, form, getValue, setValue}: Cus
           pageSize: DEFAULT_PAGE_SIZE
         }}
         toolbar={renderToolbar()}
-        title={t('Attributes')}
+        title={t("Attributes")}
         version={version}
         rowDndEnabled={acl.canWrite}
         getRowId={originalRow => originalRow.name}
@@ -267,7 +267,7 @@ export function Attributes({itemTab: dataWrapper, form, getValue, setValue}: Cus
       />
       <Modal
         {...templateAttributesModalProps}
-        title={t('Template attributes')}
+        title={t("Template attributes")}
         onOk={applyTemplateAttributes}
         onCancel={closeTemplateAttributesModal}
       >
@@ -280,7 +280,7 @@ export function Attributes({itemTab: dataWrapper, form, getValue, setValue}: Cus
         />
       </Modal>
       <Modal
-        title={t('Attribute')}
+        title={t("Attribute")}
         open={isEditModalVisible}
         destroyOnClose
         width={EDIT_MODAL_WIDTH}

@@ -1,18 +1,18 @@
-import {useMemo} from 'react'
-import {useTranslation} from 'react-i18next'
-import {Checkbox, Col, Form, FormInstance, Row, Select, Typography} from 'antd'
-import {CheckboxChangeEvent} from 'antd/es/checkbox'
-import {DATASOURCE_ITEM_NAME} from 'src/config/constants'
-import {useAcl} from 'src/util/hooks'
-import {CustomComponentContext} from 'src/extensions/plugins/types'
-import {Datasource, DatasourceType} from 'src/types/schema'
-import {DefaultOptionType} from 'antd/es/select'
+import {useMemo} from "react"
+import {useTranslation} from "react-i18next"
+import {Checkbox, Col, Form, FormInstance, Row, Select, Typography} from "antd"
+import {CheckboxChangeEvent} from "antd/es/checkbox"
+import {DATASOURCE_ITEM_NAME} from "src/config/constants"
+import {useAcl} from "src/util/hooks"
+import {CustomComponentContext} from "src/extensions/plugins/types"
+import {Datasource, DatasourceType} from "src/types/schema"
+import {DefaultOptionType} from "antd/es/select"
 
 const {Text} = Typography
 
 const delimiterOptions: DefaultOptionType[] = [
-  {label: ',', value: ','},
-  {label: ';', value: ';'}
+  {label: ",", value: ","},
+  {label: ";", value: ";"}
 ]
 
 export function DatasourceParams({
@@ -23,13 +23,13 @@ export function DatasourceParams({
 }: CustomComponentContext<Datasource>) {
   const data = dataWrapper.data as Datasource | undefined
   const {item} = dataWrapper
-  if (item.name !== DATASOURCE_ITEM_NAME) throw new Error('Illegal argument')
+  if (item.name !== DATASOURCE_ITEM_NAME) throw new Error("Illegal argument")
 
   const {t} = useTranslation()
   const acl = useAcl(item, data)
-  const sourceType = Form.useWatch('sourceType', form as FormInstance)
-  const params: Record<string, any> = useMemo(() => getValue('params', {}), [getValue])
-  const delimiter: string = useMemo(() => params.delimiter ?? ',', [params])
+  const sourceType = Form.useWatch("sourceType", form as FormInstance)
+  const params: Record<string, any> = useMemo(() => getValue("params", {}), [getValue])
+  const delimiter: string = useMemo(() => params.delimiter ?? ",", [params])
   const firstLineIsAHeading: boolean = useMemo(() => params.firstLineIsAHeading ?? true, [params])
 
   function handleDelimiterSelect(newDelimiter: string) {
@@ -55,7 +55,7 @@ export function DatasourceParams({
     <Row>
       {sourceType === DatasourceType.CSV && (
         <Col span={24} style={{marginBottom: 16}}>
-          <Text>{`${t('Delimiter')}:`}</Text>
+          <Text>{`${t("Delimiter")}:`}</Text>
           &nbsp;&nbsp;
           <Select
             size="small"
@@ -70,14 +70,14 @@ export function DatasourceParams({
       {(sourceType === DatasourceType.SPREADSHEET || sourceType === DatasourceType.CSV) && (
         <Col span={24}>
           <Checkbox disabled={!acl.canWrite} checked={firstLineIsAHeading} onChange={handleFirstLineIsAHeadingCheck}>
-            {t('First line is a heading')}
+            {t("First line is a heading")}
           </Checkbox>
         </Col>
       )}
 
       {!hasAvailableParams() && (
         <Col span={24}>
-          <Text disabled>{t('No available parameters')}</Text>
+          <Text disabled>{t("No available parameters")}</Text>
         </Col>
       )}
     </Row>

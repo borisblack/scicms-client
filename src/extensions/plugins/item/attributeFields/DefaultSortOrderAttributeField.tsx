@@ -1,15 +1,15 @@
-import {FC, useMemo} from 'react'
-import {Form, Select} from 'antd'
-import {useTranslation} from 'react-i18next'
+import {FC, useMemo} from "react"
+import {Form, Select} from "antd"
+import {useTranslation} from "react-i18next"
 
-import {FieldType} from 'src/types'
-import {DEFAULT_SORT_ORDER_ATTR_NAME} from 'src/config/constants'
-import {CustomAttributeFieldContext} from '../../types'
-import styles from 'src/pages/app/attributeFields/AttributeField.module.css'
+import {FieldType} from "src/types"
+import {DEFAULT_SORT_ORDER_ATTR_NAME} from "src/config/constants"
+import {CustomAttributeFieldContext} from "../../types"
+import styles from "src/pages/app/attributeFields/AttributeField.module.css"
 
 const FormItem = Form.Item
 
-const sortDirections = ['asc', 'desc']
+const sortDirections = ["asc", "desc"]
 
 export const DefaultSortOrderAttributeField: FC<CustomAttributeFieldContext> = ({
   attrName,
@@ -18,7 +18,7 @@ export const DefaultSortOrderAttributeField: FC<CustomAttributeFieldContext> = (
   onChange
 }) => {
   if (attrName !== DEFAULT_SORT_ORDER_ATTR_NAME || attribute.type !== FieldType.string)
-    throw new Error('Illegal attribute')
+    throw new Error("Illegal attribute")
 
   const {t} = useTranslation()
   const isDisabled = useMemo(() => attribute.readOnly, [attribute.readOnly])
@@ -36,7 +36,7 @@ export const DefaultSortOrderAttributeField: FC<CustomAttributeFieldContext> = (
       label={t(attribute.displayName)}
       hidden={attribute.fieldHidden}
       initialValue={value ?? attribute.defaultValue}
-      rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
+      rules={[{required: attribute.required && !attribute.readOnly, message: t("Required field")}]}
     >
       <Select
         options={sortDirections.map(dir => ({value: dir, label: dir}))}

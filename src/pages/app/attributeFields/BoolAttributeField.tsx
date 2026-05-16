@@ -1,15 +1,15 @@
-import {FC, useCallback, useMemo} from 'react'
-import {Checkbox, Form} from 'antd'
-import {AttributeFieldProps} from '.'
-import {FieldType} from 'src/types'
-import {useTranslation} from 'react-i18next'
-import {generateKey} from 'src/util/mdi'
-import styles from './AttributeField.module.css'
+import {FC, useCallback, useMemo} from "react"
+import {Checkbox, Form} from "antd"
+import {AttributeFieldProps} from "."
+import {FieldType} from "src/types"
+import {useTranslation} from "react-i18next"
+import {generateKey} from "src/util/mdi"
+import styles from "./AttributeField.module.css"
 
 const FormItem = Form.Item
 
 const BoolAttributeField: FC<AttributeFieldProps> = ({itemTab: dataWrapper, attrName, attribute, value}) => {
-  if (attribute.type !== FieldType.bool) throw new Error('Illegal attribute')
+  if (attribute.type !== FieldType.bool) throw new Error("Illegal attribute")
 
   const uniqueKey = generateKey(dataWrapper)
   const {t} = useTranslation()
@@ -23,9 +23,9 @@ const BoolAttributeField: FC<AttributeFieldProps> = ({itemTab: dataWrapper, attr
   }, [isDisabled])
 
   const parseValue = useCallback((val: boolean | string | number | null | undefined) => {
-    if (val === 1 || val === '1' || val === 'true') return true
+    if (val === 1 || val === "1" || val === "true") return true
 
-    if (val === 0 || val === '0' || val === 'false') return false
+    if (val === 0 || val === "0" || val === "false") return false
 
     return val
   }, [])

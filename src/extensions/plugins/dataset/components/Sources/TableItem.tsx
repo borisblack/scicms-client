@@ -1,10 +1,10 @@
-import {useDrag} from 'react-dnd'
-import {Typography} from 'antd'
-import {TableOutlined} from '@ant-design/icons'
+import {useDrag} from "react-dnd"
+import {Typography} from "antd"
+import {TableOutlined} from "@ant-design/icons"
 
-import {DndItemType} from 'src/config/constants'
-import {Table} from 'src/types/bi'
-import styles from './TableItem.module.css'
+import {DndItemType} from "src/config/constants"
+import {Table} from "src/types/bi"
+import styles from "./TableItem.module.css"
 
 interface TableItemProps {
   table: Table

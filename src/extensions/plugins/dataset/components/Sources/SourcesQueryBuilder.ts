@@ -1,4 +1,4 @@
-import {DatasetSources, JoinedTable, JoinType, QueryOp, Table, UnaryQueryOp} from 'src/types/bi'
+import {DatasetSources, JoinedTable, JoinType, QueryOp, Table, UnaryQueryOp} from "src/types/bi"
 
 export interface SourcesQueryBuildResult {
   tableName: string | null
@@ -6,14 +6,14 @@ export interface SourcesQueryBuildResult {
 }
 
 const joinsMap: Record<JoinType, string> = {
-  [JoinType.inner]: 'INNER JOIN',
-  [JoinType.left]: 'LEFT JOIN',
-  [JoinType.right]: 'RIGHT JOIN',
-  [JoinType.full]: 'FULL JOIN'
+  [JoinType.inner]: "INNER JOIN",
+  [JoinType.left]: "LEFT JOIN",
+  [JoinType.right]: "RIGHT JOIN",
+  [JoinType.full]: "FULL JOIN"
 }
 
 const opMap: Record<string, string> = {
-  [QueryOp.$eq]: '='
+  [QueryOp.$eq]: "="
 }
 
 export default class SourcesQueryBuilder {
@@ -27,13 +27,13 @@ export default class SourcesQueryBuilder {
     // SELECT
     let query: string = `SELECT ${Object.keys(mainTable.columns)
       .map(key => `${mainTable.name}.${key}`)
-      .join(',\n\t')}${joinedTables.length > 0 ? ',\n\t' : ''}`
+      .join(",\n\t")}${joinedTables.length > 0 ? ",\n\t" : ""}`
     joinedTables.forEach((joinedTable, i) => {
       const joinedTableSelectColumns = Object.keys(joinedTable.columns).map(
         key => `${joinedTable.alias || joinedTable.name}.${key} AS ${joinedTable.alias || joinedTable.name}__${key}`
       )
 
-      query += `${joinedTableSelectColumns.join(',\n\t')}${i < joinedTables.length - 1 ? ',\n\t' : '\n'}`
+      query += `${joinedTableSelectColumns.join(",\n\t")}${i < joinedTables.length - 1 ? ",\n\t" : "\n"}`
     })
 
     // FROM
@@ -44,7 +44,7 @@ export default class SourcesQueryBuilder {
           `${mainTable.name}.${join.mainTableField} ${opMap[join.op]} ${joinedTable.alias || joinedTable.name}.${join.field}`
       )
 
-      query += `\t${joinsMap[joinedTable.joinType ?? JoinType.inner]} ${joinedTable.name}${joinedTable.alias ? ` ${joinedTable.alias}` : ''} ON ${joinExpressions.join(' AND ')}\n`
+      query += `\t${joinsMap[joinedTable.joinType ?? JoinType.inner]} ${joinedTable.name}${joinedTable.alias ? ` ${joinedTable.alias}` : ""} ON ${joinExpressions.join(" AND ")}\n`
     })
 
     return {tableName: null, query}

@@ -1,6 +1,6 @@
-import {useCallback, useContext, useState} from 'react'
-import {useImmerReducer} from 'use-immer'
-import {MDIContext, MDITabObservable} from '.'
+import {useCallback, useContext, useState} from "react"
+import {useImmerReducer} from "use-immer"
+import {MDIContext, MDITabObservable} from "."
 import mdiTabsReducer, {
   MDITabsAction,
   MDITabsState,
@@ -11,8 +11,8 @@ import mdiTabsReducer, {
   UPDATE_ACTION,
   UPDATE_ACTIVE_ACTION,
   RESET_ACTION
-} from './mdiTabsReducer'
-import {ReactMDIContext} from './ReactMDIContext'
+} from "./mdiTabsReducer"
+import {ReactMDIContext} from "./ReactMDIContext"
 
 export function useNewMDIContextReducer<T>(initialItems: MDITabObservable<T>[]): MDIContext<T> {
   const [state, dispatch] = useImmerReducer<MDITabsState<T>, MDITabsAction<T>>(mdiTabsReducer, {items: initialItems})
@@ -95,7 +95,7 @@ export function useNewMDIContext<T>(initialItems: MDITabObservable<T>[]): MDICon
   const updateTab = useCallback(
     (key: string, data: T, newKey?: string) => {
       const existingItem = items.find(curItem => curItem.key === key)
-      if (existingItem == null) throw new Error('Item not found.')
+      if (existingItem == null) throw new Error("Item not found.")
 
       // Reset active key
       if (key === activeKey && newKey != null && newKey !== key) setActiveKey(undefined)
@@ -116,7 +116,7 @@ export function useNewMDIContext<T>(initialItems: MDITabObservable<T>[]): MDICon
       if (activeKey == null) return
 
       const existingItem = items.find(curItem => curItem.key === activeKey)
-      if (existingItem == null) throw new Error('Item not found.')
+      if (existingItem == null) throw new Error("Item not found.")
 
       // Reset active key
       if (newKey != null && newKey !== activeKey) setActiveKey(undefined)
@@ -157,7 +157,7 @@ export function useNewMDIContext<T>(initialItems: MDITabObservable<T>[]): MDICon
       setActiveKey(undefined)
 
       const closedItem = items.find(item => item.key === activeKey)
-      if (closedItem == null) throw new Error('Item not found.')
+      if (closedItem == null) throw new Error("Item not found.")
 
       const newItems = items.filter(item => item.key !== activeKey)
       setItems(newItems)
@@ -180,7 +180,7 @@ export function useNewMDIContext<T>(initialItems: MDITabObservable<T>[]): MDICon
 
 export function useMDIContext<T>(): MDIContext<T> {
   const ctx = useContext(ReactMDIContext)
-  if (ctx == null) throw new Error('MDI context is null.')
+  if (ctx == null) throw new Error("MDI context is null.")
 
   return ctx
 }

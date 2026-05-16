@@ -1,10 +1,10 @@
-import axios from 'axios'
-import {gql} from '@apollo/client'
+import axios from "axios"
+import {gql} from "@apollo/client"
 
-import i18n from '../i18n'
-import {apolloClient, extractAxiosErrorMessage, extractGraphQLErrorMessages} from '.'
-import {DeletingStrategy, MediaInfo} from '../types'
-import {Media} from '../types/schema'
+import i18n from "../i18n"
+import {apolloClient, extractAxiosErrorMessage, extractGraphQLErrorMessages} from "."
+import {DeletingStrategy, MediaInfo} from "../types"
+import {Media} from "../types/schema"
 
 export interface UploadInput {
   file: File
@@ -84,19 +84,19 @@ const DELETE_MEDIA_MUTATION = gql`
   }
 `
 
-const APOLLO_REQUIRE_PREFLIGHT_HEADER = 'apollo-require-preflight'
+const APOLLO_REQUIRE_PREFLIGHT_HEADER = "apollo-require-preflight"
 
 export async function uploadData(input: UploadInput): Promise<MediaInfo> {
   const data = new FormData()
-  data.set('file', input.file)
-  if (input.label) data.set('label', input.label)
+  data.set("file", input.file)
+  if (input.label) data.set("label", input.label)
 
-  if (input.description) data.set('description', input.description)
+  if (input.description) data.set("description", input.description)
 
-  if (input.permission) data.set('permission', input.permission)
+  if (input.permission) data.set("permission", input.permission)
 
   try {
-    const res = await axios.post('/api/media/upload', data)
+    const res = await axios.post("/api/media/upload", data)
     return res.data
   } catch (e: any) {
     throw new Error(extractAxiosErrorMessage(e))
@@ -106,14 +106,14 @@ export async function uploadData(input: UploadInput): Promise<MediaInfo> {
 export async function uploadDataMultiple(input: UploadInput[]): Promise<MediaInfo> {
   const data = new FormData()
   input.forEach(it => {
-    data.append('files', it.file)
-    data.append('labels', it.label || '')
-    data.append('descriptions', it.description || '')
-    data.append('permissions', it.permission || '')
+    data.append("files", it.file)
+    data.append("labels", it.label || "")
+    data.append("descriptions", it.description || "")
+    data.append("permissions", it.permission || "")
   })
 
   try {
-    const res = await axios.post('/api/media/upload-multiple', data)
+    const res = await axios.post("/api/media/upload-multiple", data)
     return res.data
   } catch (e: any) {
     throw new Error(extractAxiosErrorMessage(e))
@@ -131,7 +131,7 @@ export async function upload(file: File): Promise<MediaInfo> {
 
   if (res.errors) {
     console.error(extractGraphQLErrorMessages(res.errors))
-    throw new Error(i18n.t('An error occurred while executing the request'))
+    throw new Error(i18n.t("An error occurred while executing the request"))
   }
 
   return res.data.upload
@@ -148,7 +148,7 @@ export async function uploadMultiple(files: File[]): Promise<MediaInfo[]> {
 
   if (res.errors) {
     console.error(extractGraphQLErrorMessages(res.errors))
-    throw new Error(i18n.t('An error occurred while executing the request'))
+    throw new Error(i18n.t("An error occurred while executing the request"))
   }
 
   return res.data.uploadMultiple
@@ -158,7 +158,7 @@ export async function update(id: string, data: MediaInput): Promise<Media> {
   const res = await apolloClient.mutate({mutation: UPDATE_MEDIA_MUTATION, variables: {id, data}})
   if (res.errors) {
     console.error(extractGraphQLErrorMessages(res.errors))
-    throw new Error(i18n.t('An error occurred while executing the request'))
+    throw new Error(i18n.t("An error occurred while executing the request"))
   }
 
   return res.data.updateMedia.data
@@ -171,16 +171,16 @@ export async function deleteById(id: string): Promise<Media> {
   })
   if (res.errors) {
     console.error(extractGraphQLErrorMessages(res.errors))
-    throw new Error(i18n.t('An error occurred while executing the request'))
+    throw new Error(i18n.t("An error occurred while executing the request"))
   }
 
   return res.data.deleteMedia.data
 }
 
 export async function download(id: string, filename: string): Promise<void> {
-  const res = await axios.get(getDownloadUrlById(id), {responseType: 'blob'})
+  const res = await axios.get(getDownloadUrlById(id), {responseType: "blob"})
   const url = window.URL.createObjectURL(new Blob([res.data]))
-  const link = document.createElement('a')
+  const link = document.createElement("a")
   link.href = url
   link.download = filename
   document.body.appendChild(link)

@@ -1,10 +1,10 @@
-import _ from 'lodash'
-import {Dayjs} from 'dayjs'
-import {DateTime} from 'luxon'
+import _ from "lodash"
+import {Dayjs} from "dayjs"
+import {DateTime} from "luxon"
 
-import {FieldType} from '../types'
-import {Attribute, Item, ItemData} from '../types/schema'
-import * as MediaService from '../services/media'
+import {FieldType} from "../types"
+import {Attribute, Item, ItemData} from "../types/schema"
+import * as MediaService from "../services/media"
 import {
   LETTER_NO_WHITESPACE_MESSAGE,
   LETTER_NO_WHITESPACE_PATTERN,
@@ -14,12 +14,12 @@ import {
   PASSWORD_PLACEHOLDER,
   STATE_ATTR_NAME,
   UTC
-} from '../config/constants'
-import {tryParseJson} from './index'
-import {FormRule} from 'antd'
-import util from 'util'
-import i18n from '../i18n'
-import {ItemMap} from 'src/services/item'
+} from "../config/constants"
+import {tryParseJson} from "./index"
+import {FormRule} from "antd"
+import util from "util"
+import i18n from "../i18n"
+import {ItemMap} from "src/services/item"
 
 interface FilteredItemData {
   majorRev?: string
@@ -98,7 +98,7 @@ async function parseValue({
     case FieldType.media:
       return await parseMedia(attrName, data, values)
     case FieldType.array:
-      return _.isString(value) ? value.split('\n').map(it => tryParseJson(it)) : value
+      return _.isString(value) ? value.split("\n").map(it => tryParseJson(it)) : value
     case FieldType.json:
       return _.isString(value) ? JSON.parse(value) : value
     case FieldType.relation:
@@ -136,7 +136,7 @@ async function parseMedia(
 ): Promise<string | null> {
   const value = values[attrName]
   const prevItemPermissionId = data?.permission?.data?.id
-  const itemPermissionId = values['permission.id']
+  const itemPermissionId = values["permission.id"]
   const mediaId = values[`${attrName}.id`]
   if (mediaId) {
     if (itemPermissionId !== prevItemPermissionId) {
@@ -164,7 +164,7 @@ export function filterValues(values: FilteredItemData): ItemData {
 
 export const requiredFieldRule = (required: boolean = true, message?: string) => ({
   required,
-  message: i18n.t(message ?? 'Required field')
+  message: i18n.t(message ?? "Required field")
 })
 
 export const regExpRule =
@@ -175,7 +175,7 @@ export const regExpRule =
 
       const msg = message ?? regExpMessages[regExp.toString()]
       return Promise.reject(
-        new Error(msg == null ? util.format(i18n.t('String does not match pattern %s'), regExp) : i18n.t(msg))
+        new Error(msg == null ? util.format(i18n.t("String does not match pattern %s"), regExp) : i18n.t(msg))
       )
     }
   })

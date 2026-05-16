@@ -4,19 +4,19 @@ import {
   ITEM_TEMPLATE_MODEL_KIND,
   NAME_ATTR_NAME,
   SPEC_ATTR_NAME
-} from 'src/config/constants'
-import {FlaggedResponse, ItemData, ItemTemplateModel} from 'src/types/schema'
-import axios from 'axios'
-import {extractAxiosErrorMessage} from 'src/services'
-import QueryManager from 'src/services/query'
-import {ApiMiddlewareContext, ApiOperation} from '../types'
+} from "src/config/constants"
+import {FlaggedResponse, ItemData, ItemTemplateModel} from "src/types/schema"
+import axios from "axios"
+import {extractAxiosErrorMessage} from "src/services"
+import QueryManager from "src/services/query"
+import {ApiMiddlewareContext, ApiOperation} from "../types"
 
 export async function handleItemTemplateApiOperation<T extends ItemData>(
   operation: ApiOperation,
   context: ApiMiddlewareContext<T>,
   next: () => any
 ) {
-  if (context.item.name !== ITEM_TEMPLATE_ITEM_NAME) throw new Error('Illegal argument')
+  if (context.item.name !== ITEM_TEMPLATE_ITEM_NAME) throw new Error("Illegal argument")
 
   switch (operation) {
     case ApiOperation.CREATE:
@@ -33,7 +33,7 @@ export async function handleItemTemplateApiOperation<T extends ItemData>(
     case ApiOperation.PURGE:
     case ApiOperation.PROMOTE:
     default:
-      throw new Error('Unsupported operation')
+      throw new Error("Unsupported operation")
   }
 }
 
@@ -41,7 +41,7 @@ async function apply<T extends ItemData>({items, item, getValue}: ApiMiddlewareC
   const queryManager = new QueryManager(items)
   let id: string
   try {
-    const res = await axios.post('/api/model/apply', toItemTemplateModel(getValue))
+    const res = await axios.post("/api/model/apply", toItemTemplateModel(getValue))
     id = res.data
   } catch (e: any) {
     throw new Error(extractAxiosErrorMessage(e))
@@ -55,7 +55,7 @@ async function apply<T extends ItemData>({items, item, getValue}: ApiMiddlewareC
 const toItemTemplateModel = <T extends ItemData>(
   getValue: (path: keyof T, defaultValue?: any) => any
 ): ItemTemplateModel => ({
-  coreVersion: 'v1',
+  coreVersion: "v1",
   kind: ITEM_TEMPLATE_MODEL_KIND,
   metadata: {
     name: getValue(NAME_ATTR_NAME),

@@ -1,2 +1,2 @@
-export {IconAttributeField} from './IconAttributeField'
-export {LocaleAttributeField} from './LocaleAttributeField'
+export {IconAttributeField} from "./IconAttributeField"
+export {LocaleAttributeField} from "./LocaleAttributeField"

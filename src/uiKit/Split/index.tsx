@@ -1,7 +1,7 @@
-import * as React from 'react'
-import {default as Measure, ContentRect} from 'react-measure'
-import {DefaultSplitter, RenderSplitterProps} from '@geoffcox/react-splitter'
-import './split.css'
+import * as React from "react"
+import {default as Measure, ContentRect} from "react-measure"
+import {DefaultSplitter, RenderSplitterProps} from "@geoffcox/react-splitter"
+import "./split.css"
 
 type MeasuredDimensions = {
   height: number
@@ -92,16 +92,16 @@ export type SplitProps = {
 export const Split = (props: React.PropsWithChildren<SplitProps>): JSX.Element => {
   const {
     horizontal = false,
-    initialPrimarySize = '50%',
-    minPrimarySize = '0px',
-    minSecondarySize = '0px',
-    splitterSize = '7px',
+    initialPrimarySize = "50%",
+    minPrimarySize = "0px",
+    minSecondarySize = "0px",
+    splitterSize = "7px",
     renderSplitter,
     resetOnDoubleClick = false,
     defaultSplitterColors = {
-      color: 'silver',
-      hover: 'gray',
-      drag: 'black'
+      color: "silver",
+      hover: "gray",
+      drag: "black"
     },
     onSplitChanged,
     onMeasuredSizesChanged
@@ -202,8 +202,8 @@ export const Split = (props: React.PropsWithChildren<SplitProps>): JSX.Element =
 
   const renderSizes = {
     primary: percent !== undefined ? `${percent}%` : initialPrimarySize,
-    minPrimary: minPrimarySize ?? '0px',
-    minSecondary: minSecondarySize ?? '0px'
+    minPrimary: minPrimarySize ?? "0px",
+    minSecondary: minSecondarySize ?? "0px"
   }
 
   const renderSplitterProps = {
@@ -225,13 +225,13 @@ export const Split = (props: React.PropsWithChildren<SplitProps>): JSX.Element =
       )
     })
 
-  const rootClassName = horizontal ? 'split-container horizontal' : 'split-container vertical'
+  const rootClassName = horizontal ? "split-container horizontal" : "split-container vertical"
 
   const rootStyle = {
-    '--react-split-min-primary': renderSizes.minPrimary,
-    '--react-split-min-secondary': renderSizes.minSecondary,
-    '--react-split-primary': renderSizes.primary,
-    '--react-split-splitter': splitterSize
+    "--react-split-min-primary": renderSizes.minPrimary,
+    "--react-split-min-secondary": renderSizes.minSecondary,
+    "--react-split-primary": renderSizes.primary,
+    "--react-split-splitter": splitterSize
   } as React.CSSProperties
 
   return (

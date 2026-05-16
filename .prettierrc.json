@@ -4,6 +4,7 @@
   "endOfLine": "auto",
   "printWidth": 120,
   "semi": false,
-  "singleQuote": true,
+  "singleQuote": false,
+  "jsxSingleQuote": false,
   "trailingComma": "none"
 }

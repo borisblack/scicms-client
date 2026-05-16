@@ -1,11 +1,11 @@
-import _ from 'lodash'
-import {ReactNode} from 'react'
-import {ColumnDef, ColumnFiltersState, createColumnHelper, SortingState} from '@tanstack/react-table'
-import {Checkbox} from 'antd'
-import {DateTime} from 'luxon'
+import _ from "lodash"
+import {ReactNode} from "react"
+import {ColumnDef, ColumnFiltersState, createColumnHelper, SortingState} from "@tanstack/react-table"
+import {Checkbox} from "antd"
+import {DateTime} from "luxon"
 
-import {FieldType, Pagination, PrimitiveFilterInput} from 'src/types'
-import {type DataWithPagination, type RequestParams} from 'src/uiKit/DataGrid/DataGrid'
+import {FieldType, Pagination, PrimitiveFilterInput} from "src/types"
+import {type DataWithPagination, type RequestParams} from "src/uiKit/DataGrid/DataGrid"
 import {
   LUXON_DATE_FORMAT_STRING,
   LUXON_DATE_HOURS_FORMAT_STRING,
@@ -19,11 +19,11 @@ import {
   LUXON_YEAR_FORMAT_STRING,
   LUXON_YEAR_MONTH_FORMAT_STRING,
   UTC
-} from 'src/config/constants'
-import i18n from 'src/i18n'
-import {Column, Dataset, DatasetFiltersInput} from 'src/types/bi'
-import * as DatasetService from 'src/services/dataset'
-import {DatasetFieldInput, DatasetInput} from 'src/services/dataset'
+} from "src/config/constants"
+import i18n from "src/i18n"
+import {Column, Dataset, DatasetFiltersInput} from "src/types/bi"
+import * as DatasetService from "src/services/dataset"
+import {DatasetFieldInput, DatasetInput} from "src/services/dataset"
 
 interface DatasetData<T> extends DataWithPagination<T> {
   timeMs?: number
@@ -81,7 +81,7 @@ export const getColumns = ({
             luxonDisplayDateTimeFormatString
           }),
         size: _.isString(field.colWidth)
-          ? parseInt(field.colWidth.replace(/\D/g, ''))
+          ? parseInt(field.colWidth.replace(/\D/g, ""))
           : field.colWidth ?? defaultColWidth,
         enableSorting: field.type !== FieldType.text,
         enableColumnFilter: true
@@ -115,7 +115,7 @@ const renderCell = ({
     case FieldType.timestamp:
       return value ? DateTime.fromISO(value, {zone: UTC}).toFormat(luxonDisplayDateTimeFormatString) : null
     default:
-      throw new Error('Illegal attribute')
+      throw new Error("Illegal attribute")
   }
 }
 
@@ -183,7 +183,7 @@ function buildColumnFiltersInput(
   column: Column,
   filterValue: any
 ): DatasetFiltersInput<any> | PrimitiveFilterInput<any> {
-  if (column.hidden) throw Error('Illegal column.')
+  if (column.hidden) throw Error("Illegal column.")
 
   switch (column.type) {
     case FieldType.string:
@@ -197,9 +197,9 @@ function buildColumnFiltersInput(
       return {$eq: filterValue}
     case FieldType.bool:
       const lowerStrValue = (filterValue as string).toLowerCase()
-      if (lowerStrValue === '1' || lowerStrValue === 'true' || lowerStrValue === 'yes' || lowerStrValue === 'y')
+      if (lowerStrValue === "1" || lowerStrValue === "true" || lowerStrValue === "yes" || lowerStrValue === "y")
         return {$eq: true}
-      else if (lowerStrValue === '0' || lowerStrValue === 'false' || lowerStrValue === 'no' || lowerStrValue === 'n')
+      else if (lowerStrValue === "0" || lowerStrValue === "false" || lowerStrValue === "no" || lowerStrValue === "n")
         return {$eq: false}
       else break
     case FieldType.date:
@@ -212,123 +212,123 @@ function buildColumnFiltersInput(
       else if (column.format === FieldType.time) return buildTimeFilter(filterValue)
       else return buildDateTimeFilter(filterValue)
     default:
-      throw Error('Illegal column.')
+      throw Error("Illegal column.")
   }
 
-  throw new Error('Illegal column.')
+  throw new Error("Illegal column.")
 }
 
 function buildDateFilter(filterValue: string): PrimitiveFilterInput<string> {
   let dt = DateTime.fromFormat(filterValue, LUXON_DATE_FORMAT_STRING)
   if (dt.isValid) {
-    const endDt = dt.endOf('day')
+    const endDt = dt.endOf("day")
     return {$gte: dt.toISODate() as string, $lte: endDt.toISODate() as string}
   }
 
   dt = DateTime.fromFormat(filterValue, LUXON_STD_DATE_FORMAT_STRING)
   if (dt.isValid) {
-    const endDt = dt.endOf('day')
+    const endDt = dt.endOf("day")
     return {$gte: dt.toISODate() as string, $lte: endDt.toISODate() as string}
   }
 
   dt = DateTime.fromFormat(filterValue, LUXON_YEAR_MONTH_FORMAT_STRING)
   if (dt.isValid) {
-    const endDt = dt.endOf('month')
+    const endDt = dt.endOf("month")
     return {$gte: dt.toISODate() as string, $lte: endDt.toISODate() as string}
   }
 
   dt = DateTime.fromFormat(filterValue, LUXON_STD_YEAR_MONTH_FORMAT_STRING)
   if (dt.isValid) {
-    const endDt = dt.endOf('month')
+    const endDt = dt.endOf("month")
     return {$gte: dt.toISODate() as string, $lte: endDt.toISODate() as string}
   }
 
   dt = DateTime.fromFormat(filterValue, LUXON_YEAR_FORMAT_STRING)
   if (dt.isValid) {
-    const endDt = dt.endOf('year')
+    const endDt = dt.endOf("year")
     return {$gte: dt.toISODate() as string, $lte: endDt.toISODate() as string}
   }
 
-  throw new Error(i18n.t('Invalid filter format.'))
+  throw new Error(i18n.t("Invalid filter format."))
 }
 
 function buildTimeFilter(filterValue: string): PrimitiveFilterInput<string> {
   let dt = DateTime.fromFormat(filterValue, LUXON_TIME_FORMAT_STRING)
   if (dt.isValid) {
-    const endDt = dt.endOf('minute')
+    const endDt = dt.endOf("minute")
     return {$gte: dt.toISOTime() as string, $lte: endDt.toISOTime() as string}
   }
 
   dt = DateTime.fromFormat(filterValue, LUXON_HOURS_FORMAT_STRING)
   if (dt.isValid) {
-    const endDt = dt.endOf('hour')
+    const endDt = dt.endOf("hour")
     return {$gte: dt.toISOTime() as string, $lte: endDt.toISOTime() as string}
   }
 
-  throw new Error(i18n.t('Invalid filter format.'))
+  throw new Error(i18n.t("Invalid filter format."))
 }
 
 function buildDateTimeFilter(filterValue: string): PrimitiveFilterInput<string> {
   let dt = DateTime.fromFormat(filterValue, LUXON_DATETIME_FORMAT_STRING)
   if (dt.isValid) {
-    const endDt = dt.endOf('minute')
+    const endDt = dt.endOf("minute")
     return {$gte: dt.toISO() as string, $lte: endDt.toISO() as string}
   }
 
   dt = DateTime.fromFormat(filterValue, LUXON_STD_DATETIME_FORMAT_STRING)
   if (dt.isValid) {
-    const endDt = dt.endOf('minute')
+    const endDt = dt.endOf("minute")
     return {$gte: dt.toISO() as string, $lte: endDt.toISO() as string}
   }
 
   dt = DateTime.fromFormat(filterValue, LUXON_DATE_HOURS_FORMAT_STRING)
   if (dt.isValid) {
-    const endDt = dt.endOf('hour')
+    const endDt = dt.endOf("hour")
     return {$gte: dt.toISO() as string, $lte: endDt.toISO() as string}
   }
 
   dt = DateTime.fromFormat(filterValue, LUXON_STD_DATE_HOURS_FORMAT_STRING)
   if (dt.isValid) {
-    const endDt = dt.endOf('hour')
+    const endDt = dt.endOf("hour")
     return {$gte: dt.toISO() as string, $lte: endDt.toISO() as string}
   }
 
   dt = DateTime.fromFormat(filterValue, LUXON_DATE_FORMAT_STRING)
   if (dt.isValid) {
-    const endDt = dt.endOf('day')
+    const endDt = dt.endOf("day")
     return {$gte: dt.toISO() as string, $lte: endDt.toISO() as string}
   }
 
   dt = DateTime.fromFormat(filterValue, LUXON_STD_DATE_FORMAT_STRING)
   if (dt.isValid) {
-    const endDt = dt.endOf('day')
+    const endDt = dt.endOf("day")
     return {$gte: dt.toISO() as string, $lte: endDt.toISO() as string}
   }
 
   dt = DateTime.fromFormat(filterValue, LUXON_YEAR_MONTH_FORMAT_STRING)
   if (dt.isValid) {
-    const endDt = dt.endOf('month')
+    const endDt = dt.endOf("month")
     return {$gte: dt.toISO() as string, $lte: endDt.toISO() as string}
   }
 
   dt = DateTime.fromFormat(filterValue, LUXON_STD_YEAR_MONTH_FORMAT_STRING)
   if (dt.isValid) {
-    const endDt = dt.endOf('month')
+    const endDt = dt.endOf("month")
     return {$gte: dt.toISO() as string, $lte: endDt.toISO() as string}
   }
 
   dt = DateTime.fromFormat(filterValue, LUXON_YEAR_FORMAT_STRING)
   if (dt.isValid) {
-    const endDt = dt.endOf('year')
+    const endDt = dt.endOf("year")
     return {$gte: dt.toISO() as string, $lte: endDt.toISO() as string}
   }
 
-  throw new Error(i18n.t('Invalid filter format.'))
+  throw new Error(i18n.t("Invalid filter format."))
 }
 
 const buildSortInput = (sorting: SortingState): string[] =>
   sorting.map(sortItem => {
     const colName = sortItem.id
-    const dir = sortItem.desc ? 'desc' : 'asc'
+    const dir = sortItem.desc ? "desc" : "asc"
     return `${colName}:${dir}`
   })

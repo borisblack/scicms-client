@@ -1,14 +1,14 @@
-import {CSSProperties, MouseEvent} from 'react'
-import {flexRender, Row} from '@tanstack/react-table'
-import {CSS} from '@dnd-kit/utilities'
-import {useSortable} from '@dnd-kit/sortable'
-import {Dropdown, type MenuProps} from 'antd'
+import {CSSProperties, MouseEvent} from "react"
+import {flexRender, Row} from "@tanstack/react-table"
+import {CSS} from "@dnd-kit/utilities"
+import {useSortable} from "@dnd-kit/sortable"
+import {Dropdown, type MenuProps} from "antd"
 
-import styles from './DataGrid.module.css'
+import styles from "./DataGrid.module.css"
 
 interface DraggableRowProps<T> {
   row: Row<T>
-  getRowContextMenu?: (row: Row<T>) => MenuProps['items']
+  getRowContextMenu?: (row: Row<T>) => MenuProps["items"]
   onRowClick: (row: Row<T>, evt: MouseEvent<any>) => void
   onRowDoubleClick: (row: Row<T>) => void
 }
@@ -23,14 +23,14 @@ export function DraggableRow<T>({row, getRowContextMenu, onRowClick, onRowDouble
     transition: transition,
     opacity: isDragging ? 0.8 : 1,
     zIndex: isDragging ? 1 : 0,
-    position: 'relative'
+    position: "relative"
   }
 
   const rowContent = (
     <tr
       ref={setNodeRef}
       style={style}
-      className={`${styles.tr} ${row.getIsSelected() ? styles.selected : ''}`}
+      className={`${styles.tr} ${row.getIsSelected() ? styles.selected : ""}`}
       onClick={evt => onRowClick(row, evt)}
       onDoubleClick={() => onRowDoubleClick(row)}
     >
@@ -43,7 +43,7 @@ export function DraggableRow<T>({row, getRowContextMenu, onRowClick, onRowDouble
   )
 
   return getRowContextMenu ? (
-    <Dropdown menu={{items: getRowContextMenu(row)}} trigger={['contextMenu']}>
+    <Dropdown menu={{items: getRowContextMenu(row)}} trigger={["contextMenu"]}>
       {rowContent}
     </Dropdown>
   ) : (

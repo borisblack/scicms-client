@@ -1,9 +1,9 @@
-import {ACCESS_ITEM_NAME, MASK_ATTR_NAME} from 'src/config/constants'
-import {Access} from 'src/types/schema'
-import {Plugin} from '../Plugin'
-import {AccessMaskAttributeField} from './attributeFields'
+import {ACCESS_ITEM_NAME, MASK_ATTR_NAME} from "src/config/constants"
+import {Access} from "src/types/schema"
+import {Plugin} from "../Plugin"
+import {AccessMaskAttributeField} from "./attributeFields"
 
-const ACCESS_MASK_ATTRIBUTE_FIELD_ID = 'accessMask'
+const ACCESS_MASK_ATTRIBUTE_FIELD_ID = "accessMask"
 
 export class AccessPlugin extends Plugin<Access> {
   override onLoad(): void {
@@ -15,6 +15,6 @@ export class AccessPlugin extends Plugin<Access> {
   }
 
   override onUnload(): void {
-    throw new Error('Method not implemented.')
+    throw new Error("Method not implemented.")
   }
 }

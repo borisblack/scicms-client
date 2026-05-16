@@ -1,9 +1,9 @@
-import _ from 'lodash'
-import {useTranslation} from 'react-i18next'
-import {Button, Drawer, Form, Space} from 'antd'
+import _ from "lodash"
+import {useTranslation} from "react-i18next"
+import {Button, Drawer, Form, Space} from "antd"
 
-import {IText} from '../types/bi'
-import TextForm, {TextFormValues} from './TextForm/TextForm'
+import {IText} from "../types/bi"
+import TextForm, {TextFormValues} from "./TextForm/TextForm"
 
 interface TextFormModalProps {
   text: IText
@@ -30,14 +30,14 @@ export default function TextModal({text, canEdit, open, onChange, onClose}: Text
   return (
     <Drawer
       className="no-drag"
-      title={t('Text')}
+      title={t("Text")}
       open={open}
       destroyOnClose
       // width="70%"
       // onOk={() => form.submit()}
       extra={
         <Space>
-          <Button onClick={cancelEdit}>{t('Cancel')}</Button>
+          <Button onClick={cancelEdit}>{t("Cancel")}</Button>
           <Button disabled={!canEdit} type="primary" onClick={() => form.submit()}>
             OK
           </Button>

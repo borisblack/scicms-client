@@ -1,1 +1,1 @@
-export {MediaFileAttributeField} from './MediaFileAttributeField'
+export {MediaFileAttributeField} from "./MediaFileAttributeField"

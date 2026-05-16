@@ -1,9 +1,9 @@
-import React from 'react'
-import {useTranslation} from 'react-i18next'
-import {Form, Modal} from 'antd'
+import React from "react"
+import {useTranslation} from "react-i18next"
+import {Form, Modal} from "antd"
 
-import {JoinedTable, Table} from 'src/types/bi'
-import JoinedTableForm from './JoinedTableForm'
+import {JoinedTable, Table} from "src/types/bi"
+import JoinedTableForm from "./JoinedTableForm"
 
 interface JoinedTableModalProps {
   mainTable: Table
@@ -36,12 +36,12 @@ export default function JoinedTableModal({
 
   return (
     <Modal
-      title={t('Join')}
+      title={t("Join")}
       open={open}
       destroyOnClose
       width={800}
-      okButtonProps={{disabled: !canEdit, size: 'small'}}
-      cancelButtonProps={{size: 'small'}}
+      okButtonProps={{disabled: !canEdit, size: "small"}}
+      cancelButtonProps={{size: "small"}}
       onOk={() => form.submit()}
       onCancel={onClose}
     >

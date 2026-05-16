@@ -1,16 +1,16 @@
-import _ from 'lodash'
-import {useTranslation} from 'react-i18next'
-import {Button, Dropdown, Form, Space} from 'antd'
-import {ClearOutlined, DeleteOutlined, EditOutlined, SettingOutlined} from '@ant-design/icons'
-import {PageHeader} from '@ant-design/pro-layout'
+import _ from "lodash"
+import {useTranslation} from "react-i18next"
+import {Button, Dropdown, Form, Space} from "antd"
+import {ClearOutlined, DeleteOutlined, EditOutlined, SettingOutlined} from "@ant-design/icons"
+import {PageHeader} from "@ant-design/pro-layout"
 
-import {Dataset, IDash, ISelector, QueryOp} from 'src/types/bi'
-import {useAppProperties, useModal} from 'src/util/hooks'
-import SelectorModal from '../SelectorModal'
-import {ItemType} from 'antd/es/menu/hooks/useItems'
-import styles from './Selector.module.css'
-import SelectorValue, {SelectorValueFormValues} from './SelectorValue'
-import {fromFormSelectorFilter, toFormSelectorFilter} from '../util/util'
+import {Dataset, IDash, ISelector, QueryOp} from "src/types/bi"
+import {useAppProperties, useModal} from "src/util/hooks"
+import SelectorModal from "../SelectorModal"
+import {ItemType} from "antd/es/menu/hooks/useItems"
+import styles from "./Selector.module.css"
+import SelectorValue, {SelectorValueFormValues} from "./SelectorValue"
+import {fromFormSelectorFilter, toFormSelectorFilter} from "../util/util"
 
 interface SelectorProps {
   selector: ISelector
@@ -61,7 +61,7 @@ export default function Selector({
   }
 
   function handleSelectorClear() {
-    onChange(_.omit(selector, 'value'))
+    onChange(_.omit(selector, "value"))
   }
 
   const getSettingsMenuItems = (): ItemType[] => {
@@ -73,21 +73,21 @@ export default function Selector({
         //   type: 'divider'
         // },
         {
-          key: 'edit',
+          key: "edit",
           label: (
             <Space>
               <EditOutlined />
-              {t('Edit')}
+              {t("Edit")}
             </Space>
           ),
           onClick: handleSelectorModalOpen
         },
         {
-          key: 'delete',
+          key: "delete",
           label: (
             <Space>
               <DeleteOutlined className="red" />
-              {t('Delete')}
+              {t("Delete")}
             </Space>
           ),
           disabled: !canEdit,
@@ -111,16 +111,16 @@ export default function Selector({
             type="text"
             className={styles.toolbarBtn}
             icon={<ClearOutlined />}
-            title={t('Clear')}
+            title={t("Clear")}
             onClick={handleSelectorClear}
             onMouseDown={e => e.stopPropagation()}
           />,
-          <Dropdown key="settings" placement="bottomRight" trigger={['click']} menu={{items: getSettingsMenuItems()}}>
+          <Dropdown key="settings" placement="bottomRight" trigger={["click"]} menu={{items: getSettingsMenuItems()}}>
             <Button
               type="text"
               className={styles.toolbarBtn}
               icon={<SettingOutlined />}
-              title={t('Settings')}
+              title={t("Settings")}
               onMouseDown={e => e.stopPropagation()}
             />
           </Dropdown>
@@ -134,7 +134,7 @@ export default function Selector({
         initialValues={{selectorFilter: toFormSelectorFilter(selector, timeZone)}}
         onFinish={handleSelectorValueFormFinish}
       >
-        <SelectorValue namePrefix={['selectorFilter']} selector={selector} datasetMap={datasetMap} />
+        <SelectorValue namePrefix={["selectorFilter"]} selector={selector} datasetMap={datasetMap} />
       </Form>
 
       <SelectorModal

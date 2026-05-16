@@ -1,11 +1,11 @@
-import React from 'react'
-import {useTranslation} from 'react-i18next'
-import {Checkbox, Col, Form, Input, Popover, Row, Select, Space} from 'antd'
-import {QuestionCircleOutlined} from '@ant-design/icons'
-import {DashOptionsFormProps} from '..'
-import {legendPositions} from '../util'
-import RulesHelp from '../../../bi/RulesHelp'
-import styles from '../DashOptionForm.module.css'
+import React from "react"
+import {useTranslation} from "react-i18next"
+import {Checkbox, Col, Form, Input, Popover, Row, Select, Space} from "antd"
+import {QuestionCircleOutlined} from "@ant-design/icons"
+import {DashOptionsFormProps} from ".."
+import {legendPositions} from "../util"
+import RulesHelp from "../../../bi/RulesHelp"
+import styles from "../DashOptionForm.module.css"
 
 const {Item: FormItem} = Form
 const {TextArea} = Input
@@ -18,9 +18,9 @@ export default function AreaDashOptionsForm({fieldName, values}: DashOptionsForm
       <Col span={6}>
         <FormItem
           className={styles.formItem}
-          name={[fieldName, 'legendPosition']}
-          label={t('Legend position')}
-          initialValue={values.legendPosition ?? 'top-left'}
+          name={[fieldName, "legendPosition"]}
+          label={t("Legend position")}
+          initialValue={values.legendPosition ?? "top-left"}
         >
           <Select allowClear options={legendPositions.map(p => ({value: p, label: p}))} />
         </FormItem>
@@ -29,32 +29,32 @@ export default function AreaDashOptionsForm({fieldName, values}: DashOptionsForm
       <Col span={6}>
         <FormItem
           className={styles.formItem}
-          name={[fieldName, 'hideLegend']}
+          name={[fieldName, "hideLegend"]}
           valuePropName="checked"
           initialValue={values.hideLegend}
         >
-          <Checkbox style={{marginTop: 24}}>{t('Hide legend')}</Checkbox>
+          <Checkbox style={{marginTop: 24}}>{t("Hide legend")}</Checkbox>
         </FormItem>
       </Col>
 
       <Col span={6}>
         <FormItem
           className={styles.formItem}
-          name={[fieldName, 'xAxisLabelAutoRotate']}
+          name={[fieldName, "xAxisLabelAutoRotate"]}
           valuePropName="checked"
           initialValue={values.xAxisLabelAutoRotate}
         >
-          <Checkbox style={{marginTop: 24}}>{t('Auto rotate x-axis label')}</Checkbox>
+          <Checkbox style={{marginTop: 24}}>{t("Auto rotate x-axis label")}</Checkbox>
         </FormItem>
       </Col>
 
       <Col span={12}>
         <FormItem
           className={styles.formItem}
-          name={[fieldName, 'rules']}
+          name={[fieldName, "rules"]}
           label={
             <Space>
-              {t('Rules')}
+              {t("Rules")}
               <Popover
                 arrow={false}
                 placement="bottom"

@@ -1,6 +1,6 @@
-import React, {FC} from 'react'
-import {useTranslation} from 'react-i18next'
-import styles from './TaskListHeader.module.css'
+import React, {FC} from "react"
+import {useTranslation} from "react-i18next"
+import styles from "./TaskListHeader.module.css"
 
 interface TaskListHeaderProps {
   headerHeight: number
@@ -32,7 +32,7 @@ const TaskListHeader: FC<TaskListHeaderProps> = ({headerHeight, fontFamily, font
             minWidth: rowWidth
           }}
         >
-          &nbsp;{t('Name')}
+          &nbsp;{t("Name")}
         </div>
         <div
           className={styles.ganttTable_HeaderSeparator}
@@ -47,7 +47,7 @@ const TaskListHeader: FC<TaskListHeaderProps> = ({headerHeight, fontFamily, font
             minWidth: rowWidth
           }}
         >
-          &nbsp;{t('Start')}
+          &nbsp;{t("Start")}
         </div>
         <div
           className={styles.ganttTable_HeaderSeparator}
@@ -62,7 +62,7 @@ const TaskListHeader: FC<TaskListHeaderProps> = ({headerHeight, fontFamily, font
             minWidth: rowWidth
           }}
         >
-          &nbsp;{t('End')}
+          &nbsp;{t("End")}
         </div>
       </div>
     </div>

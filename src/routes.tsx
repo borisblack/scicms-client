@@ -1,27 +1,27 @@
-import App from './pages/app/App'
-import Bi from './pages/bi/Bi'
-import Login from './features/auth/Login'
-import {RouteObject} from 'react-router-dom'
-import ErrorFallback from './pages/error/ErrorFallback'
+import App from "./pages/app/App"
+import Bi from "./pages/bi/Bi"
+import Login from "./features/auth/Login"
+import {RouteObject} from "react-router-dom"
+import ErrorFallback from "./pages/error/ErrorFallback"
 
 const routes: RouteObject[] = [
   {
-    path: '/',
+    path: "/",
     element: <App />,
     errorElement: <ErrorFallback />
   },
   {
-    path: '/bi',
+    path: "/bi",
     element: <Bi />,
     errorElement: <ErrorFallback />
   },
   {
-    path: '/login',
+    path: "/login",
     element: <Login />,
     errorElement: <ErrorFallback />
   },
   {
-    path: '/auth/oauth2/:provider',
+    path: "/auth/oauth2/:provider",
     element: <Login />,
     errorElement: <ErrorFallback />
   }

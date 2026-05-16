@@ -1,8 +1,8 @@
-import _ from 'lodash'
-import {notification} from 'antd'
+import _ from "lodash"
+import {notification} from "antd"
 
-import i18n from '../i18n'
-import {clientConfig} from 'src/config'
+import i18n from "../i18n"
+import {clientConfig} from "src/config"
 
 export function tryParseJson(value: any): boolean {
   try {
@@ -33,11 +33,11 @@ export function copyToClipboard(text: string, notify: boolean = true) {
   navigator.clipboard.writeText(text).then(() => {
     if (notify) {
       notification.info({
-        message: i18n.t('Copied to clipboard') as string,
+        message: i18n.t("Copied to clipboard") as string,
         description: text
       })
     }
   })
 }
 
-export const extractSessionData = () => JSON.parse(localStorage.getItem('sessionData') ?? '{}')
+export const extractSessionData = () => JSON.parse(localStorage.getItem("sessionData") ?? "{}")

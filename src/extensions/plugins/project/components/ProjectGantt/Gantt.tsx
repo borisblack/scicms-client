@@ -1,1 +1,1 @@
-export {Gantt as default} from 'gantt-task-react'
+export {Gantt as default} from "gantt-task-react"

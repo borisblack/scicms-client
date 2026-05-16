@@ -1,14 +1,14 @@
-import {FC, useCallback, useMemo} from 'react'
-import {Checkbox, DatePicker, Form} from 'antd'
-import {useTranslation} from 'react-i18next'
-import dayjs, {Dayjs} from 'dayjs'
-import timezone from 'dayjs/plugin/timezone'
-import {AttributeFieldProps} from '.'
-import {FieldType} from 'src/types'
-import styles from './AttributeField.module.css'
-import {UTC} from 'src/config/constants'
-import {generateKey} from 'src/util/mdi'
-import {useAppProperties} from 'src/util/hooks'
+import {FC, useCallback, useMemo} from "react"
+import {Checkbox, DatePicker, Form} from "antd"
+import {useTranslation} from "react-i18next"
+import dayjs, {Dayjs} from "dayjs"
+import timezone from "dayjs/plugin/timezone"
+import {AttributeFieldProps} from "."
+import {FieldType} from "src/types"
+import styles from "./AttributeField.module.css"
+import {UTC} from "src/config/constants"
+import {generateKey} from "src/util/mdi"
+import {useAppProperties} from "src/util/hooks"
 
 dayjs.extend(timezone)
 
@@ -19,7 +19,7 @@ const DateTimeAttributeField: FC<AttributeFieldProps> = ({itemTab: dataWrapper, 
   const {momentDisplayDateTimeFormatString} = appProps.dateTime
 
   if (attribute.type !== FieldType.datetime && attribute.type !== FieldType.timestamp)
-    throw new Error('Illegal attribute')
+    throw new Error("Illegal attribute")
 
   const uniqueKey = generateKey(dataWrapper)
   const {t} = useTranslation()
@@ -47,11 +47,11 @@ const DateTimeAttributeField: FC<AttributeFieldProps> = ({itemTab: dataWrapper, 
         hidden={attribute.fieldHidden}
         initialValue={parseValue(value) ?? parseValue(attribute.defaultValue)}
         getValueFromEvent={getValueFromEvent}
-        rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
+        rules={[{required: attribute.required && !attribute.readOnly, message: t("Required field")}]}
       >
         <DatePicker
           id={`${uniqueKey}#${attrName}`}
-          style={{width: '100%'}}
+          style={{width: "100%"}}
           showTime
           showSecond={false}
           format={momentDisplayDateTimeFormatString}

@@ -1,6 +1,6 @@
-import {useState} from 'react'
-import {HorizontalPanelProps} from '.'
-import styles from './TopPanel.module.css'
+import {useState} from "react"
+import {HorizontalPanelProps} from "."
+import styles from "./TopPanel.module.css"
 
 export default function TopPanel({
   title,

@@ -1,12 +1,12 @@
-import {FC, useMemo} from 'react'
-import {Form, Select} from 'antd'
-import {useTranslation} from 'react-i18next'
+import {FC, useMemo} from "react"
+import {Form, Select} from "antd"
+import {useTranslation} from "react-i18next"
 
-import {FieldType} from 'src/types'
-import {CustomAttributeFieldContext} from '../../types'
-import FieldTypeIcon from 'src/components/FieldTypeIcon/FieldTypeIcon'
-import {PropertyType} from 'src/types/schema'
-import styles from 'src/pages/app/attributeFields/AttributeField.module.css'
+import {FieldType} from "src/types"
+import {CustomAttributeFieldContext} from "../../types"
+import FieldTypeIcon from "src/components/FieldTypeIcon/FieldTypeIcon"
+import {PropertyType} from "src/types/schema"
+import styles from "src/pages/app/attributeFields/AttributeField.module.css"
 
 const FormItem = Form.Item
 
@@ -46,7 +46,7 @@ export const PropertyTypeAttributeField: FC<CustomAttributeFieldContext> = ({
   }, [isDisabled])
 
   function handleChange(val: string) {
-    form.setFieldValue('value', undefined)
+    form.setFieldValue("value", undefined)
     onChange(val)
   }
 
@@ -57,7 +57,7 @@ export const PropertyTypeAttributeField: FC<CustomAttributeFieldContext> = ({
       label={t(attribute.displayName)}
       hidden={attribute.fieldHidden}
       initialValue={value ?? attribute.defaultValue}
-      rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
+      rules={[{required: attribute.required && !attribute.readOnly, message: t("Required field")}]}
     >
       <Select
         options={propertyTypes.sort().map(pt => ({

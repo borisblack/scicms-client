@@ -1,1 +1,1 @@
-export {ProjectGantt} from './ProjectGantt/ProjectGantt'
+export {ProjectGantt} from "./ProjectGantt/ProjectGantt"

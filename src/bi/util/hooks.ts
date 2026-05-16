@@ -1,15 +1,15 @@
-import _ from 'lodash'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import _ from "lodash"
+import {useCallback, useEffect, useMemo, useState} from "react"
 
-import * as DatasetService from 'src/services/dataset'
-import * as DashboardService from 'src/services/dashboard'
-import * as DashboardCategoryService from 'src/services/dashboard-category'
-import {useItemOperations, useRegistry} from 'src/util/hooks'
-import {DASHBOARD_ITEM_NAME, DATASET_ITEM_NAME} from 'src/config/constants'
-import {Dashboard, DashboardCategory, Dataset, ISelector, QueryFilter, SelectorLinkType} from 'src/types/bi'
-import {SelectorFilter} from '../../types/bi'
-import {BiConfig} from 'src/config/bi'
-import {getBiProperties} from 'src/config/util'
+import * as DatasetService from "src/services/dataset"
+import * as DashboardService from "src/services/dashboard"
+import * as DashboardCategoryService from "src/services/dashboard-category"
+import {useItemOperations, useRegistry} from "src/util/hooks"
+import {DASHBOARD_ITEM_NAME, DATASET_ITEM_NAME} from "src/config/constants"
+import {Dashboard, DashboardCategory, Dataset, ISelector, QueryFilter, SelectorLinkType} from "src/types/bi"
+import {SelectorFilter} from "../../types/bi"
+import {BiConfig} from "src/config/bi"
+import {getBiProperties} from "src/config/util"
 
 interface UseBIDataProps {
   withDatasets?: boolean

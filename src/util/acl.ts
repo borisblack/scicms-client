@@ -1,8 +1,8 @@
-import {DateTime} from 'luxon'
-import {UserInfo} from '../types'
-import {Permission} from '../types/schema'
-import {getBit} from '.'
-import {UTC} from 'src/config/constants'
+import {DateTime} from "luxon"
+import {UserInfo} from "../types"
+import {Permission} from "../types/schema"
+import {getBit} from "."
+import {UTC} from "src/config/constants"
 
 function hasAccess(user: UserInfo | null, permission: Permission, bit: number): boolean {
   if (user == null) return false

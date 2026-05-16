@@ -1,10 +1,10 @@
-import {ItemData} from 'src/types/schema'
-import {Plugin} from '../Plugin'
+import {ItemData} from "src/types/schema"
+import {Plugin} from "../Plugin"
 
 export class HiPlugin extends Plugin<ItemData> {
   override onLoad(): void {
     this.addRenderer({
-      mountPoint: 'itemTemplate.view.footer',
+      mountPoint: "itemTemplate.view.footer",
       render: ({node, context}) => {
         node.innerHTML = `Hi ${context.item.displayName} from plugin!`
       }
@@ -12,6 +12,6 @@ export class HiPlugin extends Plugin<ItemData> {
   }
 
   override onUnload(): void {
-    throw new Error('Method not implemented.')
+    throw new Error("Method not implemented.")
   }
 }

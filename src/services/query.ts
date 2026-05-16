@@ -1,12 +1,12 @@
-import _ from 'lodash'
-import {DateTime} from 'luxon'
-import {gql} from '@apollo/client'
-import {ColumnFiltersState, SortingState} from '@tanstack/react-table'
+import _ from "lodash"
+import {DateTime} from "luxon"
+import {gql} from "@apollo/client"
+import {ColumnFiltersState, SortingState} from "@tanstack/react-table"
 
-import i18n from '../i18n'
-import {apolloClient, extractGraphQLErrorMessages} from './index'
-import {FieldType} from '../types'
-import {Attribute, Item, ItemData, RelType, Response, ResponseCollection} from '../types/schema'
+import i18n from "../i18n"
+import {apolloClient, extractGraphQLErrorMessages} from "./index"
+import {FieldType} from "../types"
+import {Attribute, Item, ItemData, RelType, Response, ResponseCollection} from "../types/schema"
 
 import {
   LUXON_DATE_FORMAT_STRING,
@@ -21,9 +21,9 @@ import {
   LUXON_YEAR_FORMAT_STRING,
   LUXON_YEAR_MONTH_FORMAT_STRING,
   MEDIA_ITEM_NAME
-} from '../config/constants'
-import {RequestParams} from '../uiKit/DataGrid/DataGrid'
-import ItemManager, {ItemMap} from './item'
+} from "../config/constants"
+import {RequestParams} from "../uiKit/DataGrid/DataGrid"
+import ItemManager, {ItemMap} from "./item"
 
 export interface ExtRequestParams extends RequestParams {
   majorRev?: string | null
@@ -69,120 +69,120 @@ const SORT_ATTR_PATTERN = /^(\w+)\.?(\w+)?$/
 function buildDateFilter(filterValue: string): ItemFilterInput<ItemData, string> {
   let dt = DateTime.fromFormat(filterValue, LUXON_DATE_FORMAT_STRING)
   if (dt.isValid) {
-    const endDt = dt.endOf('day')
+    const endDt = dt.endOf("day")
     return {gte: dt.toISODate(), lte: endDt.toISODate()}
   }
 
   dt = DateTime.fromFormat(filterValue, LUXON_STD_DATE_FORMAT_STRING)
   if (dt.isValid) {
-    const endDt = dt.endOf('day')
+    const endDt = dt.endOf("day")
     return {gte: dt.toISODate(), lte: endDt.toISODate()}
   }
 
   dt = DateTime.fromFormat(filterValue, LUXON_YEAR_MONTH_FORMAT_STRING)
   if (dt.isValid) {
-    const endDt = dt.endOf('month')
+    const endDt = dt.endOf("month")
     return {gte: dt.toISODate(), lte: endDt.toISODate()}
   }
 
   dt = DateTime.fromFormat(filterValue, LUXON_STD_YEAR_MONTH_FORMAT_STRING)
   if (dt.isValid) {
-    const endDt = dt.endOf('month')
+    const endDt = dt.endOf("month")
     return {gte: dt.toISODate(), lte: endDt.toISODate()}
   }
 
   dt = DateTime.fromFormat(filterValue, LUXON_YEAR_FORMAT_STRING)
   if (dt.isValid) {
-    const endDt = dt.endOf('year')
+    const endDt = dt.endOf("year")
     return {gte: dt.toISODate(), lte: endDt.toISODate()}
   }
 
-  throw new Error(i18n.t('Invalid filter format.'))
+  throw new Error(i18n.t("Invalid filter format."))
 }
 
 function buildTimeFilter(filterValue: string): ItemFilterInput<ItemData, string> {
   let dt = DateTime.fromFormat(filterValue, LUXON_TIME_FORMAT_STRING)
   if (dt.isValid) {
-    const endDt = dt.endOf('minute')
+    const endDt = dt.endOf("minute")
     return {gte: dt.toISOTime(), lte: endDt.toISOTime()}
   }
 
   dt = DateTime.fromFormat(filterValue, LUXON_HOURS_FORMAT_STRING)
   if (dt.isValid) {
-    const endDt = dt.endOf('hour')
+    const endDt = dt.endOf("hour")
     return {gte: dt.toISOTime(), lte: endDt.toISOTime()}
   }
 
-  throw new Error(i18n.t('Invalid filter format.'))
+  throw new Error(i18n.t("Invalid filter format."))
 }
 
 function buildDateTimeFilter(filterValue: string): ItemFilterInput<ItemData, string> {
   let dt = DateTime.fromFormat(filterValue, LUXON_DATETIME_FORMAT_STRING)
   if (dt.isValid) {
-    const endDt = dt.endOf('minute')
+    const endDt = dt.endOf("minute")
     return {gte: dt.toISO(), lte: endDt.toISO()}
   }
 
   dt = DateTime.fromFormat(filterValue, LUXON_STD_DATETIME_FORMAT_STRING)
   if (dt.isValid) {
-    const endDt = dt.endOf('minute')
+    const endDt = dt.endOf("minute")
     return {gte: dt.toISO(), lte: endDt.toISO()}
   }
 
   dt = DateTime.fromFormat(filterValue, LUXON_DATE_HOURS_FORMAT_STRING)
   if (dt.isValid) {
-    const endDt = dt.endOf('hour')
+    const endDt = dt.endOf("hour")
     return {gte: dt.toISO(), lte: endDt.toISO()}
   }
 
   dt = DateTime.fromFormat(filterValue, LUXON_STD_DATE_HOURS_FORMAT_STRING)
   if (dt.isValid) {
-    const endDt = dt.endOf('hour')
+    const endDt = dt.endOf("hour")
     return {gte: dt.toISO(), lte: endDt.toISO()}
   }
 
   dt = DateTime.fromFormat(filterValue, LUXON_DATE_FORMAT_STRING)
   if (dt.isValid) {
-    const endDt = dt.endOf('day')
+    const endDt = dt.endOf("day")
     return {gte: dt.toISO(), lte: endDt.toISO()}
   }
 
   dt = DateTime.fromFormat(filterValue, LUXON_STD_DATE_FORMAT_STRING)
   if (dt.isValid) {
-    const endDt = dt.endOf('day')
+    const endDt = dt.endOf("day")
     return {gte: dt.toISO(), lte: endDt.toISO()}
   }
 
   dt = DateTime.fromFormat(filterValue, LUXON_YEAR_MONTH_FORMAT_STRING)
   if (dt.isValid) {
-    const endDt = dt.endOf('month')
+    const endDt = dt.endOf("month")
     return {gte: dt.toISO(), lte: endDt.toISO()}
   }
 
   dt = DateTime.fromFormat(filterValue, LUXON_STD_YEAR_MONTH_FORMAT_STRING)
   if (dt.isValid) {
-    const endDt = dt.endOf('month')
+    const endDt = dt.endOf("month")
     return {gte: dt.toISO(), lte: endDt.toISO()}
   }
 
   dt = DateTime.fromFormat(filterValue, LUXON_YEAR_FORMAT_STRING)
   if (dt.isValid) {
-    const endDt = dt.endOf('year')
+    const endDt = dt.endOf("year")
     return {gte: dt.toISO(), lte: endDt.toISO()}
   }
 
-  throw new Error(i18n.t('Invalid filter format.'))
+  throw new Error(i18n.t("Invalid filter format."))
 }
 
 function attributePathToGraphQl(attributePath: string): string {
-  const tokens = attributePath.split('.')
+  const tokens = attributePath.split(".")
   if (tokens.length === 1) return attributePath
 
-  return tokens.join(' { ') + ' }'.repeat(tokens.length - 1)
+  return tokens.join(" { ") + " }".repeat(tokens.length - 1)
 }
 
 function getAttribute(data: ItemData, attributePath: string): any {
-  const tokens = attributePath.split('.')
+  const tokens = attributePath.split(".")
   if (tokens.length === 1) return data[attributePath]
 
   return tokens.reduce((obj, s) => (obj ?? {})[s], data)
@@ -201,7 +201,7 @@ export default class QueryManager {
     const res = await apolloClient.query({query, variables: {id}})
     if (res.errors) {
       console.error(extractGraphQLErrorMessages(res.errors))
-      throw new Error(i18n.t('An error occurred while executing the request.'))
+      throw new Error(i18n.t("An error occurred while executing the request."))
     }
 
     return res.data[item.name]
@@ -211,7 +211,7 @@ export default class QueryManager {
         query find${_.upperFirst(item.name)}($id: ID!) {
             ${item.name}(id: $id) {
                 data {
-                    ${this.itemManager.listNonCollectionAttributes(item).join('\n')}
+                    ${this.itemManager.listNonCollectionAttributes(item).join("\n")}
                 }
             }
         }
@@ -243,7 +243,7 @@ export default class QueryManager {
     const res = await apolloClient.query({query, variables})
     if (res.errors) {
       console.error(extractGraphQLErrorMessages(res.errors))
-      throw new Error(i18n.t('An error occurred while executing the request.'))
+      throw new Error(i18n.t("An error occurred while executing the request."))
     }
 
     const responseCollection = res.data[item.pluralName] as ResponseCollection<ItemData>
@@ -268,7 +268,7 @@ export default class QueryManager {
 
       const attrName = matchRes[1]
       const nestedAttrName = matchRes[2]
-      const dir = it.desc ? 'desc' : 'asc'
+      const dir = it.desc ? "desc" : "asc"
       if (nestedAttrName == null) {
         const attr = item.spec.attributes[attrName]
         switch (attr.type) {
@@ -291,20 +291,20 @@ export default class QueryManager {
             $sort: [String]
             $filters: ${_.upperFirst(item.name)}FiltersInput
             $pagination: PaginationInput
-            ${item.versioned ? '$majorRev: String' : ''}
-            ${item.localized ? '$locale: String' : ''}
-            ${state ? '$state: String' : ''}
+            ${item.versioned ? "$majorRev: String" : ""}
+            ${item.localized ? "$locale: String" : ""}
+            ${state ? "$state: String" : ""}
         ) {
             ${item.pluralName}(
                 sort: $sort
                 filters: $filters
                 pagination: $pagination,
-                ${item.versioned ? 'majorRev: $majorRev' : ''}
-                ${item.localized ? 'locale: $locale' : ''}
-                ${state ? 'state: $state' : ''}
+                ${item.versioned ? "majorRev: $majorRev" : ""}
+                ${item.localized ? "locale: $locale" : ""}
+                ${state ? "state: $state" : ""}
             ) {
                 data {
-                    ${this.itemManager.listNonCollectionAttributes(item, attributesOverride).join('\n')}
+                    ${this.itemManager.listNonCollectionAttributes(item, attributesOverride).join("\n")}
                 }
                 meta {
                     pagination {
@@ -338,7 +338,7 @@ export default class QueryManager {
     const res = await apolloClient.query({query, variables})
     if (res.errors) {
       console.error(extractGraphQLErrorMessages(res.errors))
-      throw new Error(i18n.t('An error occurred while executing the request.'))
+      throw new Error(i18n.t("An error occurred while executing the request."))
     }
 
     return res.data[item.name].data[relAttrName]
@@ -365,7 +365,7 @@ export default class QueryManager {
               pagination: $pagination
             ) {
               data {
-                ${this.itemManager.listNonCollectionAttributes(target).join('\n')}
+                ${this.itemManager.listNonCollectionAttributes(target).join("\n")}
               }
               meta {
                 pagination {
@@ -407,7 +407,7 @@ export default class QueryManager {
       attr.private ||
       (attr.type === FieldType.relation && (attr.relType === RelType.oneToMany || attr.relType === RelType.manyToMany))
     )
-      throw Error('Illegal attribute.')
+      throw Error("Illegal attribute.")
 
     switch (attr.type) {
       case FieldType.string:
@@ -428,9 +428,9 @@ export default class QueryManager {
         return {eq: filterValue}
       case FieldType.bool:
         const lowerStrValue = (filterValue as string).toLowerCase()
-        if (lowerStrValue === '1' || lowerStrValue === 'true' || lowerStrValue === 'yes' || lowerStrValue === 'y')
+        if (lowerStrValue === "1" || lowerStrValue === "true" || lowerStrValue === "yes" || lowerStrValue === "y")
           return {eq: true}
-        else if (lowerStrValue === '0' || lowerStrValue === 'false' || lowerStrValue === 'no' || lowerStrValue === 'n')
+        else if (lowerStrValue === "0" || lowerStrValue === "false" || lowerStrValue === "no" || lowerStrValue === "n")
           return {eq: false}
         else break
       case FieldType.date:
@@ -443,7 +443,7 @@ export default class QueryManager {
       case FieldType.media:
         return {filename: {containsi: filterValue}}
       case FieldType.relation:
-        if (!attr.target) throw new Error('Illegal attribute.')
+        if (!attr.target) throw new Error("Illegal attribute.")
 
         const subItem = this.items[attr.target]
         const {titleAttribute} = subItem
@@ -451,10 +451,10 @@ export default class QueryManager {
           [titleAttribute]: this.buildAttributeFiltersInput(subItem.spec.attributes[titleAttribute], filterValue)
         }
       default:
-        throw Error('Illegal attribute.')
+        throw Error("Illegal attribute.")
     }
 
-    throw new Error('Illegal attribute.')
+    throw new Error("Illegal attribute.")
   }
 
   findAllBy = async (item: Item, filtersInput: ItemFiltersInput<ItemData>): Promise<ItemData[]> => {
@@ -462,7 +462,7 @@ export default class QueryManager {
     const res = await apolloClient.query({query, variables: {filters: filtersInput}})
     if (res.errors) {
       console.error(extractGraphQLErrorMessages(res.errors))
-      throw new Error(i18n.t('An error occurred while executing the request.'))
+      throw new Error(i18n.t("An error occurred while executing the request."))
     }
 
     return res.data[item.pluralName].data
@@ -474,7 +474,7 @@ export default class QueryManager {
                 filters: $filters
             ) {
                 data {
-                    ${this.itemManager.listNonCollectionAttributes(item).join('\n')}
+                    ${this.itemManager.listNonCollectionAttributes(item).join("\n")}
                 }
             }
         }
@@ -490,11 +490,11 @@ export default class QueryManager {
     const res = await apolloClient.query({query, variables: {configId, majorRev, locale}})
     if (res.errors) {
       console.error(extractGraphQLErrorMessages(res.errors))
-      throw new Error(i18n.t('An error occurred while executing the request.'))
+      throw new Error(i18n.t("An error occurred while executing the request."))
     }
     const data = res.data[item.pluralName].data as ItemData[]
     if (data.length > 1) {
-      throw new Error('The localization request returned more than one record.')
+      throw new Error("The localization request returned more than one record.")
     }
 
     return data.length === 1 ? data[0] : null
@@ -512,7 +512,7 @@ export default class QueryManager {
                 }
             ) {
                 data {
-                    ${this.itemManager.listNonCollectionAttributes(item).join('\n')}
+                    ${this.itemManager.listNonCollectionAttributes(item).join("\n")}
                 }
             }
         }

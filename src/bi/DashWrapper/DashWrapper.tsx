@@ -1,8 +1,8 @@
-import _ from 'lodash'
-import React, {useEffect, useMemo, useState} from 'react'
-import {Button, Dropdown, Empty, notification, Space, Spin} from 'antd'
-import {PageHeader} from '@ant-design/pro-layout'
-import {useTranslation} from 'react-i18next'
+import _ from "lodash"
+import React, {useEffect, useMemo, useState} from "react"
+import {Button, Dropdown, Empty, notification, Space, Spin} from "antd"
+import {PageHeader} from "@ant-design/pro-layout"
+import {useTranslation} from "react-i18next"
 import {
   DeleteOutlined,
   EditOutlined,
@@ -14,18 +14,18 @@ import {
   ReloadOutlined,
   SettingOutlined,
   SyncOutlined
-} from '@ant-design/icons'
+} from "@ant-design/icons"
 
-import FullScreen from 'src/uiKit/FullScreen'
-import * as DatasetService from 'src/services/dataset'
+import FullScreen from "src/uiKit/FullScreen"
+import * as DatasetService from "src/services/dataset"
 import {
   getActualFilters,
   printQueryBlock,
   toDatasetFiltersInput,
   toSingleDatasetFiltersInput,
   toSingleSelectorFiltersInput
-} from '../util/util'
-import {Dash, getDash} from 'src/extensions/dashes'
+} from "../util/util"
+import {Dash, getDash} from "src/extensions/dashes"
 import {
   Column,
   Dashboard,
@@ -36,16 +36,16 @@ import {
   IDash,
   QueryBlock,
   SelectorFilter
-} from 'src/types/bi'
-import {ItemType} from 'antd/es/menu/hooks/useItems'
-import FiltersModal from '../FiltersModal'
-import DashModal from '../DashModal'
-import {useAppProperties, useModal, usePrevious} from 'src/util/hooks'
-import {buildFieldsInput} from '../util/datagrid'
-import ExecutionStatisticModal from '../ExecutionStatisticModal'
-import {useBiProperties} from '../util/hooks'
-import styles from './DashWrapper.module.css'
-import './DashWrapper.css'
+} from "src/types/bi"
+import {ItemType} from "antd/es/menu/hooks/useItems"
+import FiltersModal from "../FiltersModal"
+import DashModal from "../DashModal"
+import {useAppProperties, useModal, usePrevious} from "src/util/hooks"
+import {buildFieldsInput} from "../util/datagrid"
+import ExecutionStatisticModal from "../ExecutionStatisticModal"
+import {useBiProperties} from "../util/hooks"
+import styles from "./DashWrapper.module.css"
+import "./DashWrapper.css"
 
 export interface DashWrapperProps {
   pageKey: string
@@ -91,7 +91,7 @@ function DashWrapper(props: DashWrapperProps) {
   } = props
   const dashHandler: Dash | undefined = useMemo(() => getDash(dash.type), [dash.type])
 
-  if (dashHandler == null) throw new Error('Illegal argument')
+  if (dashHandler == null) throw new Error("Illegal argument")
 
   if (!dash.id) throw new Error(`Dash [${dash.name}] has no ID`)
 
@@ -168,7 +168,7 @@ function DashWrapper(props: DashWrapperProps) {
     const allFields = {...datasetFields, ...dash.fields}
     const sortFieldNames: string[] = (
       dash.sortField ? (Array.isArray(dash.sortField) ? dash.sortField : [dash.sortField]) : []
-    ).map(sf => (sf.includes(':') ? sf.substring(0, sf.indexOf(':')) : sf))
+    ).map(sf => (sf.includes(":") ? sf.substring(0, sf.indexOf(":")) : sf))
     const fieldNamesToFetch: Set<string> = new Set(sortFieldNames)
     for (const axis of dashHandler.axes) {
       const axisValue: string | string[] | undefined = dash.optValues[axis.name]
@@ -202,7 +202,7 @@ function DashWrapper(props: DashWrapperProps) {
     } catch (e: any) {
       setFetchError(e.message)
       notification.error({
-        message: t('Loading error'),
+        message: t("Loading error"),
         description: e.message
       })
     } finally {
@@ -227,7 +227,7 @@ function DashWrapper(props: DashWrapperProps) {
     closeDashModal()
   }
 
-  const renderTitle = () => dash.name + (dash.unit ? `, ${dash.unit}` : '')
+  const renderTitle = () => dash.name + (dash.unit ? `, ${dash.unit}` : "")
 
   const renderSubTitle = () => {
     const queryBlock = dataset
@@ -239,7 +239,7 @@ function DashWrapper(props: DashWrapperProps) {
           dateTimeFormatString,
           timezone: timeZone
         })
-      : ''
+      : ""
 
     return (
       <div className={styles.subTitle} title={queryBlock}>
@@ -253,11 +253,11 @@ function DashWrapper(props: DashWrapperProps) {
 
     if (dataset) {
       menuItems.push({
-        key: 'filters',
+        key: "filters",
         label: (
           <Space>
             <FilterOutlined />
-            {t('Filters')}
+            {t("Filters")}
           </Space>
         ),
         onClick: showFiltersModal
@@ -267,35 +267,35 @@ function DashWrapper(props: DashWrapperProps) {
     if (!readOnly) {
       if (dataset) {
         menuItems.push({
-          key: 'statistic',
+          key: "statistic",
           label: (
             <Space>
               <FieldTimeOutlined />
-              {t('Execution statistic')}
+              {t("Execution statistic")}
             </Space>
           ),
           onClick: showStatisticModal
         })
       }
 
-      menuItems.push({type: 'divider'})
+      menuItems.push({type: "divider"})
       menuItems.push({
-        key: 'edit',
+        key: "edit",
         label: (
           <Space>
             <EditOutlined />
-            {t('Edit')}
+            {t("Edit")}
           </Space>
         ),
         // disabled: !canEdit,
         onClick: handleDashModalOpen
       })
       menuItems.push({
-        key: 'delete',
+        key: "delete",
         label: (
           <Space>
             <DeleteOutlined className="red" />
-            {t('Delete')}
+            {t("Delete")}
           </Space>
         ),
         disabled: !canEdit,
@@ -341,16 +341,16 @@ function DashWrapper(props: DashWrapperProps) {
               type="text"
               className={styles.toolbarBtn}
               icon={<ReloadOutlined />}
-              title={t('Refresh')}
+              title={t("Refresh")}
               onClick={() => fetchDatasetData()}
               onMouseDown={e => e.stopPropagation()}
             />,
-            <Dropdown key="settings" placement="bottomRight" trigger={['click']} menu={{items: getSettingsMenuItems()}}>
+            <Dropdown key="settings" placement="bottomRight" trigger={["click"]} menu={{items: getSettingsMenuItems()}}>
               <Button
                 type="text"
                 className={styles.toolbarBtn}
                 icon={<SettingOutlined />}
-                title={t('Settings')}
+                title={t("Settings")}
                 onMouseDown={e => e.stopPropagation()}
               />
             </Dropdown>,
@@ -360,7 +360,7 @@ function DashWrapper(props: DashWrapperProps) {
                 type="text"
                 className={styles.toolbarBtn}
                 icon={<FullscreenExitOutlined />}
-                title={t('Exit full screen')}
+                title={t("Exit full screen")}
                 onClick={() => handleFullScreenChange(false)}
                 onMouseDown={e => e.stopPropagation()}
               />
@@ -370,7 +370,7 @@ function DashWrapper(props: DashWrapperProps) {
                 type="text"
                 className={styles.toolbarBtn}
                 icon={<FullscreenOutlined />}
-                title={t('Full screen')}
+                title={t("Full screen")}
                 onClick={() => handleFullScreenChange(true)}
                 onMouseDown={e => e.stopPropagation()}
               />
@@ -378,10 +378,10 @@ function DashWrapper(props: DashWrapperProps) {
           ]}
         />
 
-        <div className={styles.dashContent} style={{height: fullScreen ? '85vh' : dashHeight}}>
+        <div className={styles.dashContent} style={{height: fullScreen ? "85vh" : dashHeight}}>
           {datasetData.length === 0 ? (
             <Spin spinning={loading}>
-              <div className={styles.centerChildContainer} style={{height: fullScreen ? '50vh' : dashHeight}}>
+              <div className={styles.centerChildContainer} style={{height: fullScreen ? "50vh" : dashHeight}}>
                 <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
               </div>
             </Spin>

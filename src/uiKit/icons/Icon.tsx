@@ -1,6 +1,6 @@
-import {CSSProperties} from 'react'
+import {CSSProperties} from "react"
 
-import {allIcons} from './loaders'
+import {allIcons} from "./loaders"
 
 export interface IconProps {
   iconName: string | null | undefined

@@ -1,4 +1,4 @@
-import styles from './LineVertical.module.css'
+import styles from "./LineVertical.module.css"
 
 interface LineVerticalProps {
   className?: string

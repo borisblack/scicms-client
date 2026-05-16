@@ -1,9 +1,9 @@
-import {Input, InputRef, Tag, Tooltip} from 'antd'
-import {PlusOutlined} from '@ant-design/icons'
+import {Input, InputRef, Tag, Tooltip} from "antd"
+import {PlusOutlined} from "@ant-design/icons"
 
-import './Tags.css'
-import {ChangeEvent, useEffect, useRef, useState} from 'react'
-import {useTranslation} from 'react-i18next'
+import "./Tags.css"
+import {ChangeEvent, useEffect, useRef, useState} from "react"
+import {useTranslation} from "react-i18next"
 
 interface Props {
   tags: string[]
@@ -15,10 +15,10 @@ interface Props {
 export default function Tags({tags, editable, newTagText, onChange}: Props) {
   const {t} = useTranslation()
   const [inputVisible, setInputVisible] = useState<boolean>(false)
-  const [inputValue, setInputValue] = useState('')
+  const [inputValue, setInputValue] = useState("")
   const inputRef = useRef<InputRef>(null)
   const [editInputIndex, setEditInputIndex] = useState(-1)
-  const [editInputValue, setEditInputValue] = useState('')
+  const [editInputValue, setEditInputValue] = useState("")
   const editInputRef = useRef<InputRef>(null)
 
   useEffect(() => {
@@ -49,7 +49,7 @@ export default function Tags({tags, editable, newTagText, onChange}: Props) {
       onChange([...tags, inputValue])
     }
     setInputVisible(false)
-    setInputValue('')
+    setInputValue("")
   }
 
   const handleEditInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -61,7 +61,7 @@ export default function Tags({tags, editable, newTagText, onChange}: Props) {
     newTags[editInputIndex] = editInputValue
     onChange(newTags)
     setEditInputIndex(-1)
-    setInputValue('')
+    setInputValue("")
   }
 
   return (
@@ -121,7 +121,7 @@ export default function Tags({tags, editable, newTagText, onChange}: Props) {
 
       {!inputVisible && (
         <Tag className="site-tag-plus" onClick={showInput}>
-          <PlusOutlined /> {t(newTagText ?? 'New Tag')}
+          <PlusOutlined /> {t(newTagText ?? "New Tag")}
         </Tag>
       )}
     </>

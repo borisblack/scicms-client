@@ -4,25 +4,25 @@
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  */
-import React from 'react'
-import {createRoot} from 'react-dom/client'
-import {Provider} from 'react-redux'
-import {createBrowserRouter, RouterProvider} from 'react-router-dom'
-import {I18nextProvider} from 'react-i18next'
-import {HTML5Backend} from 'react-dnd-html5-backend'
-import {DndProvider} from 'react-dnd'
-import {ConfigProvider} from 'antd'
-import {ApolloProvider} from '@apollo/client/react'
-import {store} from './store'
-import reportWebVitals from './reportWebVitals'
-import {apolloClient} from './services'
-import i18n from './i18n'
-import routes from './routes'
-import {clientConfig} from './config'
-import 'antd/dist/reset.css'
-import './index.css'
+import React from "react"
+import {createRoot} from "react-dom/client"
+import {Provider} from "react-redux"
+import {createBrowserRouter, RouterProvider} from "react-router-dom"
+import {I18nextProvider} from "react-i18next"
+import {HTML5Backend} from "react-dnd-html5-backend"
+import {DndProvider} from "react-dnd"
+import {ConfigProvider} from "antd"
+import {ApolloProvider} from "@apollo/client/react"
+import {store} from "./store"
+import reportWebVitals from "./reportWebVitals"
+import {apolloClient} from "./services"
+import i18n from "./i18n"
+import routes from "./routes"
+import {clientConfig} from "./config"
+import "antd/dist/reset.css"
+import "./index.css"
 
-const container = document.getElementById('root')
+const container = document.getElementById("root")
 const root = createRoot(container as HTMLElement)
 const router = createBrowserRouter(routes)
 root.render(

@@ -1,11 +1,11 @@
-import {DashOptionsFormProps} from '..'
-import {Checkbox, Col, Form, Input, InputNumber, Popover, Row, Select, Space} from 'antd'
-import React from 'react'
-import {useTranslation} from 'react-i18next'
-import {legendPositions} from '../util'
-import styles from '../DashOptionForm.module.css'
-import RulesHelp from '../../../bi/RulesHelp'
-import {QuestionCircleOutlined} from '@ant-design/icons'
+import {DashOptionsFormProps} from ".."
+import {Checkbox, Col, Form, Input, InputNumber, Popover, Row, Select, Space} from "antd"
+import React from "react"
+import {useTranslation} from "react-i18next"
+import {legendPositions} from "../util"
+import styles from "../DashOptionForm.module.css"
+import RulesHelp from "../../../bi/RulesHelp"
+import {QuestionCircleOutlined} from "@ant-design/icons"
 
 const {Item: FormItem} = Form
 const {TextArea} = Input
@@ -17,39 +17,39 @@ export default function DoughnutDashOptionsForm({fieldName, values}: DashOptions
       <Col span={6}>
         <FormItem
           className={styles.formItem}
-          name={[fieldName, 'radius']}
-          label={t('Radius')}
+          name={[fieldName, "radius"]}
+          label={t("Radius")}
           initialValue={values.radius}
           rules={[
-            {type: 'number', min: 0},
-            {type: 'number', max: 1}
+            {type: "number", min: 0},
+            {type: "number", max: 1}
           ]}
         >
-          <InputNumber style={{width: '100%'}} min={0} max={1} step={0.1} />
+          <InputNumber style={{width: "100%"}} min={0} max={1} step={0.1} />
         </FormItem>
       </Col>
 
       <Col span={6}>
         <FormItem
           className={styles.formItem}
-          name={[fieldName, 'innerRadius']}
-          label={t('Inner radius')}
+          name={[fieldName, "innerRadius"]}
+          label={t("Inner radius")}
           initialValue={values.innerRadius}
           rules={[
-            {type: 'number', min: 0},
-            {type: 'number', max: 1}
+            {type: "number", min: 0},
+            {type: "number", max: 1}
           ]}
         >
-          <InputNumber style={{width: '100%'}} min={0} max={1} step={0.1} />
+          <InputNumber style={{width: "100%"}} min={0} max={1} step={0.1} />
         </FormItem>
       </Col>
 
       <Col span={6}>
         <FormItem
           className={styles.formItem}
-          name={[fieldName, 'legendPosition']}
-          label={t('Legend position')}
-          initialValue={values.legendPosition ?? 'top-left'}
+          name={[fieldName, "legendPosition"]}
+          label={t("Legend position")}
+          initialValue={values.legendPosition ?? "top-left"}
         >
           <Select allowClear options={legendPositions.map(p => ({value: p, label: p}))} />
         </FormItem>
@@ -58,21 +58,21 @@ export default function DoughnutDashOptionsForm({fieldName, values}: DashOptions
       <Col span={6}>
         <FormItem
           className={styles.formItem}
-          name={[fieldName, 'hideLegend']}
+          name={[fieldName, "hideLegend"]}
           valuePropName="checked"
           initialValue={values.hideLegend}
         >
-          <Checkbox style={{marginTop: 24}}>{t('Hide legend')}</Checkbox>
+          <Checkbox style={{marginTop: 24}}>{t("Hide legend")}</Checkbox>
         </FormItem>
       </Col>
 
       <Col span={12}>
         <FormItem
           className={styles.formItem}
-          name={[fieldName, 'rules']}
+          name={[fieldName, "rules"]}
           label={
             <Space>
-              {t('Rules')}
+              {t("Rules")}
               <Popover
                 arrow={false}
                 placement="bottom"

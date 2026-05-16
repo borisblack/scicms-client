@@ -1,12 +1,12 @@
-import {useMemo} from 'react'
-import {Form} from 'antd'
-import {useDrop} from 'react-dnd'
+import {useMemo} from "react"
+import {Form} from "antd"
+import {useDrop} from "react-dnd"
 
-import {Dataset, IDash, NamedColumn} from 'src/types/bi'
-import FieldWidget from './FieldWidget'
-import styles from './DashAxisArea.module.css'
-import {DndItemType} from 'src/config/constants'
-import DashFieldOverlay, {OverlayType} from './DashFieldOverlay'
+import {Dataset, IDash, NamedColumn} from "src/types/bi"
+import FieldWidget from "./FieldWidget"
+import styles from "./DashAxisArea.module.css"
+import {DndItemType} from "src/config/constants"
+import DashFieldOverlay, {OverlayType} from "./DashFieldOverlay"
 
 interface DashAxisAreaProps {
   dataset: Dataset
@@ -71,14 +71,14 @@ export default function DashAxisArea({dataset, dash, namePath, cardinality, canE
     <div ref={drop} className={styles.dashAxisArea} style={{minHeight: (value?.length ?? 1) * FIELD_WIDGET_HEIGHT}}>
       {value &&
         value.map(v => {
-          const fieldName = v.includes(':') ? v.substring(0, v.indexOf(':')) : v
+          const fieldName = v.includes(":") ? v.substring(0, v.indexOf(":")) : v
           const field = {...allFields[fieldName], name: v}
           return (
             <FieldWidget
               key={v}
               field={field}
               isDatasetField={datasetFields.hasOwnProperty(v)}
-              isSortField={namePath === 'sortField'}
+              isSortField={namePath === "sortField"}
               canEdit={canEdit}
               onChange={handleAxisChange}
               onRemove={() => handleAxisRemove(v)}

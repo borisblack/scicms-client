@@ -1,12 +1,12 @@
-import {FC, useCallback, useMemo} from 'react'
-import {Checkbox, Form, InputNumber} from 'antd'
-import {useTranslation} from 'react-i18next'
+import {FC, useCallback, useMemo} from "react"
+import {Checkbox, Form, InputNumber} from "antd"
+import {useTranslation} from "react-i18next"
 
-import {ACCESS_ITEM_NAME, MASK_ATTR_NAME} from 'src/config/constants'
-import {clearBit, getBit, setBit} from 'src/util'
-import {generateKey} from 'src/util/mdi'
-import {CustomAttributeFieldContext} from '../../types'
-import styles from 'src/pages/app/attributeFields/AttributeField.module.css'
+import {ACCESS_ITEM_NAME, MASK_ATTR_NAME} from "src/config/constants"
+import {clearBit, getBit, setBit} from "src/util"
+import {generateKey} from "src/util/mdi"
+import {CustomAttributeFieldContext} from "../../types"
+import styles from "src/pages/app/attributeFields/AttributeField.module.css"
 
 const FormItem = Form.Item
 
@@ -18,7 +18,7 @@ export const AccessMaskAttributeField: FC<CustomAttributeFieldContext> = ({
   value
 }) => {
   const {item} = dataWrapper
-  if (item.name !== ACCESS_ITEM_NAME || attrName !== MASK_ATTR_NAME) throw new Error('Illegal attribute')
+  if (item.name !== ACCESS_ITEM_NAME || attrName !== MASK_ATTR_NAME) throw new Error("Illegal attribute")
 
   const uniqueKey = generateKey(dataWrapper)
   const {t} = useTranslation()
@@ -54,25 +54,25 @@ export const AccessMaskAttributeField: FC<CustomAttributeFieldContext> = ({
         hidden
         initialValue={initialValue}
         rules={[
-          {type: 'number', min: attribute.minRange, max: attribute.maxRange},
-          {required: isRequired, message: t('Required field')}
+          {type: "number", min: attribute.minRange, max: attribute.maxRange},
+          {required: isRequired, message: t("Required field")}
         ]}
       >
         <InputNumber
           id={`${uniqueKey}#${attrName}`}
-          style={{display: 'none'}}
+          style={{display: "none"}}
           min={attribute.minRange}
           max={attribute.maxRange}
           {...additionalProps}
         />
       </FormItem>
 
-      <div className="ant-form-item" style={{margin: '0 0 3px'}}>
+      <div className="ant-form-item" style={{margin: "0 0 3px"}}>
         <div className="ant-row ant-form-item-row">
           <div className="ant-col ant-form-item-label">
             <label
               htmlFor={attrName}
-              className={isRequired ? 'ant-form-item-required' : ''}
+              className={isRequired ? "ant-form-item-required" : ""}
               title={t(attribute.displayName)}
             >
               {t(attribute.displayName)}

@@ -1,8 +1,8 @@
-import {configureStore} from '@reduxjs/toolkit'
+import {configureStore} from "@reduxjs/toolkit"
 
-import authReducer from './features/auth/authSlice'
-import registryReducer from './features/registry/registrySlice'
-import mdiReducer from './features/mdi/mdiSlice'
+import authReducer from "./features/auth/authSlice"
+import registryReducer from "./features/registry/registrySlice"
+import mdiReducer from "./features/mdi/mdiSlice"
 
 export const store = configureStore({
   reducer: {

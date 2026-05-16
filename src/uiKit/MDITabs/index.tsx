@@ -1,10 +1,10 @@
-import React, {ReactNode} from 'react'
-import {Tabs} from 'antd'
-import {TabsType} from 'antd/es/tabs'
-import {Tab} from 'rc-tabs/lib/interface'
+import React, {ReactNode} from "react"
+import {Tabs} from "antd"
+import {TabsType} from "antd/es/tabs"
+import {Tab} from "rc-tabs/lib/interface"
 
-import {ReactMDIContext} from './ReactMDIContext'
-import styles from './MDITabs.module.css'
+import {ReactMDIContext} from "./ReactMDIContext"
+import styles from "./MDITabs.module.css"
 
 export interface MDITab<T> {
   key: string
@@ -41,8 +41,8 @@ interface MDITabsProps<T> {
 export default function MDITabs<T>({ctx, className, type, getItemLabel, renderItem}: MDITabsProps<T>) {
   const {items, activeKey, setActiveKey, closeTab} = ctx
 
-  function handleTabsEdit(e: React.MouseEvent | React.KeyboardEvent | string, action: 'add' | 'remove') {
-    if (action === 'remove') {
+  function handleTabsEdit(e: React.MouseEvent | React.KeyboardEvent | string, action: "add" | "remove") {
+    if (action === "remove") {
       closeTab(e as string)
     }
   }
@@ -51,7 +51,7 @@ export default function MDITabs<T>({ctx, className, type, getItemLabel, renderIt
     items.map(item => ({
       key: item.key,
       label: getItemLabel(item.data),
-      style: {background: '#fff'},
+      style: {background: "#fff"},
       children: <div className={styles.mdiTabContent}>{renderItem(item.data)}</div>
     }))
 

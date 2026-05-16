@@ -5,7 +5,7 @@ import {
   ROLE_PROJECT_MANAGER,
   ROLE_STANDARD_CONTROL,
   ROLE_USER
-} from './constants'
+} from "./constants"
 
 export interface MenuConfig {
   items: (SubMenu | MenuItem)[]
@@ -26,102 +26,102 @@ export interface MenuItem {
 const menuConfig: MenuConfig = {
   items: [
     {
-      key: 'administration',
-      label: 'Administration',
-      icon: 'CrownOutlined',
+      key: "administration",
+      label: "Administration",
+      icon: "CrownOutlined",
       roles: [ROLE_ADMIN],
       children: [
         {
-          itemName: 'property'
+          itemName: "property"
         },
         {
-          key: 'security',
-          label: 'Security',
-          icon: 'LockOutlined',
+          key: "security",
+          label: "Security",
+          icon: "LockOutlined",
           roles: [ROLE_ADMIN],
           children: [
             {
-              itemName: 'group'
+              itemName: "group"
             },
             {
-              itemName: 'user'
+              itemName: "user"
             },
             {
-              itemName: 'permission'
+              itemName: "permission"
             },
             {
-              itemName: 'identity'
+              itemName: "identity"
             }
           ]
         },
         {
-          key: 'storage',
-          label: 'Storage',
-          icon: 'FaDatabase',
+          key: "storage",
+          label: "Storage",
+          icon: "FaDatabase",
           roles: [ROLE_ADMIN],
           children: [
             {
-              itemName: 'datasource'
+              itemName: "datasource"
             },
             {
-              itemName: 'media'
+              itemName: "media"
             }
           ]
         },
         {
-          itemName: 'itemTemplate'
+          itemName: "itemTemplate"
         },
         {
-          itemName: 'item'
+          itemName: "item"
         },
         {
-          itemName: 'revisionPolicy'
+          itemName: "revisionPolicy"
         },
         {
-          itemName: 'sequence'
+          itemName: "sequence"
         },
         {
-          itemName: 'locale'
+          itemName: "locale"
         },
         {
-          itemName: 'lifecycle'
+          itemName: "lifecycle"
         }
       ]
     },
     {
-      key: 'analysis',
-      label: 'Analysis',
-      icon: 'PieChartOutlined',
+      key: "analysis",
+      label: "Analysis",
+      icon: "PieChartOutlined",
       roles: [ROLE_ADMIN, ROLE_ANALYST],
       children: [
         {
-          itemName: 'dataset'
+          itemName: "dataset"
         },
         {
-          itemName: 'dashboard'
+          itemName: "dashboard"
         },
         {
-          itemName: 'dashboardCategory'
+          itemName: "dashboardCategory"
         }
       ]
     },
     {
-      key: 'design',
-      label: 'Design',
-      icon: 'RocketOutlined',
+      key: "design",
+      label: "Design",
+      icon: "RocketOutlined",
       roles: [ROLE_ADMIN, ROLE_DESIGNER, ROLE_STANDARD_CONTROL],
       children: [
         {
-          itemName: 'product'
+          itemName: "product"
         },
         {
-          itemName: 'partLabelGroup'
+          itemName: "partLabelGroup"
         },
         {
-          itemName: 'part'
+          itemName: "part"
         },
         {
-          itemName: 'labelClaim'
+          itemName: "labelClaim"
         },
         /*{
             itemName: 'startSheet'
@@ -130,26 +130,26 @@ const menuConfig: MenuConfig = {
         }, {
             itemName: 'partType'
         },*/ {
-          itemName: 'theme'
+          itemName: "theme"
         } /*{
             itemName: 'department'
         }*/
       ]
     },
     {
-      key: 'projectManagement',
-      label: 'Project Management',
-      icon: 'BuildOutlined',
+      key: "projectManagement",
+      label: "Project Management",
+      icon: "BuildOutlined",
       roles: [ROLE_ADMIN, ROLE_PROJECT_MANAGER],
       children: [
         {
-          itemName: 'project'
+          itemName: "project"
         },
         {
-          itemName: 'resource'
+          itemName: "resource"
         },
         {
-          itemName: 'projectRole'
+          itemName: "projectRole"
         }
       ]
     }

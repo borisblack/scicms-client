@@ -1,9 +1,9 @@
-import styles from './DashFieldOverlay.module.css'
+import styles from "./DashFieldOverlay.module.css"
 
 export enum OverlayType {
-  IllegalMoveHover = 'Illegal',
-  LegalMoveHover = 'Legal',
-  PossibleMove = 'Possible'
+  IllegalMoveHover = "Illegal",
+  LegalMoveHover = "Legal",
+  PossibleMove = "Possible"
 }
 
 interface DashFieldOverlayProps {
@@ -13,11 +13,11 @@ interface DashFieldOverlayProps {
 function getOverlayColor(type: OverlayType): string {
   switch (type) {
     case OverlayType.IllegalMoveHover:
-      return 'red'
+      return "red"
     case OverlayType.LegalMoveHover:
-      return 'green'
+      return "green"
     case OverlayType.PossibleMove:
-      return 'yellow'
+      return "yellow"
   }
 }
 

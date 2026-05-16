@@ -1,11 +1,11 @@
-import _ from 'lodash'
-import {useCallback, useEffect} from 'react'
-import {useTranslation} from 'react-i18next'
-import {Button, Form, Select} from 'antd'
+import _ from "lodash"
+import {useCallback, useEffect} from "react"
+import {useTranslation} from "react-i18next"
+import {Button, Form, Select} from "antd"
 
-import {Oauth2ProviderConfig} from 'src/types'
-import {usePrevious} from 'src/util/hooks'
-import {requiredFieldRule} from 'src/util/form'
+import {Oauth2ProviderConfig} from "src/types"
+import {usePrevious} from "src/util/hooks"
+import {requiredFieldRule} from "src/util/form"
 
 interface Oauth2LoginFormProps {
   oauth2Providers: Oauth2ProviderConfig[]
@@ -16,7 +16,7 @@ interface Oauth2LoginFormValues {
   provider: string
 }
 
-const OAUTH_PROVIDER_KEY = 'oauth2Provider'
+const OAUTH_PROVIDER_KEY = "oauth2Provider"
 
 const FormItem = Form.Item
 
@@ -43,10 +43,10 @@ function Oauth2LoginForm({oauth2Providers, onLogin}: Oauth2LoginFormProps) {
         <FormItem
           name="provider"
           initialValue={localStorage.getItem(OAUTH_PROVIDER_KEY) || undefined}
-          rules={[requiredFieldRule(true, 'Select provider')]}
+          rules={[requiredFieldRule(true, "Select provider")]}
         >
           <Select
-            placeholder={t('OAuth2 Provider')}
+            placeholder={t("OAuth2 Provider")}
             size="large"
             options={oauth2Providers.map(provider => ({
               value: provider.id,
@@ -57,7 +57,7 @@ function Oauth2LoginForm({oauth2Providers, onLogin}: Oauth2LoginFormProps) {
         </FormItem>
         <FormItem>
           <Button block type="primary" size="large" onClick={() => form.submit()}>
-            {t('Login')}
+            {t("Login")}
           </Button>
         </FormItem>
       </Form>

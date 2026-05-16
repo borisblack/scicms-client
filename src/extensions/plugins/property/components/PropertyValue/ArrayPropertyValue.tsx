@@ -1,16 +1,16 @@
-import type {ChangeEvent, FC} from 'react'
-import {useCallback, useMemo} from 'react'
-import {Input} from 'antd'
+import type {ChangeEvent, FC} from "react"
+import {useCallback, useMemo} from "react"
+import {Input} from "antd"
 
-import {FieldType} from 'src/types'
-import {PropertyValueProps} from './types'
-import {useAppProperties} from 'src/util/hooks'
+import {FieldType} from "src/types"
+import {PropertyValueProps} from "./types"
+import {useAppProperties} from "src/util/hooks"
 
 const {TextArea} = Input
 
 export const ArrayPropertyValue: FC<PropertyValueProps> = ({type, value, canEdit, onChange}) => {
   const appProps = useAppProperties()
-  if (type !== FieldType.array) throw new Error('Illegal type.')
+  if (type !== FieldType.array) throw new Error("Illegal type.")
 
   const parsedValue = useMemo((): string[] | undefined => {
     if (value == null) return undefined

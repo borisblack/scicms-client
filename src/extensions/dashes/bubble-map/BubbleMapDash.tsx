@@ -1,16 +1,16 @@
-import _ from 'lodash'
-import {useCallback, useEffect, useMemo, useRef} from 'react'
-import {Alert} from 'antd'
-import {v4 as uuidv4} from 'uuid'
-import L, {LatLngExpression} from 'leaflet'
+import _ from "lodash"
+import {useCallback, useEffect, useMemo, useRef} from "react"
+import {Alert} from "antd"
+import {v4 as uuidv4} from "uuid"
+import L, {LatLngExpression} from "leaflet"
 
-import {DashRenderContext} from '../index'
-import * as RulesService from 'src/services/rules'
-import {defaultDashColor, defaultDashColors} from 'src/bi/util/util'
-import {MAX_LAT, MAX_LNG, MIN_LAT, MIN_LNG} from '.'
-import {QueryFilter, QueryOp} from 'src/types/bi'
-import {useBIData, useBiProperties} from 'src/bi/util/hooks'
-import 'leaflet/dist/leaflet.css'
+import {DashRenderContext} from "../index"
+import * as RulesService from "src/services/rules"
+import {defaultDashColor, defaultDashColors} from "src/bi/util/util"
+import {MAX_LAT, MAX_LNG, MIN_LAT, MIN_LNG} from "."
+import {QueryFilter, QueryOp} from "src/types/bi"
+import {useBIData, useBiProperties} from "src/bi/util/hooks"
+import "leaflet/dist/leaflet.css"
 
 interface BubbleMapDashOptions {
   latitudeField?: string
@@ -93,7 +93,7 @@ function BubbleMapDash({fullScreen, dataset, dash, height, data}: DashRenderCont
     (label: any, size: any) => {
       const labelCol = labelField ? columns[labelField] : null
       const sizeCol = sizeField ? columns[sizeField] : null
-      return `${labelCol ? `<div><b>${labelCol.alias || labelField}:</b> ${label}</div>` : ''}${sizeCol ? `<div><b>${sizeCol.alias || sizeField}:</b> ${size}</div>` : ''}`
+      return `${labelCol ? `<div><b>${labelCol.alias || labelField}:</b> ${label}</div>` : ""}${sizeCol ? `<div><b>${sizeCol.alias || sizeField}:</b> ${size}</div>` : ""}`
     },
     [columns, labelField, sizeField]
   )
@@ -122,7 +122,7 @@ function BubbleMapDash({fullScreen, dataset, dash, height, data}: DashRenderCont
         bubble.bindPopup(renderTitle(label, size))
 
         if (relatedDashboardId && size != null) {
-          bubble.on('click', evt => {
+          bubble.on("click", evt => {
             handleBubbleClick(evt, sizeField, size, queryFilter => openDashboard(relatedDashboardId, queryFilter))
           })
         }
@@ -132,7 +132,7 @@ function BubbleMapDash({fullScreen, dataset, dash, height, data}: DashRenderCont
 
     return () => {
       bubbles.forEach(bubble => {
-        bubble.off('click')
+        bubble.off("click")
         bubble.remove()
       })
     }
@@ -155,7 +155,7 @@ function BubbleMapDash({fullScreen, dataset, dash, height, data}: DashRenderCont
     value: any,
     cb: (queryFilter: QueryFilter) => void
   ) {
-    if (evt.type !== 'click' || value == null) return
+    if (evt.type !== "click" || value == null) return
 
     cb({
       id: uuidv4(),
@@ -184,7 +184,7 @@ function BubbleMapDash({fullScreen, dataset, dash, height, data}: DashRenderCont
     <div
       key={relatedDashboardId}
       ref={mapRef}
-      style={{height: fullScreen ? '88vh' : height, width: fullScreen ? '98vw' : undefined}}
+      style={{height: fullScreen ? "88vh" : height, width: fullScreen ? "98vw" : undefined}}
     />
   )
 }

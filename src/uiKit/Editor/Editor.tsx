@@ -1,9 +1,9 @@
-import CodeMirror, {EditorView, Extension} from '@uiw/react-codemirror'
-import {sql, StandardSQL} from '@codemirror/lang-sql'
-import {javascript} from '@codemirror/lang-javascript'
+import CodeMirror, {EditorView, Extension} from "@uiw/react-codemirror"
+import {sql, StandardSQL} from "@codemirror/lang-sql"
+import {javascript} from "@codemirror/lang-javascript"
 
-import {EditorMode} from './constants'
-import './Editor.css'
+import {EditorMode} from "./constants"
+import "./Editor.css"
 
 export interface EditorProps {
   value?: string
@@ -15,8 +15,8 @@ export interface EditorProps {
 }
 
 const FontSizeTheme = EditorView.theme({
-  '&': {
-    fontSize: '10pt' // default - 10.5pt
+  "&": {
+    fontSize: "10pt" // default - 10.5pt
   }
 })
 
@@ -38,7 +38,7 @@ export default function Editor({value, mode, height, lineNumbers, canEdit, onCha
 
   return (
     <CodeMirror
-      value={value ?? ''}
+      value={value ?? ""}
       height={height}
       extensions={[FontSizeTheme, ...getExtensions(mode)]}
       // editable={canEdit}

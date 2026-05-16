@@ -1,8 +1,8 @@
-import {getParser} from '../extensions/functions'
-import {notifyErrorThrottled} from '../util'
-import i18n from '../i18n'
-import {CSSProperties, ReactNode} from 'react'
-import IconSuspense from '../uiKit/icons/IconSuspense'
+import {getParser} from "../extensions/functions"
+import {notifyErrorThrottled} from "../util"
+import i18n from "../i18n"
+import {CSSProperties, ReactNode} from "react"
+import IconSuspense from "../uiKit/icons/IconSuspense"
 
 export interface FieldRule {
   condition?: string
@@ -28,7 +28,7 @@ function evaluateExpression(condition: string, values: Record<string, any>): any
     const expr = getParser().parse(condition)
     return expr.evaluate(values)
   } catch (e: any) {
-    notifyErrorThrottled(i18n.t('Expression evaluation error'), e.message)
+    notifyErrorThrottled(i18n.t("Expression evaluation error"), e.message)
     return false
   }
 }
@@ -52,11 +52,11 @@ function toStyle(props: FieldProps): CSSProperties {
 }
 
 export function parseRules(rules?: string): FieldRule[] {
-  const parsedRules = (rules?.split('\n') ?? [])
+  const parsedRules = (rules?.split("\n") ?? [])
     .map(r => r.trim())
-    .map(r => r.replace(/;$/, '')) // trailing semicolon
-    .filter(r => r !== '')
-    .filter(r => !r.startsWith('#')) // comment
+    .map(r => r.replace(/;$/, "")) // trailing semicolon
+    .filter(r => r !== "")
+    .filter(r => !r.startsWith("#")) // comment
     .map(r => r.match(RULE_REGEXP))
     .filter(Boolean)
     .map(mg => {
@@ -73,8 +73,8 @@ export function parseRules(rules?: string): FieldRule[] {
 
 function parseRuleItems(ruleItems: string): FieldProps[] {
   const parsedRules = ruleItems
-    .split(';')
-    .map(r => r.replace(/\s*/g, ''))
+    .split(";")
+    .map(r => r.replace(/\s*/g, ""))
     .map(r => r.match(RULE_ITEM_REGEXP))
     .filter(Boolean)
     .map(mg => {
@@ -84,7 +84,7 @@ function parseRuleItems(ruleItems: string): FieldProps[] {
       const value = ruleItemMatchGroups[3] as string
 
       let iconMatchGroups: RegExpMatchArray | null
-      if (prop === 'icon' && (iconMatchGroups = value.match(ICON_REGEXP)) != null) {
+      if (prop === "icon" && (iconMatchGroups = value.match(ICON_REGEXP)) != null) {
         return {
           field,
           icon: iconMatchGroups[1],
@@ -112,7 +112,7 @@ export function renderField(
   for (const rule of fieldRules) {
     if (rule.condition == null || evaluateExpression(rule.condition, record)) {
       for (const ruleItem of rule.items) {
-        if ((ruleItem.field === fieldName || ruleItem.field === '*') && ruleItem.icon != null) iconProps = ruleItem
+        if ((ruleItem.field === fieldName || ruleItem.field === "*") && ruleItem.icon != null) iconProps = ruleItem
       }
     }
   }
@@ -135,7 +135,7 @@ export function getFieldStyle(fieldRules: FieldRule[], fieldName: string, record
   for (const rule of fieldRules) {
     if (rule.condition == null || evaluateExpression(rule.condition, record)) {
       for (const ruleItem of rule.items) {
-        if ((ruleItem.field === fieldName || ruleItem.field === '*') && ruleItem.icon == null) {
+        if ((ruleItem.field === fieldName || ruleItem.field === "*") && ruleItem.icon == null) {
           Object.assign(fieldStyle, toStyle(ruleItem))
         }
       }

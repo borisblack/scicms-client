@@ -1,10 +1,10 @@
-import {useEffect} from 'react'
-import {Checkbox, Form, FormInstance, Input} from 'antd'
+import {useEffect} from "react"
+import {Checkbox, Form, FormInstance, Input} from "antd"
 
-import {useTranslation} from 'react-i18next'
-import styles from './Indexes.module.css'
-import {NamedIndex} from './types'
-import {useAppProperties} from 'src/util/hooks'
+import {useTranslation} from "react-i18next"
+import styles from "./Indexes.module.css"
+import {NamedIndex} from "./types"
+import {useAppProperties} from "src/util/hooks"
 
 interface Props {
   form: FormInstance
@@ -29,9 +29,9 @@ export default function IndexForm({form, index, canEdit, onFormFinish}: Props) {
       <FormItem
         className={styles.formItem}
         name="name"
-        label={t('Name')}
+        label={t("Name")}
         initialValue={index?.name}
-        rules={[{required: true, message: t('Required field')}]}
+        rules={[{required: true, message: t("Required field")}]}
       >
         <Input style={{maxWidth: 300}} maxLength={50} />
       </FormItem>
@@ -39,15 +39,15 @@ export default function IndexForm({form, index, canEdit, onFormFinish}: Props) {
       <FormItem
         className={styles.formItem}
         name="columns"
-        label={t('Columns')}
-        initialValue={index?.columns?.join('\n')}
-        rules={[{required: true, message: t('Required field')}]}
+        label={t("Columns")}
+        initialValue={index?.columns?.join("\n")}
+        rules={[{required: true, message: t("Required field")}]}
       >
         <TextArea style={{maxWidth: 180}} rows={appProps.ui.form.textAreaRows} />
       </FormItem>
 
       <FormItem className={styles.formItem} name="unique" valuePropName="checked" initialValue={index?.unique}>
-        <Checkbox>{t('Unique')}</Checkbox>
+        <Checkbox>{t("Unique")}</Checkbox>
       </FormItem>
     </Form>
   )

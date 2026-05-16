@@ -1,11 +1,11 @@
-import {FC} from 'react'
-import {Task as GanttTask} from 'gantt-task-react'
-import {DateTime} from 'luxon'
+import {FC} from "react"
+import {Task as GanttTask} from "gantt-task-react"
+import {DateTime} from "luxon"
 
-import styles from './TooltipContent.module.css'
-import {useTranslation} from 'react-i18next'
-import {UTC} from 'src/config/constants'
-import {useAppProperties} from 'src/util/hooks'
+import styles from "./TooltipContent.module.css"
+import {useTranslation} from "react-i18next"
+import {UTC} from "src/config/constants"
+import {useAppProperties} from "src/util/hooks"
 
 interface TooltipContentProps {
   task: GanttTask
@@ -32,12 +32,12 @@ const TooltipContent: FC<TooltipContentProps> = ({task, fontSize, fontFamily}) =
 
       {task.end.getTime() - task.start.getTime() !== 0 && (
         <p className={styles.tooltipDefaultContainerParagraph}>
-          {`${t('Duration')} (${t('days')}): ${~~((task.end.getTime() - task.start.getTime()) / (1000 * 60 * 60 * 24))}`}
+          {`${t("Duration")} (${t("days")}): ${~~((task.end.getTime() - task.start.getTime()) / (1000 * 60 * 60 * 24))}`}
         </p>
       )}
 
       {!!task.progress && (
-        <p className={styles.tooltipDefaultContainerParagraph}>{`${t('Progress')}: ${task.progress} %`}</p>
+        <p className={styles.tooltipDefaultContainerParagraph}>{`${t("Progress")}: ${task.progress} %`}</p>
       )}
     </div>
   )

@@ -1,25 +1,25 @@
-import _ from 'lodash'
-import {ReactNode, useEffect, useState} from 'react'
-import {useTranslation} from 'react-i18next'
-import {Navigate} from 'react-router-dom'
-import {Layout} from 'antd'
-import {ItemType} from 'antd/es/menu/hooks/useItems'
-import {FolderOutlined, FundOutlined} from '@ant-design/icons'
-import {useAuth, useRegistry} from 'src/util/hooks'
-import * as DashboardService from 'src/services/dashboard'
-import {ViewType} from 'src/types'
-import {ItemTab} from 'src/types/schema'
-import {Dashboard, DashboardCategory, DashboardExtra} from 'src/types/bi'
-import * as DashboardCategoryService from 'src/services/dashboard-category'
-import {DASHBOARD_ITEM_NAME, EMPTY_ARRAY} from 'src/config/constants'
-import MDITabs from 'src/uiKit/MDITabs'
-import {createMDITab, generateLabel} from 'src/util/mdi'
-import DashboardSpec from 'src/bi/DashboardSpec/DashboardSpec'
-import {useNewMDIContextRedux} from 'src/features/mdi/hooks'
-import IconSuspense from 'src/uiKit/icons/IconSuspense'
-import './Bi.css'
-import Navbar from 'src/features/registry/Navbar'
-import {useBiProperties} from 'src/bi/util/hooks'
+import _ from "lodash"
+import {ReactNode, useEffect, useState} from "react"
+import {useTranslation} from "react-i18next"
+import {Navigate} from "react-router-dom"
+import {Layout} from "antd"
+import {ItemType} from "antd/es/menu/hooks/useItems"
+import {FolderOutlined, FundOutlined} from "@ant-design/icons"
+import {useAuth, useRegistry} from "src/util/hooks"
+import * as DashboardService from "src/services/dashboard"
+import {ViewType} from "src/types"
+import {ItemTab} from "src/types/schema"
+import {Dashboard, DashboardCategory, DashboardExtra} from "src/types/bi"
+import * as DashboardCategoryService from "src/services/dashboard-category"
+import {DASHBOARD_ITEM_NAME, EMPTY_ARRAY} from "src/config/constants"
+import MDITabs from "src/uiKit/MDITabs"
+import {createMDITab, generateLabel} from "src/util/mdi"
+import DashboardSpec from "src/bi/DashboardSpec/DashboardSpec"
+import {useNewMDIContextRedux} from "src/features/mdi/hooks"
+import IconSuspense from "src/uiKit/icons/IconSuspense"
+import "./Bi.css"
+import Navbar from "src/features/registry/Navbar"
+import {useBiProperties} from "src/bi/util/hooks"
 
 const {Content} = Layout
 
@@ -35,7 +35,7 @@ function Bi() {
   const dashboardItem = itemMap[DASHBOARD_ITEM_NAME]
 
   useEffect(() => {
-    document.title = t('SciCMS BI')
+    document.title = t("SciCMS BI")
   }, [t])
 
   useEffect(() => {
@@ -88,7 +88,7 @@ function Bi() {
       dashboard => dashboard.isPublic && dashboard.categories.data.length === 0
     )
 
-    return mapDashboardMenuItems('root', rootCategories, rootDashboards)
+    return mapDashboardMenuItems("root", rootCategories, rootDashboards)
   }
 
   const mapDashboardMenuItems = (
@@ -136,8 +136,8 @@ function Bi() {
         ctx={mdiContext}
         menuItems={[
           {
-            key: 'dashboards',
-            label: t('Dashboards'),
+            key: "dashboards",
+            label: t("Dashboards"),
             icon: <FundOutlined />,
             children: getDashboardMenuItems()
           }

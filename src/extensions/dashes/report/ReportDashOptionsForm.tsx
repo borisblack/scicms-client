@@ -1,11 +1,11 @@
-import React from 'react'
-import {useTranslation} from 'react-i18next'
-import {Col, Form, Input, Popover, Row, Space} from 'antd'
-import {QuestionCircleOutlined} from '@ant-design/icons'
+import React from "react"
+import {useTranslation} from "react-i18next"
+import {Col, Form, Input, Popover, Row, Space} from "antd"
+import {QuestionCircleOutlined} from "@ant-design/icons"
 
-import {DashOptionsFormProps} from '..'
-import RulesHelp from 'src/bi/RulesHelp'
-import styles from '../DashOptionForm.module.css'
+import {DashOptionsFormProps} from ".."
+import RulesHelp from "src/bi/RulesHelp"
+import styles from "../DashOptionForm.module.css"
 
 const {Item: FormItem} = Form
 const {TextArea} = Input
@@ -18,10 +18,10 @@ export default function ReportDashOptionsForm({dataset, availableColNames, field
       <Col span={12}>
         <FormItem
           className={styles.formItem}
-          name={[fieldName, 'rules']}
+          name={[fieldName, "rules"]}
           label={
             <Space>
-              {t('Rules')}
+              {t("Rules")}
               <Popover
                 arrow={false}
                 placement="bottom"

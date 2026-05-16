@@ -3,23 +3,23 @@ import {
   INCLUDE_TEMPLATES_ATTR_NAME,
   ITEM_ITEM_NAME,
   NOT_LOCKABLE_ATTR_NAME
-} from 'src/config/constants'
-import {Item} from 'src/types/schema'
-import {Plugin} from '../Plugin'
+} from "src/config/constants"
+import {Item} from "src/types/schema"
+import {Plugin} from "../Plugin"
 import {
   DefaultSortOrderAttributeField,
   IncludeTemplatesAttributeField,
   NotLockableAttributeField
-} from './attributeFields'
-import {Attributes, Indexes} from './components'
+} from "./attributeFields"
+import {Attributes, Indexes} from "./components"
 
-const ITEM_ATTRIBUTES_COMPONENT_ID = 'itemAttributes'
-const ITEM_TEMPLATE_ATTRIBUTES_COMPONENT_ID = 'itemTemplateAttributes'
-const ITEM_INDEXES_COMPONENT_ID = 'itemIndexes'
-const ITEM_TEMPLATE_INDEXES_COMPONENT_ID = 'itemTemplateIndexes'
-const DEFAULT_SORT_ORDER_ATTRIBUTE_FIELD_ID = 'defaultSortOrder'
-const INCLUDE_TEMPLATES_ATTRIBUTE_FIELD_ID = 'includeTemplates'
-const NOT_LOCKABLE_ATTRIBUTE_FIELD_ID = 'notLockable'
+const ITEM_ATTRIBUTES_COMPONENT_ID = "itemAttributes"
+const ITEM_TEMPLATE_ATTRIBUTES_COMPONENT_ID = "itemTemplateAttributes"
+const ITEM_INDEXES_COMPONENT_ID = "itemIndexes"
+const ITEM_TEMPLATE_INDEXES_COMPONENT_ID = "itemTemplateIndexes"
+const DEFAULT_SORT_ORDER_ATTRIBUTE_FIELD_ID = "defaultSortOrder"
+const INCLUDE_TEMPLATES_ATTRIBUTE_FIELD_ID = "includeTemplates"
+const NOT_LOCKABLE_ATTRIBUTE_FIELD_ID = "notLockable"
 
 export class ItemPlugin extends Plugin<Item> {
   override onLoad() {
@@ -27,36 +27,36 @@ export class ItemPlugin extends Plugin<Item> {
     this.addComponent({
       id: ITEM_ATTRIBUTES_COMPONENT_ID,
       priority: 10,
-      mountPoint: 'item.tabs.begin',
-      title: 'Attributes',
-      icon: 'BarsOutlined',
+      mountPoint: "item.tabs.begin",
+      title: "Attributes",
+      icon: "BarsOutlined",
       render: ({context}) => <Attributes key={ITEM_ATTRIBUTES_COMPONENT_ID} {...context} />
     })
 
     this.addComponent({
       id: ITEM_TEMPLATE_ATTRIBUTES_COMPONENT_ID,
       priority: 10,
-      mountPoint: 'itemTemplate.tabs.begin',
-      title: 'Attributes',
-      icon: 'BarsOutlined',
+      mountPoint: "itemTemplate.tabs.begin",
+      title: "Attributes",
+      icon: "BarsOutlined",
       render: ({context}) => <Attributes key={ITEM_TEMPLATE_ATTRIBUTES_COMPONENT_ID} {...context} />
     })
 
     this.addComponent({
       id: ITEM_INDEXES_COMPONENT_ID,
-      mountPoint: 'item.tabs.begin',
+      mountPoint: "item.tabs.begin",
       priority: 20,
-      title: 'Indexes',
-      icon: 'HolderOutlined',
+      title: "Indexes",
+      icon: "HolderOutlined",
       render: ({context}) => <Indexes key={ITEM_INDEXES_COMPONENT_ID} {...context} />
     })
 
     this.addComponent({
       id: ITEM_TEMPLATE_INDEXES_COMPONENT_ID,
-      mountPoint: 'itemTemplate.tabs.begin',
+      mountPoint: "itemTemplate.tabs.begin",
       priority: 20,
-      title: 'Indexes',
-      icon: 'HolderOutlined',
+      title: "Indexes",
+      icon: "HolderOutlined",
       render: ({context}) => <Indexes key={ITEM_TEMPLATE_INDEXES_COMPONENT_ID} {...context} />
     })
 
@@ -89,6 +89,6 @@ export class ItemPlugin extends Plugin<Item> {
   }
 
   override onUnload() {
-    throw new Error('Method not implemented.')
+    throw new Error("Method not implemented.")
   }
 }

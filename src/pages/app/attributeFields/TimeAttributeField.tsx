@@ -1,14 +1,14 @@
-import {FC, useCallback, useMemo} from 'react'
-import {useTranslation} from 'react-i18next'
-import {Checkbox, Form, TimePicker} from 'antd'
-import dayjs, {Dayjs} from 'dayjs'
-import timezone from 'dayjs/plugin/timezone'
-import {AttributeFieldProps} from './index'
-import {FieldType} from 'src/types'
-import {MOMENT_ISO_TIME_FORMAT_STRING, UTC} from 'src/config/constants'
-import {generateKey} from 'src/util/mdi'
-import styles from './AttributeField.module.css'
-import {useAppProperties} from 'src/util/hooks'
+import {FC, useCallback, useMemo} from "react"
+import {useTranslation} from "react-i18next"
+import {Checkbox, Form, TimePicker} from "antd"
+import dayjs, {Dayjs} from "dayjs"
+import timezone from "dayjs/plugin/timezone"
+import {AttributeFieldProps} from "./index"
+import {FieldType} from "src/types"
+import {MOMENT_ISO_TIME_FORMAT_STRING, UTC} from "src/config/constants"
+import {generateKey} from "src/util/mdi"
+import styles from "./AttributeField.module.css"
+import {useAppProperties} from "src/util/hooks"
 
 dayjs.extend(timezone)
 
@@ -18,7 +18,7 @@ const TimeAttributeField: FC<AttributeFieldProps> = ({itemTab: dataWrapper, form
   const appProps = useAppProperties()
   const {momentDisplayTimeFormatString} = appProps.dateTime
 
-  if (attribute.type !== FieldType.time) throw new Error('Illegal attribute')
+  if (attribute.type !== FieldType.time) throw new Error("Illegal attribute")
 
   const uniqueKey = generateKey(dataWrapper)
   const {t} = useTranslation()
@@ -48,12 +48,12 @@ const TimeAttributeField: FC<AttributeFieldProps> = ({itemTab: dataWrapper, form
         label={t(attribute.displayName)}
         hidden={attribute.fieldHidden}
         initialValue={parseValue(value) ?? parseValue(attribute.defaultValue)}
-        rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
+        rules={[{required: attribute.required && !attribute.readOnly, message: t("Required field")}]}
         getValueFromEvent={getValueFromEvent}
       >
         <TimePicker
           id={`${uniqueKey}#${attrName}`}
-          style={{width: '100%'}}
+          style={{width: "100%"}}
           format={momentDisplayTimeFormatString}
           showSecond={false}
           {...additionalProps}

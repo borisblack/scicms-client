@@ -1,5 +1,5 @@
-import {CSSProperties, ReactNode, useMemo} from 'react'
-import './FullScreen.css'
+import {CSSProperties, ReactNode, useMemo} from "react"
+import "./FullScreen.css"
 
 interface Props {
   active: boolean
@@ -9,20 +9,20 @@ interface Props {
 }
 
 const defaultFullScreenStyle: CSSProperties = {
-  position: 'fixed',
+  position: "fixed",
   top: 0,
   bottom: 0,
   left: 0,
   zIndex: 10,
-  overflow: 'hidden',
+  overflow: "hidden",
   insetInlineStart: 0,
   insetInlineEnd: 0,
   outline: 0
 }
 
 const defaultNormalStyle: CSSProperties = {
-  position: 'relative',
-  overflow: 'hidden'
+  position: "relative",
+  overflow: "hidden"
 }
 
 export default function FullScreen({active, fullScreenStyle, normalStyle, children}: Props) {
@@ -32,7 +32,7 @@ export default function FullScreen({active, fullScreenStyle, normalStyle, childr
   )
 
   return (
-    <div className={`full-screen-wrapper ${active ? 'full-screen-wrapper-active' : ''}`} style={wrapperStyle}>
+    <div className={`full-screen-wrapper ${active ? "full-screen-wrapper-active" : ""}`} style={wrapperStyle}>
       {children}
     </div>
   )

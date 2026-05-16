@@ -1,7 +1,7 @@
-import {ChangeEvent, KeyboardEvent, MouseEvent} from 'react'
-import {Column} from '@tanstack/react-table'
-import {Input} from 'antd'
-import styles from './DataGrid.module.css'
+import {ChangeEvent, KeyboardEvent, MouseEvent} from "react"
+import {Column} from "@tanstack/react-table"
+import {Input} from "antd"
+import styles from "./DataGrid.module.css"
 
 interface Props {
   column: Column<any, unknown>
@@ -21,7 +21,7 @@ export default function ColumnFilter({column, onSubmit}: Props) {
 
   function handleKeyUp(evt: KeyboardEvent<any>) {
     evt.stopPropagation()
-    if (evt.key === 'Enter') onSubmit()
+    if (evt.key === "Enter") onSubmit()
   }
 
   function handleChange(evt: ChangeEvent<any>) {
@@ -32,7 +32,7 @@ export default function ColumnFilter({column, onSubmit}: Props) {
     <div className={styles.tableColumnFilter}>
       <Input
         size="small"
-        value={columnFilterValue ?? ''}
+        value={columnFilterValue ?? ""}
         onKeyDown={handleKeyDown}
         onKeyUp={handleKeyUp}
         onClick={handleClick}

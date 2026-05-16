@@ -1,6 +1,6 @@
-import {useState} from 'react'
-import {HorizontalPanelProps} from '.'
-import styles from './BottomPanel.module.css'
+import {useState} from "react"
+import {HorizontalPanelProps} from "."
+import styles from "./BottomPanel.module.css"
 
 export default function BottomPanel({
   title,

@@ -1,6 +1,6 @@
-import _ from 'lodash'
-import {MouseEvent, ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
-import {useTranslation} from 'react-i18next'
+import _ from "lodash"
+import {MouseEvent, ReactNode, useCallback, useEffect, useMemo, useState} from "react"
+import {useTranslation} from "react-i18next"
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -10,8 +10,8 @@ import {
   Row,
   SortingState,
   useReactTable
-} from '@tanstack/react-table'
-import {SortableContext, verticalListSortingStrategy} from '@dnd-kit/sortable'
+} from "@tanstack/react-table"
+import {SortableContext, verticalListSortingStrategy} from "@dnd-kit/sortable"
 import {
   closestCenter,
   DndContext,
@@ -22,18 +22,18 @@ import {
   UniqueIdentifier,
   useSensor,
   useSensors
-} from '@dnd-kit/core'
-import {restrictToVerticalAxis} from '@dnd-kit/modifiers'
-import {Col, MenuProps, Pagination, Row as AntdRow, Spin} from 'antd'
-import {CaretDownFilled, CaretUpFilled} from '@ant-design/icons'
+} from "@dnd-kit/core"
+import {restrictToVerticalAxis} from "@dnd-kit/modifiers"
+import {Col, MenuProps, Pagination, Row as AntdRow, Spin} from "antd"
+import {CaretDownFilled, CaretUpFilled} from "@ant-design/icons"
 
-import ColumnFilter from './ColumnFilter'
-import Toolbar from './Toolbar'
-import {exportWinFeatures, exportWinStyle, renderValue} from 'src/util/export'
-import {DraggableRow} from './DraggableRow'
-import {RowDragHandleCell} from './RowDragHandleCell'
-import styles from './DataGrid.module.css'
-import './DataGrid.css'
+import ColumnFilter from "./ColumnFilter"
+import Toolbar from "./Toolbar"
+import {exportWinFeatures, exportWinStyle, renderValue} from "src/util/export"
+import {DraggableRow} from "./DraggableRow"
+import {RowDragHandleCell} from "./RowDragHandleCell"
+import styles from "./DataGrid.module.css"
+import "./DataGrid.css"
 
 interface DataGridProps<T> {
   loading?: boolean
@@ -50,7 +50,7 @@ interface DataGridProps<T> {
   height?: number
   rowDndEnabled?: boolean
   getRowId: (originalRow: T, index: number, parent?: Row<T>) => string
-  getRowContextMenu?: (row: Row<T>) => MenuProps['items']
+  getRowContextMenu?: (row: Row<T>) => MenuProps["items"]
   onRequest: (params: RequestParams) => void
   onRowDoubleClick?: (row: Row<any>) => void
   onRowMove?: (evt: DragEndEvent) => void
@@ -80,9 +80,9 @@ interface RequestPagination {
   pageSize?: number
 }
 
-const COLUMN_RESIZE_MODE: ColumnResizeMode = 'onChange'
+const COLUMN_RESIZE_MODE: ColumnResizeMode = "onChange"
 const HEADER_FOOTER_HEIGHT = 184
-const DRAG_HANDLE_COLUMN_ID = 'drag-handle'
+const DRAG_HANDLE_COLUMN_ID = "drag-handle"
 
 export function DataGrid<T>({
   loading = false,
@@ -91,7 +91,7 @@ export function DataGrid<T>({
   initialState,
   version = 0,
   toolbar = null,
-  title = '',
+  title = "",
   height,
   getRowId,
   getRowContextMenu,
@@ -118,7 +118,7 @@ export function DataGrid<T>({
     return [
       {
         id: DRAG_HANDLE_COLUMN_ID,
-        header: '',
+        header: "",
         cell: ({row}: any) => <RowDragHandleCell rowId={row.id} />,
         size: 40
       },
@@ -217,7 +217,7 @@ export function DataGrid<T>({
   )
 
   const renderHtmlTableRow = useCallback((visibleColumns: string[], row: any): string => {
-    return `<tr>${visibleColumns.map(key => `<td>${renderValue(row[key])}</td>`).join('')}</tr>`
+    return `<tr>${visibleColumns.map(key => `<td>${renderValue(row[key])}</td>`).join("")}</tr>`
   }, [])
 
   function handleDragEnd(evt: DragEndEvent) {
@@ -241,7 +241,7 @@ export function DataGrid<T>({
                     <table>
                         <thead>
                             <tr>
-                                ${visibleColumns.map(col => `<th>${col.header}</th>`).join('')}
+                                ${visibleColumns.map(col => `<th>${col.header}</th>`).join("")}
                             </tr>
                         </thead>
                         <tbody>
@@ -252,14 +252,14 @@ export function DataGrid<T>({
                                   row
                                 )
                               )
-                              .join('')}
+                              .join("")}
                         </tbody>
                     </table>
                 </body>
             </html>`
 
     // const exportWinUrl = URL.createObjectURL(new Blob([exportWinHtml], { type: "text/html" }))
-    const exportWin = window.open('', 'Export HTML', exportWinFeatures) as Window
+    const exportWin = window.open("", "Export HTML", exportWinFeatures) as Window
     exportWin.document.body.innerHTML = exportWinHtml
   }, [columnVisibility, columns, data.data, renderHtmlTableRow, title])
 
@@ -267,7 +267,7 @@ export function DataGrid<T>({
     <Spin spinning={loading}>
       <AntdRow>
         <Col span={12}>{toolbar}</Col>
-        <Col span={12} style={{textAlign: 'right'}}>
+        <Col span={12} style={{textAlign: "right"}}>
           <Toolbar
             table={table}
             hasFilters={hasFilters}
@@ -301,7 +301,7 @@ export function DataGrid<T>({
                         {headerGroup.headers.map(header => (
                           <th
                             key={header.id}
-                            className={`${header.column.getCanSort() ? styles.tableColumnHasSorters : ''} ${hasFilters ? styles.hasFilter : ''}`}
+                            className={`${header.column.getCanSort() ? styles.tableColumnHasSorters : ""} ${hasFilters ? styles.hasFilter : ""}`}
                             style={{width: header.getSize()}}
                           >
                             <div
@@ -317,10 +317,10 @@ export function DataGrid<T>({
                                 <span className={styles.tableColumnSorter}>
                                   <span className={styles.tableColumnSorterInner}>
                                     <CaretUpFilled
-                                      className={`${styles.tableColumnSorterUp} ${header.column.getIsSorted() === 'asc' ? styles.active : ''}`}
+                                      className={`${styles.tableColumnSorterUp} ${header.column.getIsSorted() === "asc" ? styles.active : ""}`}
                                     />
                                     <CaretDownFilled
-                                      className={`${styles.tableColumnSorterDown} ${header.column.getIsSorted() === 'desc' ? styles.active : ''}`}
+                                      className={`${styles.tableColumnSorterDown} ${header.column.getIsSorted() === "desc" ? styles.active : ""}`}
                                     />
                                   </span>
                                 </span>
@@ -330,12 +330,12 @@ export function DataGrid<T>({
                               <ColumnFilter column={header.column} onSubmit={() => handleFilterSubmit(header.id)} />
                             ) : null}
                             <div
-                              className={`${styles.resizer} ${header.column.getIsResizing() ? styles.isResizing : ''}`}
+                              className={`${styles.resizer} ${header.column.getIsResizing() ? styles.isResizing : ""}`}
                               style={{
                                 transform:
-                                  COLUMN_RESIZE_MODE === 'onEnd' && header.column.getIsResizing()
+                                  COLUMN_RESIZE_MODE === "onEnd" && header.column.getIsResizing()
                                     ? `translateX(${table.getState().columnSizingInfo.deltaOffset}px)`
-                                    : ''
+                                    : ""
                               }}
                               onMouseDown={header.getResizeHandler()}
                               onTouchStart={header.getResizeHandler()}
@@ -371,10 +371,10 @@ export function DataGrid<T>({
           current={data.pagination.page}
           defaultPageSize={initialState.pageSize}
           pageSize={data.pagination.pageSize}
-          pageSizeOptions={['10', '20', '50', '100']}
+          pageSizeOptions={["10", "20", "50", "100"]}
           showSizeChanger
           showQuickJumper
-          showTotal={total => `${t('Total records')}: ${total}`}
+          showTotal={total => `${t("Total records")}: ${total}`}
           size="small"
           total={data.pagination.total}
           onChange={handlePageChange}

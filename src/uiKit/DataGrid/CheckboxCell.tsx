@@ -1,6 +1,6 @@
-import {useRef} from 'react'
-import {Checkbox} from 'antd'
-import {CheckboxChangeEvent} from 'antd/es/checkbox'
+import {useRef} from "react"
+import {Checkbox} from "antd"
+import {CheckboxChangeEvent} from "antd/es/checkbox"
 
 interface Props {
   value: boolean
@@ -16,7 +16,7 @@ export function CheckboxCell({value, disabled, onChange}: Props) {
   }
 
   return (
-    <div style={{textAlign: 'center'}}>
+    <div style={{textAlign: "center"}}>
       <Checkbox ref={checkboxInput} checked={value} disabled={disabled} onChange={handleChange} />
     </div>
   )

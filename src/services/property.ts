@@ -1,10 +1,10 @@
-import _ from 'lodash'
-import {gql} from '@apollo/client'
-import i18n from '../i18n'
+import _ from "lodash"
+import {gql} from "@apollo/client"
+import i18n from "../i18n"
 
-import {Property, PropertyScope, PropertyType} from '../types/schema'
-import {apolloClient, extractGraphQLErrorMessages} from '.'
-import {FieldType} from 'src/types'
+import {Property, PropertyScope, PropertyType} from "../types/schema"
+import {apolloClient, extractGraphQLErrorMessages} from "."
+import {FieldType} from "src/types"
 
 export type PropertyMap = Record<string, Property>
 
@@ -25,7 +25,7 @@ export const fetchProperties = async (): Promise<PropertyMap> => {
   const res = await apolloClient.query({query: FIND_ALL_QUERY})
   if (res.errors) {
     console.error(extractGraphQLErrorMessages(res.errors))
-    throw new Error(i18n.t('An error occurred while executing the request'))
+    throw new Error(i18n.t("An error occurred while executing the request"))
   }
 
   return _.mapKeys(
@@ -44,7 +44,7 @@ function parsePropertyValue(type: PropertyType, value: string): any {
     case FieldType.text:
       return value
     case FieldType.bool:
-      return value === '1' || value === 'true'
+      return value === "1" || value === "true"
     case FieldType.int:
     case FieldType.long:
     case FieldType.float:
@@ -57,8 +57,8 @@ function parsePropertyValue(type: PropertyType, value: string): any {
     case FieldType.timestamp:
       return value
     case FieldType.json:
-      return value === '' ? {} : JSON.parse(value)
+      return value === "" ? {} : JSON.parse(value)
     case FieldType.array:
-      return value === '' ? [] : value.split('\n')
+      return value === "" ? [] : value.split("\n")
   }
 }

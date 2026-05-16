@@ -1,37 +1,37 @@
-import _ from 'lodash'
-import {memo, ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {useTranslation} from 'react-i18next'
-import {Row} from '@tanstack/react-table'
-import {Button, Checkbox, Modal, notification} from 'antd'
-import {CheckboxChangeEvent} from 'antd/es/checkbox'
-import {ItemType} from 'antd/es/menu/hooks/useItems'
-import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design/icons'
-import {PageHeader} from '@ant-design/pro-layout'
-import {ItemData, ItemTab} from 'src/types/schema'
-import {type RequestParams, DataGrid} from '../../uiKit/DataGrid/DataGrid'
-import * as ACL from 'src/util/acl'
-import {findAll, getColumns, getHiddenColumns, getInitialData} from 'src/util/datagrid'
-import {ExtRequestParams} from 'src/services/query'
-import {DEBUG, ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME, MEDIA_ITEM_NAME} from 'src/config/constants'
-import {useAppProperties, useAuth, useItemOperations, useMutationManager, useRegistry} from 'src/util/hooks'
-import {getTitle} from 'src/util/mdi'
-import IconSuspense from 'src/uiKit/icons/IconSuspense'
-import {useMDIContext} from 'src/uiKit/MDITabs/hooks'
+import _ from "lodash"
+import {memo, ReactNode, useCallback, useEffect, useMemo, useRef, useState} from "react"
+import {useTranslation} from "react-i18next"
+import {Row} from "@tanstack/react-table"
+import {Button, Checkbox, Modal, notification} from "antd"
+import {CheckboxChangeEvent} from "antd/es/checkbox"
+import {ItemType} from "antd/es/menu/hooks/useItems"
+import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from "@ant-design/icons"
+import {PageHeader} from "@ant-design/pro-layout"
+import {ItemData, ItemTab} from "src/types/schema"
+import {type RequestParams, DataGrid} from "../../uiKit/DataGrid/DataGrid"
+import * as ACL from "src/util/acl"
+import {findAll, getColumns, getHiddenColumns, getInitialData} from "src/util/datagrid"
+import {ExtRequestParams} from "src/services/query"
+import {DEBUG, ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME, MEDIA_ITEM_NAME} from "src/config/constants"
+import {useAppProperties, useAuth, useItemOperations, useMutationManager, useRegistry} from "src/util/hooks"
+import {getTitle} from "src/util/mdi"
+import IconSuspense from "src/uiKit/icons/IconSuspense"
+import {useMDIContext} from "src/uiKit/MDITabs/hooks"
 import {
   ApiMiddlewareContext,
   ApiOperation,
   CustomComponentContext,
   CustomRendererContext
-} from 'src/extensions/plugins/types'
-import {pluginEngine} from 'src/extensions/plugins'
-import styles from './NavTab.module.css'
+} from "src/extensions/plugins/types"
+import {pluginEngine} from "src/extensions/plugins"
+import styles from "./NavTab.module.css"
 import {
   hasConfigIdAttribute,
   hasCurrentAttribute,
   hasGenerationAttribute,
   hasMajorRevAttribute,
   hasPermissionAttribute
-} from 'src/util/schema'
+} from "src/util/schema"
 
 interface Props {
   itemTab: ItemTab
@@ -118,7 +118,7 @@ function DefaultNavTab({itemTab}: Props) {
   )
 
   useEffect(() => {
-    if (DEBUG) console.log('DefaultNavTab buffer reset')
+    if (DEBUG) console.log("DefaultNavTab buffer reset")
 
     setBuffer({})
   }, [data])
@@ -126,19 +126,19 @@ function DefaultNavTab({itemTab}: Props) {
   useEffect(() => {
     const headerNode = headerRef.current
     if (headerNode) {
-      pluginEngine.render('default.header', headerNode, renderContext)
+      pluginEngine.render("default.header", headerNode, renderContext)
       pluginEngine.render(`${item.name}.default.header`, headerNode, renderContext)
     }
 
     const contentNode = contentRef.current
     if (contentNode) {
-      pluginEngine.render('default.content', contentNode, renderContext)
+      pluginEngine.render("default.content", contentNode, renderContext)
       pluginEngine.render(`${item.name}.default.content`, contentNode, renderContext)
     }
 
     const footerNode = footerRef.current
     if (footerNode) {
-      pluginEngine.render('default.footer', footerNode, renderContext)
+      pluginEngine.render("default.footer", footerNode, renderContext)
       pluginEngine.render(`${item.name}.default.footer`, footerNode, renderContext)
     }
   }, [item.name, renderContext])
@@ -153,7 +153,7 @@ function DefaultNavTab({itemTab}: Props) {
 
   const handleRequest = useCallback(
     async (params: RequestParams) => {
-      const allParams: ExtRequestParams = {...params, locale: showAllLocalesRef.current ? 'all' : null}
+      const allParams: ExtRequestParams = {...params, locale: showAllLocalesRef.current ? "all" : null}
 
       try {
         setLoading(true)
@@ -161,7 +161,7 @@ function DefaultNavTab({itemTab}: Props) {
         setData(dataWithPagination)
       } catch (e: any) {
         notification.error({
-          message: t('Request error'),
+          message: t("Request error"),
           description: e.message
         })
       } finally {
@@ -191,7 +191,7 @@ function DefaultNavTab({itemTab}: Props) {
     if (!isSystemItem) return
 
     confirm({
-      title: `${t('You must sign in again to apply the changes')}`,
+      title: `${t("You must sign in again to apply the changes")}`,
       onOk: handleLogout
     })
   }, [isSystemItem, handleLogout, t])
@@ -221,7 +221,7 @@ function DefaultNavTab({itemTab}: Props) {
         logoutIfNeed()
       } catch (e: any) {
         notification.error({
-          message: t('Deletion error'),
+          message: t("Deletion error"),
           description: e.message
         })
       } finally {
@@ -235,8 +235,8 @@ function DefaultNavTab({itemTab}: Props) {
     (row: Row<ItemData>) => {
       const items: ItemType[] = [
         {
-          key: 'open',
-          label: t('Open'),
+          key: "open",
+          label: t("Open"),
           icon: <FolderOpenOutlined />,
           onClick: () => handleView(row.original[item.idAttribute])
         }
@@ -248,26 +248,26 @@ function DefaultNavTab({itemTab}: Props) {
       if (canDelete) {
         if (canVersion) {
           items.push({
-            key: 'delete',
-            label: t('Delete'),
+            key: "delete",
+            label: t("Delete"),
             icon: <DeleteTwoTone twoToneColor="#eb2f96" />,
             children: [
               {
-                key: 'delete',
-                label: t('Current Version'),
+                key: "delete",
+                label: t("Current Version"),
                 onClick: () => handleDelete(row.original[item.idAttribute])
               },
               {
-                key: 'purge',
-                label: t('All Versions'),
+                key: "purge",
+                label: t("All Versions"),
                 onClick: () => handleDelete(row.original[item.idAttribute], true)
               }
             ]
           })
         } else {
           items.push({
-            key: 'delete',
-            label: t('Delete'),
+            key: "delete",
+            label: t("Delete"),
             icon: <DeleteTwoTone twoToneColor="#eb2f96" />,
             onClick: () => handleDelete(row.original[item.idAttribute])
           })
@@ -300,7 +300,7 @@ function DefaultNavTab({itemTab}: Props) {
         extra={
           canCreate && (
             <Button type="primary" onClick={handleCreate}>
-              <PlusCircleOutlined /> {t('Create')}
+              <PlusCircleOutlined /> {t("Create")}
             </Button>
           )
         }
@@ -317,24 +317,24 @@ function DefaultNavTab({itemTab}: Props) {
 
   return (
     <>
-      {pluginEngine.hasComponents('default.header') &&
-        pluginEngine.renderComponents('default.header', customComponentContext)}
+      {pluginEngine.hasComponents("default.header") &&
+        pluginEngine.renderComponents("default.header", customComponentContext)}
       {pluginEngine.hasComponents(`${item.name}.default.header`) &&
         pluginEngine.renderComponents(`${item.name}.default.header`, customComponentContext)}
-      {pluginEngine.hasRenderers('default.header', `${item.name}.default.header`) && <div ref={headerRef} />}
+      {pluginEngine.hasRenderers("default.header", `${item.name}.default.header`) && <div ref={headerRef} />}
 
-      {!pluginEngine.hasComponents('default.header', `${item.name}.default.header`) &&
-        !pluginEngine.hasRenderers('default.header', `${item.name}.default.header`) &&
+      {!pluginEngine.hasComponents("default.header", `${item.name}.default.header`) &&
+        !pluginEngine.hasRenderers("default.header", `${item.name}.default.header`) &&
         renderPageHeader()}
 
-      {pluginEngine.hasComponents('default.content') &&
-        pluginEngine.renderComponents('default.content', customComponentContext)}
+      {pluginEngine.hasComponents("default.content") &&
+        pluginEngine.renderComponents("default.content", customComponentContext)}
       {pluginEngine.hasComponents(`${item.name}.default.content`) &&
         pluginEngine.renderComponents(`${item.name}.default.content`, customComponentContext)}
-      {pluginEngine.hasRenderers('default.content', `${item.name}.default.content`) && <div ref={contentRef} />}
+      {pluginEngine.hasRenderers("default.content", `${item.name}.default.content`) && <div ref={contentRef} />}
 
-      {!pluginEngine.hasComponents('default.content', `${item.name}.default.content`) &&
-        !pluginEngine.hasRenderers('default.content', `${item.name}.default.content`) && (
+      {!pluginEngine.hasComponents("default.content", `${item.name}.default.content`) &&
+        !pluginEngine.hasRenderers("default.content", `${item.name}.default.content`) && (
           <DataGrid
             loading={loading}
             columns={columnsMemoized}
@@ -346,7 +346,7 @@ function DefaultNavTab({itemTab}: Props) {
             hasFilters={true}
             version={version}
             toolbar={
-              item.localized && <Checkbox onChange={handleLocalizationsCheckBoxChange}>{t('All Locales')}</Checkbox>
+              item.localized && <Checkbox onChange={handleLocalizationsCheckBoxChange}>{t("All Locales")}</Checkbox>
             }
             title={t(item.displayPluralName)}
             getRowId={originalRow => originalRow[item.idAttribute]}
@@ -356,11 +356,11 @@ function DefaultNavTab({itemTab}: Props) {
           />
         )}
 
-      {pluginEngine.hasComponents('default.footer') &&
-        pluginEngine.renderComponents('default.footer', customComponentContext)}
+      {pluginEngine.hasComponents("default.footer") &&
+        pluginEngine.renderComponents("default.footer", customComponentContext)}
       {pluginEngine.hasComponents(`${item.name}.default.footer`) &&
         pluginEngine.renderComponents(`${item.name}.default.footer`, customComponentContext)}
-      {pluginEngine.hasRenderers('default.footer', `${item.name}.default.footer`) && <div ref={footerRef} />}
+      {pluginEngine.hasRenderers("default.footer", `${item.name}.default.footer`) && <div ref={footerRef} />}
     </>
   )
 }

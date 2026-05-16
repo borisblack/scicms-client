@@ -1,12 +1,12 @@
-import type {FC} from 'react'
-import {Form, Input} from 'antd'
-import {useTranslation} from 'react-i18next'
+import type {FC} from "react"
+import {Form, Input} from "antd"
+import {useTranslation} from "react-i18next"
 
-import {PropertyValue} from '../components'
-import {CustomAttributeFieldContext} from '../../types'
-import {useItemAcl} from 'src/util/hooks'
-import './PropertyValueAttributeField.css'
-import styles from 'src/pages/app/attributeFields/AttributeField.module.css'
+import {PropertyValue} from "../components"
+import {CustomAttributeFieldContext} from "../../types"
+import {useItemAcl} from "src/util/hooks"
+import "./PropertyValueAttributeField.css"
+import styles from "src/pages/app/attributeFields/AttributeField.module.css"
 
 const FormItem = Form.Item
 
@@ -21,7 +21,7 @@ export const PropertyValueAttributeField: FC<CustomAttributeFieldContext> = ({
   const {t} = useTranslation()
   const {item, data} = dataWrapper
   const acl = useItemAcl(item, data)
-  const propertyType = Form.useWatch('type', form)
+  const propertyType = Form.useWatch("type", form)
   const propertyValue = Form.useWatch(attrName, form)
 
   function handleChange(val: string | null | undefined) {
@@ -37,7 +37,7 @@ export const PropertyValueAttributeField: FC<CustomAttributeFieldContext> = ({
         label={t(attribute.displayName)}
         hidden={attribute.fieldHidden}
         initialValue={value ?? attribute.defaultValue}
-        rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
+        rules={[{required: attribute.required && !attribute.readOnly, message: t("Required field")}]}
       >
         <Input hidden />
       </FormItem>

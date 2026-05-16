@@ -1,8 +1,8 @@
-import {lazy, Suspense} from 'react'
+import {lazy, Suspense} from "react"
 
-import {DashRenderContext} from '..'
+import {DashRenderContext} from ".."
 
-const BarDash = lazy(() => import('./BarDash'))
+const BarDash = lazy(() => import("./BarDash"))
 
 function BarDashSuspense(ctx: DashRenderContext) {
   return (

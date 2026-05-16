@@ -1,7 +1,7 @@
-import {ITEM_TEMPLATE_ITEM_NAME} from 'src/config/constants'
-import {ItemTemplate} from 'src/types/schema'
-import {Plugin} from '../Plugin'
-import {handleItemTemplateApiOperation} from './itemTemplateApiHandler'
+import {ITEM_TEMPLATE_ITEM_NAME} from "src/config/constants"
+import {ItemTemplate} from "src/types/schema"
+import {Plugin} from "../Plugin"
+import {handleItemTemplateApiOperation} from "./itemTemplateApiHandler"
 
 export class ItemTemplatePlugin extends Plugin<ItemTemplate> {
   override onLoad(): void {
@@ -14,6 +14,6 @@ export class ItemTemplatePlugin extends Plugin<ItemTemplate> {
   }
 
   override onUnload(): void {
-    throw new Error('Method not implemented.')
+    throw new Error("Method not implemented.")
   }
 }

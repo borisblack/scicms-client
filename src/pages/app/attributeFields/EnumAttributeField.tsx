@@ -1,10 +1,10 @@
-import {FC, useCallback, useMemo} from 'react'
-import {Form, Select} from 'antd'
-import {useTranslation} from 'react-i18next'
-import {AttributeFieldProps} from '.'
-import {FieldType} from 'src/types'
-import {generateKey} from 'src/util/mdi'
-import styles from './AttributeField.module.css'
+import {FC, useCallback, useMemo} from "react"
+import {Form, Select} from "antd"
+import {useTranslation} from "react-i18next"
+import {AttributeFieldProps} from "."
+import {FieldType} from "src/types"
+import {generateKey} from "src/util/mdi"
+import styles from "./AttributeField.module.css"
 
 const FormItem = Form.Item
 
@@ -16,7 +16,7 @@ const EnumAttributeField: FC<AttributeFieldProps> = ({
   value,
   onChange
 }) => {
-  if (attribute.type !== FieldType.enum || !attribute.enumSet) throw new Error('Illegal attribute')
+  if (attribute.type !== FieldType.enum || !attribute.enumSet) throw new Error("Illegal attribute")
 
   const uniqueKey = generateKey(dataWrapper)
   const {t} = useTranslation()
@@ -40,7 +40,7 @@ const EnumAttributeField: FC<AttributeFieldProps> = ({
       label={t(attribute.displayName)}
       hidden={attribute.fieldHidden}
       initialValue={value ?? attribute.defaultValue}
-      rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
+      rules={[{required: attribute.required && !attribute.readOnly, message: t("Required field")}]}
     >
       <Select
         id={`${uniqueKey}#${attrName}`}

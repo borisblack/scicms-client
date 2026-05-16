@@ -1,22 +1,22 @@
-import {Lifecycle} from 'src/types/schema'
-import {Plugin} from '../Plugin'
-import {LifecycleSpecSuspense} from './components'
+import {Lifecycle} from "src/types/schema"
+import {Plugin} from "../Plugin"
+import {LifecycleSpecSuspense} from "./components"
 
-const LIFECYCLE_SPEC_COMPONENT_ID = 'lifecycleSpec'
+const LIFECYCLE_SPEC_COMPONENT_ID = "lifecycleSpec"
 
 export class LifecyclePlugin extends Plugin<Lifecycle> {
   override onLoad() {
     this.addComponent({
       id: LIFECYCLE_SPEC_COMPONENT_ID,
-      mountPoint: 'lifecycle.tabs.end',
+      mountPoint: "lifecycle.tabs.end",
       priority: 10,
-      title: 'Spec',
-      icon: 'PartitionOutlined',
+      title: "Spec",
+      icon: "PartitionOutlined",
       render: ({context}) => <LifecycleSpecSuspense key={LIFECYCLE_SPEC_COMPONENT_ID} {...context} />
     })
   }
 
   override onUnload() {
-    throw new Error('Method not implemented.')
+    throw new Error("Method not implemented.")
   }
 }

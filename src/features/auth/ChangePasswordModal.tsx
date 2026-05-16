@@ -1,8 +1,8 @@
-import {Form, Modal, notification, Spin} from 'antd'
-import {useState} from 'react'
-import {useTranslation} from 'react-i18next'
-import {changePassword} from 'src/services/auth'
-import ChangePasswordForm from './ChangePasswordForm'
+import {Form, Modal, notification, Spin} from "antd"
+import {useState} from "react"
+import {useTranslation} from "react-i18next"
+import {changePassword} from "src/services/auth"
+import ChangePasswordForm from "./ChangePasswordForm"
 
 interface ChangePasswordModalProps {
   open: boolean
@@ -28,7 +28,7 @@ export default function ChangePasswordModal({open, onClose}: ChangePasswordModal
     } catch (e: any) {
       console.error(e.message)
       notification.error({
-        message: t('Password changing error'),
+        message: t("Password changing error"),
         description: e.message
       })
     } finally {
@@ -37,7 +37,7 @@ export default function ChangePasswordModal({open, onClose}: ChangePasswordModal
   }
 
   return (
-    <Modal title={t('Password changing')} open={open} destroyOnClose onOk={() => form.submit()} onCancel={onClose}>
+    <Modal title={t("Password changing")} open={open} destroyOnClose onOk={() => form.submit()} onCancel={onClose}>
       <Spin spinning={loading}>
         <Form form={form} labelCol={{span: 8}} wrapperCol={{span: 16}} layout="horizontal" onFinish={handleFormFinish}>
           <ChangePasswordForm />

@@ -1,4 +1,4 @@
-import {FieldType, Pagination, ViewType} from '.'
+import {FieldType, Pagination, ViewType} from "."
 
 export interface DefaultItemTemplate {
   id: string
@@ -34,9 +34,9 @@ export interface Datasource extends DefaultItemTemplate {
 }
 
 export enum DatasourceType {
-  DATABASE = 'DATABASE',
-  SPREADSHEET = 'SPREADSHEET',
-  CSV = 'CSV'
+  DATABASE = "DATABASE",
+  SPREADSHEET = "SPREADSHEET",
+  CSV = "CSV"
 }
 
 export interface Lifecycle extends DefaultItemTemplate {
@@ -97,7 +97,7 @@ export interface ItemTemplate extends DefaultItemTemplate {
 
 interface AbstractModel {
   coreVersion: string
-  kind: 'ItemTemplate' | 'Item'
+  kind: "ItemTemplate" | "Item"
   metadata: BaseMetadata
 }
 
@@ -106,7 +106,7 @@ interface BaseMetadata {
 }
 
 export interface ItemTemplateModel extends AbstractModel {
-  kind: 'ItemTemplate'
+  kind: "ItemTemplate"
   metadata: ItemTemplateMetadata
   spec: ItemSpec
 }
@@ -143,7 +143,7 @@ export interface Item extends ItemTemplate {
 }
 
 export interface ItemModel extends AbstractModel {
-  kind: 'Item'
+  kind: "Item"
   includeTemplates: string[]
   metadata: ItemMetadata
   spec: ItemSpec
@@ -239,10 +239,10 @@ export interface NamedAttribute extends Attribute {
 }
 
 export enum RelType {
-  oneToOne = 'oneToOne',
-  oneToMany = 'oneToMany',
-  manyToOne = 'manyToOne',
-  manyToMany = 'manyToMany'
+  oneToOne = "oneToOne",
+  oneToMany = "oneToMany",
+  manyToOne = "manyToOne",
+  manyToMany = "manyToMany"
 }
 
 export interface Index {
@@ -300,8 +300,8 @@ export type PropertyType =
   | FieldType.json
 
 export enum PropertyScope {
-  client = 'client',
-  server = 'server'
+  client = "client",
+  server = "server"
 }
 
 export interface Property extends DefaultItemTemplate {

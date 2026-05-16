@@ -1,26 +1,26 @@
-import {lazy, Suspense, useEffect, useState} from 'react'
-import {Spin} from 'antd'
-import {Task as GanttTask, ViewMode} from 'gantt-task-react'
+import {lazy, Suspense, useEffect, useState} from "react"
+import {Spin} from "antd"
+import {Task as GanttTask, ViewMode} from "gantt-task-react"
 
-import {useAcl, useAppProperties} from 'src/util/hooks'
-import {CustomComponentContext} from 'src/extensions/plugins/types'
-import {getStartEndDateForProject, singletonTaskList} from './helper'
-import ViewSwitcher from './ViewSwitcher'
-import TaskListHeader from './TaskListHeader'
-import TooltipContent from './TooltipContent'
-import {fetchAllTasksByFilter} from './taskService'
-import {Project} from './types'
-import {mapToGanttTask, mapToProjectTask} from './taskMapper'
-import {clientConfig} from 'src/config'
-import 'gantt-task-react/dist/index.css'
-import styles from './ProjectGantt.module.css'
+import {useAcl, useAppProperties} from "src/util/hooks"
+import {CustomComponentContext} from "src/extensions/plugins/types"
+import {getStartEndDateForProject, singletonTaskList} from "./helper"
+import ViewSwitcher from "./ViewSwitcher"
+import TaskListHeader from "./TaskListHeader"
+import TooltipContent from "./TooltipContent"
+import {fetchAllTasksByFilter} from "./taskService"
+import {Project} from "./types"
+import {mapToGanttTask, mapToProjectTask} from "./taskMapper"
+import {clientConfig} from "src/config"
+import "gantt-task-react/dist/index.css"
+import styles from "./ProjectGantt.module.css"
 
 const DEFAULT_COLUMN_WIDTH = 65
 const YEAR_COLUMN_WIDTH = 350
 const MONTH_COLUMN_WIDTH = 300
 const WEEK_COLUMN_WIDTH = 250
 
-const Gantt = lazy(() => import('./Gantt'))
+const Gantt = lazy(() => import("./Gantt"))
 
 function calculateColumnWidth(viewMode: ViewMode) {
   if (viewMode === ViewMode.Year) return YEAR_COLUMN_WIDTH
@@ -59,7 +59,7 @@ export function ProjectGantt({itemTab}: CustomComponentContext<Project>) {
   }, [data, parentId, topLevelTasksOnly, version])
 
   const handleTaskChange = (task: GanttTask) => {
-    console.log('On date change Id:' + task.id)
+    console.log("On date change Id:" + task.id)
     let newTasks = ganttTasks.map(t => (t.id === task.id ? task : t))
     if (task.project) {
       const [start, end] = getStartEndDateForProject(newTasks, task.project)
@@ -73,7 +73,7 @@ export function ProjectGantt({itemTab}: CustomComponentContext<Project>) {
   }
 
   const handleTaskDelete = (task: GanttTask) => {
-    const conf = window.confirm('Are you sure about ' + task.name + ' ?')
+    const conf = window.confirm("Are you sure about " + task.name + " ?")
     if (conf) {
       setGanttTasks(ganttTasks.filter(t => t.id !== task.id))
     }
@@ -82,24 +82,24 @@ export function ProjectGantt({itemTab}: CustomComponentContext<Project>) {
 
   const handleProgressChange = async (task: GanttTask) => {
     setGanttTasks(ganttTasks.map(t => (t.id === task.id ? task : t)))
-    console.log('On progress change Id:' + task.id)
+    console.log("On progress change Id:" + task.id)
   }
 
   const handleDblClick = (task: GanttTask) => {
-    alert('On Double Click event Id:' + task.id)
+    alert("On Double Click event Id:" + task.id)
   }
 
   const handleClick = (task: GanttTask) => {
-    console.log('On Click event Id:' + task.id)
+    console.log("On Click event Id:" + task.id)
   }
 
   const handleSelect = (task: GanttTask, isSelected: boolean) => {
-    console.log(task.name + ' has ' + (isSelected ? 'selected' : 'unselected'))
+    console.log(task.name + " has " + (isSelected ? "selected" : "unselected"))
   }
 
   const handleExpanderClick = (task: GanttTask) => {
     setGanttTasks(ganttTasks.map(t => (t.id === task.id ? task : t)))
-    console.log('On expander click Id:' + task.id)
+    console.log("On expander click Id:" + task.id)
   }
 
   const handleRefresh = () => setVersion(prevVersion => prevVersion + 1)
@@ -124,7 +124,7 @@ export function ProjectGantt({itemTab}: CustomComponentContext<Project>) {
           <Gantt
             tasks={ganttTasks}
             viewMode={viewMode}
-            listCellWidth={isChecked ? '155px' : ''}
+            listCellWidth={isChecked ? "155px" : ""}
             columnWidth={columnWidth}
             locale={clientConfig.i18nLng}
             TooltipContent={TooltipContent}

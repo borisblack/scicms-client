@@ -1,6 +1,6 @@
-import _ from 'lodash'
+import _ from "lodash"
 
-export const exportWinFeatures = 'width=1024,height=768,top=50,left=50'
+export const exportWinFeatures = "width=1024,height=768,top=50,left=50"
 
 export const exportWinStyle = `
     body, table {
@@ -21,13 +21,13 @@ export const exportWinStyle = `
 `
 
 export function renderValue(value: any) {
-  if (value == null || value === false) return ''
+  if (value == null || value === false) return ""
 
-  if (value === true) return 'x'
+  if (value === true) return "x"
 
   if (_.isObject(value)) {
-    if ('data' in value) {
-      if ((value as any).data == null) return ''
+    if ("data" in value) {
+      if ((value as any).data == null) return ""
 
       return JSON.stringify((value as any).data)
     }

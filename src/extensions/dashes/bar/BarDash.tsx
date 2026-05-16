@@ -1,15 +1,15 @@
-import _ from 'lodash'
-import {useMemo} from 'react'
-import {Alert} from 'antd'
-import {Bar, BarConfig} from '@ant-design/charts'
-import {v4 as uuidv4} from 'uuid'
+import _ from "lodash"
+import {useMemo} from "react"
+import {Alert} from "antd"
+import {Bar, BarConfig} from "@ant-design/charts"
+import {v4 as uuidv4} from "uuid"
 
-import {defaultDashColor, defaultDashColors, columnType, formatValue, isTemporal} from 'src/bi/util/util'
-import {DashEventHandler, DashRenderContext} from '../index'
-import {LegendPosition} from '../util'
-import * as RulesService from 'src/services/rules'
-import {useBIData, useBiProperties} from '../../../bi/util/hooks'
-import {handleDashClick} from '../util/antdPlot'
+import {defaultDashColor, defaultDashColors, columnType, formatValue, isTemporal} from "src/bi/util/util"
+import {DashEventHandler, DashRenderContext} from "../index"
+import {LegendPosition} from "../util"
+import * as RulesService from "src/services/rules"
+import {useBIData, useBiProperties} from "../../../bi/util/hooks"
+import {handleDashClick} from "../util/antdPlot"
 
 interface BarDashOpts {
   xField?: string
@@ -72,7 +72,7 @@ export default function BarDash({dataset, dash, data, onDashClick}: DashRenderCo
     legend: hideLegend
       ? false
       : {
-          position: legendPosition ?? 'top-left',
+          position: legendPosition ?? "top-left",
           label: {
             style: legendConfig?.label?.style
           },
@@ -88,13 +88,13 @@ export default function BarDash({dataset, dash, data, onDashClick}: DashRenderCo
         autoRotate: xAxisLabelAutoRotate,
         style: axisLabelStyle
       },
-      type: isTemporal(xColumn.type) ? 'time' : undefined
+      type: isTemporal(xColumn.type) ? "time" : undefined
     },
     yAxis: {
       label: {
         style: axisLabelStyle
       },
-      type: isTemporal(yColumn.type) ? 'time' : undefined
+      type: isTemporal(yColumn.type) ? "time" : undefined
     },
     meta: {
       [xField]: {

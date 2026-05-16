@@ -1,16 +1,16 @@
-import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit'
-import {fetchItems, ItemMap} from 'src/services/item'
-import {fetchPermissions, PermissionMap} from 'src/services/permission'
-import {RootState} from 'src/store'
-import {UserInfo} from 'src/types'
-import {Locale} from 'src/types/schema'
-import {notification} from 'antd'
-import {fetchItemTemplates, ItemTemplateMap} from 'src/services/item-template'
-import {CoreConfig, fetchCoreConfig} from 'src/services/core-config'
-import i18n from 'src/i18n'
-import {fetchLocales} from 'src/services/locale'
-import {fetchLifecycles, LifecycleMap} from 'src/services/lifecycle'
-import {fetchProperties, PropertyMap} from 'src/services/property'
+import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit"
+import {fetchItems, ItemMap} from "src/services/item"
+import {fetchPermissions, PermissionMap} from "src/services/permission"
+import {RootState} from "src/store"
+import {UserInfo} from "src/types"
+import {Locale} from "src/types/schema"
+import {notification} from "antd"
+import {fetchItemTemplates, ItemTemplateMap} from "src/services/item-template"
+import {CoreConfig, fetchCoreConfig} from "src/services/core-config"
+import i18n from "src/i18n"
+import {fetchLocales} from "src/services/locale"
+import {fetchLifecycles, LifecycleMap} from "src/services/lifecycle"
+import {fetchProperties, PropertyMap} from "src/services/property"
 
 export interface RegistryState {
   isInitialized: boolean
@@ -36,7 +36,7 @@ const initialState: RegistryState = {
 }
 
 const initializeIfNeeded = createAsyncThunk(
-  'registry/initialize',
+  "registry/initialize",
   async (me: UserInfo) =>
     Promise.all([
       fetchCoreConfig(),
@@ -58,7 +58,7 @@ const shouldInitialize = (state: {registry: RegistryState}) => {
 }
 
 const registrySlice = createSlice({
-  name: 'registry',
+  name: "registry",
   initialState,
   reducers: {
     reset: () => {
@@ -87,7 +87,7 @@ const registrySlice = createSlice({
         state.isInitialized = false
         state.loading = false
         notification.error({
-          message: i18n.t('Initialization error') as string,
+          message: i18n.t("Initialization error") as string,
           description: action.error.message
         })
       })

@@ -1,15 +1,15 @@
-import _ from 'lodash'
-import {useMemo} from 'react'
-import {Alert} from 'antd'
-import {Scatter, ScatterConfig} from '@ant-design/charts'
-import {v4 as uuidv4} from 'uuid'
+import _ from "lodash"
+import {useMemo} from "react"
+import {Alert} from "antd"
+import {Scatter, ScatterConfig} from "@ant-design/charts"
+import {v4 as uuidv4} from "uuid"
 
-import {DashEventHandler, DashRenderContext} from '..'
-import {defaultDashColor, defaultDashColors, columnType, formatValue, isTemporal} from 'src/bi/util/util'
-import {LegendPosition} from '../util'
-import * as RulesService from 'src/services/rules'
-import {useBIData, useBiProperties} from 'src/bi/util/hooks'
-import {handleDashClick} from '../util/antdPlot'
+import {DashEventHandler, DashRenderContext} from ".."
+import {defaultDashColor, defaultDashColors, columnType, formatValue, isTemporal} from "src/bi/util/util"
+import {LegendPosition} from "../util"
+import * as RulesService from "src/services/rules"
+import {useBIData, useBiProperties} from "src/bi/util/hooks"
+import {handleDashClick} from "../util/antdPlot"
 
 interface ScatterDashOptions {
   xField?: string
@@ -69,16 +69,16 @@ export default function ScatterDash({dataset, dash, data, onDashClick}: DashRend
     yField,
     colorField,
     size: 4,
-    shape: 'circle',
+    shape: "circle",
     autoFit: true,
     pointStyle: {
       fillOpacity: 0.8,
-      stroke: '#bbb'
+      stroke: "#bbb"
     },
     legend: hideLegend
       ? false
       : {
-          position: legendPosition ?? 'top-left',
+          position: legendPosition ?? "top-left",
           label: {
             style: legendConfig?.label?.style
           },
@@ -91,21 +91,21 @@ export default function ScatterDash({dataset, dash, data, onDashClick}: DashRend
         autoRotate: xAxisLabelAutoRotate,
         style: axisLabelStyle
       },
-      type: isTemporal(xColumn.type) ? 'time' : undefined,
+      type: isTemporal(xColumn.type) ? "time" : undefined,
       grid: {
         line: {
-          style: {stroke: '#eee'}
+          style: {stroke: "#eee"}
         }
       },
       line: {
-        style: {stroke: '#aaa'}
+        style: {stroke: "#aaa"}
       }
     },
     yAxis: {
       nice: true,
-      type: isTemporal(yColumn.type) ? 'time' : undefined,
+      type: isTemporal(yColumn.type) ? "time" : undefined,
       line: {
-        style: {stroke: '#aaa'}
+        style: {stroke: "#aaa"}
       },
       label: {
         style: axisLabelStyle

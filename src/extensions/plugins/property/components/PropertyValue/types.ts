@@ -1,4 +1,4 @@
-import {FieldType} from 'src/types'
+import {FieldType} from "src/types"
 
 export interface PropertyValueProps {
   type: FieldType

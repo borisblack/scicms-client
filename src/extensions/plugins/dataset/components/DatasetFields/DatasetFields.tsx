@@ -1,22 +1,22 @@
-import _ from 'lodash'
-import {useEffect, useMemo, useState} from 'react'
-import {Row} from '@tanstack/react-table'
-import {useTranslation} from 'react-i18next'
-import {Button, Space, Typography} from 'antd'
-import {ItemType} from 'antd/es/menu/hooks/useItems'
-import {DeleteTwoTone, PlusCircleOutlined} from '@ant-design/icons'
+import _ from "lodash"
+import {useEffect, useMemo, useState} from "react"
+import {Row} from "@tanstack/react-table"
+import {useTranslation} from "react-i18next"
+import {Button, Space, Typography} from "antd"
+import {ItemType} from "antd/es/menu/hooks/useItems"
+import {DeleteTwoTone, PlusCircleOutlined} from "@ant-design/icons"
 
-import {Split} from 'src/uiKit/Split'
-import {DATASET_ITEM_NAME} from 'src/config/constants'
-import {type DataWithPagination, type RequestParams, DataGrid} from 'src/uiKit/DataGrid/DataGrid'
-import {getInitialData, processLocal} from 'src/util/datagrid'
-import {Column, Dataset} from 'src/types/bi'
-import {NamedColumn} from 'src/types/bi'
-import {getColumns} from './fieldsDatagrid'
-import {useAcl, useAppProperties} from 'src/util/hooks'
-import DataPreview from './DataPreview'
-import DatasetFieldModal from './DatasetFieldModal'
-import {CustomComponentContext} from 'src/extensions/plugins/types'
+import {Split} from "src/uiKit/Split"
+import {DATASET_ITEM_NAME} from "src/config/constants"
+import {type DataWithPagination, type RequestParams, DataGrid} from "src/uiKit/DataGrid/DataGrid"
+import {getInitialData, processLocal} from "src/util/datagrid"
+import {Column, Dataset} from "src/types/bi"
+import {NamedColumn} from "src/types/bi"
+import {getColumns} from "./fieldsDatagrid"
+import {useAcl, useAppProperties} from "src/util/hooks"
+import DataPreview from "./DataPreview"
+import DatasetFieldModal from "./DatasetFieldModal"
+import {CustomComponentContext} from "src/extensions/plugins/types"
 
 const MIN_TOP_PANE_SIZE = 400
 const MIN_BOTTOM_PANE_SIZE = 400
@@ -31,14 +31,14 @@ let customFieldCounter: number = 0
 export function DatasetFields({itemTab: dataWrapper, getValue, setValue}: CustomComponentContext<Dataset>) {
   const data = dataWrapper.data as Dataset | undefined
   const {item} = dataWrapper
-  if (item.name !== DATASET_ITEM_NAME) throw new Error('Illegal argument')
+  if (item.name !== DATASET_ITEM_NAME) throw new Error("Illegal argument")
 
   const {t} = useTranslation()
   const appProps = useAppProperties()
   const splitConfig = appProps.ui.split
   const {defaultPageSize, minPageSize, maxPageSize} = appProps.query
   const acl = useAcl(item, data)
-  const spec = useMemo(() => getValue('spec', {columns: {}}), [getValue])
+  const spec = useMemo(() => getValue("spec", {columns: {}}), [getValue])
   const allFields = useMemo(() => spec.columns ?? {}, [spec])
   const ownFields = useMemo(() => _.pickBy(allFields, col => !col.custom), [allFields])
   const [namedFields, setNamedFields] = useState(toNamedFields(allFields))
@@ -120,12 +120,12 @@ export function DatasetFields({itemTab: dataWrapper, getValue, setValue}: Custom
 
   const renderToolbar = () => (
     <Space size={10}>
-      <Title level={5} style={{display: 'inline'}}>
-        {t('Fields')}
+      <Title level={5} style={{display: "inline"}}>
+        {t("Fields")}
       </Title>
       {acl.canWrite && !_.isEmpty(ownFields) && (
         <Button type="primary" size="small" icon={<PlusCircleOutlined />} onClick={createDraft}>
-          {t('Add')}
+          {t("Add")}
         </Button>
       )}
     </Space>
@@ -136,8 +136,8 @@ export function DatasetFields({itemTab: dataWrapper, getValue, setValue}: Custom
 
     if (acl.canWrite && !ownFields.hasOwnProperty(row.original.name)) {
       items.push({
-        key: 'delete',
-        label: t('Delete'),
+        key: "delete",
+        label: t("Delete"),
         icon: <DeleteTwoTone twoToneColor="#eb2f96" />,
         onClick: () => removeField(row.original.name)
       })
@@ -155,7 +155,7 @@ export function DatasetFields({itemTab: dataWrapper, getValue, setValue}: Custom
 
     const newFields: Record<string, Column> = {}
     for (const nf of newNamedFields) {
-      newFields[nf.name] = _.omit(nf, 'name')
+      newFields[nf.name] = _.omit(nf, "name")
     }
 
     setValue({
@@ -193,7 +193,7 @@ export function DatasetFields({itemTab: dataWrapper, getValue, setValue}: Custom
               hiddenColumns: [],
               pageSize: appProps.query.defaultPageSize
             }}
-            title={t('Fields')}
+            title={t("Fields")}
             height={MIN_TOP_PANE_SIZE}
             toolbar={renderToolbar()}
             version={version}

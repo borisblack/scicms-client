@@ -1,13 +1,13 @@
-import {useTranslation} from 'react-i18next'
-import {Button, Dropdown, Space, Typography} from 'antd'
-import {PageHeader} from '@ant-design/pro-layout'
-import {DeleteOutlined, EditOutlined, SettingOutlined} from '@ant-design/icons'
-import {ItemType} from 'antd/es/menu/hooks/useItems'
+import {useTranslation} from "react-i18next"
+import {Button, Dropdown, Space, Typography} from "antd"
+import {PageHeader} from "@ant-design/pro-layout"
+import {DeleteOutlined, EditOutlined, SettingOutlined} from "@ant-design/icons"
+import {ItemType} from "antd/es/menu/hooks/useItems"
 
-import {IText} from 'src/types/bi'
-import {useModal} from 'src/util/hooks'
-import TextModal from '../TextModal'
-import styles from './Text.module.css'
+import {IText} from "src/types/bi"
+import {useModal} from "src/util/hooks"
+import TextModal from "../TextModal"
+import styles from "./Text.module.css"
 
 interface TextProps {
   text: IText
@@ -42,22 +42,22 @@ export default function Text({text, height, readOnly, canEdit, onLockChange, onC
                     type: 'divider'
                 },*/
         {
-          key: 'edit',
+          key: "edit",
           label: (
             <Space>
               <EditOutlined />
-              {t('Edit')}
+              {t("Edit")}
             </Space>
           ),
           // disabled: !canEdit,
           onClick: handleTextModalOpen
         },
         {
-          key: 'delete',
+          key: "delete",
           label: (
             <Space>
               <DeleteOutlined className="red" />
-              {t('Delete')}
+              {t("Delete")}
             </Space>
           ),
           disabled: !canEdit,
@@ -75,12 +75,12 @@ export default function Text({text, height, readOnly, canEdit, onLockChange, onC
         <PageHeader
           className={styles.pageHeader}
           extra={[
-            <Dropdown key="settings" placement="bottomRight" trigger={['click']} menu={{items: getSettingsMenuItems()}}>
+            <Dropdown key="settings" placement="bottomRight" trigger={["click"]} menu={{items: getSettingsMenuItems()}}>
               <Button
                 type="text"
                 className={styles.toolbarBtn}
                 icon={<SettingOutlined />}
-                title={t('Settings')}
+                title={t("Settings")}
                 onMouseDown={e => e.stopPropagation()}
               />
             </Dropdown>

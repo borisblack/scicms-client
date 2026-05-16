@@ -1,8 +1,8 @@
-import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit'
-import {notification} from 'antd'
-import {DateTime} from 'luxon'
+import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit"
+import {notification} from "antd"
+import {DateTime} from "luxon"
 
-import {RootState} from 'src/store'
+import {RootState} from "src/store"
 import {
   getExpireAt,
   getJwt,
@@ -11,7 +11,7 @@ import {
   removeJwt,
   storeExpireAt,
   storeJwt
-} from 'src/services'
+} from "src/services"
 import {
   fetchSecurityConfig as doFetchSecurityConfig,
   fetchMe as doFetchMe,
@@ -20,9 +20,9 @@ import {
   loginOauth2 as doLoginOauth2,
   logout as doLogout,
   updateSessionData as doUpdateSessionData
-} from 'src/services/auth'
-import {SecurityConfig, UserInfo} from 'src/types'
-import i18n from 'src/i18n'
+} from "src/services/auth"
+import {SecurityConfig, UserInfo} from "src/types"
+import i18n from "src/i18n"
 
 export interface AuthState {
   loading: boolean
@@ -42,21 +42,21 @@ const initialState: AuthState = {
   me: null
 }
 
-const fetchSecurityConfig = createAsyncThunk('auth/fetchSecurityConfig', () =>
+const fetchSecurityConfig = createAsyncThunk("auth/fetchSecurityConfig", () =>
   doFetchSecurityConfig().then(securityConfig => securityConfig)
 )
 
-const login = createAsyncThunk('auth/login', (credentials: {username: string; password: string}) => {
+const login = createAsyncThunk("auth/login", (credentials: {username: string; password: string}) => {
   removeJwt()
   return doLogin(credentials).then(tokenResponse => tokenResponse)
 })
 
-const loginOauth2 = createAsyncThunk('auth/loginOauth2', (credentials: {provider: string; code: string}) => {
+const loginOauth2 = createAsyncThunk("auth/loginOauth2", (credentials: {provider: string; code: string}) => {
   removeJwt()
   return doLoginOauth2(credentials).then(tokenResponse => tokenResponse)
 })
 
-const fetchMeIfNeeded = createAsyncThunk('auth/fetchMeIfNeeded', () => doFetchMe().then(me => me), {
+const fetchMeIfNeeded = createAsyncThunk("auth/fetchMeIfNeeded", () => doFetchMe().then(me => me), {
   condition: (credentials, {getState}) => shouldFetchMe(getState() as {auth: AuthState})
 })
 
@@ -65,12 +65,12 @@ const shouldFetchMe = (state: {auth: AuthState}) => {
   return !me /*&& !loading*/
 }
 
-const logout = createAsyncThunk('auth/logout', () => doLogout())
+const logout = createAsyncThunk("auth/logout", () => doLogout())
 
-const updateSessionData = createAsyncThunk('auth/updateSessionData', doUpdateSessionData)
+const updateSessionData = createAsyncThunk("auth/updateSessionData", doUpdateSessionData)
 
 const authSlice = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState,
   reducers: {},
   extraReducers: builder => {
@@ -85,7 +85,7 @@ const authSlice = createSlice({
       .addCase(fetchSecurityConfig.rejected, (state, action) => {
         state.loading = false
         notification.error({
-          message: i18n.t('Error fetching security config') as string,
+          message: i18n.t("Error fetching security config") as string,
           description: action.error.message
         })
       })
@@ -106,7 +106,7 @@ const authSlice = createSlice({
       .addCase(login.rejected, (state, action) => {
         state.loading = false
         notification.error({
-          message: i18n.t('Login error') as string,
+          message: i18n.t("Login error") as string,
           description: action.error.message
         })
       })
@@ -127,7 +127,7 @@ const authSlice = createSlice({
       .addCase(loginOauth2.rejected, (state, action) => {
         state.loading = false
         notification.error({
-          message: i18n.t('Login error') as string,
+          message: i18n.t("Login error") as string,
           description: action.error.message
         })
       })
@@ -142,7 +142,7 @@ const authSlice = createSlice({
         state.me = null
         state.loading = false
         notification.error({
-          message: i18n.t('Error fetching user info') as string,
+          message: i18n.t("Error fetching user info") as string,
           description: action.error.message
         })
       })
@@ -167,7 +167,7 @@ const authSlice = createSlice({
         state.me = null
         state.loading = false
         notification.error({
-          message: i18n.t('Logout error') as string,
+          message: i18n.t("Logout error") as string,
           description: action.error.message
         })
       })
@@ -184,7 +184,7 @@ const authSlice = createSlice({
       .addCase(updateSessionData.rejected, (state, action) => {
         state.loading = false
         notification.error({
-          message: i18n.t('Session data update error') as string,
+          message: i18n.t("Session data update error") as string,
           description: action.error.message
         })
       })

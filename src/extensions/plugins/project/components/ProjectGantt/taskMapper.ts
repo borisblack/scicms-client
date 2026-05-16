@@ -1,5 +1,5 @@
-import {Task as GanttTask} from 'gantt-task-react'
-import {Project, Task} from './types'
+import {Task as GanttTask} from "gantt-task-react"
+import {Project, Task} from "./types"
 
 export function mapToProjectTask(project: Project): GanttTask {
   return {
@@ -8,7 +8,7 @@ export function mapToProjectTask(project: Project): GanttTask {
     start: new Date(project.start),
     end: new Date(project.end),
     progress: project.progress,
-    type: 'project',
+    type: "project",
     displayOrder: 0
   }
 }
@@ -21,7 +21,7 @@ export function mapToGanttTask(task: Task): GanttTask {
     start: new Date(task.start),
     end: new Date(task.end),
     progress: task.progress,
-    type: task.isMilestone ? 'milestone' : 'task',
+    type: task.isMilestone ? "milestone" : "task",
     displayOrder: task.sortOrder ?? undefined,
     dependencies: task.dependencies.data.map(dependency => dependency.target.data.id)
   }

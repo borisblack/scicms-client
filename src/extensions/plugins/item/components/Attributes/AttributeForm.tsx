@@ -1,17 +1,17 @@
-import _ from 'lodash'
-import {useEffect, useMemo, useState} from 'react'
-import {AutoComplete, Checkbox, Col, Form, FormInstance, Input, InputNumber, notification, Row, Select} from 'antd'
-import {useTranslation} from 'react-i18next'
+import _ from "lodash"
+import {useEffect, useMemo, useState} from "react"
+import {AutoComplete, Checkbox, Col, Form, FormInstance, Input, InputNumber, notification, Row, Select} from "antd"
+import {useTranslation} from "react-i18next"
 
-import {FieldType} from 'src/types/'
-import {RelType} from 'src/types/schema'
-import {regExpRule, requiredFieldRule} from 'src/util/form'
-import {LOWERCASE_NO_WHITESPACE_PATTERN} from 'src/config/constants'
-import * as SequenceService from 'src/services/sequence'
-import {NamedAttribute} from './types'
-import {useAppProperties, useRegistry} from 'src/util/hooks'
-import styles from './Attributes.module.css'
-import FieldTypeIcon from 'src/components/FieldTypeIcon/FieldTypeIcon'
+import {FieldType} from "src/types/"
+import {RelType} from "src/types/schema"
+import {regExpRule, requiredFieldRule} from "src/util/form"
+import {LOWERCASE_NO_WHITESPACE_PATTERN} from "src/config/constants"
+import * as SequenceService from "src/services/sequence"
+import {NamedAttribute} from "./types"
+import {useAppProperties, useRegistry} from "src/util/hooks"
+import styles from "./Attributes.module.css"
+import FieldTypeIcon from "src/components/FieldTypeIcon/FieldTypeIcon"
 
 interface Props {
   form: FormInstance
@@ -109,7 +109,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
       setSeqNameOptions(sequences.map(it => ({label: it.name, value: it.name})))
     } catch (e: any) {
       notification.error({
-        message: t('Request error'),
+        message: t("Request error"),
         description: e.message
       })
     }
@@ -119,7 +119,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
     setTargetOptions([])
     if (value.length < MIN_SEARCH_LENGTH) return
 
-    const regExp = new RegExp(value, 'i')
+    const regExp = new RegExp(value, "i")
     const targets = itemNames.filter(it => it.match(regExp))
     setTargetOptions(targets.map(it => ({label: it, value: it})))
   }, DEBOUNCE_WAIT_INTERVAL)
@@ -128,7 +128,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
     setIntermediateOptions([])
     if (value.length < MIN_SEARCH_LENGTH) return
 
-    const regExp = new RegExp(value, 'i')
+    const regExp = new RegExp(value, "i")
     const intermediates = itemNames.filter(it => it.match(regExp))
     setIntermediateOptions(intermediates.map(it => ({label: it, value: it})))
   }, DEBOUNCE_WAIT_INTERVAL)
@@ -140,9 +140,9 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
           <FormItem
             className={styles.formItem}
             name="name"
-            label={t('Name')}
+            label={t("Name")}
             initialValue={attribute?.name}
-            rules={[{required: true, message: t('Required field')}, regExpRule(LOWERCASE_NO_WHITESPACE_PATTERN)]}
+            rules={[{required: true, message: t("Required field")}, regExpRule(LOWERCASE_NO_WHITESPACE_PATTERN)]}
           >
             <Input style={{maxWidth: 300}} maxLength={50} disabled={attribute?.name != null} />
           </FormItem>
@@ -150,9 +150,9 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
           <FormItem
             className={styles.formItem}
             name="type"
-            label={t('Type')}
+            label={t("Type")}
             initialValue={attribute?.type}
-            rules={[{required: true, message: t('Required field')}]}
+            rules={[{required: true, message: t("Required field")}]}
           >
             <Select
               style={{maxWidth: 200}}
@@ -175,9 +175,9 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
           <FormItem
             className={styles.formItem}
             name="sortOrder"
-            label={t('Sort Order')}
+            label={t("Sort Order")}
             initialValue={attribute?.sortOrder}
-            rules={[{type: 'number', min: 0}]}
+            rules={[{type: "number", min: 0}]}
             hidden
           >
             <InputNumber style={{width: 150}} min={0} />
@@ -187,7 +187,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
             <FormItem
               className={styles.formItem}
               name="columnName"
-              label={t('Column Name')}
+              label={t("Column Name")}
               initialValue={attribute?.columnName}
             >
               <Input style={{maxWidth: 300}} maxLength={50} />
@@ -197,9 +197,9 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
           <FormItem
             className={styles.formItem}
             name="displayName"
-            label={t('Display Name')}
+            label={t("Display Name")}
             initialValue={attribute?.displayName}
-            rules={[{required: true, message: t('Required field')}]}
+            rules={[{required: true, message: t("Required field")}]}
           >
             <Input style={{maxWidth: 300}} maxLength={50} />
           </FormItem>
@@ -207,7 +207,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
           <FormItem
             className={styles.formItem}
             name="description"
-            label={t('Description')}
+            label={t("Description")}
             initialValue={attribute?.description}
           >
             <Input maxLength={250} />
@@ -221,13 +221,13 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
                 valuePropName="checked"
                 initialValue={attribute?.required}
               >
-                <Checkbox>{t('Required')}</Checkbox>
+                <Checkbox>{t("Required")}</Checkbox>
               </FormItem>
 
               <FormItem
                 className={styles.formItem}
                 name="defaultValue"
-                label={t('Default Value')}
+                label={t("Default Value")}
                 initialValue={attribute?.defaultValue}
               >
                 <Input style={{maxWidth: 300}} maxLength={50} />
@@ -236,7 +236,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
           )}
 
           <FormItem className={styles.formItem} name="keyed" valuePropName="checked" initialValue={attribute?.keyed}>
-            <Checkbox /*disabled*/>{t('Keyed')}</Checkbox>
+            <Checkbox /*disabled*/>{t("Keyed")}</Checkbox>
           </FormItem>
 
           {!isCollectionRelation && (
@@ -247,7 +247,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
                 valuePropName="checked"
                 initialValue={attribute?.unique}
               >
-                <Checkbox>{t('Unique')}</Checkbox>
+                <Checkbox>{t("Unique")}</Checkbox>
               </FormItem>
 
               <FormItem
@@ -256,7 +256,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
                 valuePropName="checked"
                 initialValue={attribute?.indexed}
               >
-                <Checkbox>{t('Indexed')}</Checkbox>
+                <Checkbox>{t("Indexed")}</Checkbox>
               </FormItem>
             </>
           )}
@@ -267,7 +267,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
             valuePropName="checked"
             initialValue={attribute?.private}
           >
-            <Checkbox>{t('Private')}</Checkbox>
+            <Checkbox>{t("Private")}</Checkbox>
           </FormItem>
 
           <FormItem
@@ -276,7 +276,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
             valuePropName="checked"
             initialValue={attribute?.readOnly}
           >
-            <Checkbox>{t('Read Only')}</Checkbox>
+            <Checkbox>{t("Read Only")}</Checkbox>
           </FormItem>
 
           {attrType === FieldType.password && (
@@ -287,7 +287,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
                 valuePropName="checked"
                 initialValue={attribute?.confirm}
               >
-                <Checkbox>{t('Confirm')}</Checkbox>
+                <Checkbox>{t("Confirm")}</Checkbox>
               </FormItem>
 
               <FormItem
@@ -296,7 +296,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
                 valuePropName="checked"
                 initialValue={attribute?.encode}
               >
-                <Checkbox>{t('Encode')}</Checkbox>
+                <Checkbox>{t("Encode")}</Checkbox>
               </FormItem>
             </>
           )}
@@ -307,9 +307,9 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
             <FormItem
               className={styles.formItem}
               name="enumSet"
-              label={t('Enum Set')}
-              initialValue={attribute?.enumSet?.join('\n')}
-              rules={[{required: true, message: t('Required field')}]}
+              label={t("Enum Set")}
+              initialValue={attribute?.enumSet?.join("\n")}
+              rules={[{required: true, message: t("Required field")}]}
             >
               <TextArea style={{maxWidth: 180}} rows={appProps.ui.form.textAreaRows} />
             </FormItem>
@@ -319,15 +319,15 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
             <FormItem
               className={styles.formItem}
               name="seqName"
-              label={t('Sequence Name')}
+              label={t("Sequence Name")}
               initialValue={attribute?.seqName}
-              rules={[{required: true, message: t('Required field')}]}
+              rules={[{required: true, message: t("Required field")}]}
             >
               <AutoComplete
                 options={seqNameOptions}
                 style={{width: 300}}
                 onSearch={handleSeqNameSearch}
-                placeholder={t('Sequence Name')}
+                placeholder={t("Sequence Name")}
               />
             </FormItem>
           )}
@@ -337,9 +337,9 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
               <FormItem
                 className={styles.formItem}
                 name="relType"
-                label={t('Relation Type')}
+                label={t("Relation Type")}
                 initialValue={attribute?.relType}
-                rules={[{required: true, message: t('Required field')}]}
+                rules={[{required: true, message: t("Required field")}]}
               >
                 <Select style={{maxWidth: 200}} onSelect={(val: RelType) => setRelType(val)}>
                   {Object.keys(RelType).map(it => (
@@ -353,16 +353,16 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
               <FormItem
                 className={styles.formItem}
                 name="target"
-                label={t('Target Item')}
+                label={t("Target Item")}
                 initialValue={attribute?.target}
-                rules={[{required: true, message: t('Required field')}]}
+                rules={[{required: true, message: t("Required field")}]}
               >
                 <AutoComplete
                   options={targetOptions}
                   style={{width: 300}}
                   onSearch={handleTargetSearch}
                   onSelect={(value: string) => setTarget(value)}
-                  placeholder={t('Target Item')}
+                  placeholder={t("Target Item")}
                 />
               </FormItem>
 
@@ -370,15 +370,15 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
                 <FormItem
                   className={styles.formItem}
                   name="intermediate"
-                  label={t('Intermediate Item')}
+                  label={t("Intermediate Item")}
                   initialValue={attribute?.intermediate}
-                  rules={[{required: true, message: t('Required field')}]}
+                  rules={[{required: true, message: t("Required field")}]}
                 >
                   <AutoComplete
                     options={intermediateOptions}
                     style={{width: 300}}
                     onSearch={handleIntermediateSearch}
-                    placeholder={t('Intermediate Item')}
+                    placeholder={t("Intermediate Item")}
                   />
                 </FormItem>
               )}
@@ -389,11 +389,11 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
                     <FormItem
                       className={styles.formItem}
                       name="mappedBy"
-                      label={t('Mapped By')}
+                      label={t("Mapped By")}
                       initialValue={attribute?.mappedBy}
                       rules={[requiredFieldRule(relType === RelType.oneToMany)]}
                     >
-                      <Select options={mappedByOptions} style={{width: 300}} placeholder={t('Mapped By')} />
+                      <Select options={mappedByOptions} style={{width: 300}} placeholder={t("Mapped By")} />
                     </FormItem>
                   )}
 
@@ -401,10 +401,10 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
                     <FormItem
                       className={styles.formItem}
                       name="inversedBy"
-                      label={t('Inversed By')}
+                      label={t("Inversed By")}
                       initialValue={attribute?.inversedBy}
                     >
-                      <Select options={inversedByOptions} style={{width: 300}} placeholder={t('Inversed By')} />
+                      <Select options={inversedByOptions} style={{width: 300}} placeholder={t("Inversed By")} />
                     </FormItem>
                   )}
 
@@ -412,10 +412,10 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
                     <FormItem
                       className={styles.formItem}
                       name="referencedBy"
-                      label={t('Referenced By')}
+                      label={t("Referenced By")}
                       initialValue={attribute?.referencedBy}
                     >
-                      <Select options={referencedByOptions} style={{width: 300}} placeholder={t('Referenced By')} />
+                      <Select options={referencedByOptions} style={{width: 300}} placeholder={t("Referenced By")} />
                     </FormItem>
                   )}
                 </>
@@ -428,11 +428,11 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
               <FormItem
                 className={styles.formItem}
                 name="length"
-                label={t('Length')}
+                label={t("Length")}
                 initialValue={attribute?.length}
                 rules={[
-                  {required: true, message: t('Required field')},
-                  {type: 'number', min: 0}
+                  {required: true, message: t("Required field")},
+                  {type: "number", min: 0}
                 ]}
               >
                 <InputNumber style={{width: 150}} min={0} />
@@ -441,7 +441,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
               <FormItem
                 className={styles.formItem}
                 name="pattern"
-                label={t('Pattern')}
+                label={t("Pattern")}
                 initialValue={attribute?.pattern}
               >
                 <Input style={{maxWidth: 300}} maxLength={50} />
@@ -450,7 +450,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
           )}
 
           {attrType === FieldType.text && (
-            <FormItem className={styles.formItem} name="format" label={t('Format')} initialValue={attribute?.format}>
+            <FormItem className={styles.formItem} name="format" label={t("Format")} initialValue={attribute?.format}>
               <Input style={{maxWidth: 300}} maxLength={50} />
             </FormItem>
           )}
@@ -460,9 +460,9 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
               <FormItem
                 className={styles.formItem}
                 name="precision"
-                label={t('Precision')}
+                label={t("Precision")}
                 initialValue={attribute?.precision}
-                rules={[{type: 'number', min: 0, max: 22}]}
+                rules={[{type: "number", min: 0, max: 22}]}
               >
                 <InputNumber style={{width: 150}} min={0} max={22} />
               </FormItem>
@@ -470,9 +470,9 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
               <FormItem
                 className={styles.formItem}
                 name="scale"
-                label={t('Scale')}
+                label={t("Scale")}
                 initialValue={attribute?.scale}
-                rules={[{type: 'number', min: 0, max: 22}]}
+                rules={[{type: "number", min: 0, max: 22}]}
               >
                 <InputNumber style={{width: 150}} min={0} max={22} />
               </FormItem>
@@ -488,9 +488,9 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
               <FormItem
                 className={styles.formItem}
                 name="minRange"
-                label={t('Min Range')}
+                label={t("Min Range")}
                 initialValue={attribute?.minRange}
-                rules={[{type: 'number'}]}
+                rules={[{type: "number"}]}
               >
                 <InputNumber style={{width: 150}} />
               </FormItem>
@@ -498,9 +498,9 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
               <FormItem
                 className={styles.formItem}
                 name="maxRange"
-                label={t('Max Range')}
+                label={t("Max Range")}
                 initialValue={attribute?.maxRange}
-                rules={[{type: 'number'}]}
+                rules={[{type: "number"}]}
               >
                 <InputNumber style={{width: 150}} />
               </FormItem>
@@ -512,9 +512,9 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
               <FormItem
                 className={styles.formItem}
                 name="colWidth"
-                label={t('Column Width')}
+                label={t("Column Width")}
                 initialValue={attribute?.colWidth}
-                rules={[{type: 'number', min: 0}]}
+                rules={[{type: "number", min: 0}]}
               >
                 <InputNumber style={{width: 150}} min={0} />
               </FormItem>
@@ -525,15 +525,15 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
                 valuePropName="checked"
                 initialValue={attribute?.colHidden}
               >
-                <Checkbox>{t('Column Hidden')}</Checkbox>
+                <Checkbox>{t("Column Hidden")}</Checkbox>
               </FormItem>
 
               <FormItem
                 className={styles.formItem}
                 name="fieldWidth"
-                label={t('Field Width')}
+                label={t("Field Width")}
                 initialValue={attribute?.fieldWidth}
-                rules={[{type: 'number', min: 0}]}
+                rules={[{type: "number", min: 0}]}
               >
                 <InputNumber style={{width: 150}} min={0} />
               </FormItem>
@@ -546,7 +546,7 @@ export default function AttributeForm({form, attribute, canEdit, onFormFinish}: 
             valuePropName="checked"
             initialValue={attribute?.fieldHidden}
           >
-            <Checkbox>{t('Field Hidden')}</Checkbox>
+            <Checkbox>{t("Field Hidden")}</Checkbox>
           </FormItem>
         </Col>
       </Row>

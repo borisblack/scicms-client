@@ -1,5 +1,5 @@
-import {Parser} from 'js-expression'
-import functionConfig from '../../config/customFunction'
+import {Parser} from "js-expression"
+import functionConfig from "../../config/customFunction"
 
 export interface CustomFunction {
   id: string
@@ -8,7 +8,7 @@ export interface CustomFunction {
   description?: string
 }
 
-type CustomFunctionInfo = Omit<CustomFunction, 'exec'>
+type CustomFunctionInfo = Omit<CustomFunction, "exec">
 
 export interface CustomFunctionContext {
   expression: string

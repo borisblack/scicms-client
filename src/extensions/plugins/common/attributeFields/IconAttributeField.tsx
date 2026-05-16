@@ -1,14 +1,14 @@
-import {FC, useMemo, useState} from 'react'
-import {useTranslation} from 'react-i18next'
-import {Button, Form, Input, Modal, Tooltip} from 'antd'
-import {CloseCircleOutlined} from '@ant-design/icons'
-import {FieldType} from 'src/types'
-import {ICON_ATTR_NAME} from 'src/config/constants'
-import IconSuspense from 'src/uiKit/icons/IconSuspense'
-import IconsSuspense from 'src/uiKit/icons/IconsSuspense'
-import {generateKey} from 'src/util/mdi'
-import {CustomAttributeFieldContext} from '../../types'
-import styles from 'src/pages/app/attributeFields/AttributeField.module.css'
+import {FC, useMemo, useState} from "react"
+import {useTranslation} from "react-i18next"
+import {Button, Form, Input, Modal, Tooltip} from "antd"
+import {CloseCircleOutlined} from "@ant-design/icons"
+import {FieldType} from "src/types"
+import {ICON_ATTR_NAME} from "src/config/constants"
+import IconSuspense from "src/uiKit/icons/IconSuspense"
+import IconsSuspense from "src/uiKit/icons/IconsSuspense"
+import {generateKey} from "src/util/mdi"
+import {CustomAttributeFieldContext} from "../../types"
+import styles from "src/pages/app/attributeFields/AttributeField.module.css"
 
 const FormItem = Form.Item
 const {Search} = Input
@@ -24,7 +24,7 @@ export const IconAttributeField: FC<CustomAttributeFieldContext> = ({
   attribute,
   value
 }) => {
-  if (attrName !== ICON_ATTR_NAME || attribute.type !== FieldType.string) throw new Error('Illegal attribute')
+  if (attrName !== ICON_ATTR_NAME || attribute.type !== FieldType.string) throw new Error("Illegal attribute")
 
   const uniqueKey = generateKey(dataWrapper)
   const {t} = useTranslation()
@@ -63,7 +63,7 @@ export const IconAttributeField: FC<CustomAttributeFieldContext> = ({
         }
         hidden={attribute.fieldHidden}
         initialValue={value ?? attribute.defaultValue}
-        rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
+        rules={[{required: attribute.required && !attribute.readOnly, message: t("Required field")}]}
       >
         <Search
           id={`${uniqueKey}#${attrName}`}
@@ -71,7 +71,7 @@ export const IconAttributeField: FC<CustomAttributeFieldContext> = ({
           onSearch={() => setIconsModalVisible(true)}
           addonAfter={
             currentValue && [
-              <Tooltip key="clear" title={t('Clear')}>
+              <Tooltip key="clear" title={t("Clear")}>
                 <Button
                   type="link"
                   style={{width: SUFFIX_BUTTON_WIDTH}}

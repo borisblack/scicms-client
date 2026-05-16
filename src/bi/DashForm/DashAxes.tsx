@@ -1,13 +1,13 @@
-import React, {useEffect, useMemo} from 'react'
-import {Form, Select} from 'antd'
-import {useTranslation} from 'react-i18next'
+import React, {useEffect, useMemo} from "react"
+import {Form, Select} from "antd"
+import {useTranslation} from "react-i18next"
 
-import {Dash, getDash} from 'src/extensions/dashes'
-import {Dataset, IDash} from 'src/types/bi'
-import DashAxisArea from './DashAxisArea'
-import {requiredFieldRule} from 'src/util/form'
-import './DashAxes.css'
-import styles from './DashAxes.module.css'
+import {Dash, getDash} from "src/extensions/dashes"
+import {Dataset, IDash} from "src/types/bi"
+import DashAxisArea from "./DashAxisArea"
+import {requiredFieldRule} from "src/util/form"
+import "./DashAxes.css"
+import styles from "./DashAxes.module.css"
 
 interface DashAxesProps {
   dataset: Dataset
@@ -37,7 +37,7 @@ export default function DashAxes({dataset, dash, dashHandler, formFieldName, can
               initialValue={initialValue}
               rules={axis.required ? [requiredFieldRule()] : []}
             >
-              <Select style={{display: 'none'}} allowClear mode="multiple" options={[]} />
+              <Select style={{display: "none"}} allowClear mode="multiple" options={[]} />
             </Form.Item>
 
             <DashAxisArea
@@ -55,10 +55,10 @@ export default function DashAxes({dataset, dash, dashHandler, formFieldName, can
         className={styles.formItem}
         // hidden
         name="sortField"
-        label={t('Sort Fields')}
+        label={t("Sort Fields")}
         initialValue={dash.sortField ? (Array.isArray(dash.sortField) ? dash.sortField : [dash.sortField]) : undefined}
       >
-        <Select style={{display: 'none'}} allowClear mode="multiple" options={[]} />
+        <Select style={{display: "none"}} allowClear mode="multiple" options={[]} />
       </Form.Item>
 
       <DashAxisArea dataset={dataset} dash={dash} namePath="sortField" cardinality={-1} canEdit={canEdit} />

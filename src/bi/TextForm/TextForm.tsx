@@ -1,10 +1,10 @@
-import {useTranslation} from 'react-i18next'
-import {Col, Form, Input, Row, Select} from 'antd'
-import {DefaultOptionType} from 'rc-select/lib/Select'
+import {useTranslation} from "react-i18next"
+import {Col, Form, Input, Row, Select} from "antd"
+import {DefaultOptionType} from "rc-select/lib/Select"
 
-import {IText} from 'src/types/bi'
-import {requiredFieldRule} from 'src/util/form'
-import styles from './TextForm.module.css'
+import {IText} from "src/types/bi"
+import {requiredFieldRule} from "src/util/form"
+import styles from "./TextForm.module.css"
 
 interface TextFormProps {
   text: IText
@@ -36,12 +36,12 @@ export default function TextForm({text, canEdit}: TextFormProps) {
       </FormItem>
 
       <Col span={24}>
-        <FormItem className={styles.formItem} name="content" label={t('Content')} rules={[requiredFieldRule()]}>
+        <FormItem className={styles.formItem} name="content" label={t("Content")} rules={[requiredFieldRule()]}>
           <TextArea />
         </FormItem>
       </Col>
       <Col span={8}>
-        <FormItem className={styles.formItem} name="level" label={t('Header')}>
+        <FormItem className={styles.formItem} name="level" label={t("Header")}>
           <Select allowClear options={levelOptions} />
         </FormItem>
       </Col>

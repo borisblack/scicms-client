@@ -1,19 +1,19 @@
-import _ from 'lodash'
-import {ReactElement} from 'react'
-import {ColumnDef, ColumnFiltersState, createColumnHelper, SortingState} from '@tanstack/react-table'
-import {Checkbox, Tag, Typography} from 'antd'
-import {DateTime} from 'luxon'
+import _ from "lodash"
+import {ReactElement} from "react"
+import {ColumnDef, ColumnFiltersState, createColumnHelper, SortingState} from "@tanstack/react-table"
+import {Checkbox, Tag, Typography} from "antd"
+import {DateTime} from "luxon"
 
-import {FieldType} from '../types'
-import {Attribute, Item, ItemData, Media, RelType} from '../types/schema'
-import {DataWithPagination, RequestParams} from '../uiKit/DataGrid/DataGrid'
-import QueryManager, {ExtRequestParams, ItemFiltersInput} from '../services/query'
-import {ACCESS_ITEM_NAME, FILENAME_ATTR_NAME, MASK_ATTR_NAME, MEDIA_ITEM_NAME, UTC} from '../config/constants'
-import i18n from '../i18n'
-import {getBit} from './index'
-import {download} from '../services/media'
-import {ItemMap} from '../services/item'
-import {sortAttributes} from './schema'
+import {FieldType} from "../types"
+import {Attribute, Item, ItemData, Media, RelType} from "../types/schema"
+import {DataWithPagination, RequestParams} from "../uiKit/DataGrid/DataGrid"
+import QueryManager, {ExtRequestParams, ItemFiltersInput} from "../services/query"
+import {ACCESS_ITEM_NAME, FILENAME_ATTR_NAME, MASK_ATTR_NAME, MEDIA_ITEM_NAME, UTC} from "../config/constants"
+import i18n from "../i18n"
+import {getBit} from "./index"
+import {download} from "../services/media"
+import {ItemMap} from "../services/item"
+import {sortAttributes} from "./schema"
 
 interface GetColumnsParams {
   items: ItemMap
@@ -146,13 +146,13 @@ const renderCell = ({
       return value ? _.truncate(value, {length: maxTextLength}) : value
     case FieldType.int:
       if (item.name === ACCESS_ITEM_NAME && attrName === MASK_ATTR_NAME && value != null) {
-        const r = getBit(value, 0) ? 'R' : '-'
-        const w = getBit(value, 1) ? 'W' : '-'
-        const c = getBit(value, 2) ? 'C' : '-'
-        const d = getBit(value, 3) ? 'D' : '-'
-        const a = getBit(value, 4) ? 'A' : '-'
+        const r = getBit(value, 0) ? "R" : "-"
+        const w = getBit(value, 1) ? "W" : "-"
+        const c = getBit(value, 2) ? "C" : "-"
+        const d = getBit(value, 3) ? "D" : "-"
+        const a = getBit(value, 4) ? "A" : "-"
 
-        return <Tag style={{fontFamily: 'monospace', fontWeight: 600}}>{`${a} ${d} ${c} ${w} ${r}`}</Tag>
+        return <Tag style={{fontFamily: "monospace", fontWeight: 600}}>{`${a} ${d} ${c} ${w} ${r}`}</Tag>
       }
       return value
     case FieldType.long:
@@ -188,9 +188,9 @@ const renderCell = ({
       )
     case FieldType.relation:
       if (attribute.relType === RelType.oneToMany || attribute.relType === RelType.manyToMany)
-        throw new Error('Cannot render oneToMany or manyToMany relation')
+        throw new Error("Cannot render oneToMany or manyToMany relation")
 
-      if (!attribute.target) throw new Error('Illegal state')
+      if (!attribute.target) throw new Error("Illegal state")
 
       const subItem = items[attribute.target]
       const title = value && value.data ? value.data[subItem.titleAttribute] ?? value.data.id : null
@@ -198,7 +198,7 @@ const renderCell = ({
 
       return <Link onClick={() => onOpenItem(subItem, value.data.id)}>{title}</Link>
     default:
-      throw new Error('Illegal attribute')
+      throw new Error("Illegal attribute")
   }
 }
 
@@ -288,25 +288,25 @@ function filterLocal(data: any[], filters: ColumnFiltersState): any[] {
           if (
             !(
               (dataVal &&
-                (lowerFilterVal === '1' ||
-                  lowerFilterVal === 'true' ||
-                  lowerFilterVal === 'yes' ||
-                  lowerFilterVal === 'y')) ||
+                (lowerFilterVal === "1" ||
+                  lowerFilterVal === "true" ||
+                  lowerFilterVal === "yes" ||
+                  lowerFilterVal === "y")) ||
               (!dataVal &&
-                (lowerFilterVal === '0' ||
-                  lowerFilterVal === 'false' ||
-                  lowerFilterVal === 'no' ||
-                  lowerFilterVal === 'n'))
+                (lowerFilterVal === "0" ||
+                  lowerFilterVal === "false" ||
+                  lowerFilterVal === "no" ||
+                  lowerFilterVal === "n"))
             )
           ) {
             return false
           }
         } else {
-          if (_.isArray(dataVal)) dataVal = dataVal.join(', ')
+          if (_.isArray(dataVal)) dataVal = dataVal.join(", ")
 
           if (!_.isString(dataVal)) dataVal = _.toString(dataVal)
 
-          if (dataVal.match(new RegExp(filterVal, 'i')) == null) return false
+          if (dataVal.match(new RegExp(filterVal, "i")) == null) return false
         }
         matched++
       }
@@ -323,11 +323,11 @@ function sortLocal(data: any[], sorting: SortingState): any[] {
     const sortingState = sorting[0]
     return [...data].sort((a, b) => {
       const {id, desc} = sortingState
-      let aVal = a[id] ?? ''
-      if (Array.isArray(aVal)) aVal = aVal.join(', ')
+      let aVal = a[id] ?? ""
+      if (Array.isArray(aVal)) aVal = aVal.join(", ")
 
-      let bVal = b[id] ?? ''
-      if (Array.isArray(bVal)) bVal = bVal.join(', ')
+      let bVal = b[id] ?? ""
+      if (Array.isArray(bVal)) bVal = bVal.join(", ")
 
       if (desc) {
         if (aVal < bVal) return 1
@@ -343,7 +343,7 @@ function sortLocal(data: any[], sorting: SortingState): any[] {
 }
 
 function paginateLocal({data, page, pageSize, minPageSize, maxPageSize}: PaginateLocalParams): DataWithPagination<any> {
-  if (page < 1 && (pageSize < minPageSize || pageSize > maxPageSize)) throw new Error('Illegal argument')
+  if (page < 1 && (pageSize < minPageSize || pageSize > maxPageSize)) throw new Error("Illegal argument")
 
   const total = data.length
   let pageNumber = page

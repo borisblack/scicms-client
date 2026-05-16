@@ -1,5 +1,5 @@
-import {MDITabObservable} from '.'
-import {Draft} from '@reduxjs/toolkit'
+import {MDITabObservable} from "."
+import {Draft} from "@reduxjs/toolkit"
 
 export interface MDITabsState<T> {
   items: MDITabObservable<T>[]
@@ -15,31 +15,31 @@ export interface MDITabsAction<T> {
   remove?: boolean
 }
 
-export const SET_ACTIVE_KEY = 'setActiveKey'
-export const OPEN_ACTION = 'open'
-export const UPDATE_ACTION = 'update'
-export const UPDATE_ACTIVE_ACTION = 'updateActive'
-export const CLOSE_ACTION = 'close'
-export const CLOSE_ACTIVE_ACTION = 'closeActive'
-export const RESET_ACTION = 'reset'
+export const SET_ACTIVE_KEY = "setActiveKey"
+export const OPEN_ACTION = "open"
+export const UPDATE_ACTION = "update"
+export const UPDATE_ACTIVE_ACTION = "updateActive"
+export const CLOSE_ACTION = "close"
+export const CLOSE_ACTIVE_ACTION = "closeActive"
+export const RESET_ACTION = "reset"
 
 export default function mdiTabsReducer<T>(draft: Draft<MDITabsState<T>>, action: MDITabsAction<T>) {
   switch (action.type) {
     case SET_ACTIVE_KEY: {
       const {key} = action
-      if (key == null) throw new Error('Action key is null.')
+      if (key == null) throw new Error("Action key is null.")
 
-      if (draft.items.findIndex(item => item.key === key) === -1) throw new Error('Key not found.')
+      if (draft.items.findIndex(item => item.key === key) === -1) throw new Error("Key not found.")
 
       draft.activeKey = key
       break
     }
     case OPEN_ACTION: {
       const {item} = action
-      if (item == null) throw new Error('Action item is null.')
+      if (item == null) throw new Error("Action item is null.")
 
       const {key} = item
-      if (key == null) throw new Error('Action key is null.')
+      if (key == null) throw new Error("Action key is null.")
 
       const {items} = draft
       const existingIndex = items.findIndex(existingItem => existingItem.key === key)
@@ -59,13 +59,13 @@ export default function mdiTabsReducer<T>(draft: Draft<MDITabsState<T>>, action:
     }
     case UPDATE_ACTION: {
       const {key, newKey, data} = action
-      if (key == null) throw new Error('Action key is null.')
+      if (key == null) throw new Error("Action key is null.")
 
-      if (data == null) throw new Error('Action data is null.')
+      if (data == null) throw new Error("Action data is null.")
 
       const {items} = draft
       const existingIndex = items.findIndex(existingItem => existingItem.key === key)
-      if (existingIndex === -1) throw new Error('Item not found.')
+      if (existingIndex === -1) throw new Error("Item not found.")
 
       const existingItem = items[existingIndex]
       const updatedItem = {...existingItem, key: newKey == null ? key : newKey, data: {...data}}
@@ -82,10 +82,10 @@ export default function mdiTabsReducer<T>(draft: Draft<MDITabsState<T>>, action:
       const {newKey, data} = action
       if (activeKey == null) break
 
-      if (data == null) throw new Error('Action data is null.')
+      if (data == null) throw new Error("Action data is null.")
 
       const existingIndex = items.findIndex(existingItem => existingItem.key === activeKey)
-      if (existingIndex === -1) throw new Error('Item not found.')
+      if (existingIndex === -1) throw new Error("Item not found.")
 
       const existingItem = items[existingIndex]
       const updatedItem = {...existingItem, key: newKey == null ? activeKey : newKey, data: {...data}}
@@ -99,7 +99,7 @@ export default function mdiTabsReducer<T>(draft: Draft<MDITabsState<T>>, action:
     }
     case CLOSE_ACTION: {
       const {key, remove} = action
-      if (key == null) throw new Error('Action key is null.')
+      if (key == null) throw new Error("Action key is null.")
 
       const {items, activeKey} = draft
       const closedIndex = items.findIndex(existingItem => existingItem.key === key)

@@ -1,9 +1,9 @@
-import {gql} from '@apollo/client'
-import {apolloClient, extractGraphQLErrorMessages} from 'src/services'
-import i18n from 'src/i18n'
-import {Task} from './types'
-import _ from 'lodash'
-import {ItemFiltersInput} from 'src/services/query'
+import {gql} from "@apollo/client"
+import {apolloClient, extractGraphQLErrorMessages} from "src/services"
+import i18n from "src/i18n"
+import {Task} from "./types"
+import _ from "lodash"
+import {ItemFiltersInput} from "src/services/query"
 
 const FIND_ALL_BY_FILTER_QUERY = gql`
   query findAllTasksByFilter($filters: TaskFiltersInput) {
@@ -47,7 +47,7 @@ export async function fetchAllTasksByFilter(projectId: string, level: number = -
 
   if (res.errors) {
     console.error(extractGraphQLErrorMessages(res.errors))
-    throw new Error(i18n.t('An error occurred while executing the request'))
+    throw new Error(i18n.t("An error occurred while executing the request"))
   }
 
   return res.data.tasks.data

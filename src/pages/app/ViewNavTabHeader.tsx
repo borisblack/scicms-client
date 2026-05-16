@@ -1,7 +1,7 @@
-import React, {MouseEvent, ReactNode, useState} from 'react'
-import {Alert, Button, Dropdown, FormInstance, Modal, notification, Popconfirm, Space} from 'antd'
-import {PageHeader} from '@ant-design/pro-layout'
-import * as icons from '@ant-design/icons'
+import React, {MouseEvent, ReactNode, useState} from "react"
+import {Alert, Button, Dropdown, FormInstance, Modal, notification, Popconfirm, Space} from "antd"
+import {PageHeader} from "@ant-design/pro-layout"
+import * as icons from "@ant-design/icons"
 import {
   CloseCircleOutlined,
   DeleteOutlined,
@@ -14,27 +14,27 @@ import {
   SaveOutlined,
   SubnodeOutlined,
   UnlockOutlined
-} from '@ant-design/icons'
+} from "@ant-design/icons"
 
-import {ViewState} from 'src/types'
-import {FlaggedResponse, ItemData, ItemTab, ResponseCollection} from 'src/types/schema'
-import {useTranslation} from 'react-i18next'
-import SearchDataGridWrapper from './SearchDataGridWrapper'
-import {ItemFiltersInput} from 'src/services/query'
-import Promote from './Promote'
+import {ViewState} from "src/types"
+import {FlaggedResponse, ItemData, ItemTab, ResponseCollection} from "src/types/schema"
+import {useTranslation} from "react-i18next"
+import SearchDataGridWrapper from "./SearchDataGridWrapper"
+import {ItemFiltersInput} from "src/services/query"
+import Promote from "./Promote"
 import {
   ITEM_ITEM_NAME,
   ITEM_TEMPLATE_ITEM_NAME,
   LOCALE_ATTR_NAME,
   MAJOR_REV_ATTR_NAME,
   MINOR_REV_ATTR_NAME
-} from 'src/config/constants'
-import {useAppProperties, useAuth, useItemOperations, useMutationManager, useRegistry} from 'src/util/hooks'
-import {useMDIContext} from '../../uiKit/MDITabs/hooks'
-import {getTitle} from 'src/util/mdi'
-import {pluginEngine} from 'src/extensions/plugins'
-import {ApiMiddlewareContext, ApiOperation} from 'src/extensions/plugins/types'
-import styles from './NavTab.module.css'
+} from "src/config/constants"
+import {useAppProperties, useAuth, useItemOperations, useMutationManager, useRegistry} from "src/util/hooks"
+import {useMDIContext} from "../../uiKit/MDITabs/hooks"
+import {getTitle} from "src/util/mdi"
+import {pluginEngine} from "src/extensions/plugins"
+import {ApiMiddlewareContext, ApiOperation} from "src/extensions/plugins/types"
+import styles from "./NavTab.module.css"
 import {
   hasConfigIdAttribute,
   hasCurrentAttribute,
@@ -42,7 +42,7 @@ import {
   hasLifecycleAttribute,
   hasMajorRevAttribute,
   isItemLockable
-} from 'src/util/schema'
+} from "src/util/schema"
 
 interface Props {
   itemTab: ItemTab
@@ -113,7 +113,7 @@ export default function ViewNavTabHeader({
   }
 
   async function handleLock(evt: MouseEvent) {
-    if (isNew) throw new Error('New item cannot be locked')
+    if (isNew) throw new Error("New item cannot be locked")
 
     if (!isLockable) return
 
@@ -131,8 +131,8 @@ export default function ViewNavTabHeader({
       if (locked.success) ctx.updateActiveTab({...itemTab, data: locked.data})
       else
         notification.warning({
-          message: 'Locking error',
-          description: t('Item cannot be locked')
+          message: "Locking error",
+          description: t("Item cannot be locked")
         })
 
       setLockedByMe(locked.success)
@@ -140,7 +140,7 @@ export default function ViewNavTabHeader({
     } catch (e: any) {
       console.error(e.message)
       notification.error({
-        message: t('Locking error'),
+        message: t("Locking error"),
         description: e.message
       })
     } finally {
@@ -149,7 +149,7 @@ export default function ViewNavTabHeader({
   }
 
   async function handleCancel(evt: MouseEvent) {
-    if (isNew) throw new Error('New item cannot be unlocked')
+    if (isNew) throw new Error("New item cannot be unlocked")
 
     if (!isLockable) return
 
@@ -173,8 +173,8 @@ export default function ViewNavTabHeader({
         ctx.updateActiveTab({...itemTab, data: unlocked.data})
       } else {
         notification.warning({
-          message: 'Cancellation error',
-          description: t('Item cannot be unlocked')
+          message: "Cancellation error",
+          description: t("Item cannot be unlocked")
         })
       }
       setLockedByMe(!unlocked)
@@ -182,7 +182,7 @@ export default function ViewNavTabHeader({
     } catch (e: any) {
       console.error(e.message)
       notification.error({
-        message: t('Cancellation error'),
+        message: t("Cancellation error"),
         description: e.message
       })
     } finally {
@@ -191,9 +191,9 @@ export default function ViewNavTabHeader({
   }
 
   async function handleDelete() {
-    if (!canDelete) throw new Error('Cannot delete this item')
+    if (!canDelete) throw new Error("Cannot delete this item")
 
-    if (isNew) throw new Error('New item cannot be deleted')
+    if (isNew) throw new Error("New item cannot be deleted")
 
     setLoading(true)
     try {
@@ -215,7 +215,7 @@ export default function ViewNavTabHeader({
     } catch (e: any) {
       console.error(e.message)
       notification.error({
-        message: t('Deletion error'),
+        message: t("Deletion error"),
         description: e.message
       })
     } finally {
@@ -224,9 +224,9 @@ export default function ViewNavTabHeader({
   }
 
   async function handlePurge() {
-    if (!canDelete) throw new Error('Cannot purge this item')
+    if (!canDelete) throw new Error("Cannot purge this item")
 
-    if (isNew) throw new Error('New item cannot be purged')
+    if (isNew) throw new Error("New item cannot be purged")
 
     setLoading(true)
     try {
@@ -248,7 +248,7 @@ export default function ViewNavTabHeader({
     } catch (e: any) {
       console.error(e.message)
       notification.error({
-        message: t('Purging error'),
+        message: t("Purging error"),
         description: e.message
       })
     } finally {
@@ -257,9 +257,9 @@ export default function ViewNavTabHeader({
   }
 
   async function handlePromote(state: string) {
-    if (!canEdit || !canPromote) throw new Error('Cannot promote this item')
+    if (!canEdit || !canPromote) throw new Error("Cannot promote this item")
 
-    if (isNew) throw new Error('New item cannot be promoted')
+    if (isNew) throw new Error("New item cannot be promoted")
 
     setLoading(true)
     try {
@@ -282,7 +282,7 @@ export default function ViewNavTabHeader({
     } catch (e: any) {
       console.error(e.message)
       notification.error({
-        message: t('Promotion error'),
+        message: t("Promotion error"),
         description: e.message
       })
     } finally {
@@ -292,7 +292,7 @@ export default function ViewNavTabHeader({
 
   const showDeleteConfirm = () => {
     confirm({
-      title: `${t('Delete Current Version')}?`,
+      title: `${t("Delete Current Version")}?`,
       icon: <ExclamationCircleOutlined />,
       onOk: handleDelete
     })
@@ -300,7 +300,7 @@ export default function ViewNavTabHeader({
 
   const showPurgeConfirm = () => {
     confirm({
-      title: `${t('Delete All Versions')}?`,
+      title: `${t("Delete All Versions")}?`,
       icon: <ExclamationCircleOutlined />,
       onOk: handlePurge
     })
@@ -308,20 +308,20 @@ export default function ViewNavTabHeader({
 
   const getPurgeMenu = () => [
     {
-      key: 'delete',
-      label: t('Current Version'),
+      key: "delete",
+      label: t("Current Version"),
       onClick: showDeleteConfirm
     },
     {
-      key: 'purge',
-      label: t('All Versions'),
+      key: "purge",
+      label: t("All Versions"),
       onClick: showPurgeConfirm
     }
   ]
 
   const getExportMenu = () => [
     {
-      key: 'html',
+      key: "html",
       label: (
         <Space>
           <Html5Outlined className="blue" />
@@ -352,12 +352,12 @@ export default function ViewNavTabHeader({
       if (canCreate) {
         extra.push(
           <Button key="save" type="primary" onClick={handleSave}>
-            <SaveOutlined /> {t('Save')}
+            <SaveOutlined /> {t("Save")}
           </Button>
         )
         extra.push(
           <Button key="cancel" icon={<CloseCircleOutlined />} onClick={() => ctx.closeActiveTab()}>
-            {t('Cancel')}
+            {t("Cancel")}
           </Button>
         )
       }
@@ -366,21 +366,21 @@ export default function ViewNavTabHeader({
         if (isLockedByMe /*&& viewState !== ViewState.VIEW*/) {
           extra.push(
             <Button key="save" type="primary" onClick={handleSave}>
-              <SaveOutlined /> {t('Save')}
+              <SaveOutlined /> {t("Save")}
             </Button>
           )
 
           if (isLockable)
             extra.push(
               <Button key="cancel" icon={<LockOutlined />} onClick={handleCancel}>
-                {t('Cancel')}
+                {t("Cancel")}
               </Button>
             )
         } else if (!isLocked) {
           if (isLockable)
             extra.push(
               <Button key="lock" type="primary" icon={<UnlockOutlined />} onClick={handleLock}>
-                {t('Edit')}
+                {t("Edit")}
               </Button>
             )
         }
@@ -389,7 +389,7 @@ export default function ViewNavTabHeader({
       if (canVersion) {
         extra.push(
           <Button key="versions" icon={<DiffOutlined />} onClick={() => setVersionsModalVisible(true)}>
-            {t('Versions')}
+            {t("Versions")}
           </Button>
         )
       }
@@ -404,7 +404,7 @@ export default function ViewNavTabHeader({
       ) {
         extra.push(
           <Button key="promote" type="primary" icon={<SubnodeOutlined />} onClick={() => setPromoteModalVisible(true)}>
-            {t('Promote')}
+            {t("Promote")}
           </Button>
         )
       }
@@ -414,15 +414,15 @@ export default function ViewNavTabHeader({
           extra.push(
             <Dropdown key="purge" placement="bottomRight" menu={{items: getPurgeMenu()}}>
               <Button type="primary" danger icon={<DownOutlined />}>
-                {t('Delete')}
+                {t("Delete")}
               </Button>
             </Dropdown>
           )
         } else {
           extra.push(
-            <Popconfirm key="delete" placement="bottomRight" title={`${t('Delete Item')}?`} onConfirm={handleDelete}>
+            <Popconfirm key="delete" placement="bottomRight" title={`${t("Delete Item")}?`} onConfirm={handleDelete}>
               <Button type="primary" danger icon={<DeleteOutlined />}>
-                {t('Delete')}
+                {t("Delete")}
               </Button>
             </Popconfirm>
           )
@@ -430,8 +430,8 @@ export default function ViewNavTabHeader({
       }
 
       extra.push(
-        <Dropdown key="export" placement="bottomLeft" trigger={['click']} menu={{items: getExportMenu()}}>
-          <Button icon={<ExportOutlined />}>{t('Export')}</Button>
+        <Dropdown key="export" placement="bottomLeft" trigger={["click"]} menu={{items: getExportMenu()}}>
+          <Button icon={<ExportOutlined />}>{t("Export")}</Button>
         </Dropdown>
       )
     }
@@ -448,7 +448,7 @@ export default function ViewNavTabHeader({
   return (
     <>
       {viewState === ViewState.CREATE_VERSION && (
-        <Alert type="warning" closable message={t('A new version will be created')} />
+        <Alert type="warning" closable message={t("A new version will be created")} />
       )}
       <PageHeader
         className={styles.pageHeader}
@@ -465,7 +465,7 @@ export default function ViewNavTabHeader({
         extra={getExtra()}
       />
       <Modal
-        title={t('Versions')}
+        title={t("Versions")}
         open={isVersionsModalVisible}
         destroyOnClose
         width={VERSIONS_MODAL_WIDTH}
@@ -483,7 +483,7 @@ export default function ViewNavTabHeader({
       </Modal>
       {data?.lifecycle?.data && (
         <Modal
-          title={t('Promotion')}
+          title={t("Promotion")}
           open={isPromoteModalVisible}
           destroyOnClose
           footer={null}

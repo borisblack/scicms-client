@@ -1,7 +1,7 @@
-import {useTranslation} from 'react-i18next'
-import {useRouteError} from 'react-router-dom'
-import {Divider} from 'antd'
-import styles from './ErrorFallback.module.css'
+import {useTranslation} from "react-i18next"
+import {useRouteError} from "react-router-dom"
+import {Divider} from "antd"
+import styles from "./ErrorFallback.module.css"
 
 export default function ErrorFallback() {
   const error = useRouteError() as Error
@@ -10,15 +10,15 @@ export default function ErrorFallback() {
   return (
     <div className={styles.container}>
       <p className={styles.smile}>:(</p>
-      <p className={styles.title}>{t('Oops! An error has occurred')}</p>
+      <p className={styles.title}>{t("Oops! An error has occurred")}</p>
       <Divider />
-      <p className={styles.desc}>{t('Client application error')}</p>
+      <p className={styles.desc}>{t("Client application error")}</p>
       <div className={styles.small}>
-        <p>{t('Try to do the following')}:</p>
+        <p>{t("Try to do the following")}:</p>
         <ul>
-          <li>{t('restart the program')};</li>
-          <li>{t('check network connection')};</li>
-          <li>{t('contact administrator')}.</li>
+          <li>{t("restart the program")};</li>
+          <li>{t("check network connection")};</li>
+          <li>{t("contact administrator")}.</li>
         </ul>
       </div>
       <p className={styles.label}>{error.message}</p>

@@ -1,27 +1,27 @@
-import {ItemData} from './schema'
+import {ItemData} from "./schema"
 
 export enum FieldType {
-  uuid = 'uuid',
-  string = 'string',
-  text = 'text',
-  sequence = 'sequence',
-  email = 'email',
-  enum = 'enum',
-  password = 'password',
-  int = 'int',
-  long = 'long',
-  float = 'float',
-  double = 'double',
-  decimal = 'decimal',
-  date = 'date',
-  time = 'time',
-  datetime = 'datetime',
-  timestamp = 'timestamp',
-  bool = 'bool',
-  array = 'array',
-  json = 'json',
-  media = 'media',
-  relation = 'relation'
+  uuid = "uuid",
+  string = "string",
+  text = "text",
+  sequence = "sequence",
+  email = "email",
+  enum = "enum",
+  password = "password",
+  int = "int",
+  long = "long",
+  float = "float",
+  double = "double",
+  decimal = "decimal",
+  date = "date",
+  time = "time",
+  datetime = "datetime",
+  timestamp = "timestamp",
+  bool = "bool",
+  array = "array",
+  json = "json",
+  media = "media",
+  relation = "relation"
 }
 
 export interface UserInfo {
@@ -33,8 +33,8 @@ export interface UserInfo {
 }
 
 export enum AuthType {
-  LOCAL = 'LOCAL',
-  OAUTH2 = 'OAUTH2'
+  LOCAL = "LOCAL",
+  OAUTH2 = "OAUTH2"
 }
 
 export interface MediaInfo {
@@ -71,9 +71,9 @@ export interface PrimitiveFilterInput<T extends string | number | boolean> {
 }
 
 export enum DeletingStrategy {
-  NO_ACTION = 'NO_ACTION',
-  SET_NULL = 'SET_NULL',
-  CASCADE = 'CASCADE'
+  NO_ACTION = "NO_ACTION",
+  SET_NULL = "SET_NULL",
+  CASCADE = "CASCADE"
 }
 
 export interface Pagination {
@@ -88,11 +88,11 @@ export interface Pagination {
 }
 
 export enum ViewState {
-  CREATE = 'CREATE',
-  CREATE_VERSION = 'CREATE_VERSION',
-  CREATE_LOCALIZATION = 'CREATE_LOCALIZATION',
-  UPDATE = 'UPDATE',
-  VIEW = 'VIEW'
+  CREATE = "CREATE",
+  CREATE_VERSION = "CREATE_VERSION",
+  CREATE_LOCALIZATION = "CREATE_LOCALIZATION",
+  UPDATE = "UPDATE",
+  VIEW = "VIEW"
 }
 
 export interface PaginationInput {
@@ -103,8 +103,8 @@ export interface PaginationInput {
 }
 
 export enum ViewType {
-  default = 'default',
-  view = 'view'
+  default = "default",
+  view = "view"
 }
 
 export interface SecurityConfig {

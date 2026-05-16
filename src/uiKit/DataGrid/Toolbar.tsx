@@ -1,10 +1,10 @@
-import React, {useCallback} from 'react'
-import {Button, Checkbox, Dropdown, Popover, Space, Tooltip} from 'antd'
-import {ClearOutlined, ExportOutlined, Html5Outlined, ReloadOutlined, SettingOutlined} from '@ant-design/icons'
-import {Table} from '@tanstack/react-table'
-import {useTranslation} from 'react-i18next'
+import React, {useCallback} from "react"
+import {Button, Checkbox, Dropdown, Popover, Space, Tooltip} from "antd"
+import {ClearOutlined, ExportOutlined, Html5Outlined, ReloadOutlined, SettingOutlined} from "@ant-design/icons"
+import {Table} from "@tanstack/react-table"
+import {useTranslation} from "react-i18next"
 
-import styles from './Toolbar.module.css'
+import styles from "./Toolbar.module.css"
 
 interface Props {
   table: Table<any>
@@ -20,7 +20,7 @@ function Toolbar({table, hasFilters, onRefresh, onClearFilters, onHtmlExport}: P
   const getExportMenu = useCallback(
     () => [
       {
-        key: 'html',
+        key: "html",
         label: (
           <Space>
             <Html5Outlined className="blue" />
@@ -35,21 +35,21 @@ function Toolbar({table, hasFilters, onRefresh, onClearFilters, onHtmlExport}: P
 
   return (
     <div className={styles.toolbar}>
-      <Tooltip title={t('Refresh')}>
+      <Tooltip title={t("Refresh")}>
         <Button icon={<ReloadOutlined />} type="text" className={styles.toolbarBtn} onClick={onRefresh} />
       </Tooltip>
 
       {hasFilters && (
-        <Tooltip title={t('Clear filters')}>
+        <Tooltip title={t("Clear filters")}>
           <Button icon={<ClearOutlined />} type="text" className={styles.toolbarBtn} onClick={onClearFilters} />
         </Tooltip>
       )}
 
-      <Tooltip title={t('Settings')}>
+      <Tooltip title={t("Settings")}>
         <Popover
           content={table
             .getAllLeafColumns()
-            .filter(column => column.id !== 'drag-handle')
+            .filter(column => column.id !== "drag-handle")
             .map(column => (
               <div key={column.id}>
                 <Checkbox checked={column.getIsVisible()} onChange={column.getToggleVisibilityHandler()}>
@@ -64,8 +64,8 @@ function Toolbar({table, hasFilters, onRefresh, onClearFilters, onHtmlExport}: P
         </Popover>
       </Tooltip>
 
-      <Tooltip title={t('Export')}>
-        <Dropdown placement="bottomLeft" trigger={['click']} menu={{items: getExportMenu()}}>
+      <Tooltip title={t("Export")}>
+        <Dropdown placement="bottomLeft" trigger={["click"]} menu={{items: getExportMenu()}}>
           <Button icon={<ExportOutlined />} type="text" className={styles.toolbarBtn} />
         </Dropdown>
       </Tooltip>

@@ -1,7 +1,7 @@
-import {Drawer} from 'antd'
-import ExecutionStatistic from './ExecutionStatistic'
-import {useTranslation} from 'react-i18next'
-import {ExecutionStatisticInfo} from '../types/bi'
+import {Drawer} from "antd"
+import ExecutionStatistic from "./ExecutionStatistic"
+import {useTranslation} from "react-i18next"
+import {ExecutionStatisticInfo} from "../types/bi"
 
 interface ExecutionStatisticModalProps extends ExecutionStatisticInfo {
   open: boolean
@@ -21,7 +21,7 @@ export default function ExecutionStatisticModal({
   return (
     <Drawer
       className="no-drag"
-      title={t('Execution statistic')}
+      title={t("Execution statistic")}
       width="40%"
       open={open}
       destroyOnClose

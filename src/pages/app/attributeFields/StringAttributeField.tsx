@@ -1,14 +1,14 @@
-import type {FC} from 'react'
-import {useCallback, useMemo} from 'react'
-import {useTranslation} from 'react-i18next'
-import {Form, FormRule, Input} from 'antd'
+import type {FC} from "react"
+import {useCallback, useMemo} from "react"
+import {useTranslation} from "react-i18next"
+import {Form, FormRule, Input} from "antd"
 
-import {AttributeFieldProps} from './index'
-import {FieldType} from 'src/types'
-import styles from './AttributeField.module.css'
-import {ITEM_ITEM_NAME, MAJOR_REV_ATTR_NAME, NAME_ATTR_NAME, STATE_ATTR_NAME, UUID_PATTERN} from 'src/config/constants'
-import {regExpRule} from 'src/util/form'
-import {generateKey} from 'src/util/mdi'
+import {AttributeFieldProps} from "./index"
+import {FieldType} from "src/types"
+import styles from "./AttributeField.module.css"
+import {ITEM_ITEM_NAME, MAJOR_REV_ATTR_NAME, NAME_ATTR_NAME, STATE_ATTR_NAME, UUID_PATTERN} from "src/config/constants"
+import {regExpRule} from "src/util/form"
+import {generateKey} from "src/util/mdi"
 
 const FormItem = Form.Item
 
@@ -19,7 +19,7 @@ const StringAttributeField: FC<AttributeFieldProps> = ({itemTab: dataWrapper, at
     attribute.type !== FieldType.email &&
     attribute.type !== FieldType.sequence
   )
-    throw new Error('Illegal attribute')
+    throw new Error("Illegal attribute")
 
   const {item, data} = dataWrapper
   const isNew = useMemo(() => !data?.id, [data?.id])
@@ -57,16 +57,16 @@ const StringAttributeField: FC<AttributeFieldProps> = ({itemTab: dataWrapper, at
         required:
           (attribute.required && !attribute.readOnly) ||
           (attrName === MAJOR_REV_ATTR_NAME && !!item.versioned && !!item.manualVersioning),
-        message: t('Required field')
+        message: t("Required field")
       }
     ]
 
     switch (attribute.type) {
       case FieldType.uuid:
-        rules.push(regExpRule(UUID_PATTERN, 'String must contain UUID'))
+        rules.push(regExpRule(UUID_PATTERN, "String must contain UUID"))
         break
       case FieldType.email:
-        rules.push({type: 'email'})
+        rules.push({type: "email"})
         break
       case FieldType.string:
         if (attribute.pattern) {

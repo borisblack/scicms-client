@@ -1,8 +1,8 @@
-import {useTranslation} from 'react-i18next'
-import React, {useMemo} from 'react'
-import {Tabs} from 'antd'
-import Colors from '../uiKit/Colors'
-import IconsSuspense from '../uiKit/icons/IconsSuspense'
+import {useTranslation} from "react-i18next"
+import React, {useMemo} from "react"
+import {Tabs} from "antd"
+import Colors from "../uiKit/Colors"
+import IconsSuspense from "../uiKit/icons/IconsSuspense"
 
 interface Props {
   height?: number | string
@@ -14,9 +14,9 @@ export default function RulesHelp({height}: Props) {
   return (
     <Tabs
       items={[
-        {key: 'rules', label: t('Rules'), children: <RulesDescription height={height} />},
-        {key: 'colors', label: t('Colors'), children: <Colors height={height} />},
-        {key: 'icons', label: t('Icons'), children: <IconsSuspense height={height} />}
+        {key: "rules", label: t("Rules"), children: <RulesDescription height={height} />},
+        {key: "colors", label: t("Colors"), children: <Colors height={height} />},
+        {key: "icons", label: t("Icons"), children: <IconsSuspense height={height} />}
       ]}
     />
   )
@@ -26,10 +26,10 @@ function RulesDescription({height}: Props) {
   const {t} = useTranslation()
 
   const descriptionContent = useMemo(() => {
-    const helpDescription = t('Rules help description')
+    const helpDescription = t("Rules help description")
     return (
       <p>
-        {helpDescription.split('\n').map((s, i) => (
+        {helpDescription.split("\n").map((s, i) => (
           <span key={i}>
             {s}
             <br />
@@ -40,11 +40,11 @@ function RulesDescription({height}: Props) {
   }, [t])
 
   return (
-    <div style={{height, overflowY: 'scroll'}}>
-      <h4 style={{fontWeight: 600}}>{t('Description')}</h4>
+    <div style={{height, overflowY: "scroll"}}>
+      <h4 style={{fontWeight: 600}}>{t("Description")}</h4>
       {descriptionContent}
 
-      <h4 style={{fontWeight: 600}}>{t('Properties')}</h4>
+      <h4 style={{fontWeight: 600}}>{t("Properties")}</h4>
       <ul>
         <li>icon</li>
         <li>color</li>
@@ -54,11 +54,11 @@ function RulesDescription({height}: Props) {
         <li>fontWeight</li>
       </ul>
 
-      <h4 style={{fontWeight: 600}}>{t('Examples')}</h4>
+      <h4 style={{fontWeight: 600}}>{t("Examples")}</h4>
       <code>
-        {'count<=0 ? *.color=red;count.icon=ExclamationCircleOutlined-red;name.bgColor=#ffcccc'}
+        {"count<=0 ? *.color=red;count.icon=ExclamationCircleOutlined-red;name.bgColor=#ffcccc"}
         <br />
-        <span style={{color: '#999999'}}>
+        <span style={{color: "#999999"}}>
           {"# name=='Foo' ? *.bgColor=#ccffcc;name.icon=InfoCircleOutlined-#009933"}
         </span>
         <br />

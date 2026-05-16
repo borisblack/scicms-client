@@ -1,11 +1,11 @@
-import _ from 'lodash'
-import {gql} from '@apollo/client'
+import _ from "lodash"
+import {gql} from "@apollo/client"
 
-import i18n from '../i18n'
-import {apolloClient, extractGraphQLErrorMessages} from '.'
-import {FieldType} from '../types'
-import {Item, RelType} from '../types/schema'
-import {FILENAME_ATTR_NAME, ID_ATTR_NAME, MEDIA_ITEM_NAME} from '../config/constants'
+import i18n from "../i18n"
+import {apolloClient, extractGraphQLErrorMessages} from "."
+import {FieldType} from "../types"
+import {Item, RelType} from "../types/schema"
+import {FILENAME_ATTR_NAME, ID_ATTR_NAME, MEDIA_ITEM_NAME} from "../config/constants"
 
 export type ItemMap = Record<string, Item>
 
@@ -83,7 +83,7 @@ export const fetchItems = (): Promise<ItemMap> =>
   apolloClient.query({query: FIND_ALL_QUERY}).then(res => {
     if (res.errors) {
       console.error(extractGraphQLErrorMessages(res.errors))
-      throw new Error(i18n.t('An error occurred while executing the request'))
+      throw new Error(i18n.t("An error occurred while executing the request"))
     }
     return _.mapKeys(res.data.items.data, item => item.name)
   })
@@ -135,19 +135,19 @@ export default class ItemManager {
         case FieldType.media:
           const media = this.items[MEDIA_ITEM_NAME]
           result.push(
-            `${attrName} { data { id ${media.titleAttribute === ID_ATTR_NAME ? '' : media.titleAttribute} ${media.titleAttribute === FILENAME_ATTR_NAME ? '' : FILENAME_ATTR_NAME} } }`
+            `${attrName} { data { id ${media.titleAttribute === ID_ATTR_NAME ? "" : media.titleAttribute} ${media.titleAttribute === FILENAME_ATTR_NAME ? "" : FILENAME_ATTR_NAME} } }`
           )
           break
         case FieldType.relation:
-          if (!attr.target) throw new Error('Illegal attribute')
+          if (!attr.target) throw new Error("Illegal attribute")
 
           const subItem = this.items[attr.target]
           result.push(
-            `${attrName} { data { id ${subItem.titleAttribute === ID_ATTR_NAME ? '' : subItem.titleAttribute} } }`
+            `${attrName} { data { id ${subItem.titleAttribute === ID_ATTR_NAME ? "" : subItem.titleAttribute} } }`
           )
           break
         default:
-          throw Error('Illegal attribute')
+          throw Error("Illegal attribute")
       }
     }
 

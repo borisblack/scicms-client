@@ -1,11 +1,11 @@
-import {ReactNode, useMemo} from 'react'
-import {Alert, Table} from 'antd'
-import {v4 as uuidv4} from 'uuid'
-import {ColumnsType} from 'antd/es/table'
-import {DashRenderContext} from '..'
-import {columnType, formatValue} from 'src/bi/util/util'
-import * as RulesService from 'src/services/rules'
-import {useBiProperties} from 'src/bi/util/hooks'
+import {ReactNode, useMemo} from "react"
+import {Alert, Table} from "antd"
+import {v4 as uuidv4} from "uuid"
+import {ColumnsType} from "antd/es/table"
+import {DashRenderContext} from ".."
+import {columnType, formatValue} from "src/bi/util/util"
+import * as RulesService from "src/services/rules"
+import {useBiProperties} from "src/bi/util/hooks"
 
 interface ReportDashOpts {
   displayedColNames: string[]
@@ -61,7 +61,7 @@ function ReportDash({dataset, dash, height, fullScreen, data}: DashRenderContext
       dataSource={data}
       rowKey={/*keyColName ? keyColName :*/ () => uuidv4()}
       pagination={false}
-      scroll={{y: fullScreen ? '80vh' : height - TABLE_HEADER_HEIGHT}}
+      scroll={{y: fullScreen ? "80vh" : height - TABLE_HEADER_HEIGHT}}
     />
   )
 }

@@ -1,15 +1,15 @@
-import _ from 'lodash'
-import {useMemo} from 'react'
-import {Alert} from 'antd'
-import {Pie, PieConfig} from '@ant-design/charts'
-import {v4 as uuidv4} from 'uuid'
+import _ from "lodash"
+import {useMemo} from "react"
+import {Alert} from "antd"
+import {Pie, PieConfig} from "@ant-design/charts"
+import {v4 as uuidv4} from "uuid"
 
-import {DashEventHandler, DashRenderContext} from '..'
-import {defaultDashColors, columnType, formatValue, toPercent} from 'src/bi/util/util'
-import {LegendPosition} from '../util'
-import * as RulesService from 'src/services/rules'
-import {useBIData, useBiProperties} from 'src/bi/util/hooks'
-import {handleDashClick} from '../util/antdPlot'
+import {DashEventHandler, DashRenderContext} from ".."
+import {defaultDashColors, columnType, formatValue, toPercent} from "src/bi/util/util"
+import {LegendPosition} from "../util"
+import * as RulesService from "src/services/rules"
+import {useBIData, useBiProperties} from "src/bi/util/hooks"
+import {handleDashClick} from "../util/antdPlot"
 
 export interface DoughnutDashOptions {
   angleField?: string | string[]
@@ -71,7 +71,7 @@ export default function DoughnutDash({dataset, dash, data, onDashClick}: DashRen
     legend: hideLegend
       ? false
       : {
-          position: legendPosition ?? 'top-left',
+          position: legendPosition ?? "top-left",
           label: {
             style: legendConfig?.label?.style
           },
@@ -80,18 +80,18 @@ export default function DoughnutDash({dataset, dash, data, onDashClick}: DashRen
           }
         },
     label: {
-      type: 'inner',
-      offset: '-50%',
+      type: "inner",
+      offset: "-50%",
       content: ({percent}) => `${toPercent(percent, percentFractionDigits)}%`,
       style: biProps.dash.doughnut?.labelStyle
     },
     statistic,
     interactions: [
       {
-        type: 'element-selected'
+        type: "element-selected"
       },
       {
-        type: 'element-active'
+        type: "element-active"
       }
     ],
     autoFit: true,

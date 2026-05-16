@@ -8,8 +8,8 @@ import {
   MAJOR_REV_ATTR_NAME,
   PERMISSION_ATTR_NAME,
   STATE_ATTR_NAME
-} from 'src/config/constants'
-import {Attribute, Item} from 'src/types/schema'
+} from "src/config/constants"
+import {Attribute, Item} from "src/types/schema"
 
 export const sortAttributes = (attributes: Record<string, Attribute>): Record<string, Attribute> =>
   Object.entries(attributes)

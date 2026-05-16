@@ -1,14 +1,14 @@
-import {FC, useMemo, useState} from 'react'
-import {useTranslation} from 'react-i18next'
-import {Button, Form, Input, notification, Upload} from 'antd'
-import {UploadOutlined} from '@ant-design/icons'
-import {RcFile, UploadFile} from 'antd/es/upload/interface'
-import {FieldType, MediaInfo} from 'src/types'
-import {Media} from 'src/types/schema'
-import {AttributeFieldProps} from '.'
-import * as MediaService from 'src/services/media'
-import {generateKey} from 'src/util/mdi'
-import styles from './AttributeField.module.css'
+import {FC, useMemo, useState} from "react"
+import {useTranslation} from "react-i18next"
+import {Button, Form, Input, notification, Upload} from "antd"
+import {UploadOutlined} from "@ant-design/icons"
+import {RcFile, UploadFile} from "antd/es/upload/interface"
+import {FieldType, MediaInfo} from "src/types"
+import {Media} from "src/types/schema"
+import {AttributeFieldProps} from "."
+import * as MediaService from "src/services/media"
+import {generateKey} from "src/util/mdi"
+import styles from "./AttributeField.module.css"
 
 const {Item: FormItem} = Form
 
@@ -20,7 +20,7 @@ const MediaAttributeField: FC<AttributeFieldProps> = ({
   value,
   setLoading
 }) => {
-  if (attribute.type !== FieldType.media) throw new Error('Illegal attribute')
+  if (attribute.type !== FieldType.media) throw new Error("Illegal attribute")
 
   const {item} = dataWrapper
   const uniqueKey = generateKey(dataWrapper)
@@ -46,7 +46,7 @@ const MediaAttributeField: FC<AttributeFieldProps> = ({
       {
         uid: mediaData.id,
         name: mediaData.filename,
-        status: 'done',
+        status: "done",
         url: MediaService.getDownloadUrlById(mediaData.id)
       }
     ]
@@ -70,7 +70,7 @@ const MediaAttributeField: FC<AttributeFieldProps> = ({
   }
 
   async function handleRemove(file: UploadFile) {
-    file.status = 'uploading'
+    file.status = "uploading"
     setFileList([file])
 
     // Can be used by another versions or localizations
@@ -79,10 +79,10 @@ const MediaAttributeField: FC<AttributeFieldProps> = ({
       try {
         await MediaService.deleteById(mediaData.id)
       } catch (e: any) {
-        file.status = 'error'
+        file.status = "error"
         setFileList([file])
         notification.error({
-          message: t('Downloading error'),
+          message: t("Downloading error"),
           description: e.message
         })
         return false
@@ -109,7 +109,7 @@ const MediaAttributeField: FC<AttributeFieldProps> = ({
         getValueFromEvent={normFile}
         required={attribute.required && !attribute.readOnly}
         dependencies={[`${attrName}.id`]}
-        rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
+        rules={[{required: attribute.required && !attribute.readOnly, message: t("Required field")}]}
       >
         <Upload
           id={`${uniqueKey}#${attrName}`}
@@ -125,7 +125,7 @@ const MediaAttributeField: FC<AttributeFieldProps> = ({
         >
           {fileList.length === 0 && (
             <Button size="middle" icon={<UploadOutlined />}>
-              {t('Add')}
+              {t("Add")}
             </Button>
           )}
         </Upload>

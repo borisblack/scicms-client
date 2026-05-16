@@ -1,7 +1,7 @@
-import {Select} from 'antd'
-import {BaseSelectRef} from 'rc-select'
-import {DefaultOptionType} from 'rc-select/lib/Select'
-import {FocusEvent, KeyboardEvent, useRef, useState} from 'react'
+import {Select} from "antd"
+import {BaseSelectRef} from "rc-select"
+import {DefaultOptionType} from "rc-select/lib/Select"
+import {FocusEvent, KeyboardEvent, useRef, useState} from "react"
 
 interface Props {
   value: any
@@ -30,7 +30,7 @@ export function SelectableCell({value, allowClear = false, options, onChange}: P
   }
 
   function handleKeyUp(evt: KeyboardEvent<HTMLDivElement>) {
-    if (evt.key === 'Escape') {
+    if (evt.key === "Escape") {
       setEditing(false)
     }
   }

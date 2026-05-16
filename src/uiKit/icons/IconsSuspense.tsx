@@ -1,8 +1,8 @@
-import {lazy, Suspense} from 'react'
+import {lazy, Suspense} from "react"
 
-import {IconsProps} from './Icons'
+import {IconsProps} from "./Icons"
 
-const Icons = lazy(() => import('./Icons'))
+const Icons = lazy(() => import("./Icons"))
 
 export default function IconsSuspense(props: IconsProps) {
   return (

@@ -1,7 +1,7 @@
-import _ from 'lodash'
-import {FC, ReactElement} from 'react'
-import {ItemData} from 'src/types/schema'
-import type {Plugin} from './Plugin'
+import _ from "lodash"
+import {FC, ReactElement} from "react"
+import {ItemData} from "src/types/schema"
+import type {Plugin} from "./Plugin"
 import {
   ApiMiddleware,
   ApiMiddlewareContext,
@@ -12,7 +12,7 @@ import {
   CustomComponentContext,
   CustomRenderer,
   CustomRendererContext
-} from './types'
+} from "./types"
 
 interface Prioritized {
   priority?: number
@@ -28,9 +28,9 @@ const attributeFieldSorter = (a: CustomAttributeField, b: CustomAttributeField) 
   const bMountPoint = b.mountPoint
   if (aMountPoint === bMountPoint) return 0
 
-  if (aMountPoint === '*') return 1
+  if (aMountPoint === "*") return 1
 
-  if (bMountPoint === '*') return -1
+  if (bMountPoint === "*") return -1
 
   return aMountPoint < bMountPoint ? 1 : -1
 }
@@ -121,10 +121,10 @@ export class PluginEngine {
 
   getAttributeField = (itemName: string, attrName: string): CustomAttributeField | undefined =>
     this.attributeFields.find(af => {
-      const separatorIndex = af.mountPoint.indexOf('.')
+      const separatorIndex = af.mountPoint.indexOf(".")
       const fieldItemName = af.mountPoint.substring(0, separatorIndex)
       const fieldAttrName = af.mountPoint.substring(separatorIndex + 1)
-      return fieldAttrName === attrName && (fieldItemName === itemName || fieldItemName === '*')
+      return fieldAttrName === attrName && (fieldItemName === itemName || fieldItemName === "*")
     })
 
   renderAttributeField(
@@ -138,7 +138,7 @@ export class PluginEngine {
 
   // Api middleware
   hasApiMiddleware = (itemName: string): boolean =>
-    itemName in this.apiMiddlewareByItemName || '*' in this.apiMiddlewareByItemName
+    itemName in this.apiMiddlewareByItemName || "*" in this.apiMiddlewareByItemName
 
   async handleApiMiddleware(
     itemName: string,
@@ -148,7 +148,7 @@ export class PluginEngine {
   ): Promise<any> {
     const apiMiddlewares = [
       ...(this.apiMiddlewareByItemName[itemName] ?? []),
-      ...(this.apiMiddlewareByItemName['*'] ?? [])
+      ...(this.apiMiddlewareByItemName["*"] ?? [])
     ]
     if (apiMiddlewares.length === 0) return await next()
 

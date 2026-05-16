@@ -1,14 +1,14 @@
-import _ from 'lodash'
-import {useMemo, useState} from 'react'
-import {useTranslation} from 'react-i18next'
-import RGL, {Layout, WidthProvider} from 'react-grid-layout'
-import {Alert, Button, Dropdown, Space} from 'antd'
-import {FundOutlined, PlusCircleOutlined} from '@ant-design/icons'
-import {v4 as uuidv4} from 'uuid'
-import 'react-grid-layout/css/styles.css'
-import 'react-resizable/css/styles.css'
+import _ from "lodash"
+import {useMemo, useState} from "react"
+import {useTranslation} from "react-i18next"
+import RGL, {Layout, WidthProvider} from "react-grid-layout"
+import {Alert, Button, Dropdown, Space} from "antd"
+import {FundOutlined, PlusCircleOutlined} from "@ant-design/icons"
+import {v4 as uuidv4} from "uuid"
+import "react-grid-layout/css/styles.css"
+import "react-resizable/css/styles.css"
 
-import {DASHBOARD_ITEM_NAME, EMPTY_ARRAY} from 'src/config/constants'
+import {DASHBOARD_ITEM_NAME, EMPTY_ARRAY} from "src/config/constants"
 import {
   Dashboard,
   DashboardExtra,
@@ -19,17 +19,17 @@ import {
   ISelector,
   IText,
   QueryOp
-} from 'src/types/bi'
-import {generateQueryBlock, printSingleQueryFilter} from '../util/util'
-import DashWrapper from '../DashWrapper/DashWrapper'
-import {useAcl} from 'src/util/hooks'
-import {generateKey} from 'src/util/mdi'
-import {useBIData, useBiProperties, useSelectors} from '../util/hooks'
-import Text from '../Text/Text'
-import Selector from '../Selector/Selector'
-import './DashboardSpec.css'
-import styles from './DashboardSpec.module.css'
-import {CustomComponentContext} from 'src/extensions/plugins/types'
+} from "src/types/bi"
+import {generateQueryBlock, printSingleQueryFilter} from "../util/util"
+import DashWrapper from "../DashWrapper/DashWrapper"
+import {useAcl} from "src/util/hooks"
+import {generateKey} from "src/util/mdi"
+import {useBIData, useBiProperties, useSelectors} from "../util/hooks"
+import Text from "../Text/Text"
+import Selector from "../Selector/Selector"
+import "./DashboardSpec.css"
+import styles from "./DashboardSpec.module.css"
+import {CustomComponentContext} from "src/extensions/plugins/types"
 
 interface DashboardSpecProps extends CustomComponentContext<Dashboard> {
   extra?: DashboardExtra
@@ -50,7 +50,7 @@ let seqNum = 0
 
 function DashboardSpec({itemTab, readOnly, getValue, setValue}: DashboardSpecProps) {
   const {item, data, extra} = itemTab
-  if (item.name !== DASHBOARD_ITEM_NAME) throw new Error('Illegal argument')
+  if (item.name !== DASHBOARD_ITEM_NAME) throw new Error("Illegal argument")
 
   const biProps = useBiProperties()
   const {dateFormatString, timeFormatString, dateTimeFormatString} = biProps.dateTime
@@ -70,7 +70,7 @@ function DashboardSpec({itemTab, readOnly, getValue, setValue}: DashboardSpecPro
   const acl = useAcl(item, data)
   const {datasets, dashboards} = useBIData({withDatasets: true, withDashboards: true})
   const datasetMap = useMemo(() => _.mapKeys(datasets, ds => ds.name), [datasets])
-  const spec: IDashboardSpec = useMemo(() => getValue('spec', initialSpec()), [getValue])
+  const spec: IDashboardSpec = useMemo(() => getValue("spec", initialSpec()), [getValue])
   const dashboardLayout: DashboardLayoutItem[] = useMemo(
     () =>
       spec.layout ??
@@ -127,7 +127,7 @@ function DashboardSpec({itemTab, readOnly, getValue, setValue}: DashboardSpecPro
     const newLayoutItem = createLayoutItem(DashboardItemType.DASH)
     const newDash: IDash = {
       id: newLayoutItem.id,
-      name: `${t('Dash')} ${(++seqNum).toString()}`,
+      name: `${t("Dash")} ${(++seqNum).toString()}`,
       type: defaultDashType,
       fields: {},
       optValues: {},
@@ -149,7 +149,7 @@ function DashboardSpec({itemTab, readOnly, getValue, setValue}: DashboardSpecPro
     const newLayoutItem = createLayoutItem(DashboardItemType.TEXT)
     const newText: IText = {
       id: newLayoutItem.id,
-      content: ''
+      content: ""
     }
 
     const newSpec: IDashboardSpec = {
@@ -166,9 +166,9 @@ function DashboardSpec({itemTab, readOnly, getValue, setValue}: DashboardSpecPro
     const newLayoutItem = createLayoutItem(DashboardItemType.SELECTOR)
     const newSelector: ISelector = {
       id: newLayoutItem.id,
-      name: `${t('Selector')} ${(++seqNum).toString()}`,
+      name: `${t("Selector")} ${(++seqNum).toString()}`,
       type: defaultSelectorType,
-      field: '',
+      field: "",
       op: QueryOp.$eq,
       links: []
     }
@@ -184,7 +184,7 @@ function DashboardSpec({itemTab, readOnly, getValue, setValue}: DashboardSpecPro
   }
 
   function handleLayoutChange(layouts: Layout[]) {
-    if (layouts.length !== dashboardLayout.length) throw new Error('Illegal layout state.')
+    if (layouts.length !== dashboardLayout.length) throw new Error("Illegal layout state.")
 
     const newSpec: IDashboardSpec = {
       layout: layouts.map(layout => {
@@ -289,17 +289,17 @@ function DashboardSpec({itemTab, readOnly, getValue, setValue}: DashboardSpecPro
           layoutItem.h
         )
       default:
-        return <Alert description={t('Unsupported layout item.')} type="error" />
+        return <Alert description={t("Unsupported layout item.")} type="error" />
     }
   }
 
   function renderDash(dash: IDash, height: number) {
-    const dataset = datasetMap[dash.dataset ?? '']
+    const dataset = datasetMap[dash.dataset ?? ""]
 
     return (
       <div
         key={dash.id}
-        className={`${styles.layoutItem} ${styles.dashWrapper} ${acl.canWrite ? styles.editable : ''}`}
+        className={`${styles.layoutItem} ${styles.dashWrapper} ${acl.canWrite ? styles.editable : ""}`}
         onClick={() => selectDash(dash)}
       >
         <DashWrapper
@@ -362,7 +362,7 @@ function DashboardSpec({itemTab, readOnly, getValue, setValue}: DashboardSpecPro
       {extra && extra.queryFilter && (
         <Alert
           style={{marginBottom: 16}}
-          message={t('Filtered')}
+          message={t("Filtered")}
           description={printSingleQueryFilter({
             queryFilter: extra.queryFilter,
             dateFormatString,
@@ -379,35 +379,35 @@ function DashboardSpec({itemTab, readOnly, getValue, setValue}: DashboardSpecPro
           <Dropdown
             disabled={!isGridEditable}
             placement="bottomLeft"
-            trigger={['hover']}
+            trigger={["hover"]}
             menu={{
               items: [
                 {
-                  key: 'dash',
+                  key: "dash",
                   label: (
                     <Space>
                       <FundOutlined />
-                      {t('Dash')}
+                      {t("Dash")}
                     </Space>
                   ),
                   onClick: handleDashAdd
                 },
                 {
-                  key: 'selector',
+                  key: "selector",
                   label: (
                     <Space>
                       <i className="fa-solid fa-sliders"></i>
-                      {t('Selector')}
+                      {t("Selector")}
                     </Space>
                   ),
                   onClick: handleSelectorAdd
                 },
                 {
-                  key: 'text',
+                  key: "text",
                   label: (
                     <Space>
                       <i className="fa-solid fa-font"></i>
-                      {t('Text')}
+                      {t("Text")}
                     </Space>
                   ),
                   onClick: handleTextAdd
@@ -416,7 +416,7 @@ function DashboardSpec({itemTab, readOnly, getValue, setValue}: DashboardSpecPro
             }}
           >
             <Button type="dashed" icon={<PlusCircleOutlined />}>
-              {t('Add')}
+              {t("Add")}
             </Button>
           </Dropdown>
         </div>

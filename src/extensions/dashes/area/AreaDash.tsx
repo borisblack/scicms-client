@@ -1,15 +1,15 @@
-import _ from 'lodash'
-import {useMemo} from 'react'
-import {Alert} from 'antd'
-import {Area, AreaConfig} from '@ant-design/charts'
-import {v4 as uuidv4} from 'uuid'
+import _ from "lodash"
+import {useMemo} from "react"
+import {Alert} from "antd"
+import {Area, AreaConfig} from "@ant-design/charts"
+import {v4 as uuidv4} from "uuid"
 
-import {DashEventHandler, DashRenderContext} from '../index'
-import {defaultDashColor, defaultDashColors, columnType, formatValue, isTemporal} from 'src/bi/util/util'
-import {LegendPosition} from '../util'
-import * as RulesService from 'src/services/rules'
-import {useBIData, useBiProperties} from 'src/bi/util/hooks'
-import {handleDashClick} from '../util/antdPlot'
+import {DashEventHandler, DashRenderContext} from "../index"
+import {defaultDashColor, defaultDashColors, columnType, formatValue, isTemporal} from "src/bi/util/util"
+import {LegendPosition} from "../util"
+import * as RulesService from "src/services/rules"
+import {useBIData, useBiProperties} from "src/bi/util/hooks"
+import {handleDashClick} from "../util/antdPlot"
 
 interface AreaDashOpts {
   xField?: string
@@ -70,7 +70,7 @@ export default function AreaDash({dataset, dash, data, onDashClick}: DashRenderC
     legend: hideLegend
       ? false
       : {
-          position: legendPosition ?? 'top-left',
+          position: legendPosition ?? "top-left",
           label: {
             style: legendConfig?.label?.style
           },
@@ -80,14 +80,14 @@ export default function AreaDash({dataset, dash, data, onDashClick}: DashRenderC
         },
     autoFit: true,
     xAxis: {
-      type: isTemporal(xColumn.type) ? 'time' : undefined,
+      type: isTemporal(xColumn.type) ? "time" : undefined,
       label: {
         autoRotate: xAxisLabelAutoRotate,
         style: axisLabelStyle
       }
     },
     yAxis: {
-      type: isTemporal(yColumn.type) ? 'time' : undefined,
+      type: isTemporal(yColumn.type) ? "time" : undefined,
       label: {
         style: axisLabelStyle
       }

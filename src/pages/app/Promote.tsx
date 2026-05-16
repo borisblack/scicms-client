@@ -1,10 +1,10 @@
-import {useCallback, useEffect, useState} from 'react'
-import {useTranslation} from 'react-i18next'
-import {Button, List, notification, Spin} from 'antd'
-import {RightCircleOutlined} from '@ant-design/icons'
-import {findLifecycleById} from 'src/services/lifecycle'
-import {Lifecycle} from 'src/types/schema'
-import {parseLifecycleSpec} from 'src/util/bpmn'
+import {useCallback, useEffect, useState} from "react"
+import {useTranslation} from "react-i18next"
+import {Button, List, notification, Spin} from "antd"
+import {RightCircleOutlined} from "@ant-design/icons"
+import {findLifecycleById} from "src/services/lifecycle"
+import {Lifecycle} from "src/types/schema"
+import {parseLifecycleSpec} from "src/util/bpmn"
 
 interface Props {
   lifecycleId: string
@@ -31,7 +31,7 @@ export default function Promote({lifecycleId, currentState: currentStateName, on
       })
       .catch((e: any) => {
         notification.error({
-          message: t('Request error'),
+          message: t("Request error"),
           description: e.message
         })
       })
@@ -47,18 +47,18 @@ export default function Promote({lifecycleId, currentState: currentStateName, on
     if (!currentStateName) {
       return startEvent.transitions.map(targetStateName => {
         const allowedState = states[targetStateName]
-        if (!allowedState) throw new Error('Invalid transition')
+        if (!allowedState) throw new Error("Invalid transition")
 
         return {title: targetStateName}
       })
     }
 
     const currentState = states[currentStateName]
-    if (!currentState) throw new Error('Invalid current state')
+    if (!currentState) throw new Error("Invalid current state")
 
     return currentState.transitions.map(targetStateName => {
       const allowedState = states[targetStateName]
-      if (!allowedState) throw new Error('Invalid transition')
+      if (!allowedState) throw new Error("Invalid transition")
 
       return {title: targetStateName}
     })

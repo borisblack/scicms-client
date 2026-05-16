@@ -1,15 +1,15 @@
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import type {TypedUseSelectorHook} from 'react-redux'
-import {useDispatch, useSelector} from 'react-redux'
-import {useTranslation} from 'react-i18next'
-import {notification} from 'antd'
+import {useCallback, useEffect, useMemo, useRef, useState} from "react"
+import type {TypedUseSelectorHook} from "react-redux"
+import {useDispatch, useSelector} from "react-redux"
+import {useTranslation} from "react-i18next"
+import {notification} from "antd"
 
-import type {AppDispatch, RootState} from 'src/store'
-import PermissionManager, {Acl} from 'src/services/permission'
-import {UserInfo, ViewType} from 'src/types'
-import {Item, ItemData, ItemTab} from 'src/types/schema'
-import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME} from 'src/config/constants'
-import {logout as doLogout, selectIsExpired, selectMe} from 'src/features/auth/authSlice'
+import type {AppDispatch, RootState} from "src/store"
+import PermissionManager, {Acl} from "src/services/permission"
+import {UserInfo, ViewType} from "src/types"
+import {Item, ItemData, ItemTab} from "src/types/schema"
+import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME} from "src/config/constants"
+import {logout as doLogout, selectIsExpired, selectMe} from "src/features/auth/authSlice"
 import {
   initializeIfNeeded as doInitializeIfNeeded,
   RegistryState,
@@ -23,14 +23,14 @@ import {
   selectLocales,
   selectPermissions,
   selectProperties
-} from 'src/features/registry/registrySlice'
-import QueryManager from 'src/services/query'
-import MutationManager from 'src/services/mutation'
-import {useMDIContext} from '../uiKit/MDITabs/hooks'
-import {createMDITab, generateKeyById} from './mdi'
-import {getAppProperties, getProperty} from 'src/config/util'
-import {AppConfig, PropertyKey} from 'src/config'
-import {MenuConfig} from 'src/config/menu'
+} from "src/features/registry/registrySlice"
+import QueryManager from "src/services/query"
+import MutationManager from "src/services/mutation"
+import {useMDIContext} from "../uiKit/MDITabs/hooks"
+import {createMDITab, generateKeyById} from "./mdi"
+import {getAppProperties, getProperty} from "src/config/util"
+import {AppConfig, PropertyKey} from "src/config"
+import {MenuConfig} from "src/config/menu"
 
 export const useAppDispatch: () => AppDispatch = useDispatch
 
@@ -205,8 +205,8 @@ export function useItemOperations() {
         ctx.openTab(createMDITab(item, ViewType.view, actualData.data, extra, onUpdate, onClose))
       } else {
         notification.error({
-          message: t('Opening error'),
-          description: t('Item not found. It may have been removed')
+          message: t("Opening error"),
+          description: t("Item not found. It may have been removed")
         })
       }
     },

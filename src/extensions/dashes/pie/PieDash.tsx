@@ -1,15 +1,15 @@
-import _ from 'lodash'
-import {useMemo} from 'react'
-import {Alert} from 'antd'
-import {Pie, PieConfig} from '@ant-design/charts'
-import {v4 as uuidv4} from 'uuid'
+import _ from "lodash"
+import {useMemo} from "react"
+import {Alert} from "antd"
+import {Pie, PieConfig} from "@ant-design/charts"
+import {v4 as uuidv4} from "uuid"
 
-import {DashEventHandler, DashRenderContext} from '..'
-import {defaultDashColors, columnType, formatValue, toPercent} from 'src/bi/util/util'
-import {LegendPosition} from '../util'
-import * as RulesService from 'src/services/rules'
-import {useBIData, useBiProperties} from 'src/bi/util/hooks'
-import {handleDashClick} from '../util/antdPlot'
+import {DashEventHandler, DashRenderContext} from ".."
+import {defaultDashColors, columnType, formatValue, toPercent} from "src/bi/util/util"
+import {LegendPosition} from "../util"
+import * as RulesService from "src/services/rules"
+import {useBIData, useBiProperties} from "src/bi/util/hooks"
+import {handleDashClick} from "../util/antdPlot"
 
 interface PieDashOptions {
   angleField?: string
@@ -67,7 +67,7 @@ export default function PieDash({dataset, dash, data, onDashClick}: DashRenderCo
     legend: hideLegend
       ? false
       : {
-          position: legendPosition ?? 'top-left',
+          position: legendPosition ?? "top-left",
           label: {
             style: legendConfig?.label?.style
           },
@@ -76,17 +76,17 @@ export default function PieDash({dataset, dash, data, onDashClick}: DashRenderCo
           }
         },
     label: {
-      type: 'inner',
-      offset: '-30%',
+      type: "inner",
+      offset: "-30%",
       content: ({percent}) => `${toPercent(percent, percentFractionDigits)}%`,
       style: dashConfig?.pie?.labelStyle
     },
     interactions: [
       {
-        type: 'element-selected'
+        type: "element-selected"
       },
       {
-        type: 'element-active'
+        type: "element-active"
       }
     ],
     autoFit: true,

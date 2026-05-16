@@ -1,10 +1,10 @@
-import {ReactNode} from 'react'
-import {FormInstance} from 'antd'
+import {ReactNode} from "react"
+import {FormInstance} from "antd"
 
-import {AttributeFieldProps} from 'src/pages/app/attributeFields'
-import {ItemMap} from 'src/services/item'
-import {UserInfo} from 'src/types'
-import {Item, ItemData, ItemTab} from 'src/types/schema'
+import {AttributeFieldProps} from "src/pages/app/attributeFields"
+import {ItemMap} from "src/services/item"
+import {UserInfo} from "src/types"
+import {Item, ItemData, ItemTab} from "src/types/schema"
 
 /**
  * Render mount points:
@@ -25,13 +25,13 @@ import {Item, ItemData, ItemTab} from 'src/types/schema'
  */
 export type CustomRendererMountPoint =
   | string
-  | 'default.header'
-  | 'default.content'
-  | 'default.footer'
-  | 'view.header'
-  | 'view.footer'
-  | 'view.content'
-  | 'tabs.content'
+  | "default.header"
+  | "default.content"
+  | "default.footer"
+  | "view.header"
+  | "view.footer"
+  | "view.content"
+  | "tabs.content"
 
 export interface CustomRenderer<T extends ItemData> {
   mountPoint: CustomRendererMountPoint
@@ -76,10 +76,10 @@ export interface CustomRendererContext<T extends ItemData> {
  */
 export type CustomComponentMountPoint =
   | CustomRendererMountPoint
-  | 'view.content.form.begin'
-  | 'view.content.form.end'
-  | 'tabs.begin'
-  | 'tabs.end'
+  | "view.content.form.begin"
+  | "view.content.form.end"
+  | "tabs.begin"
+  | "tabs.end"
 
 export interface CustomComponent<T extends ItemData> {
   id: string
@@ -133,22 +133,22 @@ export interface CustomAttributeFieldProps {
 export interface CustomAttributeFieldContext extends AttributeFieldProps {}
 
 export enum ApiOperation {
-  FIND = 'FIND',
-  FIND_ALL = 'FIND_ALL',
-  CREATE = 'CREATE',
-  CREATE_VERSION = 'CREATE_VERSION',
-  CREATE_LOCALIZATION = 'CREATE_LOCALIZATION',
-  UPDATE = 'UPDATE',
-  LOCK = 'LOCK',
-  UNLOCK = 'UNLOCK',
-  DELETE = 'DELETE',
-  PURGE = 'PURGE',
-  PROMOTE = 'PROMOTE'
+  FIND = "FIND",
+  FIND_ALL = "FIND_ALL",
+  CREATE = "CREATE",
+  CREATE_VERSION = "CREATE_VERSION",
+  CREATE_LOCALIZATION = "CREATE_LOCALIZATION",
+  UPDATE = "UPDATE",
+  LOCK = "LOCK",
+  UNLOCK = "UNLOCK",
+  DELETE = "DELETE",
+  PURGE = "PURGE",
+  PROMOTE = "PROMOTE"
 }
 
 export interface ApiMiddleware<T extends ItemData> {
   id: string
-  itemName: string | '*'
+  itemName: string | "*"
   priority?: number
   handle: (operation: ApiOperation, context: ApiMiddlewareContext<T>, next: () => any) => any
 }

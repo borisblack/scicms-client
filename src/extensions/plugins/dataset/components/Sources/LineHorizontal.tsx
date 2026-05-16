@@ -1,4 +1,4 @@
-import styles from './LineHorizontal.module.css'
+import styles from "./LineHorizontal.module.css"
 
 interface LineHorizontalProps {
   y: number

@@ -1,13 +1,13 @@
-import {useDrag} from 'react-dnd'
+import {useDrag} from "react-dnd"
 
-import {NamedColumn} from 'src/types/bi'
-import {DndItemType} from '../../config/constants'
-import FieldTypeIcon from '../../components/FieldTypeIcon/FieldTypeIcon'
-import FieldName from '../../components/FieldName/FieldName'
-import styles from './FieldItem.module.css'
-import {Button} from 'antd'
-import {CloseOutlined, FunctionOutlined} from '@ant-design/icons'
-import {useTranslation} from 'react-i18next'
+import {NamedColumn} from "src/types/bi"
+import {DndItemType} from "../../config/constants"
+import FieldTypeIcon from "../../components/FieldTypeIcon/FieldTypeIcon"
+import FieldName from "../../components/FieldName/FieldName"
+import styles from "./FieldItem.module.css"
+import {Button} from "antd"
+import {CloseOutlined, FunctionOutlined} from "@ant-design/icons"
+import {useTranslation} from "react-i18next"
 
 interface FieldItemProps {
   field: NamedColumn
@@ -40,10 +40,10 @@ export default function FieldItem({field, isDatasetField, canEdit, onFieldOpen, 
       <span className="text-ellipsis" title={field.name}>
         <FieldTypeIcon
           fieldType={field.type}
-          color={field.custom && ((field.source && field.aggregate) || field.formula) ? '#007bff' : '#28a745'}
+          color={field.custom && ((field.source && field.aggregate) || field.formula) ? "#007bff" : "#28a745"}
         />
         &nbsp;&nbsp;
-        <FieldName name={field.name} tag={field.custom ? (isDatasetField ? 'dataset' : undefined) : 'lock'} />
+        <FieldName name={field.name} tag={field.custom ? (isDatasetField ? "dataset" : undefined) : "lock"} />
       </span>
 
       {canEdit && (
@@ -62,7 +62,7 @@ export default function FieldItem({field, isDatasetField, canEdit, onFieldOpen, 
             <Button
               size="small"
               // type="text"
-              title={t('Remove')}
+              title={t("Remove")}
               icon={<CloseOutlined />}
               className={styles.fieldItem_removeBtn}
               style={{right: BTN_SPACE}}

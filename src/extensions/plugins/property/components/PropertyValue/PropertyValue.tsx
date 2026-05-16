@@ -1,16 +1,16 @@
-import type {FC} from 'react'
+import type {FC} from "react"
 
-import type {PropertyValueProps} from './types'
-import {FieldType} from 'src/types'
-import {StringPropertyValue} from './StringPropertyValue'
-import {BoolPropertyValue} from './BoolPropertyValue'
-import {TextPropertyValue} from './TextPropertyValue'
-import {JsonPropertyValue} from './JsonPropertyValue'
-import {ArrayPropertyValue} from './ArrayPropertyValue'
-import {NumberPropertyValue} from './NumberPropertyValue'
-import {DatePropertyValue} from './DatePropertyValue'
-import {TimePropertyValue} from './TimePropertyValue'
-import {DateTimePropertyValue} from './DateTimePropertyValue'
+import type {PropertyValueProps} from "./types"
+import {FieldType} from "src/types"
+import {StringPropertyValue} from "./StringPropertyValue"
+import {BoolPropertyValue} from "./BoolPropertyValue"
+import {TextPropertyValue} from "./TextPropertyValue"
+import {JsonPropertyValue} from "./JsonPropertyValue"
+import {ArrayPropertyValue} from "./ArrayPropertyValue"
+import {NumberPropertyValue} from "./NumberPropertyValue"
+import {DatePropertyValue} from "./DatePropertyValue"
+import {TimePropertyValue} from "./TimePropertyValue"
+import {DateTimePropertyValue} from "./DateTimePropertyValue"
 
 const propertyValueComponents: Record<string, FC<PropertyValueProps>> = {
   [FieldType.string]: StringPropertyValue,

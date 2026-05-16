@@ -1,11 +1,11 @@
-import _ from 'lodash'
-import {v4 as uuidv4} from 'uuid'
-import dayjs, {Dayjs} from 'dayjs'
-import {DateTime} from 'luxon'
-import {notification, Space} from 'antd'
+import _ from "lodash"
+import {v4 as uuidv4} from "uuid"
+import dayjs, {Dayjs} from "dayjs"
+import {DateTime} from "luxon"
+import {notification, Space} from "antd"
 
-import {evaluate, getInfo} from 'src/extensions/functions'
-import {FieldType, PrimitiveFilterInput} from 'src/types'
+import {evaluate, getInfo} from "src/extensions/functions"
+import {FieldType, PrimitiveFilterInput} from "src/types"
 import {
   AggregateType,
   BoolAggregateType,
@@ -25,10 +25,10 @@ import {
   TemporalPeriod,
   TemporalType,
   TemporalUnit
-} from 'src/types/bi'
-import i18n from 'src/i18n'
-import {extractSessionData} from 'src/util'
-import FieldTypeIcon from 'src/components/FieldTypeIcon/FieldTypeIcon'
+} from "src/types/bi"
+import i18n from "src/i18n"
+import {extractSessionData} from "src/util"
+import FieldTypeIcon from "src/components/FieldTypeIcon/FieldTypeIcon"
 
 interface FormatParams {
   dateFormatString: string
@@ -183,47 +183,47 @@ export const datasetFieldTypeOptions = datasetFieldTypes.map(dft => ({
 }))
 
 export const queryOpTitles: {[key: string]: string} = {
-  [QueryOp.$eq]: i18n.t('equals'),
-  [QueryOp.$ne]: i18n.t('not equals'),
-  [QueryOp.$gt]: i18n.t('greater than'),
-  [QueryOp.$gte]: i18n.t('greater than or equals'),
-  [QueryOp.$lt]: i18n.t('less than'),
-  [QueryOp.$lte]: i18n.t('less than or equals'),
-  [QueryOp.$between]: i18n.t('between'),
-  [QueryOp.$startsWith]: i18n.t('starts with'),
-  [QueryOp.$endsWith]: i18n.t('ends with'),
-  [QueryOp.$contains]: i18n.t('contains'),
-  [QueryOp.$containsi]: i18n.t('contains ignore case'),
-  [QueryOp.$notContains]: i18n.t('not contains'),
-  [QueryOp.$notContainsi]: i18n.t('not contains ignore case'),
-  [QueryOp.$in]: i18n.t('in'),
-  [QueryOp.$notIn]: i18n.t('not in'),
-  [QueryOp.$null]: i18n.t('null'),
-  [QueryOp.$notNull]: i18n.t('not null')
+  [QueryOp.$eq]: i18n.t("equals"),
+  [QueryOp.$ne]: i18n.t("not equals"),
+  [QueryOp.$gt]: i18n.t("greater than"),
+  [QueryOp.$gte]: i18n.t("greater than or equals"),
+  [QueryOp.$lt]: i18n.t("less than"),
+  [QueryOp.$lte]: i18n.t("less than or equals"),
+  [QueryOp.$between]: i18n.t("between"),
+  [QueryOp.$startsWith]: i18n.t("starts with"),
+  [QueryOp.$endsWith]: i18n.t("ends with"),
+  [QueryOp.$contains]: i18n.t("contains"),
+  [QueryOp.$containsi]: i18n.t("contains ignore case"),
+  [QueryOp.$notContains]: i18n.t("not contains"),
+  [QueryOp.$notContainsi]: i18n.t("not contains ignore case"),
+  [QueryOp.$in]: i18n.t("in"),
+  [QueryOp.$notIn]: i18n.t("not in"),
+  [QueryOp.$null]: i18n.t("null"),
+  [QueryOp.$notNull]: i18n.t("not null")
 }
 
 export const positiveLogicalOps: PositiveLogicalOp[] = [LogicalOp.$and, LogicalOp.$or]
 
 export const logicalOpTitles: {[key: string]: string} = {
-  [LogicalOp.$and]: i18n.t('and'),
-  [LogicalOp.$or]: i18n.t('or'),
-  [LogicalOp.$not]: i18n.t('not')
+  [LogicalOp.$and]: i18n.t("and"),
+  [LogicalOp.$or]: i18n.t("or"),
+  [LogicalOp.$not]: i18n.t("not")
 }
 
 export const temporalPeriodTitles: {[key: string]: string} = {
-  [TemporalPeriod.ARBITRARY]: i18n.t('arbitrary'),
-  [TemporalPeriod.LAST]: i18n.t('last'),
-  [TemporalPeriod.NEXT]: i18n.t('next')
+  [TemporalPeriod.ARBITRARY]: i18n.t("arbitrary"),
+  [TemporalPeriod.LAST]: i18n.t("last"),
+  [TemporalPeriod.NEXT]: i18n.t("next")
 }
 
 export const temporalUnitTitles: {[key: string]: string} = {
-  [TemporalUnit.SECOND]: i18n.t('seconds'),
-  [TemporalUnit.MINUTE]: i18n.t('minutes'),
-  [TemporalUnit.HOUR]: i18n.t('hours'),
-  [TemporalUnit.DAY]: i18n.t('days'),
-  [TemporalUnit.WEEK]: i18n.t('weeks'),
-  [TemporalUnit.MONTH]: i18n.t('months'),
-  [TemporalUnit.YEAR]: i18n.t('years')
+  [TemporalUnit.SECOND]: i18n.t("seconds"),
+  [TemporalUnit.MINUTE]: i18n.t("minutes"),
+  [TemporalUnit.HOUR]: i18n.t("hours"),
+  [TemporalUnit.DAY]: i18n.t("days"),
+  [TemporalUnit.WEEK]: i18n.t("weeks"),
+  [TemporalUnit.MONTH]: i18n.t("months"),
+  [TemporalUnit.YEAR]: i18n.t("years")
 }
 
 export const isString = (fieldType: FieldType) => stringTypeSet.has(fieldType)
@@ -258,19 +258,19 @@ export function intervalFromPeriod(period: TemporalPeriod, unit: TemporalUnit, v
   if (period === TemporalPeriod.LAST) {
     switch (unit) {
       case TemporalUnit.SECOND:
-        return [dayjs().subtract(value, 'second'), now]
+        return [dayjs().subtract(value, "second"), now]
       case TemporalUnit.MINUTE:
-        return [dayjs().subtract(value, 'minute'), now]
+        return [dayjs().subtract(value, "minute"), now]
       case TemporalUnit.HOUR:
-        return [dayjs().subtract(value, 'hour'), now]
+        return [dayjs().subtract(value, "hour"), now]
       case TemporalUnit.DAY:
-        return [dayjs().subtract(value, 'day'), now]
+        return [dayjs().subtract(value, "day"), now]
       case TemporalUnit.WEEK:
-        return [dayjs().subtract(value, 'week'), now]
+        return [dayjs().subtract(value, "week"), now]
       case TemporalUnit.MONTH:
-        return [dayjs().subtract(value, 'month'), now]
+        return [dayjs().subtract(value, "month"), now]
       case TemporalUnit.YEAR:
-        return [dayjs().subtract(value, 'year'), now]
+        return [dayjs().subtract(value, "year"), now]
       default:
         break
     }
@@ -279,25 +279,25 @@ export function intervalFromPeriod(period: TemporalPeriod, unit: TemporalUnit, v
   if (period === TemporalPeriod.NEXT) {
     switch (unit) {
       case TemporalUnit.SECOND:
-        return [now, dayjs().add(value, 'second')]
+        return [now, dayjs().add(value, "second")]
       case TemporalUnit.MINUTE:
-        return [now, dayjs().add(value, 'minute')]
+        return [now, dayjs().add(value, "minute")]
       case TemporalUnit.HOUR:
-        return [now, dayjs().add(value, 'hour')]
+        return [now, dayjs().add(value, "hour")]
       case TemporalUnit.DAY:
-        return [now, dayjs().add(value, 'day')]
+        return [now, dayjs().add(value, "day")]
       case TemporalUnit.WEEK:
-        return [now, dayjs().add(value, 'week')]
+        return [now, dayjs().add(value, "week")]
       case TemporalUnit.MONTH:
-        return [now, dayjs().add(value, 'month')]
+        return [now, dayjs().add(value, "month")]
       case TemporalUnit.YEAR:
-        return [now, dayjs().add(value, 'year')]
+        return [now, dayjs().add(value, "year")]
       default:
         break
     }
   }
 
-  throw new Error('Illegal argument')
+  throw new Error("Illegal argument")
 }
 
 export const formatTemporalIso = ({temporal, temporalType, timezone}: FormatTemporalIsoParams): string | null => {
@@ -318,7 +318,7 @@ const formatTemporalDisplay = ({
   timeFormatString,
   dateTimeFormatString
 }: FormatTemporalDisplayParams): string => {
-  if (temporal == null) return ''
+  if (temporal == null) return ""
 
   const dt = dayjs(temporal)
   if (temporalType === FieldType.date) return dt.format(dateFormatString)
@@ -631,7 +631,7 @@ function parseManualFilterValue(value?: string): any {
   } catch (e: any) {
     // notifyErrorThrottled(i18n.t('Expression evaluation error'), e.message)
     notification.error({
-      message: i18n.t('Expression evaluation error') as string,
+      message: i18n.t("Expression evaluation error") as string,
       description: e.message
     })
     return undefined
@@ -681,7 +681,7 @@ export function printQueryBlock({
     buf.push(`(${nestedQueryBlockContent})`)
   }
 
-  return buf.length === 0 ? undefined : buf.join(' ')
+  return buf.length === 0 ? undefined : buf.join(" ")
 }
 
 function printQueryFilter({
@@ -704,7 +704,7 @@ function printQueryFilter({
   const filterValue = parseFilterValue({type: column.type, filter, timezone})
   if (op === QueryOp.$between) {
     if (!isTemporal(column.type))
-      return `${columnAlias} ${opTitle} (${filterValue[0]} ${i18n.t('and')} ${filterValue[1]})`
+      return `${columnAlias} ${opTitle} (${filterValue[0]} ${i18n.t("and")} ${filterValue[1]})`
 
     const temporalType = columnType(column) as TemporalType
     const period = filter.extra?.period ?? TemporalPeriod.ARBITRARY
@@ -723,14 +723,14 @@ function printQueryFilter({
         timeFormatString,
         dateTimeFormatString
       })
-      return `${columnAlias} ${opTitle} (${left} ${i18n.t('and')} ${right})`
+      return `${columnAlias} ${opTitle} (${left} ${i18n.t("and")} ${right})`
     } else {
-      return `${columnAlias} ${i18n.t('for')} ${temporalPeriodTitles[period]}`
+      return `${columnAlias} ${i18n.t("for")} ${temporalPeriodTitles[period]}`
     }
   }
 
   if (op === QueryOp.$in || op === QueryOp.$notIn)
-    return `${columnAlias} ${opTitle} (${(filterValue as any[]).join(', ')})`
+    return `${columnAlias} ${opTitle} (${(filterValue as any[]).join(", ")})`
 
   return `${columnAlias} ${opTitle} ${isTemporal(column.type) ? formatTemporalDisplay({temporal: filterValue, temporalType: columnType(column) as TemporalType, dateFormatString, timeFormatString, dateTimeFormatString}) : filterValue}`
 }
@@ -751,7 +751,7 @@ export function getCustomFunctionsInfo(): string[] {
     buf.push(`${i18n.t(category)}:`)
     const functionsInfo = categoryFunctionsInfo[category]
     for (const func of functionsInfo) {
-      buf.push(`${func.id}() - ${i18n.t(func.description ?? 'No description')}`)
+      buf.push(`${func.id}() - ${i18n.t(func.description ?? "No description")}`)
     }
   }
 
@@ -760,11 +760,11 @@ export function getCustomFunctionsInfo(): string[] {
 
 function guessType(value: string | number | boolean): FieldType {
   const valueType = typeof value
-  if (valueType === 'boolean') return FieldType.bool
+  if (valueType === "boolean") return FieldType.bool
 
-  if (valueType === 'number') return FieldType.decimal
+  if (valueType === "number") return FieldType.decimal
 
-  if (valueType === 'string') {
+  if (valueType === "string") {
     const strValue = value as string
     if (strValue.match(dateRegExp)) return FieldType.date
 
@@ -778,13 +778,13 @@ function guessType(value: string | number | boolean): FieldType {
 
 export function extractSessionFilters(dashboardId: string, dashId: string) {
   const sessionData = extractSessionData()
-  return _.get(sessionData, ['dashboards', dashboardId, 'dashes', dashId, 'filters'])
+  return _.get(sessionData, ["dashboards", dashboardId, "dashes", dashId, "filters"])
 }
 
 export function saveSessionFilters(dashboardId: string, dashId: string, filters: QueryBlock) {
   const newSessionData = extractSessionData()
-  _.set(newSessionData, ['dashboards', dashboardId, 'dashes', dashId, 'filters'], filters)
-  localStorage.setItem('sessionData', JSON.stringify(newSessionData))
+  _.set(newSessionData, ["dashboards", dashboardId, "dashes", dashId, "filters"], filters)
+  localStorage.setItem("sessionData", JSON.stringify(newSessionData))
 }
 
 export function getActualFilters(dashboardId: string, dash: IDash) {
@@ -811,7 +811,7 @@ export function getAggregateTypes(type: FieldType): AggregateType[] {
     case FieldType.timestamp:
       return Object.keys(DateTimeAggregateType) as AggregateType[]
     default:
-      throw new Error('Illegal argument')
+      throw new Error("Illegal argument")
   }
 }
 
@@ -845,6 +845,6 @@ export function calculateAggregationResultType(type: FieldType, aggregation: Agg
     case AggregateType.max:
       return type
     default:
-      throw new Error('Illegal argument')
+      throw new Error("Illegal argument")
   }
 }

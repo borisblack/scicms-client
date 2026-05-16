@@ -1,23 +1,23 @@
-import {Locale} from '@antv/g2plot'
+import {Locale} from "@antv/g2plot"
 
 export const RU_RU_LOCALE: Locale = {
-  locale: 'ru-RU',
+  locale: "ru-RU",
 
   // General
   general: {
-    increase: 'Increase',
-    decrease: 'Decrease',
-    root: 'Root'
+    increase: "Increase",
+    decrease: "Decrease",
+    root: "Root"
   },
 
   // Plot Components
   /** statistic text component */
   statistic: {
-    total: 'Всего'
+    total: "Всего"
   },
   /** conversionTag component */
   conversionTag: {
-    label: 'Rate'
+    label: "Rate"
   },
   legend: {},
   tooltip: {},
@@ -26,6 +26,6 @@ export const RU_RU_LOCALE: Locale = {
 
   // Plots
   waterfall: {
-    total: 'Всего'
+    total: "Всего"
   }
 }

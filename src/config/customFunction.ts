@@ -1,4 +1,4 @@
-import {CustomFunction} from '../extensions/functions'
+import {CustomFunction} from "../extensions/functions"
 import {
   secondsBeforeNow,
   minutesBeforeNow,
@@ -21,7 +21,7 @@ import {
   monthsAfterNowTrunc,
   yearsAfterNow,
   yearsAfterNowTrunc
-} from '../extensions/functions/temporal'
+} from "../extensions/functions/temporal"
 
 interface FunctionConfig {
   functions: CustomFunction[]

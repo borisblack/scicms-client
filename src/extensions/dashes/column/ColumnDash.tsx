@@ -1,15 +1,15 @@
-import _ from 'lodash'
-import {useMemo} from 'react'
-import {Alert} from 'antd'
-import {Column, ColumnConfig} from '@ant-design/charts'
-import {v4 as uuidv4} from 'uuid'
+import _ from "lodash"
+import {useMemo} from "react"
+import {Alert} from "antd"
+import {Column, ColumnConfig} from "@ant-design/charts"
+import {v4 as uuidv4} from "uuid"
 
-import {DashEventHandler, DashRenderContext} from 'src/extensions/dashes'
-import {defaultDashColor, defaultDashColors, columnType, formatValue} from 'src/bi/util/util'
-import {LegendPosition} from '../util'
-import * as RulesService from 'src/services/rules'
-import {useBIData, useBiProperties} from 'src/bi/util/hooks'
-import {handleDashClick} from '../util/antdPlot'
+import {DashEventHandler, DashRenderContext} from "src/extensions/dashes"
+import {defaultDashColor, defaultDashColors, columnType, formatValue} from "src/bi/util/util"
+import {LegendPosition} from "../util"
+import * as RulesService from "src/services/rules"
+import {useBIData, useBiProperties} from "src/bi/util/hooks"
+import {handleDashClick} from "../util/antdPlot"
 
 interface ColumnDashOptions {
   xField?: string
@@ -72,7 +72,7 @@ export default function ColumnDash({dataset, dash, data, onDashClick}: DashRende
     legend: hideLegend
       ? false
       : {
-          position: legendPosition ?? 'top-left',
+          position: legendPosition ?? "top-left",
           label: {
             style: legendConfig?.label?.style
           },

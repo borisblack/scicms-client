@@ -1,18 +1,18 @@
-import {FC, useMemo} from 'react'
-import {Form, Select} from 'antd'
-import {useTranslation} from 'react-i18next'
+import {FC, useMemo} from "react"
+import {Form, Select} from "antd"
+import {useTranslation} from "react-i18next"
 
-import {FieldType} from 'src/types'
-import {LOCALE_ATTR_NAME} from 'src/config/constants'
-import {useRegistry} from 'src/util/hooks'
-import {CustomAttributeFieldContext} from '../../types'
-import styles from 'src/pages/app/attributeFields/AttributeField.module.css'
+import {FieldType} from "src/types"
+import {LOCALE_ATTR_NAME} from "src/config/constants"
+import {useRegistry} from "src/util/hooks"
+import {CustomAttributeFieldContext} from "../../types"
+import styles from "src/pages/app/attributeFields/AttributeField.module.css"
 
 const FormItem = Form.Item
 const {Option: SelectOption} = Select
 
 export const LocaleAttributeField: FC<CustomAttributeFieldContext> = ({attrName, attribute, value, onChange}) => {
-  if (attribute.type !== FieldType.string || attrName !== LOCALE_ATTR_NAME) throw new Error('Illegal attribute')
+  if (attribute.type !== FieldType.string || attrName !== LOCALE_ATTR_NAME) throw new Error("Illegal attribute")
 
   const {locales} = useRegistry()
   const {t} = useTranslation()
@@ -31,7 +31,7 @@ export const LocaleAttributeField: FC<CustomAttributeFieldContext> = ({attrName,
       label={t(attribute.displayName)}
       hidden={attribute.fieldHidden}
       initialValue={value ?? attribute.defaultValue}
-      rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
+      rules={[{required: attribute.required && !attribute.readOnly, message: t("Required field")}]}
     >
       <Select onSelect={(val: string) => onChange(val)} {...additionalProps}>
         {locales.map(it => (

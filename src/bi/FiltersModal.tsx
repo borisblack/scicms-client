@@ -1,11 +1,11 @@
-import {useTranslation} from 'react-i18next'
-import {Button, Drawer, Form, Space, Tooltip} from 'antd'
-import {QuestionCircleOutlined} from '@ant-design/icons'
+import {useTranslation} from "react-i18next"
+import {Button, Drawer, Form, Space, Tooltip} from "antd"
+import {QuestionCircleOutlined} from "@ant-design/icons"
 
-import {fromFormQueryBlock, getCustomFunctionsInfo, saveSessionFilters, toFormQueryBlock} from './util/util'
-import DashFilters from './DashFilters/DashFilters'
-import {Dataset, IDash, QueryBlock} from '../types/bi'
-import {useAppProperties} from 'src/util/hooks'
+import {fromFormQueryBlock, getCustomFunctionsInfo, saveSessionFilters, toFormQueryBlock} from "./util/util"
+import DashFilters from "./DashFilters/DashFilters"
+import {Dataset, IDash, QueryBlock} from "../types/bi"
+import {useAppProperties} from "src/util/hooks"
 
 interface FiltersModalProps {
   dash: IDash
@@ -62,7 +62,7 @@ export default function FiltersModal({
       width="60%"
       title={
         <Space style={{fontSize: 16}}>
-          {t('Filters')}
+          {t("Filters")}
           <Tooltip
             placement="rightBottom"
             overlayInnerStyle={{width: 600}}
@@ -80,7 +80,7 @@ export default function FiltersModal({
       }
       extra={
         <Space>
-          <Button onClick={cancelEdit}>{t('Cancel')}</Button>
+          <Button onClick={cancelEdit}>{t("Cancel")}</Button>
           <Button type="primary" onClick={() => form.submit()}>
             OK
           </Button>
@@ -91,7 +91,7 @@ export default function FiltersModal({
     >
       <Form form={form} size="small" layout="vertical" onFinish={handleFormFinish}>
         <DashFilters
-          namePrefix={['filters']}
+          namePrefix={["filters"]}
           dataset={dataset}
           initialBlock={toFormQueryBlock(dataset, timeZone, filters)}
         />

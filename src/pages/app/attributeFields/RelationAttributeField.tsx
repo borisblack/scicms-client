@@ -1,14 +1,14 @@
-import _ from 'lodash'
-import {FC, useEffect, useMemo, useState} from 'react'
-import {useTranslation} from 'react-i18next'
-import {Button, Form, Input, Modal, Tooltip} from 'antd'
-import {CloseCircleOutlined, FolderOpenOutlined} from '@ant-design/icons'
-import {FieldType} from 'src/types'
-import {AllowedLifecycle, AllowedPermission, ItemData, Lifecycle, Permission, RelType} from 'src/types/schema'
-import {AttributeFieldProps} from '.'
-import {DEFAULT_LIFECYCLE_ID} from 'src/services/lifecycle'
-import {BI_PERMISSION_ID, DEFAULT_PERMISSION_ID, SECURITY_PERMISSION_ID} from 'src/services/permission'
-import {ItemFiltersInput} from 'src/services/query'
+import _ from "lodash"
+import {FC, useEffect, useMemo, useState} from "react"
+import {useTranslation} from "react-i18next"
+import {Button, Form, Input, Modal, Tooltip} from "antd"
+import {CloseCircleOutlined, FolderOpenOutlined} from "@ant-design/icons"
+import {FieldType} from "src/types"
+import {AllowedLifecycle, AllowedPermission, ItemData, Lifecycle, Permission, RelType} from "src/types/schema"
+import {AttributeFieldProps} from "."
+import {DEFAULT_LIFECYCLE_ID} from "src/services/lifecycle"
+import {BI_PERMISSION_ID, DEFAULT_PERMISSION_ID, SECURITY_PERMISSION_ID} from "src/services/permission"
+import {ItemFiltersInput} from "src/services/query"
 import {
   DASHBOARD_CATEGORY_HIERARCHY_ITEM_NAME,
   DASHBOARD_CATEGORY_ITEM_NAME,
@@ -23,11 +23,11 @@ import {
   ROLE_ITEM_NAME,
   STATE_ATTR_NAME,
   USER_ITEM_NAME
-} from 'src/config/constants'
-import {useItemAcl, useItemOperations, useQueryManager, useRegistry} from 'src/util/hooks'
-import SearchDataGridWrapper from '../SearchDataGridWrapper'
-import {generateKey} from 'src/util/mdi'
-import styles from './AttributeField.module.css'
+} from "src/config/constants"
+import {useItemAcl, useItemOperations, useQueryManager, useRegistry} from "src/util/hooks"
+import SearchDataGridWrapper from "../SearchDataGridWrapper"
+import {generateKey} from "src/util/mdi"
+import styles from "./AttributeField.module.css"
 
 const SUFFIX_BUTTON_WIDTH = 24
 const RELATION_MODAL_WIDTH = 800
@@ -72,10 +72,10 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({itemTab: dataWrapper, 
     attribute.relType === RelType.oneToMany ||
     attribute.relType === RelType.manyToMany
   )
-    throw new Error('Illegal attribute')
+    throw new Error("Illegal attribute")
 
   const {target} = attribute
-  if (!target) throw new Error('Target is undefined')
+  if (!target) throw new Error("Target is undefined")
 
   const {item, data} = dataWrapper
   const isNew = data?.id == null
@@ -180,7 +180,7 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({itemTab: dataWrapper, 
         label={t(attribute.displayName)}
         hidden={attribute.fieldHidden}
         initialValue={initialData[targetItem.titleAttribute] ?? initialData.id}
-        rules={[{required: attribute.required && !attribute.readOnly, message: t('Required field')}]}
+        rules={[{required: attribute.required && !attribute.readOnly, message: t("Required field")}]}
       >
         <Search
           id={`${uniqueKey}#${attrName}`}
@@ -188,7 +188,7 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({itemTab: dataWrapper, 
           onSearch={() => setRelationModalVisible(true)}
           addonAfter={
             currentId && [
-              <Tooltip key="open" title={t('Open')}>
+              <Tooltip key="open" title={t("Open")}>
                 <Button
                   type="link"
                   style={{marginLeft: 4, width: SUFFIX_BUTTON_WIDTH}}
@@ -198,7 +198,7 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({itemTab: dataWrapper, 
                   onClick={openRelation}
                 />
               </Tooltip>,
-              <Tooltip key="clear" title={t('Clear')}>
+              <Tooltip key="clear" title={t("Clear")}>
                 <Button
                   type="link"
                   style={{width: SUFFIX_BUTTON_WIDTH}}

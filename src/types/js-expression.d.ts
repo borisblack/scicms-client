@@ -1,4 +1,4 @@
-declare module 'js-expression' {
+declare module "js-expression" {
   export class Expression {
     simplify: (values?: {[key: string]: any}) => Expression
     evaluate: (values?: {[key: string]: any}) => any

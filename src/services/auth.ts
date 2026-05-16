@@ -1,7 +1,7 @@
-import axios from 'axios'
-import {gql} from '@apollo/client'
-import {apolloClient, extractAxiosErrorMessage, throwAxiosResponseError} from '.'
-import {SecurityConfig, UserInfo} from '../types'
+import axios from "axios"
+import {gql} from "@apollo/client"
+import {apolloClient, extractAxiosErrorMessage, throwAxiosResponseError} from "."
+import {SecurityConfig, UserInfo} from "../types"
 
 export interface JwtTokenResponse {
   jwt: string
@@ -36,7 +36,7 @@ const UPDATE_SESSION_DATA_MUTATION = gql`
 
 export async function fetchSecurityConfig(): Promise<SecurityConfig> {
   try {
-    const res = await axios.get('/api/config/security')
+    const res = await axios.get("/api/config/security")
 
     return res.data
   } catch (e: any) {
@@ -48,7 +48,7 @@ export async function login(credentials: {username: string; password: string}) {
   const {username, password} = credentials
 
   try {
-    const res = await axios.post('/api/auth/local', {
+    const res = await axios.post("/api/auth/local", {
       username: encodeURI(username),
       password: encodeURI(password)
     })
@@ -63,7 +63,7 @@ export async function loginOauth2(credentials: {provider: string; code: string})
   const {provider, code} = credentials
 
   try {
-    const res = await axios.post('/api/auth/oauth2', {
+    const res = await axios.post("/api/auth/oauth2", {
       provider: encodeURI(provider),
       code: encodeURI(code)
     })
@@ -76,7 +76,7 @@ export async function loginOauth2(credentials: {provider: string; code: string})
 
 export async function logout() {
   try {
-    const res = await axios.post('/logout')
+    const res = await axios.post("/logout")
 
     return res.data
   } catch (e: any) {
@@ -86,7 +86,7 @@ export async function logout() {
 
 export async function changePassword(request: ChangePasswordRequest) {
   try {
-    await axios.post('/api/auth/local/password', request)
+    await axios.post("/api/auth/local/password", request)
   } catch (e: any) {
     throwAxiosResponseError(e)
   }

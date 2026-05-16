@@ -1,9 +1,9 @@
-import {useMemo} from 'react'
-import {Alert, Statistic} from 'antd'
+import {useMemo} from "react"
+import {Alert, Statistic} from "antd"
 
-import {DashRenderContext} from '..'
-import * as RulesService from 'src/services/rules'
-import {useBiProperties} from 'src/bi/util/hooks'
+import {DashRenderContext} from ".."
+import * as RulesService from "src/services/rules"
+import {useBiProperties} from "src/bi/util/hooks"
 
 interface StatisticDashOptions {
   statisticField?: string
@@ -27,7 +27,7 @@ function StatisticDash({dash, data}: DashRenderContext) {
     <div>
       {data.length > 0 && (
         <Statistic
-          style={{padding: '0 12px'}}
+          style={{padding: "0 12px"}}
           valueStyle={{fontSize: 48, fontWeight: 600, color: statisticProps.color, ...fieldStyle}}
           value={data[0][statisticField]}
           groupSeparator=" "

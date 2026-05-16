@@ -1,5 +1,5 @@
-import {Input, InputRef} from 'antd'
-import {ChangeEvent, FocusEvent, KeyboardEvent, useEffect, useRef, useState} from 'react'
+import {Input, InputRef} from "antd"
+import {ChangeEvent, FocusEvent, KeyboardEvent, useEffect, useRef, useState} from "react"
 
 interface Props {
   value: any
@@ -25,13 +25,13 @@ export function EditableCell({value, onChange}: Props) {
   }
 
   function handleKeyUp(evt: KeyboardEvent<HTMLInputElement>) {
-    if (evt.key === 'Escape') {
+    if (evt.key === "Escape") {
       setEditing(false)
       setInnerValue(value)
       return
     }
 
-    if (evt.key === 'Enter') {
+    if (evt.key === "Enter") {
       setEditing(false)
       onChange((evt.target as HTMLInputElement).value)
     }

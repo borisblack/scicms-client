@@ -1,5 +1,5 @@
-import {InputNumber} from 'antd'
-import {FocusEvent, KeyboardEvent, useEffect, useRef, useState} from 'react'
+import {InputNumber} from "antd"
+import {FocusEvent, KeyboardEvent, useEffect, useRef, useState} from "react"
 
 interface Props {
   value?: string | number | null
@@ -28,13 +28,13 @@ export function EditableNumberCell({value, min, max, step, onChange}: Props) {
   }
 
   function handleKeyUp(evt: KeyboardEvent<HTMLInputElement>) {
-    if (evt.key === 'Escape') {
+    if (evt.key === "Escape") {
       setEditing(false)
       setInnerValue(value)
       return
     }
 
-    if (evt.key === 'Enter') {
+    if (evt.key === "Enter") {
       setEditing(false)
       const v = (evt.target as HTMLInputElement).value
       onChange(v ? Number(v) : null)

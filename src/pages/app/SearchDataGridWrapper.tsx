@@ -1,14 +1,14 @@
-import {useCallback, useMemo, useRef, useState} from 'react'
-import {useTranslation} from 'react-i18next'
-import {Row} from '@tanstack/react-table'
-import {Checkbox, notification} from 'antd'
+import {useCallback, useMemo, useRef, useState} from "react"
+import {useTranslation} from "react-i18next"
+import {Row} from "@tanstack/react-table"
+import {Checkbox, notification} from "antd"
 
-import {RequestParams, DataGrid} from 'src/uiKit/DataGrid/DataGrid'
-import {findAll, getColumns, getHiddenColumns, getInitialData} from 'src/util/datagrid'
-import {Item, ItemData} from 'src/types/schema'
-import {ExtRequestParams, ItemFiltersInput} from 'src/services/query'
-import {CheckboxChangeEvent} from 'antd/es/checkbox'
-import {useAppProperties, useItemOperations, useRegistry} from 'src/util/hooks'
+import {RequestParams, DataGrid} from "src/uiKit/DataGrid/DataGrid"
+import {findAll, getColumns, getHiddenColumns, getInitialData} from "src/util/datagrid"
+import {Item, ItemData} from "src/types/schema"
+import {ExtRequestParams, ItemFiltersInput} from "src/services/query"
+import {CheckboxChangeEvent} from "antd/es/checkbox"
+import {useAppProperties, useItemOperations, useRegistry} from "src/util/hooks"
 
 interface Props {
   item: Item
@@ -75,7 +75,7 @@ export default function SearchDataGridWrapper({
       const allParams: ExtRequestParams = {
         ...params,
         majorRev,
-        locale: showAllLocalesRef.current ? 'all' : locale,
+        locale: showAllLocalesRef.current ? "all" : locale,
         state
       }
 
@@ -86,7 +86,7 @@ export default function SearchDataGridWrapper({
       } catch (e: any) {
         console.error(e.message)
         notification.error({
-          message: t('Request error'),
+          message: t("Request error"),
           description: e.message
         })
       } finally {
@@ -113,7 +113,7 @@ export default function SearchDataGridWrapper({
         hiddenColumns: hiddenColumnsMemoized,
         pageSize: appProps.query.defaultPageSize
       }}
-      toolbar={item.localized && <Checkbox onChange={handleLocalizationsCheckBoxChange}>{t('All Locales')}</Checkbox>}
+      toolbar={item.localized && <Checkbox onChange={handleLocalizationsCheckBoxChange}>{t("All Locales")}</Checkbox>}
       title={t(item.displayPluralName)}
       getRowId={originalRow => originalRow[item.idAttribute]}
       onRequest={handleRequest}

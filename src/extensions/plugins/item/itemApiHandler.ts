@@ -1,5 +1,5 @@
-import _ from 'lodash'
-import axios from 'axios'
+import _ from "lodash"
+import axios from "axios"
 
 import {
   CACHE_TTL_ATTR_NAME,
@@ -31,18 +31,18 @@ import {
   TABLE_NAME_ATTR_NAME,
   TITLE_ATTRIBUTE_ATTR_NAME,
   VERSIONED_ATTR_NAME
-} from 'src/config/constants'
-import QueryManager from 'src/services/query'
-import {extractAxiosErrorMessage} from 'src/services'
-import {FlaggedResponse, ItemData, ItemModel} from 'src/types/schema'
-import {ApiMiddlewareContext, ApiOperation} from '../types'
+} from "src/config/constants"
+import QueryManager from "src/services/query"
+import {extractAxiosErrorMessage} from "src/services"
+import {FlaggedResponse, ItemData, ItemModel} from "src/types/schema"
+import {ApiMiddlewareContext, ApiOperation} from "../types"
 
 export async function handleItemApiOperation<T extends ItemData>(
   operation: ApiOperation,
   context: ApiMiddlewareContext<T>,
   next: () => any
 ) {
-  if (context.item.name !== ITEM_ITEM_NAME) throw new Error('Illegal argument')
+  if (context.item.name !== ITEM_ITEM_NAME) throw new Error("Illegal argument")
 
   switch (operation) {
     case ApiOperation.CREATE:
@@ -59,7 +59,7 @@ export async function handleItemApiOperation<T extends ItemData>(
     case ApiOperation.PURGE:
     case ApiOperation.PROMOTE:
     default:
-      throw new Error('Unsupported operation')
+      throw new Error("Unsupported operation")
   }
 }
 
@@ -68,7 +68,7 @@ async function apply<T extends ItemData>({items, item, getValue}: ApiMiddlewareC
   let id: string
   try {
     const model = toModel(getValue)
-    const res = await axios.post('/api/model/apply', model)
+    const res = await axios.post("/api/model/apply", model)
     id = res.data
   } catch (e: any) {
     throw new Error(extractAxiosErrorMessage(e))
@@ -86,7 +86,7 @@ function toModel<T extends ItemData>(getValue: (path: keyof T, defaultValue?: an
   const permission = getValue(PERMISSION_ATTR_NAME)
 
   return {
-    coreVersion: 'v1',
+    coreVersion: "v1",
     kind: ITEM_MODEL_KIND,
     includeTemplates: getValue(INCLUDE_TEMPLATES_ATTR_NAME),
     metadata: {

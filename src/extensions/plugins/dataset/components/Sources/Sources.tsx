@@ -1,30 +1,30 @@
-import _ from 'lodash'
-import {ChangeEvent, useEffect, useMemo, useState} from 'react'
-import {useTranslation} from 'react-i18next'
-import {Checkbox, Form, FormInstance, Input, Pagination, Space, Spin, Tree, Typography} from 'antd'
-import type {DataNode} from 'antd/es/tree'
-import {CheckboxChangeEvent} from 'antd/es/checkbox'
+import _ from "lodash"
+import {ChangeEvent, useEffect, useMemo, useState} from "react"
+import {useTranslation} from "react-i18next"
+import {Checkbox, Form, FormInstance, Input, Pagination, Space, Spin, Tree, Typography} from "antd"
+import type {DataNode} from "antd/es/tree"
+import {CheckboxChangeEvent} from "antd/es/checkbox"
 
-import {Split} from 'src/uiKit/Split'
-import {DATASET_ITEM_NAME, MAIN_DATASOURCE_NAME} from 'src/config/constants'
-import {Pagination as IPagination} from 'src/types'
-import {Dataset, DatasetSources, DatasetSpec, Table} from 'src/types/bi'
-import {findDatasourceById, loadDatasourceTables} from 'src/services/datasource'
-import {useAcl, useAppProperties} from 'src/util/hooks'
-import TableItem from './TableItem'
-import SourcesDesigner from './SourcesDesigner'
-import FieldTypeIcon from 'src/components/FieldTypeIcon/FieldTypeIcon'
-import {SourcesQueryBuildResult} from './SourcesQueryBuilder'
-import CodeEditor from 'src/uiKit/Editor'
-import {EditorMode} from 'src/uiKit/Editor/constants'
-import styles from './Sources.module.css'
-import {CustomComponentContext} from 'src/extensions/plugins/types'
-import {Datasource, DatasourceType} from 'src/types/schema'
+import {Split} from "src/uiKit/Split"
+import {DATASET_ITEM_NAME, MAIN_DATASOURCE_NAME} from "src/config/constants"
+import {Pagination as IPagination} from "src/types"
+import {Dataset, DatasetSources, DatasetSpec, Table} from "src/types/bi"
+import {findDatasourceById, loadDatasourceTables} from "src/services/datasource"
+import {useAcl, useAppProperties} from "src/util/hooks"
+import TableItem from "./TableItem"
+import SourcesDesigner from "./SourcesDesigner"
+import FieldTypeIcon from "src/components/FieldTypeIcon/FieldTypeIcon"
+import {SourcesQueryBuildResult} from "./SourcesQueryBuilder"
+import CodeEditor from "src/uiKit/Editor"
+import {EditorMode} from "src/uiKit/Editor/constants"
+import styles from "./Sources.module.css"
+import {CustomComponentContext} from "src/extensions/plugins/types"
+import {Datasource, DatasourceType} from "src/types/schema"
 
-const MIN_LEFT_PANE_SIZE = '600px'
-const MIN_RIGHT_PANE_SIZE = '700px'
-const MIN_TOP_PANE_SIZE = '250px'
-const MIN_BOTTOM_PANE_SIZE = '250px'
+const MIN_LEFT_PANE_SIZE = "600px"
+const MIN_RIGHT_PANE_SIZE = "700px"
+const MIN_TOP_PANE_SIZE = "250px"
+const MIN_BOTTOM_PANE_SIZE = "250px"
 const DEBOUNCE_WAIT_INTERVAL = 500
 
 const {Search} = Input
@@ -38,16 +38,16 @@ const initialSources: DatasetSources = {
 export function Sources({form, itemTab: dataWrapper, getValue, setValue}: CustomComponentContext<Dataset>) {
   const data = dataWrapper.data as Dataset | undefined
   const {item} = dataWrapper
-  if (item.name !== DATASET_ITEM_NAME) throw new Error('Illegal argument')
+  if (item.name !== DATASET_ITEM_NAME) throw new Error("Illegal argument")
 
   const {t} = useTranslation()
   const appProps = useAppProperties()
   const acl = useAcl(item, data)
-  const datasourceId = Form.useWatch('datasource.id', form as FormInstance)
-  const datasourceName = Form.useWatch('datasource', form as FormInstance)
+  const datasourceId = Form.useWatch("datasource.id", form as FormInstance)
+  const datasourceName = Form.useWatch("datasource", form as FormInstance)
   const [datasource, setDatasource] = useState<Datasource | undefined>()
   const isDatabase = datasource?.sourceType === DatasourceType.DATABASE
-  const spec: DatasetSpec = useMemo(() => getValue('spec', {columns: {}}), [getValue])
+  const spec: DatasetSpec = useMemo(() => getValue("spec", {columns: {}}), [getValue])
   const sources: DatasetSources = useMemo(() => spec.sources ?? initialSources, [spec])
   const [loading, setLoading] = useState<boolean>(false)
   const [tables, setTables] = useState<Table[]>([])
@@ -60,8 +60,8 @@ export function Sources({form, itemTab: dataWrapper, getValue, setValue}: Custom
   }
   const [pagination, setPagination] = useState<IPagination>(defaultPagination)
   const editorValue: string = useMemo(() => {
-    const tableName = getValue('tableName')
-    return tableName ? `SELECT * FROM ${tableName}` : (getValue('query', '') as string)
+    const tableName = getValue("tableName")
+    return tableName ? `SELECT * FROM ${tableName}` : (getValue("query", "") as string)
   }, [getValue])
   const useDesigner: boolean = useMemo(
     () => spec.useDesigner ?? false /*!editorValue*/,
@@ -164,8 +164,8 @@ export function Sources({form, itemTab: dataWrapper, getValue, setValue}: Custom
       >
         <div className={styles.tablesPane}>
           <Space.Compact className={styles.filterInput} size="small">
-            <Input allowClear placeholder={t('Schema')} onChange={handleSchemaChange} />
-            <Search allowClear placeholder={t('Source name')} onChange={handleFilterChange} />
+            <Input allowClear placeholder={t("Schema")} onChange={handleSchemaChange} />
+            <Search allowClear placeholder={t("Source name")} onChange={handleFilterChange} />
           </Space.Compact>
 
           <Tree
@@ -180,10 +180,10 @@ export function Sources({form, itemTab: dataWrapper, getValue, setValue}: Custom
               current={pagination.page}
               defaultPageSize={appProps.query.defaultPageSize}
               pageSize={pagination.pageSize}
-              pageSizeOptions={['10', '20', '50', '100']}
+              pageSizeOptions={["10", "20", "50", "100"]}
               showSizeChanger
               showQuickJumper
-              showTotal={total => `${t('Total records')}: ${total}`}
+              showTotal={total => `${t("Total records")}: ${total}`}
               size="small"
               total={pagination.total}
               onChange={handlePaginationChange}
@@ -199,7 +199,7 @@ export function Sources({form, itemTab: dataWrapper, getValue, setValue}: Custom
             checked={useDesigner || !isDatabase}
             onChange={handleUseDesignerCheck}
           >
-            <Text strong>{t('Use designer')}</Text>
+            <Text strong>{t("Use designer")}</Text>
           </Checkbox>
 
           {isDatabase ? (

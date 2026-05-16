@@ -1,8 +1,8 @@
-import {gql} from '@apollo/client'
+import {gql} from "@apollo/client"
 
-import i18n from '../i18n'
-import {apolloClient, extractGraphQLErrorMessages} from '.'
-import {Locale} from '../types/schema'
+import i18n from "../i18n"
+import {apolloClient, extractGraphQLErrorMessages} from "."
+import {Locale} from "../types/schema"
 
 const FIND_ALL_QUERY = gql`
   query {
@@ -25,7 +25,7 @@ export async function fetchLocales(): Promise<Locale[]> {
   const res = await apolloClient.query({query: FIND_ALL_QUERY})
   if (res.errors) {
     console.error(extractGraphQLErrorMessages(res.errors))
-    throw new Error(i18n.t('An error occurred while executing the request'))
+    throw new Error(i18n.t("An error occurred while executing the request"))
   }
 
   return res.data.locales.data

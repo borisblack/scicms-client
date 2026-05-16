@@ -1,24 +1,24 @@
-import _ from 'lodash'
-import {useCallback, useMemo, useState} from 'react'
-import {Row} from '@tanstack/react-table'
-import {Button, Form, Modal, Space} from 'antd'
-import {useTranslation} from 'react-i18next'
+import _ from "lodash"
+import {useCallback, useMemo, useState} from "react"
+import {Row} from "@tanstack/react-table"
+import {Button, Form, Modal, Space} from "antd"
+import {useTranslation} from "react-i18next"
 
-import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME} from 'src/config/constants'
-import {Index, Item, ItemSpec} from 'src/types/schema'
-import {type DataWithPagination, type RequestParams, DataGrid} from 'src/uiKit/DataGrid/DataGrid'
-import {getInitialData, processLocal} from 'src/util/datagrid'
-import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from '@ant-design/icons'
-import {ItemType} from 'antd/es/menu/hooks/useItems'
-import IndexForm from './IndexForm'
-import {useAppProperties, useItemAcl, useRegistry} from 'src/util/hooks'
-import {getHiddenIndexColumns, getIndexColumns} from './indexColumns'
-import {NamedIndex} from './types'
-import {CustomComponentContext} from 'src/extensions/plugins/types'
+import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME} from "src/config/constants"
+import {Index, Item, ItemSpec} from "src/types/schema"
+import {type DataWithPagination, type RequestParams, DataGrid} from "src/uiKit/DataGrid/DataGrid"
+import {getInitialData, processLocal} from "src/util/datagrid"
+import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from "@ant-design/icons"
+import {ItemType} from "antd/es/menu/hooks/useItems"
+import IndexForm from "./IndexForm"
+import {useAppProperties, useItemAcl, useRegistry} from "src/util/hooks"
+import {getHiddenIndexColumns, getIndexColumns} from "./indexColumns"
+import {NamedIndex} from "./types"
+import {CustomComponentContext} from "src/extensions/plugins/types"
 
 export function Indexes({itemTab: dataWrapper, getValue, setValue}: CustomComponentContext<Item>) {
   const {item, data} = dataWrapper
-  if (item.name !== ITEM_TEMPLATE_ITEM_NAME && item.name !== ITEM_ITEM_NAME) throw new Error('Illegal argument')
+  if (item.name !== ITEM_TEMPLATE_ITEM_NAME && item.name !== ITEM_ITEM_NAME) throw new Error("Illegal argument")
 
   const {itemTemplates} = useRegistry()
   const isNew = !data?.id
@@ -30,7 +30,7 @@ export function Indexes({itemTab: dataWrapper, getValue, setValue}: CustomCompon
   const acl = useItemAcl(item, data)
   const columns = useMemo(() => getIndexColumns(defaultColWidth), [defaultColWidth])
   const hiddenColumns = useMemo(() => getHiddenIndexColumns(), [])
-  const spec: ItemSpec = useMemo(() => getValue('spec', {attributes: {}, indexes: {}}), [getValue])
+  const spec: ItemSpec = useMemo(() => getValue("spec", {attributes: {}, indexes: {}}), [getValue])
 
   const initialNamedIndexes = useMemo((): NamedIndex[] => {
     const indexes = spec.indexes ?? {}
@@ -98,8 +98,8 @@ export function Indexes({itemTab: dataWrapper, getValue, setValue}: CustomCompon
     _.forOwn(values, (value, key) => {
       if (value == null) return
 
-      if (key === 'columns') {
-        parsedValues[key] = (value as string).split('\n')
+      if (key === "columns") {
+        parsedValues[key] = (value as string).split("\n")
         return
       }
 
@@ -117,7 +117,7 @@ export function Indexes({itemTab: dataWrapper, getValue, setValue}: CustomCompon
 
       const parsedValues = parseValues(values)
       const {name} = parsedValues
-      if (!name) throw new Error('Illegal argument')
+      if (!name) throw new Error("Illegal argument")
 
       if (name in (spec.indexes ?? {}))
         handleNamedIndexesChange(namedIndexes.map(it => (it.name === name ? {...parsedValues} : it)))
@@ -139,7 +139,7 @@ export function Indexes({itemTab: dataWrapper, getValue, setValue}: CustomCompon
       <Space>
         {acl.canWrite && (
           <Button type="primary" size="small" icon={<PlusCircleOutlined />} onClick={handleCreate}>
-            {t('Add')}
+            {t("Add")}
           </Button>
         )}
       </Space>
@@ -158,8 +158,8 @@ export function Indexes({itemTab: dataWrapper, getValue, setValue}: CustomCompon
     (row: Row<NamedIndex>) => {
       const items: ItemType[] = [
         {
-          key: 'open',
-          label: t('Open'),
+          key: "open",
+          label: t("Open"),
           icon: <FolderOpenOutlined />,
           onClick: () => openRow(row)
         }
@@ -167,8 +167,8 @@ export function Indexes({itemTab: dataWrapper, getValue, setValue}: CustomCompon
 
       if (acl.canWrite) {
         items.push({
-          key: 'delete',
-          label: t('Delete'),
+          key: "delete",
+          label: t("Delete"),
           icon: <DeleteTwoTone twoToneColor="#eb2f96" />,
           onClick: () => deleteRow(row)
         })
@@ -190,14 +190,14 @@ export function Indexes({itemTab: dataWrapper, getValue, setValue}: CustomCompon
         }}
         toolbar={renderToolbar()}
         version={version}
-        title={t('Indexes')}
+        title={t("Indexes")}
         getRowId={originalRow => originalRow.name}
         getRowContextMenu={getRowContextMenu}
         onRequest={handleRequest}
         onRowDoubleClick={handleRowDoubleClick}
       />
       <Modal
-        title={t('Index')}
+        title={t("Index")}
         open={isEditModalVisible}
         destroyOnClose
         onOk={() => indexForm.submit()}

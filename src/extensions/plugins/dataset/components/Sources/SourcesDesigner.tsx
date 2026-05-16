@@ -1,14 +1,14 @@
-import {useDrop} from 'react-dnd'
+import {useDrop} from "react-dnd"
 
-import {DndItemType} from 'src/config/constants'
-import {DatasetSources, JoinedTable, JoinType, Table} from 'src/types/bi'
-import TableWidget from './TableWidget'
-import LineHorizontal from './LineHorizontal'
-import {useEffect, useState} from 'react'
-import LineVertical from './LineVertical'
-import JoinedTableModal from './JoinedTableModal'
-import SourcesQueryBuilder, {SourcesQueryBuildResult} from './SourcesQueryBuilder'
-import styles from './SourcesDesigner.module.css'
+import {DndItemType} from "src/config/constants"
+import {DatasetSources, JoinedTable, JoinType, Table} from "src/types/bi"
+import TableWidget from "./TableWidget"
+import LineHorizontal from "./LineHorizontal"
+import {useEffect, useState} from "react"
+import LineVertical from "./LineVertical"
+import JoinedTableModal from "./JoinedTableModal"
+import SourcesQueryBuilder, {SourcesQueryBuildResult} from "./SourcesQueryBuilder"
+import styles from "./SourcesDesigner.module.css"
 
 interface SourcesDesignerProps {
   sources: DatasetSources

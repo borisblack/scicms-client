@@ -1,9 +1,9 @@
-import {Select} from 'antd'
-import {NamedAttribute} from './types'
-import TransferInput from 'src/uiKit/TransferInput'
-import {useRegistry} from 'src/util/hooks'
-import {useTranslation} from 'react-i18next'
-import {useMemo, useState} from 'react'
+import {Select} from "antd"
+import {NamedAttribute} from "./types"
+import TransferInput from "src/uiKit/TransferInput"
+import {useRegistry} from "src/util/hooks"
+import {useTranslation} from "react-i18next"
+import {useMemo, useState} from "react"
 
 interface TemplateAttributesSelectionProps {
   includeTemplates: string[]
@@ -67,7 +67,7 @@ export default function TemplateAttributesSelection({
     <>
       <Select
         style={{width: 180, marginBottom: 10}}
-        placeholder={t('Select template')}
+        placeholder={t("Select template")}
         size="small"
         options={Object.entries(itemTemplates)
           .filter(([name, template]) => !includeTemplateNames.has(name))

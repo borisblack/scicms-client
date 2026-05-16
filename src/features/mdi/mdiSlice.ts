@@ -1,7 +1,7 @@
-import {createSlice, Draft, PayloadAction} from '@reduxjs/toolkit'
+import {createSlice, Draft, PayloadAction} from "@reduxjs/toolkit"
 
-import {MDITab} from 'src/uiKit/MDITabs'
-import {RootState} from '../../store'
+import {MDITab} from "src/uiKit/MDITabs"
+import {RootState} from "../../store"
 
 export interface MDIState<T> {
   items: MDITab<T>[]
@@ -22,7 +22,7 @@ const initialState: MDIState<any> = {
 }
 
 const mdiSlice = createSlice({
-  name: 'mdi',
+  name: "mdi",
   initialState,
   reducers: {
     initItems(draft: Draft<MDIState<any>>, action: PayloadAction<MDIAction<any>>) {
@@ -34,19 +34,19 @@ const mdiSlice = createSlice({
 
     setActiveKey(draft: Draft<MDIState<any>>, action: PayloadAction<MDIAction<any>>) {
       const {key} = action.payload
-      if (key == null) throw new Error('Action key is null.')
+      if (key == null) throw new Error("Action key is null.")
 
-      if (draft.items.findIndex(item => item.key === key) === -1) throw new Error('Key not found.')
+      if (draft.items.findIndex(item => item.key === key) === -1) throw new Error("Key not found.")
 
       draft.activeKey = key
     },
 
     open(draft: Draft<MDIState<any>>, action: PayloadAction<MDIAction<any>>) {
       const {item} = action.payload
-      if (item == null) throw new Error('Action item is null.')
+      if (item == null) throw new Error("Action item is null.")
 
       const {key} = item
-      if (key == null) throw new Error('Action key is null.')
+      if (key == null) throw new Error("Action key is null.")
 
       const {items} = draft
       const existingIndex = items.findIndex(existingItem => existingItem.key === key)
@@ -57,13 +57,13 @@ const mdiSlice = createSlice({
 
     update(draft: Draft<MDIState<any>>, action: PayloadAction<MDIAction<any>>) {
       const {key, newKey, data} = action.payload
-      if (key == null) throw new Error('Action key is null.')
+      if (key == null) throw new Error("Action key is null.")
 
-      if (data == null) throw new Error('Action data is null.')
+      if (data == null) throw new Error("Action data is null.")
 
       const {items} = draft
       const existingIndex = items.findIndex(existingItem => existingItem.key === key)
-      if (existingIndex === -1) throw new Error('Item not found.')
+      if (existingIndex === -1) throw new Error("Item not found.")
 
       const existingItem = items[existingIndex]
       const updatedItem = {...existingItem, key: newKey == null ? key : newKey, data: {...data}}
@@ -77,10 +77,10 @@ const mdiSlice = createSlice({
       const {newKey, data} = action.payload
       if (activeKey == null) return
 
-      if (data == null) throw new Error('Action data is null.')
+      if (data == null) throw new Error("Action data is null.")
 
       const existingIndex = items.findIndex(existingItem => existingItem.key === activeKey)
-      if (existingIndex === -1) throw new Error('Item not found.')
+      if (existingIndex === -1) throw new Error("Item not found.")
 
       const existingItem = items[existingIndex]
       const updatedItem = {...existingItem, key: newKey == null ? activeKey : newKey, data: {...data}}
@@ -91,7 +91,7 @@ const mdiSlice = createSlice({
 
     close(draft: Draft<MDIState<any>>, action: PayloadAction<MDIAction<any>>) {
       const {key} = action.payload
-      if (key == null) throw new Error('Action key is null.')
+      if (key == null) throw new Error("Action key is null.")
 
       const {items, activeKey} = draft
       const closedIndex = items.findIndex(existingItem => existingItem.key === key)

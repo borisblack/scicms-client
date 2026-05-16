@@ -1,12 +1,12 @@
-import _ from 'lodash'
-import {gql} from '@apollo/client'
+import _ from "lodash"
+import {gql} from "@apollo/client"
 
-import i18n from '../i18n'
-import {apolloClient, extractGraphQLErrorMessages} from '.'
-import {UserInfo} from '../types'
-import {Item, ItemData, Permission} from '../types/schema'
-import * as ACL from '../util/acl'
-import {hasPermissionAttribute} from 'src/util/schema'
+import i18n from "../i18n"
+import {apolloClient, extractGraphQLErrorMessages} from "."
+import {UserInfo} from "../types"
+import {Item, ItemData, Permission} from "../types/schema"
+import * as ACL from "../util/acl"
+import {hasPermissionAttribute} from "src/util/schema"
 
 export type PermissionMap = Record<string, Permission>
 
@@ -18,9 +18,9 @@ export interface Acl {
   canAdmin: boolean
 }
 
-export const DEFAULT_PERMISSION_ID = '6fd701bf-87e0-4aca-bbfd-fe1e9f85fc71'
-export const SECURITY_PERMISSION_ID = '4e1f310d-570f-4a16-9f41-cbc80b08ab8e'
-export const BI_PERMISSION_ID = '874e089e-cd9a-428a-962f-0c3d994cd371'
+export const DEFAULT_PERMISSION_ID = "6fd701bf-87e0-4aca-bbfd-fe1e9f85fc71"
+export const SECURITY_PERMISSION_ID = "4e1f310d-570f-4a16-9f41-cbc80b08ab8e"
+export const BI_PERMISSION_ID = "874e089e-cd9a-428a-962f-0c3d994cd371"
 
 const FIND_ALL_QUERY = gql`
   query findAll {
@@ -84,7 +84,7 @@ const fetchAllPermissions = (): Promise<Permission[]> =>
   apolloClient.query({query: FIND_ALL_QUERY}).then(res => {
     if (res.errors) {
       console.error(extractGraphQLErrorMessages(res.errors))
-      throw new Error(i18n.t('An error occurred while executing the request'))
+      throw new Error(i18n.t("An error occurred while executing the request"))
     }
     return res.data.permissions.data
   })
@@ -98,7 +98,7 @@ const findAllByIdentityNames = (identityNames: string[]): Promise<Permission[]> 
   apolloClient.query({query: FIND_ALL_BY_IDENTITY_NAMES_QUERY, variables: {identityNames}}).then(res => {
     if (res.errors) {
       console.error(extractGraphQLErrorMessages(res.errors))
-      throw new Error(i18n.t('An error occurred while executing the request'))
+      throw new Error(i18n.t("An error occurred while executing the request"))
     }
     return res.data.permissions.data
   })

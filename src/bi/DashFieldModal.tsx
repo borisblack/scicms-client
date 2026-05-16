@@ -1,10 +1,10 @@
-import React from 'react'
-import {useTranslation} from 'react-i18next'
-import {Button, Drawer, Form, Space} from 'antd'
+import React from "react"
+import {useTranslation} from "react-i18next"
+import {Button, Drawer, Form, Space} from "antd"
 
-import {NamedColumn} from 'src/types/bi'
-import FieldForm from './FieldForm/FieldForm'
-import {Column} from 'src/types/bi'
+import {NamedColumn} from "src/types/bi"
+import FieldForm from "./FieldForm/FieldForm"
+import {Column} from "src/types/bi"
 
 interface DashFieldModalProps {
   field: NamedColumn
@@ -30,13 +30,13 @@ export default function DashFieldModal({field, allFields, open, canEdit, onChang
 
   return (
     <Drawer
-      title={t('Field')}
+      title={t("Field")}
       open={open}
       destroyOnClose
       width={500}
       extra={
         <Space>
-          <Button onClick={onClose}>{t('Cancel')}</Button>
+          <Button onClick={onClose}>{t("Cancel")}</Button>
           <Button disabled={!canEdit} type="primary" onClick={() => form.submit()}>
             OK
           </Button>

@@ -1,5 +1,5 @@
-import {FieldType, PrimitiveFilterInput} from '.'
-import {Datasource, DefaultItemTemplate} from './schema'
+import {FieldType, PrimitiveFilterInput} from "."
+import {Datasource, DefaultItemTemplate} from "./schema"
 
 export interface Dataset extends DefaultItemTemplate {
   name: string
@@ -125,9 +125,9 @@ export interface DashboardLayoutItem {
 }
 
 export enum DashboardItemType {
-  DASH = 'DASH',
-  SELECTOR = 'SELECTOR',
-  TEXT = 'TEXT'
+  DASH = "DASH",
+  SELECTOR = "SELECTOR",
+  TEXT = "TEXT"
 }
 
 export interface IDash {
@@ -161,9 +161,9 @@ export interface SelectorLink {
 }
 
 export enum SelectorLinkType {
-  in = 'in',
-  out = 'out',
-  both = 'both'
+  in = "in",
+  out = "out",
+  both = "both"
 }
 
 export interface IText {
@@ -180,29 +180,29 @@ export interface ExecutionStatisticInfo {
 }
 
 export enum AggregateType {
-  count = 'count',
-  countd = 'countd',
-  sum = 'sum',
-  avg = 'avg',
-  min = 'min',
-  max = 'max'
+  count = "count",
+  countd = "countd",
+  sum = "sum",
+  avg = "avg",
+  min = "min",
+  max = "max"
 }
 
 export enum StringAggregateType {
-  count = 'count',
-  countd = 'countd'
+  count = "count",
+  countd = "countd"
 }
 
 export enum BoolAggregateType {
-  count = 'count',
-  countd = 'countd'
+  count = "count",
+  countd = "countd"
 }
 
 export enum DateTimeAggregateType {
-  count = 'count',
-  countd = 'countd',
-  min = 'min',
-  max = 'max'
+  count = "count",
+  countd = "countd",
+  min = "min",
+  max = "max"
 }
 
 export interface QueryBlock {
@@ -261,54 +261,54 @@ export type ListQueryOp = QueryOp.$in | QueryOp.$notIn
 export type PositiveLogicalOp = LogicalOp.$and | LogicalOp.$or
 
 export enum QueryOp {
-  $eq = '$eq',
-  $ne = '$ne',
-  $gt = '$gt',
-  $gte = '$gte',
-  $lt = '$lt',
-  $lte = '$lte',
-  $between = '$between',
-  $startsWith = '$startsWith',
-  $endsWith = '$endsWith',
-  $contains = '$contains',
-  $containsi = '$containsi',
-  $notContains = '$notContains',
-  $notContainsi = '$notContainsi',
-  $in = '$in',
-  $notIn = '$notIn',
-  $null = '$null',
-  $notNull = '$notNull'
+  $eq = "$eq",
+  $ne = "$ne",
+  $gt = "$gt",
+  $gte = "$gte",
+  $lt = "$lt",
+  $lte = "$lte",
+  $between = "$between",
+  $startsWith = "$startsWith",
+  $endsWith = "$endsWith",
+  $contains = "$contains",
+  $containsi = "$containsi",
+  $notContains = "$notContains",
+  $notContainsi = "$notContainsi",
+  $in = "$in",
+  $notIn = "$notIn",
+  $null = "$null",
+  $notNull = "$notNull"
 }
 
 export enum LogicalOp {
-  $and = '$and',
-  $or = '$or',
-  $not = '$not'
+  $and = "$and",
+  $or = "$or",
+  $not = "$not"
 }
 
 export type TemporalType = FieldType.date | FieldType.time | FieldType.datetime | FieldType.timestamp
 
 export enum TemporalPeriod {
-  ARBITRARY = 'ARBITRARY',
-  LAST = 'LAST',
-  NEXT = 'NEXT'
+  ARBITRARY = "ARBITRARY",
+  LAST = "LAST",
+  NEXT = "NEXT"
 }
 
 export enum TemporalUnit {
-  SECOND = 'SECOND',
-  MINUTE = 'MINUTE',
-  HOUR = 'HOUR',
-  DAY = 'DAY',
-  WEEK = 'WEEK',
-  MONTH = 'MONTH',
-  YEAR = 'YEAR'
+  SECOND = "SECOND",
+  MINUTE = "MINUTE",
+  HOUR = "HOUR",
+  DAY = "DAY",
+  WEEK = "WEEK",
+  MONTH = "MONTH",
+  YEAR = "YEAR"
 }
 
 export enum JoinType {
-  inner = 'inner',
-  left = 'left',
-  right = 'right',
-  full = 'full'
+  inner = "inner",
+  left = "left",
+  right = "right",
+  full = "full"
 }
 
 export type DatasetFiltersInput<T> = {

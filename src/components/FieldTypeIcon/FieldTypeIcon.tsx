@@ -1,7 +1,7 @@
-import {CSSProperties} from 'react'
+import {CSSProperties} from "react"
 
-import {FieldType} from 'src/types'
-import styles from './FieldTypeIcon.module.css'
+import {FieldType} from "src/types"
+import styles from "./FieldTypeIcon.module.css"
 
 interface FieldTypeIconProps {
   fieldType: FieldType
@@ -18,44 +18,44 @@ export default function FieldTypeIcon({fieldType, color, className, style}: Fiel
       case FieldType.float:
       case FieldType.double:
       case FieldType.decimal:
-        return 'fa-solid fa-hashtag'
+        return "fa-solid fa-hashtag"
       case FieldType.string:
       case FieldType.text:
-        return 'fa-solid fa-t'
+        return "fa-solid fa-t"
       case FieldType.bool:
-        return 'fa-solid fa-check'
+        return "fa-solid fa-check"
       case FieldType.date:
       case FieldType.datetime:
       case FieldType.timestamp:
-        return 'fa-solid fa-calendar-days'
+        return "fa-solid fa-calendar-days"
       case FieldType.time:
-        return 'fa-solid fa-clock'
+        return "fa-solid fa-clock"
       case FieldType.uuid:
-        return 'fa-solid fa-u'
+        return "fa-solid fa-u"
       case FieldType.sequence:
-        return 'fa-solid fa-arrow-up-1-9'
+        return "fa-solid fa-arrow-up-1-9"
       case FieldType.email:
-        return 'fa-solid fa-at'
+        return "fa-solid fa-at"
       case FieldType.enum:
-        return 'fa-solid fa-e'
+        return "fa-solid fa-e"
       case FieldType.password:
-        return 'fa-solid fa-asterisk'
+        return "fa-solid fa-asterisk"
       case FieldType.array:
-        return 'fa-solid fa-bars'
+        return "fa-solid fa-bars"
       case FieldType.json:
-        return 'fa-solid fa-j'
+        return "fa-solid fa-j"
       case FieldType.media:
-        return 'fa-solid fa-photo-film'
+        return "fa-solid fa-photo-film"
       case FieldType.relation:
-        return 'fa-solid fa-share-nodes'
+        return "fa-solid fa-share-nodes"
       default:
-        return 'fa-solid fa-question'
+        return "fa-solid fa-question"
     }
   }
 
   return (
     <i
-      className={`${iconClassName()} fa-border ${styles.fieldTypeIcon} ${className ?? ''}`}
+      className={`${iconClassName()} fa-border ${styles.fieldTypeIcon} ${className ?? ""}`}
       style={{color, ...(style ?? {})}}
       title={fieldType}
     ></i>

@@ -1,7 +1,7 @@
-import {Space} from 'antd'
-import {SwapLeftOutlined, SwapOutlined, SwapRightOutlined} from '@ant-design/icons'
+import {Space} from "antd"
+import {SwapLeftOutlined, SwapOutlined, SwapRightOutlined} from "@ant-design/icons"
 
-import {SelectorLinkType} from 'src/types/bi'
+import {SelectorLinkType} from "src/types/bi"
 
 interface SelectorLinkTypeProps {
   linkType: SelectorLinkType
@@ -17,7 +17,7 @@ export default function SelectorLinkTypeLabel({linkType}: SelectorLinkTypeProps)
       case SelectorLinkType.both:
         return <SwapOutlined />
       default:
-        throw new Error('Illegal selector link type.')
+        throw new Error("Illegal selector link type.")
     }
   }
 

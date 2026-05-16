@@ -1,6 +1,6 @@
-import util from 'util'
-import i18n from 'src/i18n'
-import {RlsEntry, RlsIdentities} from 'src/types/bi'
+import util from "util"
+import i18n from "src/i18n"
+import {RlsEntry, RlsIdentities} from "src/types/bi"
 
 const COMMA_REGEXP = /\s*,\s*/
 const RLS_ENTRY_REGEXP = /^\s*(#)?\s*(?:'(.+)'|(\*))\s*:\s*(.+?)\s*$/
@@ -20,7 +20,7 @@ export function parseRls(rawRls: string): RlsEntry[] {
   if (!rawRls) return []
 
   const rls = rawRls
-    .split('\n')
+    .split("\n")
     .map(rule => rule.match(RLS_ENTRY_REGEXP))
     .filter(Boolean)
     .map(mg => {
@@ -36,8 +36,8 @@ export function parseRls(rawRls: string): RlsEntry[] {
         ...parseIdentities(rawIdentities)
       }
 
-      if (rlsEntry.value === '*' && rlsEntry.anyIdentity)
-        throw new Error(util.format(i18n.t('Invalid rule: [%s]. Any value cannot be allowed for any identity.'), exp))
+      if (rlsEntry.value === "*" && rlsEntry.anyIdentity)
+        throw new Error(util.format(i18n.t("Invalid rule: [%s]. Any value cannot be allowed for any identity."), exp))
 
       return rlsEntry
     })
@@ -53,14 +53,14 @@ export function parseRls(rawRls: string): RlsEntry[] {
  * @returns serialized string
  */
 export function serializeRls(rls: RlsEntry[]): string {
-  return rls.map(serializeRlsEntry).join('\n')
+  return rls.map(serializeRlsEntry).join("\n")
 }
 
 function serializeRlsEntry(rls: RlsEntry): string {
   const {active, value, identities, anyIdentity} = rls
-  if (value === '*' && anyIdentity) {
+  if (value === "*" && anyIdentity) {
     throw new Error(
-      util.format(i18n.t('Invalid rule: [%s]. Any value cannot be allowed for any identity.'), JSON.stringify(rls))
+      util.format(i18n.t("Invalid rule: [%s]. Any value cannot be allowed for any identity."), JSON.stringify(rls))
     )
   }
 
@@ -68,16 +68,16 @@ function serializeRlsEntry(rls: RlsEntry): string {
     throw new Error(
       util.format(
         i18n.t(
-          'Invalid identities definition: [%s]. All identities are allowed, but the personal identities list is not empty.'
+          "Invalid identities definition: [%s]. All identities are allowed, but the personal identities list is not empty."
         ),
         JSON.stringify(identities)
       )
     )
   }
 
-  const comment = active ? '' : '# '
-  const valueExp = value === '*' ? value : `'${value}'`
-  const identitiesExp = anyIdentity ? '*' : Array.from(identities).join(', ')
+  const comment = active ? "" : "# "
+  const valueExp = value === "*" ? value : `'${value}'`
+  const identitiesExp = anyIdentity ? "*" : Array.from(identities).join(", ")
 
   return `${comment}${valueExp}: ${identitiesExp}`
 }
@@ -104,7 +104,7 @@ function parseIdentities(rawIdentities: string): RlsIdentities {
       } else if (star) {
         if (anyIdentity) {
           throw new Error(
-            util.format(i18n.t('Invalid identities definition: [%s]. Only one star placeholder is allowed.'), exp)
+            util.format(i18n.t("Invalid identities definition: [%s]. Only one star placeholder is allowed."), exp)
           )
         }
 
@@ -112,7 +112,7 @@ function parseIdentities(rawIdentities: string): RlsIdentities {
           throw new Error(
             util.format(
               i18n.t(
-                'Invalid identities definition: [%s]. All identities are allowed, but the personal identities list is not empty.'
+                "Invalid identities definition: [%s]. All identities are allowed, but the personal identities list is not empty."
               ),
               exp
             )

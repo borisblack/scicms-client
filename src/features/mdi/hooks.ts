@@ -1,6 +1,6 @@
-import {useCallback, useEffect} from 'react'
-import {MDIContext, MDITabObservable} from 'src/uiKit/MDITabs'
-import {useAppDispatch, useAppSelector} from 'src/util/hooks'
+import {useCallback, useEffect} from "react"
+import {MDIContext, MDITabObservable} from "src/uiKit/MDITabs"
+import {useAppDispatch, useAppSelector} from "src/util/hooks"
 import {
   selectActiveKey,
   selectItems,
@@ -12,7 +12,7 @@ import {
   close,
   closeActive,
   reset as doReset
-} from './mdiSlice'
+} from "./mdiSlice"
 import {
   changeKey,
   onClose,
@@ -20,7 +20,7 @@ import {
   register as registerCallbacks,
   unregister as unregisterCallbacks,
   reset as resetCallbacks
-} from './callbacks'
+} from "./callbacks"
 
 export function useNewMDIContextRedux<T>(initialItems: MDITabObservable<T>[]): MDIContext<T> {
   const dispatch = useAppDispatch()

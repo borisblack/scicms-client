@@ -1,19 +1,19 @@
-import {useCallback, useEffect, useMemo, useState} from 'react'
-import {useTranslation} from 'react-i18next'
-import {Col, Collapse, Form, Input, InputNumber, Popover, Row, Select, Space, Tooltip, Typography} from 'antd'
-import {FolderOpenOutlined, QuestionCircleOutlined} from '@ant-design/icons'
+import {useCallback, useEffect, useMemo, useState} from "react"
+import {useTranslation} from "react-i18next"
+import {Col, Collapse, Form, Input, InputNumber, Popover, Row, Select, Space, Tooltip, Typography} from "antd"
+import {FolderOpenOutlined, QuestionCircleOutlined} from "@ant-design/icons"
 
-import {Column, Dashboard, Dataset, IDash, NamedColumn, QueryBlock} from 'src/types/bi'
-import {generateQueryBlock, getCustomFunctionsInfo, toFormQueryBlock} from '../util/util'
-import DashFilters from '../DashFilters/DashFilters'
-import {Dash, getDash, getDashIds} from 'src/extensions/dashes'
-import {useBIData, useBiProperties} from '../util/hooks'
-import {Split} from 'src/uiKit/Split'
-import FieldList from './FieldList'
-import DashAxes from './DashAxes'
-import IconSuspense from 'src/uiKit/icons/IconSuspense'
-import styles from './DashForm.module.css'
-import {useAppProperties} from 'src/util/hooks'
+import {Column, Dashboard, Dataset, IDash, NamedColumn, QueryBlock} from "src/types/bi"
+import {generateQueryBlock, getCustomFunctionsInfo, toFormQueryBlock} from "../util/util"
+import DashFilters from "../DashFilters/DashFilters"
+import {Dash, getDash, getDashIds} from "src/extensions/dashes"
+import {useBIData, useBiProperties} from "../util/hooks"
+import {Split} from "src/uiKit/Split"
+import FieldList from "./FieldList"
+import DashAxes from "./DashAxes"
+import IconSuspense from "src/uiKit/icons/IconSuspense"
+import styles from "./DashForm.module.css"
+import {useAppProperties} from "src/util/hooks"
 
 interface DashFormProps {
   dash: IDash
@@ -87,14 +87,14 @@ export default function DashForm({
   }, [dash.dataset, datasetMap])
 
   const resetSortAndOptValuesFormFields = useCallback(() => {
-    form.setFieldValue('sortField', undefined)
-    form.setFieldValue('optValues', {})
+    form.setFieldValue("sortField", undefined)
+    form.setFieldValue("optValues", {})
   }, [form])
 
   const handleDatasetChange = useCallback(
     (datasetName: string) => {
       resetSortAndOptValuesFormFields()
-      form.setFieldValue('defaultFilters', generateQueryBlock())
+      form.setFieldValue("defaultFilters", generateQueryBlock())
       const newDataset = datasetMap[datasetName]
       setDataset(newDataset)
       onDatasetChange(newDataset)
@@ -117,7 +117,7 @@ export default function DashForm({
       dataset,
       availableColNames,
       form,
-      fieldName: 'optValues',
+      fieldName: "optValues",
       values: dash.optValues ?? {}
     })
 
@@ -136,9 +136,9 @@ export default function DashForm({
             name="dataset"
             label={
               <Space>
-                {t('Dataset')}
+                {t("Dataset")}
                 {dataset && (
-                  <Tooltip key="open" title={t('Open')}>
+                  <Tooltip key="open" title={t("Open")}>
                     <Link onClick={() => openDataset(datasetMap[dataset.name].id)}>
                       <FolderOpenOutlined />
                     </Link>
@@ -147,7 +147,7 @@ export default function DashForm({
               </Space>
             }
             initialValue={dash.dataset}
-            rules={[{required: true, message: t('Required field')}]}
+            rules={[{required: true, message: t("Required field")}]}
           >
             <Select
               style={{maxWidth: 220}}
@@ -181,16 +181,16 @@ export default function DashForm({
             <FormItem
               className={styles.formItem}
               name="type"
-              label={t('Type')}
+              label={t("Type")}
               initialValue={dash.type}
-              rules={[{required: true, message: t('Required field')}]}
+              rules={[{required: true, message: t("Required field")}]}
             >
               <Select
-                style={{maxWidth: 220, position: 'sticky', top: 0}}
+                style={{maxWidth: 220, position: "sticky", top: 0}}
                 options={dashTypes.map(dt => ({
                   label: (
                     <span>
-                      <IconSuspense iconName={getDash(dt)?.icon} className="red" style={{display: 'inline'}} />
+                      <IconSuspense iconName={getDash(dt)?.icon} className="red" style={{display: "inline"}} />
                       &nbsp;
                       {dt}
                     </span>
@@ -222,15 +222,15 @@ export default function DashForm({
                 <FormItem
                   className={styles.formItem}
                   name="name"
-                  label={t('Name')}
+                  label={t("Name")}
                   initialValue={dash.name}
-                  rules={[{required: true, message: t('Required field')}]}
+                  rules={[{required: true, message: t("Required field")}]}
                 >
                   <Input />
                 </FormItem>
               </Col>
               <Col span={6}>
-                <FormItem className={styles.formItem} name="unit" label={t('Unit')} initialValue={dash.unit}>
+                <FormItem className={styles.formItem} name="unit" label={t("Unit")} initialValue={dash.unit}>
                   <Input />
                 </FormItem>
               </Col>
@@ -238,24 +238,24 @@ export default function DashForm({
                 <FormItem
                   className={styles.formItem}
                   name="refreshIntervalSeconds"
-                  label={t('Refresh Interval (sec)')}
+                  label={t("Refresh Interval (sec)")}
                   initialValue={dash.refreshIntervalSeconds}
                   rules={[
-                    {required: true, message: t('Required field')},
-                    {type: 'number', min: minRefreshIntervalSeconds}
+                    {required: true, message: t("Required field")},
+                    {type: "number", min: minRefreshIntervalSeconds}
                   ]}
                 >
-                  <InputNumber style={{width: '100%'}} min={minRefreshIntervalSeconds} />
+                  <InputNumber style={{width: "100%"}} min={minRefreshIntervalSeconds} />
                 </FormItem>
               </Col>
             </Row>
 
             <Collapse
-              defaultActiveKey={['dashOptions', 'defaultFilters']}
+              defaultActiveKey={["dashOptions", "defaultFilters"]}
               items={[
                 {
-                  key: 'dashOptions',
-                  label: t('Dash Options'),
+                  key: "dashOptions",
+                  label: t("Dash Options"),
                   children: (
                     <>
                       <Row gutter={10} style={{marginBottom: 10}}>
@@ -263,7 +263,7 @@ export default function DashForm({
                           <FormItem
                             className={styles.formItem}
                             name="relatedDashboardId"
-                            label={t('Related Dashboard')}
+                            label={t("Related Dashboard")}
                             initialValue={dash.relatedDashboardId}
                           >
                             <Select allowClear>
@@ -282,10 +282,10 @@ export default function DashForm({
                   )
                 },
                 {
-                  key: 'defaultFilters',
+                  key: "defaultFilters",
                   label: (
                     <Space>
-                      {t('Default Filters')}
+                      {t("Default Filters")}
                       <Popover
                         arrow={false}
                         placement="right"
@@ -293,7 +293,7 @@ export default function DashForm({
                         title={
                           <>
                             {getCustomFunctionsInfo().map((s, i) => (
-                              <div key={i} style={{fontWeight: 'normal'}}>
+                              <div key={i} style={{fontWeight: "normal"}}>
                                 {s}
                               </div>
                             ))}
@@ -306,7 +306,7 @@ export default function DashForm({
                   ),
                   children: dataset && (
                     <DashFilters
-                      namePrefix={['defaultFilters']}
+                      namePrefix={["defaultFilters"]}
                       dataset={dataset}
                       initialBlock={toFormQueryBlock(dataset, timeZone, dash.defaultFilters)}
                     />

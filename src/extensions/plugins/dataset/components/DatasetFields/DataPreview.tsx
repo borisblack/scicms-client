@@ -1,15 +1,15 @@
-import _ from 'lodash'
-import {useCallback, useEffect, useMemo, useState} from 'react'
-import {useTranslation} from 'react-i18next'
-import {Button, notification, Space, Typography} from 'antd'
-import {FieldTimeOutlined} from '@ant-design/icons'
-import md5 from 'crypto-js/md5'
+import _ from "lodash"
+import {useCallback, useEffect, useMemo, useState} from "react"
+import {useTranslation} from "react-i18next"
+import {Button, notification, Space, Typography} from "antd"
+import {FieldTimeOutlined} from "@ant-design/icons"
+import md5 from "crypto-js/md5"
 
-import {type DataWithPagination, type RequestParams, DataGrid} from 'src/uiKit/DataGrid/DataGrid'
-import {getColumns, getHiddenColumns, getInitialData, loadData} from 'src/bi/util/datagrid'
-import {Column, Dataset, ExecutionStatisticInfo} from 'src/types/bi'
-import {useAppProperties, usePrevious} from 'src/util/hooks'
-import ExecutionStatisticModal from 'src/bi/ExecutionStatisticModal'
+import {type DataWithPagination, type RequestParams, DataGrid} from "src/uiKit/DataGrid/DataGrid"
+import {getColumns, getHiddenColumns, getInitialData, loadData} from "src/bi/util/datagrid"
+import {Column, Dataset, ExecutionStatisticInfo} from "src/types/bi"
+import {useAppProperties, usePrevious} from "src/util/hooks"
+import ExecutionStatisticModal from "src/bi/ExecutionStatisticModal"
 
 interface DataPreviewProps {
   dataset: Dataset
@@ -75,7 +75,7 @@ export default function DataPreview(props: DataPreviewProps) {
       } catch (e: any) {
         console.error(e.message)
         notification.error({
-          message: t('Request error'),
+          message: t("Request error"),
           description: e.message
         })
       } finally {
@@ -93,14 +93,14 @@ export default function DataPreview(props: DataPreviewProps) {
 
   const renderToolbar = () => (
     <Space size={10}>
-      <Title level={5} style={{display: 'inline'}}>
-        {t('Preview')}
+      <Title level={5} style={{display: "inline"}}>
+        {t("Preview")}
       </Title>
       <Button
         size="small"
         disabled={!statistic}
         icon={<FieldTimeOutlined />}
-        title={t('Execution statistic')}
+        title={t("Execution statistic")}
         onClick={showStatistic}
       />
     </Space>
@@ -119,7 +119,7 @@ export default function DataPreview(props: DataPreviewProps) {
         }}
         height={height}
         toolbar={renderToolbar()}
-        title={t('Preview')}
+        title={t("Preview")}
         getRowId={originalRow => md5(JSON.stringify(originalRow)).toString()} // TODO: Won't work if rows fully identical
         onRequest={handleRequest}
       />

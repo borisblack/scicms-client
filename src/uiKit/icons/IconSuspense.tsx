@@ -1,8 +1,8 @@
-import {lazy, Suspense} from 'react'
+import {lazy, Suspense} from "react"
 
-import {IconProps} from './Icon'
+import {IconProps} from "./Icon"
 
-const Icon = lazy(() => import('./Icon'))
+const Icon = lazy(() => import("./Icon"))
 
 export default function IconSuspense(props: IconProps) {
   const renderEmptyIcon = () => (

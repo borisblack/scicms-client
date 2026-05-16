@@ -1,18 +1,18 @@
-import _ from 'lodash'
-import {useCallback, useState} from 'react'
-import {useTranslation} from 'react-i18next'
-import {Layout, Menu, Spin} from 'antd'
-import {LogoutOutlined, UserOutlined} from '@ant-design/icons'
+import _ from "lodash"
+import {useCallback, useState} from "react"
+import {useTranslation} from "react-i18next"
+import {Layout, Menu, Spin} from "antd"
+import {LogoutOutlined, UserOutlined} from "@ant-design/icons"
 // import {gql, useQuery} from '@apollo/client'
-import {ItemType} from 'antd/lib/menu/hooks/useItems'
+import {ItemType} from "antd/lib/menu/hooks/useItems"
 
-import {useAuth, useModal, useRegistry} from 'src/util/hooks'
-import {AuthType} from 'src/types'
-import {ItemTab} from 'src/types/schema'
-import {MDIContext} from 'src/uiKit/MDITabs'
-import logo from 'src/logo.svg'
-import ChangePasswordModal from '../auth/ChangePasswordModal'
-import styles from './Navbar.module.css'
+import {useAuth, useModal, useRegistry} from "src/util/hooks"
+import {AuthType} from "src/types"
+import {ItemTab} from "src/types/schema"
+import {MDIContext} from "src/uiKit/MDITabs"
+import logo from "src/logo.svg"
+import ChangePasswordModal from "../auth/ChangePasswordModal"
+import styles from "./Navbar.module.css"
 
 type NavbarProps = {
   ctx: MDIContext<ItemTab>
@@ -23,14 +23,14 @@ type NavbarProps = {
 }
 
 const DEFAULT_NAVBAR_WIDTH = 275
-const NAVBAR_COLLAPSED_KEY = 'navbarCollapsed'
-const NAVBAR_COLLAPSED_KEY_SUFFIX = 'NavbarCollapsed'
+const NAVBAR_COLLAPSED_KEY = "navbarCollapsed"
+const NAVBAR_COLLAPSED_KEY_SUFFIX = "NavbarCollapsed"
 
 const {Sider} = Layout
 
-const isNavbarCollapsed = (key: string) => localStorage.getItem(key) === '1'
+const isNavbarCollapsed = (key: string) => localStorage.getItem(key) === "1"
 
-const setNavbarCollapsed = (key: string, collapsed: boolean) => localStorage.setItem(key, collapsed ? '1' : '0')
+const setNavbarCollapsed = (key: string, collapsed: boolean) => localStorage.setItem(key, collapsed ? "1" : "0")
 
 const Navbar = ({ctx, menuItems, isLoading = false, appPrefix, width = DEFAULT_NAVBAR_WIDTH}: NavbarProps) => {
   const {me, logout} = useAuth()
@@ -67,15 +67,15 @@ const Navbar = ({ctx, menuItems, isLoading = false, appPrefix, width = DEFAULT_N
 
     if (me.authType === AuthType.LOCAL) {
       profileChildMenuItems.push({
-        key: 'changePassword',
-        label: t('Change password'),
+        key: "changePassword",
+        label: t("Change password"),
         onClick: handleChangePassword
       })
     }
 
     profileChildMenuItems.push({
-      key: 'logout',
-      label: t('Logout'),
+      key: "logout",
+      label: t("Logout"),
       icon: <LogoutOutlined />,
       onClick: handleLogout
     })
@@ -94,7 +94,7 @@ const Navbar = ({ctx, menuItems, isLoading = false, appPrefix, width = DEFAULT_N
     >
       <div className={styles.navbarLogoWrapper} onClick={handleToggle}>
         <img src={logo} className={styles.navbarLogo} alt="logo" />
-        {!collapsed && <span className={styles.navbarLogoText}>{t('SciCMS Admin')}</span>}
+        {!collapsed && <span className={styles.navbarLogoText}>{t("SciCMS Admin")}</span>}
       </div>
       <Spin spinning={loading || isLoading}>
         <Menu
@@ -102,8 +102,8 @@ const Navbar = ({ctx, menuItems, isLoading = false, appPrefix, width = DEFAULT_N
           theme="dark"
           items={[
             {
-              key: 'profile',
-              label: `${t('Profile')} (${me?.username ?? 'Anonymous'})`,
+              key: "profile",
+              label: `${t("Profile")} (${me?.username ?? "Anonymous"})`,
               icon: <UserOutlined />,
               children: getProfileChildMenuItems()
             },

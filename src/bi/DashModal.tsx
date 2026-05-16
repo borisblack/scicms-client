@@ -1,13 +1,13 @@
-import _ from 'lodash'
-import React, {useEffect, useMemo, useState} from 'react'
-import {Button, Drawer, Form, Space} from 'antd'
+import _ from "lodash"
+import React, {useEffect, useMemo, useState} from "react"
+import {Button, Drawer, Form, Space} from "antd"
 
-import {fromFormQueryBlock, generateQueryBlock} from './util/util'
-import DashForm, {DashFormValues} from './DashForm/DashForm'
-import {Column, Dashboard, Dataset, IDash, NamedColumn} from '../types/bi'
-import {useTranslation} from 'react-i18next'
-import {useAppProperties, useModal} from '../util/hooks'
-import DashFieldModal from './DashFieldModal'
+import {fromFormQueryBlock, generateQueryBlock} from "./util/util"
+import DashForm, {DashFormValues} from "./DashForm/DashForm"
+import {Column, Dashboard, Dataset, IDash, NamedColumn} from "../types/bi"
+import {useTranslation} from "react-i18next"
+import {useAppProperties, useModal} from "../util/hooks"
+import DashFieldModal from "./DashFieldModal"
 
 interface DashFormModalProps {
   dash: IDash
@@ -54,7 +54,7 @@ export default function DashModal({
   const appProps = useAppProperties()
   const {timeZone} = appProps.dateTime
   const [form] = Form.useForm()
-  const [selectedDataset, setSelectedDataset] = useState<Dataset | undefined>(datasetMap[dash.dataset ?? ''])
+  const [selectedDataset, setSelectedDataset] = useState<Dataset | undefined>(datasetMap[dash.dataset ?? ""])
   const allFields = useMemo(
     () => ({...(selectedDataset?.spec.columns ?? {}), ...dash.fields}),
     [selectedDataset?.spec.columns, dash.fields]
@@ -122,7 +122,7 @@ export default function DashModal({
   function handleFieldChange(field: NamedColumn, prevName: string) {
     if (!canEdit) return
 
-    if (!canFieldEdit(prevName)) throw new Error('Dataset field cannot be changed here.')
+    if (!canFieldEdit(prevName)) throw new Error("Dataset field cannot be changed here.")
 
     const newFields: Record<string, Column> = {
       ...dash.fields,
@@ -142,7 +142,7 @@ export default function DashModal({
   function handleFieldRemove(fieldName: string) {
     if (!canEdit) return
 
-    if (!canFieldEdit(fieldName)) throw new Error('Dataset field cannot be removed here.')
+    if (!canFieldEdit(fieldName)) throw new Error("Dataset field cannot be removed here.")
 
     onChange({
       ...dash,
@@ -160,7 +160,7 @@ export default function DashModal({
       // onOk={() => dashForm.submit()}
       extra={
         <Space>
-          <Button onClick={cancelEdit}>{t('Cancel')}</Button>
+          <Button onClick={cancelEdit}>{t("Cancel")}</Button>
           <Button disabled={!canEdit} type="primary" onClick={() => form.submit()}>
             OK
           </Button>

@@ -1,6 +1,6 @@
-import {FC} from 'react'
-import {FormInstance} from 'antd'
-import {Attribute, ItemTab} from 'src/types/schema'
+import {FC} from "react"
+import {FormInstance} from "antd"
+import {Attribute, ItemTab} from "src/types/schema"
 
 export interface AttributeFieldProps {
   itemTab: ItemTab

@@ -1,1 +1,1 @@
-export {LifecycleSpecSuspense} from './LifecycleSpec/LifecycleSpecSuspense'
+export {LifecycleSpecSuspense} from "./LifecycleSpec/LifecycleSpecSuspense"

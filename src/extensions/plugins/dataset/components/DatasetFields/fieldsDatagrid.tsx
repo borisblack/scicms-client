@@ -1,14 +1,14 @@
-import {ReactNode} from 'react'
-import {ColumnDef, createColumnHelper} from '@tanstack/react-table'
-import {Tag, Typography} from 'antd'
-import i18n from 'src/i18n'
-import {FieldType} from 'src/types'
-import {NamedColumn} from 'src/types/bi'
-import {CheckboxCell, ClickableCell, EditableCell, EditableNumberCell, SelectableCell} from 'src/uiKit/DataGrid'
-import {AggregateType, Column} from 'src/types/bi'
-import {getFormatOptions} from 'src/bi/util/util'
-import FieldTypeIcon from 'src/components/FieldTypeIcon/FieldTypeIcon'
-import FieldName, {TagType} from 'src/components/FieldName/FieldName'
+import {ReactNode} from "react"
+import {ColumnDef, createColumnHelper} from "@tanstack/react-table"
+import {Tag, Typography} from "antd"
+import i18n from "src/i18n"
+import {FieldType} from "src/types"
+import {NamedColumn} from "src/types/bi"
+import {CheckboxCell, ClickableCell, EditableCell, EditableNumberCell, SelectableCell} from "src/uiKit/DataGrid"
+import {AggregateType, Column} from "src/types/bi"
+import {getFormatOptions} from "src/bi/util/util"
+import FieldTypeIcon from "src/components/FieldTypeIcon/FieldTypeIcon"
+import FieldName, {TagType} from "src/components/FieldName/FieldName"
 
 interface GetColumnsProps {
   ownColumns: Record<string, Column>
@@ -25,7 +25,7 @@ const renderField = (field: NamedColumn, tag?: TagType): ReactNode => (
   <span className="text-ellipsis">
     <FieldTypeIcon
       fieldType={field.type}
-      color={field.custom && ((field.source && field.aggregate) || field.formula) ? '#007bff' : '#28a745'}
+      color={field.custom && ((field.source && field.aggregate) || field.formula) ? "#007bff" : "#28a745"}
     />
     &nbsp;
     <FieldName name={field.name} tag={tag} />
@@ -40,30 +40,30 @@ export function getColumns({
   onClick
 }: GetColumnsProps): ColumnDef<NamedColumn, any>[] {
   return [
-    columnHelper.accessor('name', {
-      header: i18n.t('Name'),
+    columnHelper.accessor("name", {
+      header: i18n.t("Name"),
       cell: info => {
         const thisField = info.row.original
         return canEdit /*&& thisField.custom*/ ? (
           <ClickableCell
-            value={renderField(thisField, thisField.custom ? undefined : 'lock')}
+            value={renderField(thisField, thisField.custom ? undefined : "lock")}
             onClick={() => onClick(info.getValue())}
           />
         ) : (
-          renderField(thisField, thisField.custom ? undefined : 'lock')
+          renderField(thisField, thisField.custom ? undefined : "lock")
         )
       },
       size: 160,
       enableSorting: true
     }) as ColumnDef<NamedColumn, string>,
-    columnHelper.accessor('type', {
-      header: i18n.t('Type'),
+    columnHelper.accessor("type", {
+      header: i18n.t("Type"),
       cell: info => <Tag color="processing">{info.getValue()}</Tag>,
       size: 100,
       enableSorting: true
     }) as ColumnDef<NamedColumn, FieldType>,
-    columnHelper.accessor('source', {
-      header: i18n.t('Source'),
+    columnHelper.accessor("source", {
+      header: i18n.t("Source"),
       cell: info => {
         const thisField = info.row.original
         const source = info.getValue()
@@ -80,8 +80,8 @@ export function getColumns({
       size: defaultColWidth,
       enableSorting: true
     }) as ColumnDef<NamedColumn, FieldType>,
-    columnHelper.accessor('hidden', {
-      header: i18n.t('Show'),
+    columnHelper.accessor("hidden", {
+      header: i18n.t("Show"),
       cell: info => {
         return (
           <CheckboxCell
@@ -94,8 +94,8 @@ export function getColumns({
       size: 120,
       enableSorting: true
     }) as ColumnDef<NamedColumn, boolean>,
-    columnHelper.accessor('aggregate', {
-      header: i18n.t('Aggregate'),
+    columnHelper.accessor("aggregate", {
+      header: i18n.t("Aggregate"),
       cell: info => {
         const thisField = info.row.original
         const value = info.getValue()
@@ -108,8 +108,8 @@ export function getColumns({
       size: 180,
       enableSorting: true
     }) as ColumnDef<NamedColumn, AggregateType>,
-    columnHelper.accessor('formula', {
-      header: i18n.t('Formula'),
+    columnHelper.accessor("formula", {
+      header: i18n.t("Formula"),
       cell: info => {
         const thisField = info.row.original
         const value = info.getValue()
@@ -122,8 +122,8 @@ export function getColumns({
       size: 250,
       enableSorting: true
     }) as ColumnDef<NamedColumn, string>,
-    columnHelper.accessor('format', {
-      header: i18n.t('Format'),
+    columnHelper.accessor("format", {
+      header: i18n.t("Format"),
       cell: info => {
         const {type} = info.row.original
         const formatOptions = getFormatOptions(type)
@@ -143,8 +143,8 @@ export function getColumns({
       size: defaultColWidth,
       enableSorting: true
     }) as ColumnDef<NamedColumn, string>,
-    columnHelper.accessor('alias', {
-      header: i18n.t('Alias'),
+    columnHelper.accessor("alias", {
+      header: i18n.t("Alias"),
       cell: info =>
         canEdit ? (
           <EditableCell
@@ -157,8 +157,8 @@ export function getColumns({
       size: 250,
       enableSorting: true
     }) as ColumnDef<NamedColumn, string>,
-    columnHelper.accessor('colWidth', {
-      header: i18n.t('Column Width'),
+    columnHelper.accessor("colWidth", {
+      header: i18n.t("Column Width"),
       cell: info =>
         canEdit ? (
           <EditableNumberCell

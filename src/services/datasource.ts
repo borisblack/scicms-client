@@ -1,11 +1,11 @@
-import axios from 'axios'
-import {apolloClient, extractAxiosErrorMessage, extractGraphQLErrorMessages} from '.'
-import {Pagination, PaginationInput} from '../types'
-import {Table} from '../types/bi'
-import qs from 'qs'
-import {gql} from '@apollo/client'
-import {Datasource} from 'src/types/schema'
-import i18n from '../i18n'
+import axios from "axios"
+import {apolloClient, extractAxiosErrorMessage, extractGraphQLErrorMessages} from "."
+import {Pagination, PaginationInput} from "../types"
+import {Table} from "../types/bi"
+import qs from "qs"
+import {gql} from "@apollo/client"
+import {Datasource} from "src/types/schema"
+import i18n from "../i18n"
 
 export interface DatasourceTablesInput {
   schema?: string
@@ -38,7 +38,7 @@ export const findDatasourceById = async (id: string): Promise<Datasource> => {
   const res = await apolloClient.query({query: FIND_BY_ID_QUERY, variables: {id}})
   if (res.errors) {
     console.error(extractGraphQLErrorMessages(res.errors))
-    throw new Error(i18n.t('An error occurred while executing the request'))
+    throw new Error(i18n.t("An error occurred while executing the request"))
   }
 
   return res.data.datasource.data
@@ -51,7 +51,7 @@ export async function loadDatasourceTables(
   const query = qs.stringify(input)
 
   try {
-    const res = await axios.get(`/api/datasource/${datasource}/tables${query ? `?${query}` : ''}`)
+    const res = await axios.get(`/api/datasource/${datasource}/tables${query ? `?${query}` : ""}`)
     return res.data
   } catch (e: any) {
     throw new Error(extractAxiosErrorMessage(e))

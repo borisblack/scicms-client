@@ -1,18 +1,18 @@
-import {useCallback, useMemo, useRef, useState} from 'react'
-import {useTranslation} from 'react-i18next'
-import {Row} from '@tanstack/react-table'
-import {Button, Modal, notification, Space} from 'antd'
-import {ItemType} from 'antd/es/menu/hooks/useItems'
-import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined, SelectOutlined} from '@ant-design/icons'
-import {type RequestParams, DataGrid} from 'src/uiKit/DataGrid/DataGrid'
-import {findAllRelated, getColumns, getHiddenColumns, getInitialData} from 'src/util/datagrid'
-import {Attribute, ItemData, ItemTab, RelType} from 'src/types/schema'
-import {ID_ATTR_NAME, ITEM_ITEM_NAME, SOURCE_ATTR_NAME, TARGET_ATTR_NAME} from 'src/config/constants'
-import MutationManager from 'src/services/mutation'
-import QueryManager, {ItemFiltersInput} from 'src/services/query'
-import SearchDataGridWrapper from './SearchDataGridWrapper'
-import * as ACL from 'src/util/acl'
-import {useAcl, useAppProperties, useAuth, useItemOperations, useRegistry} from 'src/util/hooks'
+import {useCallback, useMemo, useRef, useState} from "react"
+import {useTranslation} from "react-i18next"
+import {Row} from "@tanstack/react-table"
+import {Button, Modal, notification, Space} from "antd"
+import {ItemType} from "antd/es/menu/hooks/useItems"
+import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined, SelectOutlined} from "@ant-design/icons"
+import {type RequestParams, DataGrid} from "src/uiKit/DataGrid/DataGrid"
+import {findAllRelated, getColumns, getHiddenColumns, getInitialData} from "src/util/datagrid"
+import {Attribute, ItemData, ItemTab, RelType} from "src/types/schema"
+import {ID_ATTR_NAME, ITEM_ITEM_NAME, SOURCE_ATTR_NAME, TARGET_ATTR_NAME} from "src/config/constants"
+import MutationManager from "src/services/mutation"
+import QueryManager, {ItemFiltersInput} from "src/services/query"
+import SearchDataGridWrapper from "./SearchDataGridWrapper"
+import * as ACL from "src/util/acl"
+import {useAcl, useAppProperties, useAuth, useItemOperations, useRegistry} from "src/util/hooks"
 
 interface Props {
   itemTab: ItemTab
@@ -39,9 +39,9 @@ export default function RelationsDataGridWrapper({itemTab, relAttrName, relAttri
     !relAttribute.target ||
     (relAttribute.relType !== RelType.oneToMany && relAttribute.relType !== RelType.manyToMany)
   )
-    throw Error('Illegal attribute')
+    throw Error("Illegal attribute")
 
-  if (relAttribute.inversedBy && relAttribute.mappedBy) throw Error('Illegal attribute')
+  if (relAttribute.inversedBy && relAttribute.mappedBy) throw Error("Illegal attribute")
 
   const {t} = useTranslation()
   const [loading, setLoading] = useState<boolean>(false)
@@ -116,14 +116,14 @@ export default function RelationsDataGridWrapper({itemTab, relAttrName, relAttri
       (acl.canWrite ||
         (acl.canAdmin &&
           item.name === ITEM_ITEM_NAME &&
-          (relAttrName === 'allowedLifecycles' || relAttrName === 'allowedPermissions'))) &&
+          (relAttrName === "allowedLifecycles" || relAttrName === "allowedPermissions"))) &&
       !relAttribute.readOnly,
     [acl.canAdmin, acl.canWrite, relAttribute.readOnly, item.name, relAttrName]
   )
 
   const handleRequest = useCallback(
     async (params: RequestParams) => {
-      if (!itemId) throw new Error('Item ID is null.')
+      if (!itemId) throw new Error("Item ID is null.")
 
       try {
         setLoading(true)
@@ -132,7 +132,7 @@ export default function RelationsDataGridWrapper({itemTab, relAttrName, relAttri
       } catch (e: any) {
         console.error(e.message)
         notification.error({
-          message: t('Request error'),
+          message: t("Request error"),
           description: e.message
         })
       } finally {
@@ -146,11 +146,11 @@ export default function RelationsDataGridWrapper({itemTab, relAttrName, relAttri
 
   const processExistingManyToManyRelation = useCallback(
     async (updatedItem: ItemTab, remove: boolean = false) => {
-      if (relAttribute.relType !== RelType.manyToMany || !intermediate) throw new Error('Illegal attribute.')
+      if (relAttribute.relType !== RelType.manyToMany || !intermediate) throw new Error("Illegal attribute.")
 
       const updatedId = updatedItem.data?.[targetReferencedAttrName]
       if (updatedId == null) {
-        throw new Error('ID of updated item is not set.')
+        throw new Error("ID of updated item is not set.")
         // console.debug('ID of updated item is not set.')
         // return
       }
@@ -173,7 +173,7 @@ export default function RelationsDataGridWrapper({itemTab, relAttrName, relAttri
         } catch (e: any) {
           console.error(e.message)
           notification.error({
-            message: t('Relation processing error'),
+            message: t("Relation processing error"),
             description: e.message
           })
         } finally {
@@ -186,13 +186,13 @@ export default function RelationsDataGridWrapper({itemTab, relAttrName, relAttri
 
   const processCreatedManyToManyRelation = useCallback(
     async (updatedItemTab: ItemTab, remove: boolean = false) => {
-      if (itemId == null) throw new Error('Item ID is null.')
+      if (itemId == null) throw new Error("Item ID is null.")
 
-      if (relAttribute.relType !== RelType.manyToMany || !intermediate) throw new Error('Illegal attribute.')
+      if (relAttribute.relType !== RelType.manyToMany || !intermediate) throw new Error("Illegal attribute.")
 
       const id = updatedItemTab.data?.[targetReferencedAttrName]
       if (id == null) {
-        console.debug('Created item is not saved.')
+        console.debug("Created item is not saved.")
         return
       }
 
@@ -208,7 +208,7 @@ export default function RelationsDataGridWrapper({itemTab, relAttrName, relAttri
         } catch (e: any) {
           console.error(e.message)
           notification.error({
-            message: t('Relation processing error'),
+            message: t("Relation processing error"),
             description: e.message
           })
         } finally {
@@ -234,11 +234,11 @@ export default function RelationsDataGridWrapper({itemTab, relAttrName, relAttri
   )
 
   const createManyToOneOwningInitialData = useCallback((): ItemData | undefined => {
-    if (relAttribute.relType !== RelType.oneToMany || !oppositeAttrName) throw new Error('Illegal attribute.')
+    if (relAttribute.relType !== RelType.oneToMany || !oppositeAttrName) throw new Error("Illegal attribute.")
 
     const referencedAttrName = target.spec.attributes[oppositeAttrName].referencedBy || item.idAttribute
     const key = itemData?.[referencedAttrName]
-    if (key == null) throw new Error('Item key attribute is null.')
+    if (key == null) throw new Error("Item key attribute is null.")
 
     const initialData: any = {[referencedAttrName]: key}
     if (item.titleAttribute !== ID_ATTR_NAME) initialData[item.titleAttribute] = itemData?.[item.titleAttribute]
@@ -258,9 +258,9 @@ export default function RelationsDataGridWrapper({itemTab, relAttrName, relAttri
   const handleManyToManySelect = useCallback(
     async (selectedItemData: ItemData) => {
       const key = itemData?.[sourceReferencedAttrName]
-      if (key == null) throw new Error('Item key attribute is null.')
+      if (key == null) throw new Error("Item key attribute is null.")
 
-      if (relAttribute.relType !== RelType.manyToMany || !intermediate) throw new Error('Illegal attribute.')
+      if (relAttribute.relType !== RelType.manyToMany || !intermediate) throw new Error("Illegal attribute.")
 
       await mutationManager.create(intermediate, {
         [sourceAttrName]: key,
@@ -309,7 +309,7 @@ export default function RelationsDataGridWrapper({itemTab, relAttrName, relAttri
       } catch (e: any) {
         console.error(e.message)
         notification.error({
-          message: t('Deletion error'),
+          message: t("Deletion error"),
           description: e.message
         })
       } finally {
@@ -322,7 +322,7 @@ export default function RelationsDataGridWrapper({itemTab, relAttrName, relAttri
   const deleteIntermediate = useCallback(
     async (targetId: string) => {
       if (intermediate == null) {
-        console.log('Intermediate is null.')
+        console.log("Intermediate is null.")
         return
       }
 
@@ -346,7 +346,7 @@ export default function RelationsDataGridWrapper({itemTab, relAttrName, relAttri
       } catch (e: any) {
         console.error(e.message)
         notification.error({
-          message: t('Deletion error'),
+          message: t("Deletion error"),
           description: e.message
         })
       } finally {
@@ -370,8 +370,8 @@ export default function RelationsDataGridWrapper({itemTab, relAttrName, relAttri
     (row: Row<ItemData>) => {
       const items: ItemType[] = [
         {
-          key: 'open',
-          label: t('Open'),
+          key: "open",
+          label: t("Open"),
           icon: <FolderOpenOutlined />,
           onClick: () => openTarget(row.original[target.idAttribute])
         }
@@ -384,26 +384,26 @@ export default function RelationsDataGridWrapper({itemTab, relAttrName, relAttri
         if (isOneToMany) {
           if (target.versioned) {
             items.push({
-              key: 'delete',
-              label: t('Delete'),
+              key: "delete",
+              label: t("Delete"),
               icon: <DeleteTwoTone twoToneColor="#eb2f96" />,
               children: [
                 {
-                  key: 'delete',
-                  label: t('Current Version'),
+                  key: "delete",
+                  label: t("Current Version"),
                   onClick: () => deleteTarget(row.original[target.idAttribute])
                 },
                 {
-                  key: 'purge',
-                  label: t('All Versions'),
+                  key: "purge",
+                  label: t("All Versions"),
                   onClick: () => deleteTarget(row.original[target.idAttribute], true)
                 }
               ]
             })
           } else {
             items.push({
-              key: 'delete',
-              label: t('Delete'),
+              key: "delete",
+              label: t("Delete"),
               icon: <DeleteTwoTone twoToneColor="#eb2f96" />,
               onClick: () => deleteTarget(row.original[target.idAttribute])
             })
@@ -411,8 +411,8 @@ export default function RelationsDataGridWrapper({itemTab, relAttrName, relAttri
         } else {
           // manyToMany
           items.push({
-            key: 'delete',
-            label: t('Delete'),
+            key: "delete",
+            label: t("Delete"),
             icon: <DeleteTwoTone twoToneColor="#eb2f96" />,
             onClick: () => deleteIntermediate(row.original[target.idAttribute])
           })
@@ -446,12 +446,12 @@ export default function RelationsDataGridWrapper({itemTab, relAttrName, relAttri
       <Space>
         {!isOneToMany && (
           <Button size="small" icon={<SelectOutlined />} onClick={() => setSelectionModalVisible(true)}>
-            {t('Select')}
+            {t("Select")}
           </Button>
         )}
         {canCreateTarget && (
           <Button type="primary" size="small" icon={<PlusCircleOutlined />} onClick={handleCreate}>
-            {t('Add')}
+            {t("Add")}
           </Button>
         )}
       </Space>
@@ -478,7 +478,7 @@ export default function RelationsDataGridWrapper({itemTab, relAttrName, relAttri
       />
 
       <Modal
-        title={`${t('Select')}: ${t(target.displayName)}`}
+        title={`${t("Select")}: ${t(target.displayName)}`}
         open={isSelectionModalVisible}
         destroyOnClose
         width={SELECTION_MODAL_WIDTH}

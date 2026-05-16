@@ -1,30 +1,30 @@
-import _ from 'lodash'
-import {useEffect, useState} from 'react'
-import {useTranslation} from 'react-i18next'
-import {Checkbox, Form, Input, InputNumber, Popover, Select, Space, Tabs} from 'antd'
-import {FormInstance, RuleObject, RuleRender} from 'rc-field-form/es/interface'
-import {CheckboxChangeEvent} from 'antd/es/checkbox'
-import {QuestionCircleOutlined} from '@ant-design/icons'
+import _ from "lodash"
+import {useEffect, useState} from "react"
+import {useTranslation} from "react-i18next"
+import {Checkbox, Form, Input, InputNumber, Popover, Select, Space, Tabs} from "antd"
+import {FormInstance, RuleObject, RuleRender} from "rc-field-form/es/interface"
+import {CheckboxChangeEvent} from "antd/es/checkbox"
+import {QuestionCircleOutlined} from "@ant-design/icons"
 
-import {NamedColumn} from 'src/types/bi'
-import {usePrevious} from 'src/util/hooks'
-import {regExpRule, requiredFieldRule} from 'src/util/form'
+import {NamedColumn} from "src/types/bi"
+import {usePrevious} from "src/util/hooks"
+import {regExpRule, requiredFieldRule} from "src/util/form"
 import {
   calculateAggregationResultType,
   datasetFieldTypeOptions,
   getAggregateOptions,
   getFormatOptions
-} from 'src/bi/util/util'
-import {AggregateType, Column} from 'src/types/bi'
-import {FieldType} from 'src/types'
-import FieldTypeIcon from 'src/components/FieldTypeIcon/FieldTypeIcon'
-import FieldName from 'src/components/FieldName/FieldName'
-import CodeEditor from 'src/uiKit/Editor'
-import {EditorMode} from 'src/uiKit/Editor/constants'
-import {LETTER_NO_WHITESPACE_PATTERN} from 'src/config/constants'
-import * as RlsService from 'src/services/rls'
-import RlsHelp from './RlsHelp'
-import styles from './FieldForm.module.css'
+} from "src/bi/util/util"
+import {AggregateType, Column} from "src/types/bi"
+import {FieldType} from "src/types"
+import FieldTypeIcon from "src/components/FieldTypeIcon/FieldTypeIcon"
+import FieldName from "src/components/FieldName/FieldName"
+import CodeEditor from "src/uiKit/Editor"
+import {EditorMode} from "src/uiKit/Editor/constants"
+import {LETTER_NO_WHITESPACE_PATTERN} from "src/config/constants"
+import * as RlsService from "src/services/rls"
+import RlsHelp from "./RlsHelp"
+import styles from "./FieldForm.module.css"
 
 interface ColumnFormProps {
   field: NamedColumn
@@ -54,7 +54,7 @@ export default function FieldForm({field, allFields, canEdit, showRls = false}: 
     validator(_, value) {
       if (value === field.name || !allFields.hasOwnProperty(value)) return Promise.resolve()
 
-      return Promise.reject(new Error(t('Name is not unique')))
+      return Promise.reject(new Error(t("Name is not unique")))
     }
   })
 
@@ -62,7 +62,7 @@ export default function FieldForm({field, allFields, canEdit, showRls = false}: 
     validator(_, value) {
       try {
         const rls = RlsService.parseRls(value)
-        setFieldValue('rls', rls)
+        setFieldValue("rls", rls)
       } catch (err: any) {
         return Promise.reject(new Error(err.message))
       }
@@ -73,65 +73,65 @@ export default function FieldForm({field, allFields, canEdit, showRls = false}: 
 
   function handleSourceChange(newSource?: string) {
     setSource(newSource)
-    form.setFieldValue('aggregate', undefined)
-    form.setFieldValue('format', undefined)
+    form.setFieldValue("aggregate", undefined)
+    form.setFieldValue("format", undefined)
 
     if (newSource) {
       const sourceColumn = ownFields[newSource]
-      form.setFieldValue('type', sourceColumn.type)
+      form.setFieldValue("type", sourceColumn.type)
       setFieldType(sourceColumn.type)
     } else {
-      form.setFieldValue('type', undefined)
+      form.setFieldValue("type", undefined)
       setFieldType(undefined)
     }
   }
 
   function handleAggregateChange(newAggregate?: AggregateType) {
-    if (!source) throw new Error('Illegal state. Source must be specified')
+    if (!source) throw new Error("Illegal state. Source must be specified")
 
     const sourceColumn = ownFields[source]
     const newFieldType = newAggregate
       ? calculateAggregationResultType(sourceColumn.type, newAggregate)
       : sourceColumn.type
-    form.setFieldValue('type', newFieldType)
+    form.setFieldValue("type", newFieldType)
     setFieldType(newFieldType)
-    form.setFieldValue('format', undefined)
+    form.setFieldValue("format", undefined)
   }
 
   function handleFormulaChange(newFormula: string | undefined) {
     // TODO: Infer type from expression
-    form.setFieldValue('formula', newFormula)
+    form.setFieldValue("formula", newFormula)
   }
 
   function handleTabsChange(newActiveKey: string) {
     if (!canEdit || !field.custom) return
 
-    form.setFieldValue('type', undefined)
+    form.setFieldValue("type", undefined)
     setFieldType(undefined)
-    form.setFieldValue('format', undefined)
+    form.setFieldValue("format", undefined)
 
-    if (newActiveKey === 'source') {
-      form.setFieldValue('formula', undefined)
-      setFormula('')
-    } else if (newActiveKey === 'formula') {
+    if (newActiveKey === "source") {
+      form.setFieldValue("formula", undefined)
+      setFormula("")
+    } else if (newActiveKey === "formula") {
       // TODO: Infer type from expression
-      form.setFieldValue('type', FieldType.decimal)
+      form.setFieldValue("type", FieldType.decimal)
       setFieldType(FieldType.decimal)
-      form.setFieldValue('source', undefined)
+      form.setFieldValue("source", undefined)
       setSource(undefined)
-      form.setFieldValue('aggregate', undefined)
+      form.setFieldValue("aggregate", undefined)
     }
   }
 
   function handleVisibilityChange(e: CheckboxChangeEvent) {
-    form.setFieldValue('hidden', !e.target.checked)
+    form.setFieldValue("hidden", !e.target.checked)
   }
 
   return (
     <>
       <FormItem
         name="name"
-        label={t('Name')}
+        label={t("Name")}
         rules={[requiredFieldRule(), regExpRule(LETTER_NO_WHITESPACE_PATTERN), uniqueNameRule]}
       >
         <Input disabled={!canEdit || !field.custom} />
@@ -139,23 +139,23 @@ export default function FieldForm({field, allFields, canEdit, showRls = false}: 
 
       <FormItem
         name="type"
-        label={t('Type')}
-        rules={[{required: true, message: t('Cannot resolve type. Eihther Source or Formula field must be set.')}]}
+        label={t("Type")}
+        rules={[{required: true, message: t("Cannot resolve type. Eihther Source or Formula field must be set.")}]}
       >
         <Select disabled options={datasetFieldTypeOptions} />
       </FormItem>
 
       <Tabs
-        defaultActiveKey={field.formula ? 'formula' : 'source'}
+        defaultActiveKey={field.formula ? "formula" : "source"}
         size="small"
         style={{height: 220}}
         items={[
           {
-            key: 'source',
-            label: t('Source'),
+            key: "source",
+            label: t("Source"),
             children: (
               <>
-                <FormItem name="source" label={t('Source')}>
+                <FormItem name="source" label={t("Source")}>
                   <Select
                     allowClear
                     disabled={!canEdit || !field.custom}
@@ -179,7 +179,7 @@ export default function FieldForm({field, allFields, canEdit, showRls = false}: 
                   />
                 </FormItem>
 
-                <FormItem name="aggregate" label={t('Aggregate')}>
+                <FormItem name="aggregate" label={t("Aggregate")}>
                   <Select
                     allowClear
                     disabled={!canEdit || !field.custom || !source}
@@ -192,8 +192,8 @@ export default function FieldForm({field, allFields, canEdit, showRls = false}: 
             )
           },
           {
-            key: 'formula',
-            label: t('Formula'),
+            key: "formula",
+            label: t("Formula"),
             children: (
               <>
                 <FormItem name="formula" hidden>
@@ -217,7 +217,7 @@ export default function FieldForm({field, allFields, canEdit, showRls = false}: 
       />
 
       <FormItem name="hidden" hidden valuePropName="checked">
-        <Checkbox disabled={!canEdit}>{t('Hide')}</Checkbox>
+        <Checkbox disabled={!canEdit}>{t("Hide")}</Checkbox>
       </FormItem>
       <Checkbox
         className={styles.showCheckBox}
@@ -225,20 +225,20 @@ export default function FieldForm({field, allFields, canEdit, showRls = false}: 
         defaultChecked={!field.hidden}
         onChange={handleVisibilityChange}
       >
-        {t('Show')}
+        {t("Show")}
       </Checkbox>
 
-      <FormItem name="alias" label={t('Alias')}>
+      <FormItem name="alias" label={t("Alias")}>
         <Input disabled={!canEdit} />
       </FormItem>
 
       {formatOptions.length > 0 && (
-        <FormItem name="format" label={t('Format')}>
+        <FormItem name="format" label={t("Format")}>
           <Select allowClear disabled={!canEdit} options={formatOptions} />
         </FormItem>
       )}
 
-      <FormItem name="colWidth" label={t('Column Width')}>
+      <FormItem name="colWidth" label={t("Column Width")}>
         <InputNumber disabled={!canEdit} min={0} />
       </FormItem>
 
@@ -252,7 +252,7 @@ export default function FieldForm({field, allFields, canEdit, showRls = false}: 
             name="rawRls"
             label={
               <Space>
-                {t('Row-level security')}
+                {t("Row-level security")}
                 <Popover
                   arrow={false}
                   placement="bottom"

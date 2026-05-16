@@ -1,9 +1,9 @@
-import _ from 'lodash'
-import {useTranslation} from 'react-i18next'
-import {Button, Drawer, Form, Space} from 'antd'
+import _ from "lodash"
+import {useTranslation} from "react-i18next"
+import {Button, Drawer, Form, Space} from "antd"
 
-import {Dataset, IDash, ISelector} from '../types/bi'
-import SelectorForm, {SelectorFormValues} from './SelectorForm/SelectorForm'
+import {Dataset, IDash, ISelector} from "../types/bi"
+import SelectorForm, {SelectorFormValues} from "./SelectorForm/SelectorForm"
 
 interface SelectorFormModalProps {
   selector: ISelector
@@ -40,14 +40,14 @@ export default function SelectorModal({
   return (
     <Drawer
       className="no-drag"
-      title={t('Selector')}
+      title={t("Selector")}
       open={open}
       destroyOnClose
       width={400}
       // onOk={() => form.submit()}
       extra={
         <Space>
-          <Button onClick={cancelEdit}>{t('Cancel')}</Button>
+          <Button onClick={cancelEdit}>{t("Cancel")}</Button>
           <Button disabled={!canEdit} type="primary" onClick={() => form.submit()}>
             OK
           </Button>

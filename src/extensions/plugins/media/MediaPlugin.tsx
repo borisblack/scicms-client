@@ -1,9 +1,9 @@
-import {FILENAME_ATTR_NAME, MEDIA_ITEM_NAME} from 'src/config/constants'
-import {Media} from 'src/types/schema'
-import {Plugin} from '../Plugin'
-import {MediaFileAttributeField} from './attributeFields'
+import {FILENAME_ATTR_NAME, MEDIA_ITEM_NAME} from "src/config/constants"
+import {Media} from "src/types/schema"
+import {Plugin} from "../Plugin"
+import {MediaFileAttributeField} from "./attributeFields"
 
-const MEDIA_FILE_ATTRIBUTE_FIELD_ID = 'mediaFile'
+const MEDIA_FILE_ATTRIBUTE_FIELD_ID = "mediaFile"
 
 export class MediaPlugin extends Plugin<Media> {
   override onLoad(): void {
@@ -15,6 +15,6 @@ export class MediaPlugin extends Plugin<Media> {
   }
 
   override onUnload(): void {
-    throw new Error('Method not implemented.')
+    throw new Error("Method not implemented.")
   }
 }

@@ -1,15 +1,15 @@
-import {useEffect, useMemo} from 'react'
-import {useTranslation} from 'react-i18next'
-import {Button, Form, Select, Space} from 'antd'
-import {DefaultOptionType} from 'rc-select/lib/Select'
+import {useEffect, useMemo} from "react"
+import {useTranslation} from "react-i18next"
+import {Button, Form, Select, Space} from "antd"
+import {DefaultOptionType} from "rc-select/lib/Select"
 
-import {Column, Dataset, ISelector, QueryOp, SelectorFilter} from 'src/types/bi'
-import {queryOpTitles} from 'src/bi/util/util'
-import {requiredFieldRule} from 'src/util/form'
-import FilterValueFieldWrapper from '../DashFilters/FilterValueFieldWrapper'
-import {usePrevious} from 'src/util/hooks'
-import styles from './SelectorValue.module.css'
-import {ReloadOutlined} from '@ant-design/icons'
+import {Column, Dataset, ISelector, QueryOp, SelectorFilter} from "src/types/bi"
+import {queryOpTitles} from "src/bi/util/util"
+import {requiredFieldRule} from "src/util/form"
+import FilterValueFieldWrapper from "../DashFilters/FilterValueFieldWrapper"
+import {usePrevious} from "src/util/hooks"
+import styles from "./SelectorValue.module.css"
+import {ReloadOutlined} from "@ant-design/icons"
 
 interface SelectorValueProps {
   namePrefix: string[]
@@ -53,16 +53,16 @@ export default function SelectorValue({namePrefix, selector, datasetMap}: Select
 
   return (
     <Space>
-      <FormItem className={styles.formItem} name={[...namePrefix, 'field']} rules={[requiredFieldRule()]}>
-        <Select bordered={false} disabled style={{width: 160}} placeholder={t('Field name')} options={fieldOptions} />
+      <FormItem className={styles.formItem} name={[...namePrefix, "field"]} rules={[requiredFieldRule()]}>
+        <Select bordered={false} disabled style={{width: 160}} placeholder={t("Field name")} options={fieldOptions} />
       </FormItem>
 
-      <FormItem className={styles.formItem} name={[...namePrefix, 'op']} rules={[requiredFieldRule()]}>
+      <FormItem className={styles.formItem} name={[...namePrefix, "op"]} rules={[requiredFieldRule()]}>
         <Select
           bordered={false}
           disabled
           style={{width: 160}}
-          placeholder={t('Operator')}
+          placeholder={t("Operator")}
           options={[
             {
               label: queryOpTitles[op],
@@ -77,7 +77,7 @@ export default function SelectorValue({namePrefix, selector, datasetMap}: Select
       <Button
         type="text"
         icon={<ReloadOutlined />}
-        title={t('Apply')}
+        title={t("Apply")}
         onMouseDown={e => e.stopPropagation()}
         onClick={() => form.submit()}
       />

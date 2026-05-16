@@ -1,5 +1,5 @@
-import {useMemo} from 'react'
-import {useTranslation} from 'react-i18next'
+import {useMemo} from "react"
+import {useTranslation} from "react-i18next"
 
 interface Props {
   height?: number | string
@@ -13,10 +13,10 @@ function RlsDescription({height}: Props) {
   const {t} = useTranslation()
 
   const descriptionContent = useMemo(() => {
-    const helpDescription = t('RLS help description')
+    const helpDescription = t("RLS help description")
     return (
       <p>
-        {helpDescription.split('\n').map((s, i) => (
+        {helpDescription.split("\n").map((s, i) => (
           <span key={i}>
             {s}
             <br />
@@ -27,17 +27,17 @@ function RlsDescription({height}: Props) {
   }, [t])
 
   return (
-    <div style={{height, overflowY: 'scroll'}}>
-      <h4 style={{fontWeight: 600}}>{t('Description')}</h4>
+    <div style={{height, overflowY: "scroll"}}>
+      <h4 style={{fontWeight: 600}}>{t("Description")}</h4>
       {descriptionContent}
 
-      <h4 style={{fontWeight: 600}}>{t('Examples')}</h4>
+      <h4 style={{fontWeight: 600}}>{t("Examples")}</h4>
       <code>
         {"'value1': user1, user2, @role:ROLE_MANAGER"}
         <br />
-        {'*: user3, user4'}
+        {"*: user3, user4"}
         <br />
-        <span style={{color: '#999999'}}>{"# 'value2': user5"}</span>
+        <span style={{color: "#999999"}}>{"# 'value2': user5"}</span>
         <br />
         {"'value3': *"}
       </code>
