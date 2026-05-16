@@ -2,6 +2,29 @@
   "name": "scicms-client",
   "version": "0.12.4",
   "private": true,
+  "scripts": {
+    "analyze": "source-map-explorer 'build/static/js/*.js'",
+    "start": "react-scripts start",
+    "start-rewired": "react-app-rewired start",
+    "build": "react-scripts build",
+    "build-rewired": "react-app-rewired build",
+    "lint": "eslint --fix ./src",
+    "test": "react-scripts test",
+    "test-rewired": "react-app-rewired test",
+    "eject": "react-scripts eject"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
   "dependencies": {
     "@ant-design/charts": "^1.4.2",
     "@ant-design/icons": "^5.0.1",
@@ -65,29 +88,6 @@
     "util": "^0.12.4",
     "uuid": "^9.0.0",
     "web-vitals": "^2.1.4"
-  },
-  "scripts": {
-    "analyze": "source-map-explorer 'build/static/js/*.js'",
-    "start": "react-scripts start",
-    "start-rewired": "react-app-rewired start",
-    "build": "react-scripts build",
-    "build-rewired": "react-app-rewired build",
-    "lint": "eslint --fix ./src",
-    "test": "react-scripts test",
-    "test-rewired": "react-app-rewired test",
-    "eject": "react-scripts eject"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
