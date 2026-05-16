@@ -7,7 +7,7 @@ const TEMPORAL_CATEGORY = 'Temporal Functions'
 export const now: CustomFunction = {
   id: 'now',
   category: TEMPORAL_CATEGORY,
-  exec: () => DateTime.now().setZone(UTC, {keepLocalTime: true}),
+  exec: () => DateTime.now().setZone(UTC, {keepLocalTime: true}).toISO(),
   description: 'Now'
 }
 

@@ -52,7 +52,6 @@ axios.interceptors.request.use((config: AxiosRequestConfig) => {
 })
 
 export function extractAxiosErrorMessage(e: AxiosError, showServerErrorMessage: boolean = true): string {
-  console.log(e)
   const res = e.response
   if (res) {
     if (res.status === 401 && getJwt()) {

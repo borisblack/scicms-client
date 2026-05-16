@@ -46,11 +46,11 @@ function Bi() {
 
   useEffect(() => {
     if (isInitialized) {
-      initializePage()
+      loadPageData()
     }
   }, [isInitialized])
 
-  function initializePage() {
+  function loadPageData() {
     setLoading(true)
     Promise.all([DashboardCategoryService.fetchDashboardCategories(), DashboardService.fetchDashboards()])
       .then(([dashboardCategoryList, dashboardList]) => {
