@@ -1,6 +1,4 @@
-// import process from 'process'
-
-export const DEBUG: boolean = process.env.NODE_ENV !== "production"
+export const DEBUG: boolean = import.meta.env.DEV
 export const EMPTY_ARRAY = []
 export const EMPTY_OBJECT = {}
 

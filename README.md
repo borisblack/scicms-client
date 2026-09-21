@@ -30,15 +30,14 @@ Before starting work, it is recommended to read the SciCMS Core server [document
 
 ### Launch
 
-SciCMS Client is a React application written in Typescript. The [Create React App](https://create-react-app.dev) environment is used for building.
-[Ant Design](https://ant.design) was selected as the UI framework.
+SciCMS Client is a React application written in Typescript. The project is built with [Vite](https://vitejs.dev) and [Ant Design](https://ant.design) is used as the UI framework.
 
-Before the first launch, we need to install dependencies with the `yarn install` command (in the project's working directory).
+Before the first launch, install dependencies with the `npm install` command in the project directory.
 
 The following commands are available:
-- `yarn start-rewired` - local launch; the application will be opened in the browser at [http://localhost:3000](http://localhost:3000); when changes are made to the source code, the page will automatically reload; linter errors and warnings will be displayed in the terminal;
-- `yarn test` - launching tests;
-- `yarn build` - building of an optimized bundle for industrial use.
+- `npm run dev` - local launch; the application will be opened in the browser at [http://localhost:3000](http://localhost:3000); when changes are made to the source code, the page will automatically reload;
+- `npm test` - launching tests;
+- `npm run build` - building of an optimized bundle for industrial use.
 
 ### Login
 
@@ -54,10 +53,10 @@ To log in using the OAuth2 protocol, we must first [configure](https://github.co
 
 The application configuration files are located in the [src/config](src/config) folder. The main program settings are the SciCMS Core server URL and the interface language.
 The easiest (and recommended) way to change them is to use environment variables:
-- `REACT_APP_CORE_URL` - SciCMS Core server URL (default value is `http://localhost:8079`, corresponds to a locally running server instance);
-- `REACT_APP_I18N_LNG` - interface language (default value - `en-US`); currently available values ​​are `en-US` and `ru-RU`.
+- `VITE_CORE_URL` - SciCMS Core server URL (default value is `http://localhost:8079`, corresponds to a locally running server instance);
+- `VITE_I18N_LNG` - interface language (default value - `en-US`); currently available values ​​are `en-US` and `ru-RU`.
 
-Variables can be set in `.env` files for different environments, see [documentation](https://create-react-app.dev/docs/adding-custom-environment-variables) for more details.
+Variables can be set in `.env` files for different environments, see the [Vite documentation](https://vitejs.dev/guide/env-and-mode.html) for more details.
 
 Other settings can be set directly in configuration files in the [src/config](src/config) directory.
 

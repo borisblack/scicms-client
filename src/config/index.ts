@@ -100,9 +100,9 @@ const antdLocales: Record<string, Locale> = {
   "ru-RU": ruRU
 }
 
-const i18nLng = process.env.REACT_APP_I18N_LNG ?? DEFAULT_I18N_LNG
+const i18nLng = import.meta.env.VITE_I18N_LNG ?? DEFAULT_I18N_LNG
 export const clientConfig: ClientConfig = {
-  coreUrl: process.env.REACT_APP_CORE_URL ?? DEFAULT_CORE_URL,
+  coreUrl: import.meta.env.VITE_CORE_URL ?? DEFAULT_CORE_URL,
   i18nLng,
   antdLocale: antdLocales[i18nLng] ?? ruRU,
   notification: {
