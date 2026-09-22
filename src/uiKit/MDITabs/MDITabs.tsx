@@ -38,7 +38,7 @@ interface MDITabsProps<T> {
   renderItem: (data: T) => ReactNode
 }
 
-export default function MDITabs<T>({ctx, className, type, getItemLabel, renderItem}: MDITabsProps<T>) {
+export function MDITabs<T>({ctx, className, type, getItemLabel, renderItem}: MDITabsProps<T>) {
   const {items, activeKey, setActiveKey, closeTab} = ctx
 
   function handleTabsEdit(e: React.MouseEvent | React.KeyboardEvent | string, action: "add" | "remove") {
@@ -58,12 +58,12 @@ export default function MDITabs<T>({ctx, className, type, getItemLabel, renderIt
   return (
     <ReactMDIContext.Provider value={ctx}>
       <Tabs
-        items={getTabs()}
         activeKey={activeKey}
         className={className}
         hideAdd
-        type={type}
+        items={getTabs()}
         size="small"
+        type={type}
         onChange={setActiveKey}
         onEdit={handleTabsEdit}
       />

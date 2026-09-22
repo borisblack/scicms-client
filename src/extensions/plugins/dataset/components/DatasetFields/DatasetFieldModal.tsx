@@ -41,7 +41,7 @@ export default function DatasetFieldModal({
       title={t("Field")}
       width={620}
       open={open}
-      destroyOnClose
+      destroyOnHidden
       okButtonProps={{disabled: !canEdit, size: "small"}}
       cancelButtonProps={{size: "small"}}
       onOk={() => form.submit()}

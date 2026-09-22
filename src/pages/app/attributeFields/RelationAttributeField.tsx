@@ -218,7 +218,7 @@ const RelationAttributeField: FC<AttributeFieldProps> = ({itemTab: dataWrapper, 
       <Modal
         title={t(attribute.displayName)}
         open={isRelationModalVisible}
-        destroyOnClose
+        destroyOnHidden
         width={RELATION_MODAL_WIDTH}
         footer={null}
         onCancel={() => setRelationModalVisible(false)}

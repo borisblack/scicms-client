@@ -467,7 +467,7 @@ export default function ViewNavTabHeader({
       <Modal
         title={t("Versions")}
         open={isVersionsModalVisible}
-        destroyOnClose
+        destroyOnHidden
         width={VERSIONS_MODAL_WIDTH}
         footer={null}
         onCancel={() => setVersionsModalVisible(false)}
@@ -485,7 +485,7 @@ export default function ViewNavTabHeader({
         <Modal
           title={t("Promotion")}
           open={isPromoteModalVisible}
-          destroyOnClose
+          destroyOnHidden
           footer={null}
           onCancel={() => setPromoteModalVisible(false)}
         >

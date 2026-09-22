@@ -38,7 +38,7 @@ export default function JoinedTableModal({
     <Modal
       title={t("Join")}
       open={open}
-      destroyOnClose
+      destroyOnHidden
       width={800}
       okButtonProps={{disabled: !canEdit, size: "small"}}
       cancelButtonProps={{size: "small"}}

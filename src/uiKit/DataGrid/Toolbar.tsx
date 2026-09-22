@@ -45,30 +45,30 @@ function Toolbar({table, hasFilters, onRefresh, onClearFilters, onHtmlExport}: P
         </Tooltip>
       )}
 
-      <Tooltip title={t("Settings")}>
-        <Popover
-          content={table
-            .getAllLeafColumns()
-            .filter(column => column.id !== "drag-handle")
-            .map(column => (
-              <div key={column.id}>
-                <Checkbox checked={column.getIsVisible()} onChange={column.getToggleVisibilityHandler()}>
-                  {column.columnDef.header as string}
-                </Checkbox>
-              </div>
-            ))}
-          placement="leftTop"
-          trigger="click"
-        >
+      <Popover
+        content={table
+          .getAllLeafColumns()
+          .filter(column => column.id !== "drag-handle")
+          .map(column => (
+            <div key={column.id}>
+              <Checkbox checked={column.getIsVisible()} onChange={column.getToggleVisibilityHandler()}>
+                {column.columnDef.header as string}
+              </Checkbox>
+            </div>
+          ))}
+        placement="leftTop"
+        trigger="click"
+      >
+        <Tooltip title={t("Settings")}>
           <Button icon={<SettingOutlined />} type="text" className={styles.toolbarBtn} />
-        </Popover>
-      </Tooltip>
+        </Tooltip>
+      </Popover>
 
-      <Tooltip title={t("Export")}>
-        <Dropdown placement="bottomLeft" trigger={["click"]} menu={{items: getExportMenu()}}>
+      <Dropdown placement="bottomLeft" trigger={["click"]} menu={{items: getExportMenu()}}>
+        <Tooltip title={t("Export")}>
           <Button icon={<ExportOutlined />} type="text" className={styles.toolbarBtn} />
-        </Dropdown>
-      </Tooltip>
+        </Tooltip>
+      </Dropdown>
     </div>
   )
 }

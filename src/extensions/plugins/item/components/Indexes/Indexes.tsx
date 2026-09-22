@@ -199,7 +199,7 @@ export function Indexes({itemTab: dataWrapper, getValue, setValue}: CustomCompon
       <Modal
         title={t("Index")}
         open={isEditModalVisible}
-        destroyOnClose
+        destroyOnHidden
         onOk={() => indexForm.submit()}
         onCancel={() => setEditModalVisible(false)}
       >

@@ -32,7 +32,7 @@ export default function DashFieldModal({field, allFields, open, canEdit, onChang
     <Drawer
       title={t("Field")}
       open={open}
-      destroyOnClose
+      destroyOnHidden
       width={500}
       extra={
         <Space>

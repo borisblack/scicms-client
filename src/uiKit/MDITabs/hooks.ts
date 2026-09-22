@@ -1,6 +1,6 @@
 import {useCallback, useContext, useState} from "react"
 import {useImmerReducer} from "use-immer"
-import {MDIContext, MDITabObservable} from "."
+import {MDIContext, MDITabObservable} from "./MDITabs"
 import mdiTabsReducer, {
   MDITabsAction,
   MDITabsState,

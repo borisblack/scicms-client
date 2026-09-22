@@ -89,7 +89,7 @@ export const IconAttributeField: FC<CustomAttributeFieldContext> = ({
       <Modal
         title={t(attribute.displayName)}
         open={isIconsModalVisible}
-        destroyOnClose
+        destroyOnHidden
         width={ICONS_MODAL_WIDTH}
         footer={null}
         onCancel={() => setIconsModalVisible(false)}

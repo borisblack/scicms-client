@@ -1,17 +1,16 @@
-import _ from "lodash"
 import {useCallback, useState} from "react"
 import {useTranslation} from "react-i18next"
 import {Layout, Menu, Spin} from "antd"
 import {LogoutOutlined, UserOutlined} from "@ant-design/icons"
-// import {gql, useQuery} from '@apollo/client'
-import {ItemType} from "antd/lib/menu/hooks/useItems"
+// import {gql, useQuery} from "@apollo/client"
 
 import {useAuth, useModal, useRegistry} from "src/util/hooks"
 import {AuthType} from "src/types"
 import {ItemTab} from "src/types/schema"
-import {MDIContext} from "src/uiKit/MDITabs"
+import {MDIContext} from "src/uiKit/MDITabs/MDITabs"
 import logo from "src/logo.svg"
 import ChangePasswordModal from "../auth/ChangePasswordModal"
+import type {ItemType} from "antd/es/menu/interface"
 import styles from "./Navbar.module.css"
 
 type NavbarProps = {

@@ -128,7 +128,7 @@ const StringRelationAttributeField: FC<StringRelationAttributeFieldProps> = ({
       <Modal
         title={t(attribute.displayName)}
         open={isSearchModalVisible}
-        destroyOnClose
+        destroyOnHidden
         width={RELATION_MODAL_WIDTH}
         footer={null}
         onCancel={() => setSearchModalVisible(false)}

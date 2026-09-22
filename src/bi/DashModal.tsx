@@ -155,7 +155,7 @@ export default function DashModal({
       className="no-drag"
       title={dash.name}
       open={open}
-      destroyOnClose
+      destroyOnHidden
       width="70%"
       // onOk={() => dashForm.submit()}
       extra={

@@ -2,7 +2,7 @@ import axios, {AxiosError, AxiosRequestConfig} from "axios"
 import {codeMessage} from "../i18n"
 import {ApolloClient, ApolloLink, from, InMemoryCache} from "@apollo/client"
 import {createUploadLink} from "apollo-upload-client"
-import {GraphQLError} from "graphql/error"
+import {GraphQLError, GraphQLFormattedError} from "graphql/error"
 import {DateTime} from "luxon"
 import {clientConfig} from "src/config"
 
@@ -102,7 +102,7 @@ export const apolloClient = new ApolloClient({
   }
 })
 
-export const extractGraphQLErrorMessages = (errors: ReadonlyArray<GraphQLError>) =>
+export const extractGraphQLErrorMessages = (errors: ReadonlyArray<GraphQLFormattedError>) =>
   errors.map(err => err.message).join("; ")
 
 export const throwGraphQLErrors = (errors: ReadonlyArray<GraphQLError>) => {

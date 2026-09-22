@@ -42,7 +42,7 @@ export default function SelectorModal({
       className="no-drag"
       title={t("Selector")}
       open={open}
-      destroyOnClose
+      destroyOnHidden
       width={400}
       // onOk={() => form.submit()}
       extra={

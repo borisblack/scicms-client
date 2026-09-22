@@ -282,7 +282,7 @@ export function Attributes({itemTab: dataWrapper, form, getValue, setValue}: Cus
       <Modal
         title={t("Attribute")}
         open={isEditModalVisible}
-        destroyOnClose
+        destroyOnHidden
         width={EDIT_MODAL_WIDTH}
         onOk={() => attributeForm.submit()}
         onCancel={() => setEditModalVisible(false)}

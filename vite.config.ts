@@ -1,13 +1,20 @@
-import {defineConfig} from "vite"
+import {defineConfig} from "vitest/config"
 import react from "@vitejs/plugin-react"
 import path from "path"
 
-export default defineConfig({
+export default defineConfig(({mode}) => ({
   plugins: [react()],
   resolve: {
     alias: {
       src: path.resolve(__dirname, "./src")
     }
+  },
+  define: {
+    global: "globalThis",
+    process: JSON.stringify({env: {NODE_ENV: mode}}),
+    "process.env": JSON.stringify({
+      NODE_ENV: mode
+    })
   },
   server: {
     host: "0.0.0.0",
@@ -26,4 +33,4 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: "./src/setupTests.ts"
   }
-})
+}))

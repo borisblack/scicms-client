@@ -32,7 +32,7 @@ export default function TextModal({text, canEdit, open, onChange, onClose}: Text
       className="no-drag"
       title={t("Text")}
       open={open}
-      destroyOnClose
+      destroyOnHidden
       // width="70%"
       // onOk={() => form.submit()}
       extra={

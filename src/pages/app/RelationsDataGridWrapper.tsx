@@ -480,7 +480,7 @@ export default function RelationsDataGridWrapper({itemTab, relAttrName, relAttri
       <Modal
         title={`${t("Select")}: ${t(target.displayName)}`}
         open={isSelectionModalVisible}
-        destroyOnClose
+        destroyOnHidden
         width={SELECTION_MODAL_WIDTH}
         footer={null}
         onCancel={() => setSelectionModalVisible(false)}

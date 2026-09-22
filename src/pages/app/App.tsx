@@ -6,7 +6,7 @@ import {useAuth, useMenuProperties, useRegistry} from "src/util/hooks"
 import Navbar from "src/features/registry/Navbar"
 import {ViewType} from "src/types"
 import {ItemTab} from "src/types/schema"
-import MDITabs from "src/uiKit/MDITabs"
+import {MDITabs} from "src/uiKit/MDITabs"
 import ViewNavTab from "./ViewNavTab"
 import DefaultNavTab from "./DefaultNavTab"
 import {generateLabel} from "src/util/mdi"
@@ -51,8 +51,8 @@ function App() {
         <Content className="App-content-wrapper">
           <div className="App-content">
             <MDITabs
-              ctx={mdiContext}
               className="pages"
+              ctx={mdiContext}
               type="editable-card"
               getItemLabel={generateLabel}
               renderItem={renderItem}

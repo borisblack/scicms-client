@@ -24,7 +24,7 @@ export default function ExecutionStatisticModal({
       title={t("Execution statistic")}
       width="40%"
       open={open}
-      destroyOnClose
+      destroyOnHidden
       onClose={onClose}
     >
       <ExecutionStatistic timeMs={timeMs} cacheHit={cacheHit} query={query} params={params} />

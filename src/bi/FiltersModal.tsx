@@ -57,7 +57,7 @@ export default function FiltersModal({
   return (
     <Drawer
       className="no-drag"
-      destroyOnClose
+      destroyOnHidden
       open={open}
       width="60%"
       title={

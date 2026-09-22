@@ -37,7 +37,7 @@ export default function ChangePasswordModal({open, onClose}: ChangePasswordModal
   }
 
   return (
-    <Modal title={t("Password changing")} open={open} destroyOnClose onOk={() => form.submit()} onCancel={onClose}>
+    <Modal title={t("Password changing")} open={open} destroyOnHidden onOk={() => form.submit()} onCancel={onClose}>
       <Spin spinning={loading}>
         <Form form={form} labelCol={{span: 8}} wrapperCol={{span: 16}} layout="horizontal" onFinish={handleFormFinish}>
           <ChangePasswordForm />
