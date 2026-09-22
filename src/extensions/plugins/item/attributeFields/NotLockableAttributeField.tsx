@@ -1,13 +1,14 @@
 import _ from "lodash"
-import {FC, useCallback, useMemo} from "react"
+import type {FC} from "react"
+import {useCallback, useMemo} from "react"
 import {Checkbox, Form} from "antd"
 import {useTranslation} from "react-i18next"
 
 import {FieldType} from "src/types"
 import {LOCKED_BY_ATTR_NAME, NOT_LOCKABLE_ATTR_NAME} from "src/config/constants"
-import {CustomAttributeFieldContext} from "../../types"
+import type {CustomAttributeFieldContext} from "../../types"
 import {generateKey} from "src/util/mdi"
-import {Item} from "src/types/schema"
+import type {Item} from "src/types/schema"
 import styles from "src/pages/app/attributeFields/AttributeField.module.css"
 
 const FormItem = Form.Item

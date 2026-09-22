@@ -1,6 +1,6 @@
 import _ from "lodash"
 
-import {LifecycleSpec, StateMap} from "../types/schema"
+import type {LifecycleSpec, StateMap} from "../types/schema"
 
 interface BpmnDefinitions {
   process: {

@@ -1,8 +1,8 @@
 import _ from "lodash"
-import {FC, ReactElement} from "react"
-import {ItemData} from "src/types/schema"
+import type {FC, ReactElement} from "react"
+import type {ItemData} from "src/types/schema"
 import type {Plugin} from "./Plugin"
-import {
+import type {
   ApiMiddleware,
   ApiMiddlewareContext,
   ApiOperation,

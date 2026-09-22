@@ -1,4 +1,4 @@
-import {FieldType, Pagination, ViewType} from "."
+import type {FieldType, Pagination, ViewType} from "."
 
 export interface DefaultItemTemplate {
   id: string

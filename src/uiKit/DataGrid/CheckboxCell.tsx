@@ -1,6 +1,6 @@
 import {useRef} from "react"
 import {Checkbox} from "antd"
-import {CheckboxChangeEvent} from "antd/es/checkbox"
+import type {CheckboxChangeEvent} from "antd/es/checkbox"
 
 interface Props {
   value: boolean

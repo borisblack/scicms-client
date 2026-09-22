@@ -1,4 +1,4 @@
-import {Lifecycle} from "src/types/schema"
+import type {Lifecycle} from "src/types/schema"
 import {Plugin} from "../Plugin"
 import {LifecycleSpecSuspense} from "./components"
 

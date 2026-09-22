@@ -1,10 +1,11 @@
 import _ from "lodash"
-import {ChangeEvent, useMemo, useState} from "react"
+import type {ChangeEvent} from "react"
+import {useMemo, useState} from "react"
 import {useTranslation} from "react-i18next"
 import {Button, Input, Space} from "antd"
 import {PlusOutlined} from "@ant-design/icons"
 
-import {Dataset, IDash, NamedColumn} from "src/types/bi"
+import type {Dataset, IDash, NamedColumn} from "src/types/bi"
 import FieldItem from "./FieldItem"
 import styles from "./FieldList.module.css"
 

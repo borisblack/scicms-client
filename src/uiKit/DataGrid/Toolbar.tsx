@@ -1,7 +1,7 @@
 import React, {useCallback} from "react"
 import {Button, Checkbox, Dropdown, Popover, Space, Tooltip} from "antd"
 import {ClearOutlined, ExportOutlined, Html5Outlined, ReloadOutlined, SettingOutlined} from "@ant-design/icons"
-import {Table} from "@tanstack/react-table"
+import type {Table} from "@tanstack/react-table"
 import {useTranslation} from "react-i18next"
 
 import styles from "./Toolbar.module.css"

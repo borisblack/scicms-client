@@ -1,10 +1,11 @@
-import {FC, useCallback} from "react"
+import type {FC} from "react"
+import {useCallback} from "react"
 import {Button, notification} from "antd"
 
 import {useTranslation} from "react-i18next"
 import {FILENAME_ATTR_NAME, MEDIA_ITEM_NAME} from "src/config/constants"
 import * as MediaService from "src/services/media"
-import {CustomAttributeFieldContext} from "../../types"
+import type {CustomAttributeFieldContext} from "../../types"
 
 export const MediaFileAttributeField: FC<CustomAttributeFieldContext> = ({
   itemTab: dataWrapper,

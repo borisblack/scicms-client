@@ -1,5 +1,5 @@
 import {FieldType} from "../../types"
-import {AttributeFieldProps, AttributeFields} from "./attributeFields"
+import type {AttributeFieldProps, AttributeFields} from "./attributeFields"
 import RelationAttributeField from "./attributeFields/RelationAttributeField"
 import DateTimeAttributeField from "./attributeFields/DateTimeAttributeField"
 import TimeAttributeField from "./attributeFields/TimeAttributeField"

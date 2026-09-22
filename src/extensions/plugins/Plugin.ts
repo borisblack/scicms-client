@@ -1,5 +1,5 @@
-import {ItemData} from "src/types/schema"
-import {ApiMiddleware, CustomAttributeField, CustomComponent, CustomRenderer} from "./types"
+import type {ItemData} from "src/types/schema"
+import type {ApiMiddleware, CustomAttributeField, CustomComponent, CustomRenderer} from "./types"
 
 export abstract class Plugin<T extends ItemData> {
   renderers: CustomRenderer<T>[] = []

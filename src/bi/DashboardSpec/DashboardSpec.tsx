@@ -1,7 +1,8 @@
 import _ from "lodash"
 import {useMemo, useState} from "react"
 import {useTranslation} from "react-i18next"
-import RGL, {Layout, WidthProvider} from "react-grid-layout"
+import type {Layout} from "react-grid-layout"
+import RGL, {WidthProvider} from "react-grid-layout"
 import {Alert, Button, Dropdown, Space} from "antd"
 import {FundOutlined, PlusCircleOutlined} from "@ant-design/icons"
 import {v4 as uuidv4} from "uuid"
@@ -9,17 +10,16 @@ import "react-grid-layout/css/styles.css"
 import "react-resizable/css/styles.css"
 
 import {DASHBOARD_ITEM_NAME, EMPTY_ARRAY} from "src/config/constants"
-import {
+import type {
   Dashboard,
   DashboardExtra,
-  DashboardItemType,
   DashboardLayoutItem,
   IDash,
   IDashboardSpec,
   ISelector,
-  IText,
-  QueryOp
+  IText
 } from "src/types/bi"
+import {DashboardItemType, QueryOp} from "src/types/bi"
 import {generateQueryBlock, printSingleQueryFilter} from "../util/util"
 import DashWrapper from "../DashWrapper/DashWrapper"
 import {useAcl} from "src/util/hooks"
@@ -29,7 +29,7 @@ import Text from "../Text/Text"
 import Selector from "../Selector/Selector"
 import "./DashboardSpec.css"
 import styles from "./DashboardSpec.module.css"
-import {CustomComponentContext} from "src/extensions/plugins/types"
+import type {CustomComponentContext} from "src/extensions/plugins/types"
 
 interface DashboardSpecProps extends CustomComponentContext<Dashboard> {
   extra?: DashboardExtra

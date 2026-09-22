@@ -1,4 +1,4 @@
-import {Dash} from ".."
+import type {Dash} from ".."
 import DoughnutDashSuspense from "./DoughnutDashSuspense"
 import DoughnutDashOptionsForm from "./DoughnutDashOptionsForm"
 

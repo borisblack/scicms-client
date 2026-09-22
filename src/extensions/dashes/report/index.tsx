@@ -1,4 +1,4 @@
-import {Dash} from "../index"
+import type {Dash} from "../index"
 import ReportDashOptionsForm from "./ReportDashOptionsForm"
 import ReportDash from "./ReportDash"
 

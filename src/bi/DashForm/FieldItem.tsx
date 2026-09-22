@@ -1,6 +1,6 @@
 import {useDrag} from "react-dnd"
 
-import {NamedColumn} from "src/types/bi"
+import type {NamedColumn} from "src/types/bi"
 import {DndItemType} from "../../config/constants"
 import FieldTypeIcon from "../../components/FieldTypeIcon/FieldTypeIcon"
 import FieldName from "../../components/FieldName/FieldName"

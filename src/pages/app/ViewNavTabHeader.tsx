@@ -1,5 +1,7 @@
-import React, {MouseEvent, ReactNode, useState} from "react"
-import {Alert, Button, Dropdown, FormInstance, Modal, notification, Popconfirm, Space} from "antd"
+import type {MouseEvent, ReactNode} from "react"
+import React, {useState} from "react"
+import type {FormInstance} from "antd"
+import {Alert, Button, Dropdown, Modal, notification, Popconfirm, Space} from "antd"
 import {PageHeader} from "@ant-design/pro-layout"
 import * as icons from "@ant-design/icons"
 import {
@@ -17,10 +19,10 @@ import {
 } from "@ant-design/icons"
 
 import {ViewState} from "src/types"
-import {FlaggedResponse, ItemData, ItemTab, ResponseCollection} from "src/types/schema"
+import type {FlaggedResponse, ItemData, ItemTab, ResponseCollection} from "src/types/schema"
 import {useTranslation} from "react-i18next"
 import SearchDataGridWrapper from "./SearchDataGridWrapper"
-import {ItemFiltersInput} from "src/services/query"
+import type {ItemFiltersInput} from "src/services/query"
 import Promote from "./Promote"
 import {
   ITEM_ITEM_NAME,
@@ -33,7 +35,8 @@ import {useAppProperties, useAuth, useItemOperations, useMutationManager, useReg
 import {useMDIContext} from "../../uiKit/MDITabs/hooks"
 import {getTitle} from "src/util/mdi"
 import {pluginEngine} from "src/extensions/plugins"
-import {ApiMiddlewareContext, ApiOperation} from "src/extensions/plugins/types"
+import type {ApiMiddlewareContext} from "src/extensions/plugins/types"
+import {ApiOperation} from "src/extensions/plugins/types"
 import styles from "./NavTab.module.css"
 import {
   hasConfigIdAttribute,

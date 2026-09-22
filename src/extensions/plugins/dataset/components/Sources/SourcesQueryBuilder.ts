@@ -1,4 +1,5 @@
-import {DatasetSources, JoinedTable, JoinType, QueryOp, Table, UnaryQueryOp} from "src/types/bi"
+import type {DatasetSources, JoinedTable, Table} from "src/types/bi"
+import {JoinType, QueryOp, UnaryQueryOp} from "src/types/bi"
 
 export interface SourcesQueryBuildResult {
   tableName: string | null

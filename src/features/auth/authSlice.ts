@@ -1,8 +1,9 @@
-import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit"
+import type {PayloadAction} from "@reduxjs/toolkit"
+import {createAsyncThunk, createSlice} from "@reduxjs/toolkit"
 import {notification} from "antd"
 import {DateTime} from "luxon"
 
-import {RootState} from "src/store"
+import type {RootState} from "src/store"
 import {
   getExpireAt,
   getJwt,
@@ -12,16 +13,16 @@ import {
   storeExpireAt,
   storeJwt
 } from "src/services"
+import type {JwtTokenResponse} from "src/services/auth"
 import {
   fetchSecurityConfig as doFetchSecurityConfig,
   fetchMe as doFetchMe,
-  JwtTokenResponse,
   login as doLogin,
   loginOauth2 as doLoginOauth2,
   logout as doLogout,
   updateSessionData as doUpdateSessionData
 } from "src/services/auth"
-import {SecurityConfig, UserInfo} from "src/types"
+import type {SecurityConfig, UserInfo} from "src/types"
 import i18n from "src/i18n"
 
 export interface AuthState {

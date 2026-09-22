@@ -15,10 +15,7 @@
       "no-unused-expressions": "off",
       "semi": "off",
       "@typescript-eslint/comma-dangle": "error",
-      "@typescript-eslint/semi": [
-        "error",
-        "never"
-      ],
+      "@typescript-eslint/consistent-type-imports":"error",
       "@typescript-eslint/member-delimiter-style": [
         "error",
         {
@@ -29,6 +26,10 @@
             "delimiter": "semi"
           }
         }
+      ],
+      "@typescript-eslint/semi": [
+        "error",
+        "never"
       ]
     }
 }

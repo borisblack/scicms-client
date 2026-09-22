@@ -1,9 +1,9 @@
-import {FC} from "react"
+import type {FC} from "react"
 import {Form} from "antd"
 
 import {FieldType} from "src/types"
 import {SOURCE_TYPE_ATTR_NAME, MIN_IDLE_ATTR_NAME} from "src/config/constants"
-import {CustomAttributeFieldContext} from "../../types"
+import type {CustomAttributeFieldContext} from "../../types"
 import NumberAttributeField from "src/pages/app/attributeFields/NumberAttributeField"
 import {DatasourceType} from "src/types/schema"
 

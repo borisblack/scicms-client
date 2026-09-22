@@ -1,5 +1,6 @@
-import {CSSProperties, MouseEvent} from "react"
-import {flexRender, Row} from "@tanstack/react-table"
+import type {CSSProperties, MouseEvent} from "react"
+import type {Row} from "@tanstack/react-table"
+import {flexRender} from "@tanstack/react-table"
 import {CSS} from "@dnd-kit/utilities"
 import {useSortable} from "@dnd-kit/sortable"
 import {Dropdown, type MenuProps} from "antd"

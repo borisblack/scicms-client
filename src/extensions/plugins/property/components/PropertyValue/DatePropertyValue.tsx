@@ -5,7 +5,7 @@ import utc from "dayjs/plugin/utc"
 import {DatePicker} from "antd"
 
 import {FieldType} from "src/types"
-import {PropertyValueProps} from "./types"
+import type {PropertyValueProps} from "./types"
 import {useAppProperties} from "src/util/hooks"
 
 dayjs.extend(utc)

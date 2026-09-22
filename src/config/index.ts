@@ -1,6 +1,6 @@
 import dayjs from "dayjs"
 import {notification} from "antd"
-import {Locale} from "antd/lib/locale"
+import type {Locale} from "antd/lib/locale"
 import enUS from "antd/locale/en_US"
 import ruRU from "antd/locale/ru_RU"
 // import {Settings as LuxonSettings} from 'luxon'

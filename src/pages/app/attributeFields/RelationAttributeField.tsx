@@ -1,14 +1,16 @@
 import _ from "lodash"
-import {FC, useEffect, useMemo, useState} from "react"
+import type {FC} from "react"
+import {useEffect, useMemo, useState} from "react"
 import {useTranslation} from "react-i18next"
 import {Button, Form, Input, Modal, Tooltip} from "antd"
 import {CloseCircleOutlined, FolderOpenOutlined} from "@ant-design/icons"
 import {FieldType} from "src/types"
-import {AllowedLifecycle, AllowedPermission, ItemData, Lifecycle, Permission, RelType} from "src/types/schema"
-import {AttributeFieldProps} from "."
+import type {AllowedLifecycle, AllowedPermission, ItemData, Lifecycle, Permission} from "src/types/schema"
+import {RelType} from "src/types/schema"
+import type {AttributeFieldProps} from "."
 import {DEFAULT_LIFECYCLE_ID} from "src/services/lifecycle"
 import {BI_PERMISSION_ID, DEFAULT_PERMISSION_ID, SECURITY_PERMISSION_ID} from "src/services/permission"
-import {ItemFiltersInput} from "src/services/query"
+import type {ItemFiltersInput} from "src/services/query"
 import {
   DASHBOARD_CATEGORY_HIERARCHY_ITEM_NAME,
   DASHBOARD_CATEGORY_ITEM_NAME,

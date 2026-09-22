@@ -1,6 +1,6 @@
 import {DateTime} from "luxon"
-import {UserInfo} from "../types"
-import {Permission} from "../types/schema"
+import type {UserInfo} from "../types"
+import type {Permission} from "../types/schema"
 import {getBit} from "."
 import {UTC} from "src/config/constants"
 

@@ -1,12 +1,14 @@
 import {useMemo} from "react"
 import {useTranslation} from "react-i18next"
-import {Checkbox, Col, Form, FormInstance, Row, Select, Typography} from "antd"
-import {CheckboxChangeEvent} from "antd/es/checkbox"
+import type {FormInstance} from "antd"
+import {Checkbox, Col, Form, Row, Select, Typography} from "antd"
+import type {CheckboxChangeEvent} from "antd/es/checkbox"
 import {DATASOURCE_ITEM_NAME} from "src/config/constants"
 import {useAcl} from "src/util/hooks"
-import {CustomComponentContext} from "src/extensions/plugins/types"
-import {Datasource, DatasourceType} from "src/types/schema"
-import {DefaultOptionType} from "antd/es/select"
+import type {CustomComponentContext} from "src/extensions/plugins/types"
+import type {Datasource} from "src/types/schema"
+import {DatasourceType} from "src/types/schema"
+import type {DefaultOptionType} from "antd/es/select"
 
 const {Text} = Typography
 

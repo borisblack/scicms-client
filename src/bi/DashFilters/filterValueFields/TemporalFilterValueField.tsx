@@ -1,8 +1,9 @@
-import {FC, useState} from "react"
+import type {FC} from "react"
+import {useState} from "react"
 import {DatePicker, Form, Input, InputNumber, Select, Space, Switch, TimePicker} from "antd"
 import {FunctionOutlined} from "@ant-design/icons"
 import {useTranslation} from "react-i18next"
-import {FilterValueFieldProps} from "./index"
+import type {FilterValueFieldProps} from "./index"
 import {
   allTemporalUnits,
   columnType,
@@ -13,7 +14,8 @@ import {
   timeTemporalUnits
 } from "src/bi/util/util"
 import {FieldType} from "src/types"
-import {QueryOp, TemporalPeriod, TemporalType} from "src/types/bi"
+import type {TemporalType} from "src/types/bi"
+import {QueryOp, TemporalPeriod} from "src/types/bi"
 import styles from "../DashFilters.module.css"
 import {useAppProperties} from "src/util/hooks"
 

@@ -2,11 +2,11 @@ import _ from "lodash"
 import {useEffect, useState} from "react"
 import {useTranslation} from "react-i18next"
 import {Checkbox, Form, Input, InputNumber, Popover, Select, Space, Tabs} from "antd"
-import {FormInstance, RuleObject, RuleRender} from "rc-field-form/es/interface"
-import {CheckboxChangeEvent} from "antd/es/checkbox"
+import type {FormInstance, RuleObject, RuleRender} from "rc-field-form/es/interface"
+import type {CheckboxChangeEvent} from "antd/es/checkbox"
 import {QuestionCircleOutlined} from "@ant-design/icons"
 
-import {NamedColumn} from "src/types/bi"
+import type {NamedColumn} from "src/types/bi"
 import {usePrevious} from "src/util/hooks"
 import {regExpRule, requiredFieldRule} from "src/util/form"
 import {
@@ -15,7 +15,7 @@ import {
   getAggregateOptions,
   getFormatOptions
 } from "src/bi/util/util"
-import {AggregateType, Column} from "src/types/bi"
+import type {AggregateType, Column} from "src/types/bi"
 import {FieldType} from "src/types"
 import FieldTypeIcon from "src/components/FieldTypeIcon/FieldTypeIcon"
 import FieldName from "src/components/FieldName/FieldName"

@@ -4,12 +4,14 @@ import {Button, Dropdown, Form, Space} from "antd"
 import {ClearOutlined, DeleteOutlined, EditOutlined, SettingOutlined} from "@ant-design/icons"
 import {PageHeader} from "@ant-design/pro-layout"
 
-import {Dataset, IDash, ISelector, QueryOp} from "src/types/bi"
+import type {Dataset, IDash, ISelector} from "src/types/bi"
+import {QueryOp} from "src/types/bi"
 import {useAppProperties, useModal} from "src/util/hooks"
 import SelectorModal from "../SelectorModal"
-import {ItemType} from "antd/es/menu/hooks/useItems"
+import type {ItemType} from "antd/es/menu/hooks/useItems"
 import styles from "./Selector.module.css"
-import SelectorValue, {SelectorValueFormValues} from "./SelectorValue"
+import type {SelectorValueFormValues} from "./SelectorValue"
+import SelectorValue from "./SelectorValue"
 import {fromFormSelectorFilter, toFormSelectorFilter} from "../util/util"
 
 interface SelectorProps {

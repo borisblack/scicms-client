@@ -2,7 +2,7 @@ import React from "react"
 import {useTranslation} from "react-i18next"
 import {Form, Modal} from "antd"
 
-import {JoinedTable, Table} from "src/types/bi"
+import type {JoinedTable, Table} from "src/types/bi"
 import JoinedTableForm from "./JoinedTableForm"
 
 interface JoinedTableModalProps {

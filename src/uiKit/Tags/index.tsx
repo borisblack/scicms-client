@@ -1,8 +1,10 @@
-import {Input, InputRef, Tag, Tooltip} from "antd"
+import type {InputRef} from "antd"
+import {Input, Tag, Tooltip} from "antd"
 import {PlusOutlined} from "@ant-design/icons"
 
 import "./Tags.css"
-import {ChangeEvent, useEffect, useRef, useState} from "react"
+import type {ChangeEvent} from "react"
+import {useEffect, useRef, useState} from "react"
 import {useTranslation} from "react-i18next"
 
 interface Props {

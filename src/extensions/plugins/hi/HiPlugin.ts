@@ -1,4 +1,4 @@
-import {ItemData} from "src/types/schema"
+import type {ItemData} from "src/types/schema"
 import {Plugin} from "../Plugin"
 
 export class HiPlugin extends Plugin<ItemData> {

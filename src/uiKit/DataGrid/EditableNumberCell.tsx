@@ -1,5 +1,6 @@
 import {InputNumber} from "antd"
-import {FocusEvent, KeyboardEvent, useEffect, useRef, useState} from "react"
+import type {FocusEvent, KeyboardEvent} from "react"
+import {useEffect, useRef, useState} from "react"
 
 interface Props {
   value?: string | number | null

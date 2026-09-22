@@ -1,9 +1,9 @@
 import _ from "lodash"
-import {Dayjs} from "dayjs"
+import type {Dayjs} from "dayjs"
 import {DateTime} from "luxon"
 
 import {FieldType} from "../types"
-import {Attribute, Item, ItemData} from "../types/schema"
+import type {Attribute, Item, ItemData} from "../types/schema"
 import * as MediaService from "../services/media"
 import {
   LETTER_NO_WHITESPACE_MESSAGE,
@@ -16,10 +16,10 @@ import {
   UTC
 } from "../config/constants"
 import {tryParseJson} from "./index"
-import {FormRule} from "antd"
+import type {FormRule} from "antd"
 import util from "util"
 import i18n from "../i18n"
-import {ItemMap} from "src/services/item"
+import type {ItemMap} from "src/services/item"
 
 interface FilteredItemData {
   majorRev?: string

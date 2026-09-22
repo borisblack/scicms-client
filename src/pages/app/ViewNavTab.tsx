@@ -1,9 +1,10 @@
 import _ from "lodash"
 import {memo, useCallback, useEffect, useMemo, useRef, useState} from "react"
 import {Col, Collapse, Form, Modal, notification, Row, Spin, Tabs} from "antd"
-import {Tab} from "rc-tabs/lib/interface"
+import type {Tab} from "rc-tabs/lib/interface"
 import {FieldType, ViewState} from "src/types"
-import {Attribute, ItemData, ItemTab, RelType} from "src/types/schema"
+import type {Attribute, ItemData, ItemTab} from "src/types/schema"
+import {RelType} from "src/types/schema"
 import {useTranslation} from "react-i18next"
 import AttributeFieldWrapper from "./AttributeFieldWrapper"
 import {filterValues, parseValues} from "src/util/form"
@@ -33,12 +34,8 @@ import {
   isItemLockable,
   sortAttributes
 } from "src/util/schema"
-import {
-  ApiMiddlewareContext,
-  ApiOperation,
-  CustomComponentContext,
-  CustomRendererContext
-} from "src/extensions/plugins/types"
+import type {ApiMiddlewareContext, CustomComponentContext, CustomRendererContext} from "src/extensions/plugins/types"
+import {ApiOperation} from "src/extensions/plugins/types"
 import {pluginEngine} from "src/extensions/plugins"
 import {clientConfig} from "src/config"
 

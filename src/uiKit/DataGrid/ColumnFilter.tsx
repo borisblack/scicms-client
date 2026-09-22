@@ -1,5 +1,5 @@
-import {ChangeEvent, KeyboardEvent, MouseEvent} from "react"
-import {Column} from "@tanstack/react-table"
+import type {ChangeEvent, KeyboardEvent, MouseEvent} from "react"
+import type {Column} from "@tanstack/react-table"
 import {Input} from "antd"
 import styles from "./DataGrid.module.css"
 

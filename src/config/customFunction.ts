@@ -1,4 +1,4 @@
-import {CustomFunction} from "../extensions/functions"
+import type {CustomFunction} from "../extensions/functions"
 import {
   secondsBeforeNow,
   minutesBeforeNow,

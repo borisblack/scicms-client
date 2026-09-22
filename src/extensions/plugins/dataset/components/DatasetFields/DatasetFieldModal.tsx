@@ -1,9 +1,9 @@
 import {useTranslation} from "react-i18next"
 import {Form, Modal} from "antd"
 
-import {NamedColumn} from "src/types/bi"
+import type {NamedColumn} from "src/types/bi"
 import FieldForm from "src/bi/FieldForm/FieldForm"
-import {Column} from "src/types/bi"
+import type {Column} from "src/types/bi"
 import * as RlsService from "src/services/rls"
 
 interface DatasetFieldModalProps {

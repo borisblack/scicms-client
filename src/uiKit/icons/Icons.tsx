@@ -1,4 +1,4 @@
-import {FC} from "react"
+import type {FC} from "react"
 import {Col, Row, Tabs} from "antd"
 
 import {copyToClipboard} from "src/util"

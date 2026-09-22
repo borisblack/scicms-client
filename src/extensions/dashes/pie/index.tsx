@@ -1,4 +1,4 @@
-import {Dash} from "../index"
+import type {Dash} from "../index"
 import PieDashSuspense from "./PieDashSuspense"
 import PieDashOptionsForm from "./PieDashOptionsForm"
 

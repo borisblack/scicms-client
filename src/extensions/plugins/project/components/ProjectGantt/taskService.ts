@@ -1,9 +1,9 @@
 import {gql} from "@apollo/client"
 import {apolloClient, extractGraphQLErrorMessages} from "src/services"
 import i18n from "src/i18n"
-import {Task} from "./types"
+import type {Task} from "./types"
 import _ from "lodash"
-import {ItemFiltersInput} from "src/services/query"
+import type {ItemFiltersInput} from "src/services/query"
 
 const FIND_ALL_BY_FILTER_QUERY = gql`
   query findAllTasksByFilter($filters: TaskFiltersInput) {

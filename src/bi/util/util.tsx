@@ -1,29 +1,33 @@
 import _ from "lodash"
 import {v4 as uuidv4} from "uuid"
-import dayjs, {Dayjs} from "dayjs"
+import type {Dayjs} from "dayjs"
+import dayjs from "dayjs"
 import {DateTime} from "luxon"
 import {notification, Space} from "antd"
 
 import {evaluate, getInfo} from "src/extensions/functions"
-import {FieldType, PrimitiveFilterInput} from "src/types"
-import {
-  AggregateType,
-  BoolAggregateType,
+import type {PrimitiveFilterInput} from "src/types"
+import {FieldType} from "src/types"
+import type {
   Column,
   ColumnType,
   Dataset,
   DatasetFiltersInput,
-  DateTimeAggregateType,
   IDash,
-  LogicalOp,
   PositiveLogicalOp,
   QueryBlock,
   QueryFilter,
-  QueryOp,
   SelectorFilter,
+  TemporalType
+} from "src/types/bi"
+import {
+  AggregateType,
+  BoolAggregateType,
+  DateTimeAggregateType,
+  LogicalOp,
+  QueryOp,
   StringAggregateType,
   TemporalPeriod,
-  TemporalType,
   TemporalUnit
 } from "src/types/bi"
 import i18n from "src/i18n"

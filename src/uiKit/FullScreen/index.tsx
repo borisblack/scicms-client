@@ -1,4 +1,5 @@
-import {CSSProperties, ReactNode, useMemo} from "react"
+import type {CSSProperties, ReactNode} from "react"
+import {useMemo} from "react"
 import "./FullScreen.css"
 
 interface Props {

@@ -1,8 +1,9 @@
 import {Form, Input} from "antd"
-import {FC, useCallback, useMemo, useState} from "react"
+import type {FC} from "react"
+import {useCallback, useMemo, useState} from "react"
 import {useTranslation} from "react-i18next"
 
-import {AttributeFieldProps} from "."
+import type {AttributeFieldProps} from "."
 import {FieldType} from "src/types"
 import {generateKey} from "src/util/mdi"
 import {useAppProperties, useItemAcl} from "src/util/hooks"

@@ -1,13 +1,15 @@
-import {ColumnDef, createColumnHelper} from "@tanstack/react-table"
+import type {ColumnDef} from "@tanstack/react-table"
+import {createColumnHelper} from "@tanstack/react-table"
 import {Checkbox, Tag} from "antd"
 
 import i18n from "src/i18n"
-import {FieldType} from "src/types"
-import {RelType} from "src/types/schema"
-import {NamedAttribute} from "./types"
-import {ReactNode} from "react"
+import type {FieldType} from "src/types"
+import type {RelType} from "src/types/schema"
+import type {NamedAttribute} from "./types"
+import type {ReactNode} from "react"
 import FieldTypeIcon from "src/components/FieldTypeIcon/FieldTypeIcon"
-import FieldName, {TagType} from "src/components/FieldName/FieldName"
+import type {TagType} from "src/components/FieldName/FieldName"
+import FieldName from "src/components/FieldName/FieldName"
 
 const renderAttribute = (attribute: NamedAttribute, tag?: TagType): ReactNode => (
   <span className="text-ellipsis">

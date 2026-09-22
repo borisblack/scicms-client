@@ -1,5 +1,5 @@
 import {ITEM_TEMPLATE_ITEM_NAME} from "src/config/constants"
-import {ItemTemplate} from "src/types/schema"
+import type {ItemTemplate} from "src/types/schema"
 import {Plugin} from "../Plugin"
 import {handleItemTemplateApiOperation} from "./itemTemplateApiHandler"
 

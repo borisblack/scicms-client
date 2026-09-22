@@ -4,7 +4,7 @@ import {
   ITEM_ITEM_NAME,
   NOT_LOCKABLE_ATTR_NAME
 } from "src/config/constants"
-import {Item} from "src/types/schema"
+import type {Item} from "src/types/schema"
 import {Plugin} from "../Plugin"
 import {
   DefaultSortOrderAttributeField,

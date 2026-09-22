@@ -3,7 +3,7 @@ import {useTranslation} from "react-i18next"
 import {ReloadOutlined} from "@ant-design/icons"
 import React from "react"
 import {Button, Checkbox, Radio, Space} from "antd"
-import {CheckboxChangeEvent} from "antd/es/checkbox"
+import type {CheckboxChangeEvent} from "antd/es/checkbox"
 import "gantt-task-react/dist/index.css"
 import styles from "./ViewSwitcher.module.css"
 

@@ -1,10 +1,12 @@
 import _ from "lodash"
-import {ReactNode} from "react"
-import {ColumnDef, ColumnFiltersState, createColumnHelper, SortingState} from "@tanstack/react-table"
+import type {ReactNode} from "react"
+import type {ColumnDef, ColumnFiltersState, SortingState} from "@tanstack/react-table"
+import {createColumnHelper} from "@tanstack/react-table"
 import {Checkbox} from "antd"
 import {DateTime} from "luxon"
 
-import {FieldType, Pagination, PrimitiveFilterInput} from "src/types"
+import type {Pagination, PrimitiveFilterInput} from "src/types"
+import {FieldType} from "src/types"
 import {type DataWithPagination, type RequestParams} from "src/uiKit/DataGrid/DataGrid"
 import {
   LUXON_DATE_FORMAT_STRING,
@@ -21,9 +23,9 @@ import {
   UTC
 } from "src/config/constants"
 import i18n from "src/i18n"
-import {Column, Dataset, DatasetFiltersInput} from "src/types/bi"
+import type {Column, Dataset, DatasetFiltersInput} from "src/types/bi"
 import * as DatasetService from "src/services/dataset"
-import {DatasetFieldInput, DatasetInput} from "src/services/dataset"
+import type {DatasetFieldInput, DatasetInput} from "src/services/dataset"
 
 interface DatasetData<T> extends DataWithPagination<T> {
   timeMs?: number

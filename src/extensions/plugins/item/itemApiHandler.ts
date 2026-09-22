@@ -34,8 +34,9 @@ import {
 } from "src/config/constants"
 import QueryManager from "src/services/query"
 import {extractAxiosErrorMessage} from "src/services"
-import {FlaggedResponse, ItemData, ItemModel} from "src/types/schema"
-import {ApiMiddlewareContext, ApiOperation} from "../types"
+import type {FlaggedResponse, ItemData, ItemModel} from "src/types/schema"
+import type {ApiMiddlewareContext} from "../types"
+import {ApiOperation} from "../types"
 
 export async function handleItemApiOperation<T extends ItemData>(
   operation: ApiOperation,

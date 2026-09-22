@@ -1,13 +1,14 @@
 import {Button, Form, Input, Modal, notification, Tooltip} from "antd"
-import {FC, useMemo, useState} from "react"
+import type {FC} from "react"
+import {useMemo, useState} from "react"
 import {useTranslation} from "react-i18next"
 import {CloseCircleOutlined, FolderOpenOutlined} from "@ant-design/icons"
 import {FieldType} from "src/types"
-import {ItemData} from "src/types/schema"
+import type {ItemData} from "src/types/schema"
 import SearchDataGridWrapper from "src/pages/app/SearchDataGridWrapper"
 import {useItemOperations, useQueryManager, useRegistry} from "src/util/hooks"
 import {generateKey} from "src/util/mdi"
-import {AttributeFieldProps} from "."
+import type {AttributeFieldProps} from "."
 import styles from "./AttributeField.module.css"
 
 const SUFFIX_BUTTON_WIDTH = 24

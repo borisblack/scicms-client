@@ -1,20 +1,20 @@
 import _ from "lodash"
 import {useCallback, useMemo, useState} from "react"
-import {Row} from "@tanstack/react-table"
+import type {Row} from "@tanstack/react-table"
 import {Button, Form, Modal, Space} from "antd"
 import {useTranslation} from "react-i18next"
 
 import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME} from "src/config/constants"
-import {Index, Item, ItemSpec} from "src/types/schema"
+import type {Index, Item, ItemSpec} from "src/types/schema"
 import {type DataWithPagination, type RequestParams, DataGrid} from "src/uiKit/DataGrid/DataGrid"
 import {getInitialData, processLocal} from "src/util/datagrid"
 import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from "@ant-design/icons"
-import {ItemType} from "antd/es/menu/hooks/useItems"
+import type {ItemType} from "antd/es/menu/hooks/useItems"
 import IndexForm from "./IndexForm"
 import {useAppProperties, useItemAcl, useRegistry} from "src/util/hooks"
 import {getHiddenIndexColumns, getIndexColumns} from "./indexColumns"
-import {NamedIndex} from "./types"
-import {CustomComponentContext} from "src/extensions/plugins/types"
+import type {NamedIndex} from "./types"
+import type {CustomComponentContext} from "src/extensions/plugins/types"
 
 export function Indexes({itemTab: dataWrapper, getValue, setValue}: CustomComponentContext<Item>) {
   const {item, data} = dataWrapper

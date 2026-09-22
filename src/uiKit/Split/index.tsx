@@ -1,6 +1,8 @@
 import * as React from "react"
-import {default as Measure, ContentRect} from "react-measure"
-import {DefaultSplitter, RenderSplitterProps} from "@geoffcox/react-splitter"
+import type {ContentRect} from "react-measure"
+import {default as Measure} from "react-measure"
+import type {RenderSplitterProps} from "@geoffcox/react-splitter"
+import {DefaultSplitter} from "@geoffcox/react-splitter"
 import "./split.css"
 
 type MeasuredDimensions = {

@@ -1,9 +1,10 @@
 import type {FC} from "react"
 import {useCallback, useMemo} from "react"
 import {useTranslation} from "react-i18next"
-import {Form, FormRule, Input} from "antd"
+import type {FormRule} from "antd"
+import {Form, Input} from "antd"
 
-import {AttributeFieldProps} from "./index"
+import type {AttributeFieldProps} from "./index"
 import {FieldType} from "src/types"
 import styles from "./AttributeField.module.css"
 import {ITEM_ITEM_NAME, MAJOR_REV_ATTR_NAME, NAME_ATTR_NAME, STATE_ATTR_NAME, UUID_PATTERN} from "src/config/constants"

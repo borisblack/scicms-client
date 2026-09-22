@@ -1,9 +1,10 @@
 import {useEffect, useMemo} from "react"
 import {useTranslation} from "react-i18next"
 import {Button, Form, Select, Space} from "antd"
-import {DefaultOptionType} from "rc-select/lib/Select"
+import type {DefaultOptionType} from "rc-select/lib/Select"
 
-import {Column, Dataset, ISelector, QueryOp, SelectorFilter} from "src/types/bi"
+import type {Column, Dataset, ISelector, SelectorFilter} from "src/types/bi"
+import {QueryOp} from "src/types/bi"
 import {queryOpTitles} from "src/bi/util/util"
 import {requiredFieldRule} from "src/util/form"
 import FilterValueFieldWrapper from "../DashFilters/FilterValueFieldWrapper"

@@ -1,5 +1,5 @@
 import {DateTime} from "luxon"
-import {CustomFunction} from "."
+import type {CustomFunction} from "."
 import {UTC} from "../../config/constants"
 
 const TEMPORAL_CATEGORY = "Temporal Functions"

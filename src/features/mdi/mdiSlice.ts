@@ -1,7 +1,8 @@
-import {createSlice, Draft, PayloadAction} from "@reduxjs/toolkit"
+import type {Draft, PayloadAction} from "@reduxjs/toolkit"
+import {createSlice} from "@reduxjs/toolkit"
 
-import {MDITab} from "src/uiKit/MDITabs/MDITabs"
-import {RootState} from "../../store"
+import type {MDITab} from "src/uiKit/MDITabs"
+import type {RootState} from "../../store"
 
 export interface MDIState<T> {
   items: MDITab<T>[]

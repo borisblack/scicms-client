@@ -1,7 +1,8 @@
-import {ColumnDef, createColumnHelper} from "@tanstack/react-table"
+import type {ColumnDef} from "@tanstack/react-table"
+import {createColumnHelper} from "@tanstack/react-table"
 import {Checkbox} from "antd"
 import i18n from "src/i18n"
-import {NamedIndex} from "./types"
+import type {NamedIndex} from "./types"
 
 const columnHelper = createColumnHelper<NamedIndex>()
 

@@ -3,7 +3,7 @@ import {useTranslation} from "react-i18next"
 import {Button, List, notification, Spin} from "antd"
 import {RightCircleOutlined} from "@ant-design/icons"
 import {findLifecycleById} from "src/services/lifecycle"
-import {Lifecycle} from "src/types/schema"
+import type {Lifecycle} from "src/types/schema"
 import {parseLifecycleSpec} from "src/util/bpmn"
 
 interface Props {

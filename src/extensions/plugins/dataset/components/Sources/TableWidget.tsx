@@ -1,9 +1,9 @@
-import {CSSProperties} from "react"
+import type {CSSProperties} from "react"
 import {useTranslation} from "react-i18next"
 import {Button} from "antd"
 import {CloseOutlined, TableOutlined} from "@ant-design/icons"
 
-import {Table} from "src/types/bi"
+import type {Table} from "src/types/bi"
 import styles from "./TableWidget.module.css"
 
 interface TableWidgetProps {

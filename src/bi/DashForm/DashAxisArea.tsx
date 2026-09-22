@@ -2,7 +2,7 @@ import {useMemo} from "react"
 import {Form} from "antd"
 import {useDrop} from "react-dnd"
 
-import {Dataset, IDash, NamedColumn} from "src/types/bi"
+import type {Dataset, IDash, NamedColumn} from "src/types/bi"
 import FieldWidget from "./FieldWidget"
 import styles from "./DashAxisArea.module.css"
 import {DndItemType} from "src/config/constants"

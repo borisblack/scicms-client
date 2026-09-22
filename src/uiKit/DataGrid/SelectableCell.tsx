@@ -1,7 +1,8 @@
 import {Select} from "antd"
-import {BaseSelectRef} from "rc-select"
-import {DefaultOptionType} from "rc-select/lib/Select"
-import {FocusEvent, KeyboardEvent, useRef, useState} from "react"
+import type {BaseSelectRef} from "rc-select"
+import type {DefaultOptionType} from "rc-select/lib/Select"
+import type {FocusEvent, KeyboardEvent} from "react"
+import {useRef, useState} from "react"
 
 interface Props {
   value: any

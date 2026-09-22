@@ -2,7 +2,8 @@ import _ from "lodash"
 import {gql} from "@apollo/client"
 import i18n from "../i18n"
 
-import {Property, PropertyScope, PropertyType} from "../types/schema"
+import type {Property, PropertyType} from "../types/schema"
+import {PropertyScope} from "../types/schema"
 import {apolloClient, extractGraphQLErrorMessages} from "."
 import {FieldType} from "src/types"
 

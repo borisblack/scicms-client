@@ -1,10 +1,13 @@
 import _ from "lodash"
-import {AppConfig, PropertyKey, appConfig} from "."
-import biConfig, {BiConfig, BiPropertyKey} from "./bi"
-import menuConfig, {MenuConfig} from "./menu"
+import type {AppConfig} from "."
+import {PropertyKey, appConfig} from "."
+import type {BiConfig} from "./bi"
+import biConfig, {BiPropertyKey} from "./bi"
+import type {MenuConfig} from "./menu"
+import menuConfig from "./menu"
 import {store} from "src/store"
 import {selectProperties} from "src/features/registry/registrySlice"
-import {PropertyMap} from "src/services/property"
+import type {PropertyMap} from "src/services/property"
 
 const biPathPattern = /^bi\.(.+)$/
 

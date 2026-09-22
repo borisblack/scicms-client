@@ -5,11 +5,12 @@ import {
   NAME_ATTR_NAME,
   SPEC_ATTR_NAME
 } from "src/config/constants"
-import {FlaggedResponse, ItemData, ItemTemplateModel} from "src/types/schema"
+import type {FlaggedResponse, ItemData, ItemTemplateModel} from "src/types/schema"
 import axios from "axios"
 import {extractAxiosErrorMessage} from "src/services"
 import QueryManager from "src/services/query"
-import {ApiMiddlewareContext, ApiOperation} from "../types"
+import type {ApiMiddlewareContext} from "../types"
+import {ApiOperation} from "../types"
 
 export async function handleItemTemplateApiOperation<T extends ItemData>(
   operation: ApiOperation,

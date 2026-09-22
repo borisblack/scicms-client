@@ -1,4 +1,4 @@
-import {Dash} from "../index"
+import type {Dash} from "../index"
 import RadarDashSuspense from "./RadarDashSuspense"
 import RadarDashOptionsForm from "./RadarDashOptionsForm"
 

@@ -1,4 +1,4 @@
-import {CSSProperties, ReactNode} from "react"
+import type {CSSProperties, ReactNode} from "react"
 import {Badge} from "antd"
 import {DatabaseFilled, LockFilled} from "@ant-design/icons"
 

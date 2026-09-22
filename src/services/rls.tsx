@@ -1,6 +1,6 @@
 import util from "util"
 import i18n from "src/i18n"
-import {RlsEntry, RlsIdentities} from "src/types/bi"
+import type {RlsEntry, RlsIdentities} from "src/types/bi"
 
 const COMMA_REGEXP = /\s*,\s*/
 const RLS_ENTRY_REGEXP = /^\s*(#)?\s*(?:'(.+)'|(\*))\s*:\s*(.+?)\s*$/

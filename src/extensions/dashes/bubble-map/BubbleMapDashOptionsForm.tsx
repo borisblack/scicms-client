@@ -2,7 +2,7 @@ import {Col, Form, Input, InputNumber, Popover, Row, Space} from "antd"
 import {QuestionCircleOutlined} from "@ant-design/icons"
 import {useTranslation} from "react-i18next"
 
-import {DashOptionsFormProps} from ".."
+import type {DashOptionsFormProps} from ".."
 import RulesHelp from "src/bi/RulesHelp"
 import {MAX_LAT, MAX_LNG, MIN_LAT, MIN_LNG} from "."
 import styles from "../DashOptionForm.module.css"

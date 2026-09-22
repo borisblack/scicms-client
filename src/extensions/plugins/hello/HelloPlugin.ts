@@ -1,5 +1,5 @@
 import {Plugin} from "../Plugin"
-import {ItemData} from "src/types/schema"
+import type {ItemData} from "src/types/schema"
 
 export class HelloPlugin extends Plugin<ItemData> {
   override onLoad() {

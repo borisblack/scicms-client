@@ -6,7 +6,7 @@ import {CopyOutlined} from "@ant-design/icons"
 import CodeEditor from "src/uiKit/Editor"
 import {EditorMode} from "src/uiKit/Editor/constants"
 import {copyToClipboard} from "src/util"
-import {ExecutionStatisticInfo} from "src/types/bi"
+import type {ExecutionStatisticInfo} from "src/types/bi"
 import styles from "./ExecutionStatistic.module.css"
 
 interface ExecutionStatisticProps extends ExecutionStatisticInfo {}

@@ -1,14 +1,15 @@
 import _ from "lodash"
 import i18n from "src/i18n"
-import {ItemType} from "antd/lib/menu/hooks/useItems"
 
-import {MenuItem, SubMenu} from "src/config/menu"
+import type {MenuItem, SubMenu} from "src/config/menu"
 import IconSuspense from "src/uiKit/icons/IconSuspense"
-import {ItemMap} from "src/services/item"
-import {MDIContext} from "src/uiKit/MDITabs/MDITabs"
-import {Item, ItemTab} from "src/types/schema"
+import type {ItemMap} from "src/services/item"
+import type {MDIContext} from "src/uiKit/MDITabs"
+import type {Item, ItemTab} from "src/types/schema"
 import {createMDITab} from "src/util/mdi"
-import {UserInfo, ViewType} from "src/types"
+import type {UserInfo} from "src/types"
+import {ViewType} from "src/types"
+import type {ItemType} from "antd/es/menu/interface"
 
 interface ToAntdMenuItemsParams {
   ctx: MDIContext<ItemTab>

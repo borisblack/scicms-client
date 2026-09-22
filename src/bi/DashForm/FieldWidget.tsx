@@ -1,9 +1,10 @@
-import React, {CSSProperties, useState} from "react"
+import type {CSSProperties} from "react"
+import React, {useState} from "react"
 import {useTranslation} from "react-i18next"
 import {Button} from "antd"
 import {CloseOutlined, SortAscendingOutlined, SortDescendingOutlined} from "@ant-design/icons"
 
-import {NamedColumn} from "src/types/bi"
+import type {NamedColumn} from "src/types/bi"
 import FieldTypeIcon from "src/components/FieldTypeIcon/FieldTypeIcon"
 import FieldName from "src/components/FieldName/FieldName"
 import styles from "./FieldWidget.module.css"

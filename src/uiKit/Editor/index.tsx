@@ -1,5 +1,5 @@
 import {lazy, Suspense} from "react"
-import {EditorProps} from "./Editor"
+import type {EditorProps} from "./Editor"
 
 const Editor = lazy(() => import("./Editor"))
 

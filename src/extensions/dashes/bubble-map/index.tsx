@@ -1,4 +1,4 @@
-import {Dash} from "../index"
+import type {Dash} from "../index"
 import BubbleMapDash from "./BubbleMapDash"
 import BubbleMapDashOptionsForm from "./BubbleMapDashOptionsForm"
 

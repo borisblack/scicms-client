@@ -1,7 +1,7 @@
 import {Drawer} from "antd"
 import ExecutionStatistic from "./ExecutionStatistic"
 import {useTranslation} from "react-i18next"
-import {ExecutionStatisticInfo} from "../types/bi"
+import type {ExecutionStatisticInfo} from "../types/bi"
 
 interface ExecutionStatisticModalProps extends ExecutionStatisticInfo {
   open: boolean

@@ -25,8 +25,9 @@ import {
   toSingleDatasetFiltersInput,
   toSingleSelectorFiltersInput
 } from "../util/util"
-import {Dash, getDash} from "src/extensions/dashes"
-import {
+import type {Dash} from "src/extensions/dashes"
+import {getDash} from "src/extensions/dashes"
+import type {
   Column,
   Dashboard,
   DashboardExtra,
@@ -37,7 +38,7 @@ import {
   QueryBlock,
   SelectorFilter
 } from "src/types/bi"
-import {ItemType} from "antd/es/menu/hooks/useItems"
+import type {ItemType} from "antd/es/menu/hooks/useItems"
 import FiltersModal from "../FiltersModal"
 import DashModal from "../DashModal"
 import {useAppProperties, useModal, usePrevious} from "src/util/hooks"

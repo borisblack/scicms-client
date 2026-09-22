@@ -1,10 +1,10 @@
 import axios from "axios"
 import {apolloClient, extractAxiosErrorMessage, extractGraphQLErrorMessages} from "."
-import {Pagination, PaginationInput} from "../types"
-import {Table} from "../types/bi"
+import type {Pagination, PaginationInput} from "../types"
+import type {Table} from "../types/bi"
 import qs from "qs"
 import {gql} from "@apollo/client"
-import {Datasource} from "src/types/schema"
+import type {Datasource} from "src/types/schema"
 import i18n from "../i18n"
 
 export interface DatasourceTablesInput {

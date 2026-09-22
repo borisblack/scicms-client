@@ -1,7 +1,7 @@
 import {Button, Form, Select} from "antd"
 import {DeleteOutlined} from "@ant-design/icons"
 import {v4 as uuidv4} from "uuid"
-import {Dataset, QueryBlock} from "src/types/bi"
+import type {Dataset, QueryBlock} from "src/types/bi"
 import React from "react"
 import {useTranslation} from "react-i18next"
 import {generateQueryBlock, logicalOpTitles, positiveLogicalOps} from "../util/util"

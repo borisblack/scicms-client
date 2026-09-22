@@ -1,5 +1,5 @@
 import {FILENAME_ATTR_NAME, MEDIA_ITEM_NAME} from "src/config/constants"
-import {Media} from "src/types/schema"
+import type {Media} from "src/types/schema"
 import {Plugin} from "../Plugin"
 import {MediaFileAttributeField} from "./attributeFields"
 

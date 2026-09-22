@@ -3,7 +3,7 @@ import {useCallback, useMemo} from "react"
 import {Input} from "antd"
 
 import {FieldType} from "src/types"
-import {PropertyValueProps} from "./types"
+import type {PropertyValueProps} from "./types"
 import {useAppProperties} from "src/util/hooks"
 
 const {TextArea} = Input

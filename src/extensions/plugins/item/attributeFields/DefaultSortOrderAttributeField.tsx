@@ -1,10 +1,11 @@
-import {FC, useMemo} from "react"
+import type {FC} from "react"
+import {useMemo} from "react"
 import {Form, Select} from "antd"
 import {useTranslation} from "react-i18next"
 
 import {FieldType} from "src/types"
 import {DEFAULT_SORT_ORDER_ATTR_NAME} from "src/config/constants"
-import {CustomAttributeFieldContext} from "../../types"
+import type {CustomAttributeFieldContext} from "../../types"
 import styles from "src/pages/app/attributeFields/AttributeField.module.css"
 
 const FormItem = Form.Item

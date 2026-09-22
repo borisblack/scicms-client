@@ -1,6 +1,6 @@
 import {Transfer} from "antd"
-import {CSSProperties, ReactNode} from "react"
-import {RenderResult, TransferItem} from "antd/es/transfer"
+import type {CSSProperties, ReactNode} from "react"
+import type {RenderResult, TransferItem} from "antd/es/transfer"
 
 interface Props<RecordType extends TransferItem> {
   dataSource: RecordType[]

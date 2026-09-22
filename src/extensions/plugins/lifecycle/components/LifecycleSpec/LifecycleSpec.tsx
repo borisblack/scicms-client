@@ -4,13 +4,13 @@ import "bpmn-font/dist/css/bpmn-embedded.css"
 
 import Modeler from "src/lib/diagram/Modeler"
 import Viewer from "src/lib/diagram/Viewer"
-import {CustomComponentContext} from "src/extensions/plugins/types"
+import type {CustomComponentContext} from "src/extensions/plugins/types"
 import customTranslate from "src/lib/diagram/i18s/custom-translate"
 import {LIFECYCLE_ITEM_NAME} from "src/config/constants"
 import {useAcl} from "src/util/hooks"
 import "src/lib/diagram/bpmn-js.css"
 import styles from "./LifecycleSpec.module.css"
-import {Lifecycle} from "src/types/schema"
+import type {Lifecycle} from "src/types/schema"
 
 const customTranslateModule = {
   translate: ["value", customTranslate]

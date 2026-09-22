@@ -1,8 +1,8 @@
 import {useTranslation} from "react-i18next"
 import {Col, Form, Input, Row, Select} from "antd"
-import {DefaultOptionType} from "rc-select/lib/Select"
+import type {DefaultOptionType} from "rc-select/lib/Select"
 
-import {IText} from "src/types/bi"
+import type {IText} from "src/types/bi"
 import {requiredFieldRule} from "src/util/form"
 import styles from "./TextForm.module.css"
 

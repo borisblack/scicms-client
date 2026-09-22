@@ -1,4 +1,4 @@
-import {Dash} from "../index"
+import type {Dash} from "../index"
 import StatisticDash from "./StatisticDash"
 import StatisticDashOptionsForm from "./StatisticDashOptionsForm"
 

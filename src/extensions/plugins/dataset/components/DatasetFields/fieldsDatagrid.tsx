@@ -1,14 +1,16 @@
-import {ReactNode} from "react"
-import {ColumnDef, createColumnHelper} from "@tanstack/react-table"
+import type {ReactNode} from "react"
+import type {ColumnDef} from "@tanstack/react-table"
+import {createColumnHelper} from "@tanstack/react-table"
 import {Tag, Typography} from "antd"
 import i18n from "src/i18n"
-import {FieldType} from "src/types"
-import {NamedColumn} from "src/types/bi"
+import type {FieldType} from "src/types"
+import type {NamedColumn} from "src/types/bi"
 import {CheckboxCell, ClickableCell, EditableCell, EditableNumberCell, SelectableCell} from "src/uiKit/DataGrid"
-import {AggregateType, Column} from "src/types/bi"
+import type {AggregateType, Column} from "src/types/bi"
 import {getFormatOptions} from "src/bi/util/util"
 import FieldTypeIcon from "src/components/FieldTypeIcon/FieldTypeIcon"
-import FieldName, {TagType} from "src/components/FieldName/FieldName"
+import type {TagType} from "src/components/FieldName/FieldName"
+import FieldName from "src/components/FieldName/FieldName"
 
 interface GetColumnsProps {
   ownColumns: Record<string, Column>

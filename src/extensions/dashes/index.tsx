@@ -1,12 +1,12 @@
 import _ from "lodash"
-import {ReactElement, ReactNode} from "react"
-import {PlotEvent} from "@ant-design/plots"
-import {Plot} from "@antv/g2plot"
+import type {ReactElement, ReactNode} from "react"
+import type {PlotEvent} from "@ant-design/plots"
+import type {Plot} from "@antv/g2plot"
 
 import dashConfig from "src/config/dash"
-import {Dataset} from "src/types/bi"
-import {FormInstance} from "antd"
-import {DashWrapperProps} from "../../bi/DashWrapper/DashWrapper"
+import type {Dataset} from "src/types/bi"
+import type {FormInstance} from "antd"
+import type {DashWrapperProps} from "../../bi/DashWrapper/DashWrapper"
 
 export interface Dash {
   id: string

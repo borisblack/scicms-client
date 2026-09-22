@@ -1,5 +1,5 @@
 import DashboardSpec from "src/bi/DashboardSpec/DashboardSpec"
-import {Dashboard} from "src/types/bi"
+import type {Dashboard} from "src/types/bi"
 import {Plugin} from "../Plugin"
 
 const DASHBOARD_SPEC_COMPONENT_ID = "dashboardSpec"

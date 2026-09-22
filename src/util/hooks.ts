@@ -5,14 +5,16 @@ import {useTranslation} from "react-i18next"
 import {notification} from "antd"
 
 import type {AppDispatch, RootState} from "src/store"
-import PermissionManager, {Acl} from "src/services/permission"
-import {UserInfo, ViewType} from "src/types"
-import {Item, ItemData, ItemTab} from "src/types/schema"
+import type {Acl} from "src/services/permission"
+import PermissionManager from "src/services/permission"
+import type {UserInfo} from "src/types"
+import {ViewType} from "src/types"
+import type {Item, ItemData, ItemTab} from "src/types/schema"
 import {ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME} from "src/config/constants"
 import {logout as doLogout, selectIsExpired, selectMe} from "src/features/auth/authSlice"
+import type {RegistryState} from "src/features/registry/registrySlice"
 import {
   initializeIfNeeded as doInitializeIfNeeded,
-  RegistryState,
   reset as resetRegistry,
   selectCoreConfig,
   selectIsInitialized,
@@ -29,8 +31,9 @@ import MutationManager from "src/services/mutation"
 import {useMDIContext} from "../uiKit/MDITabs/hooks"
 import {createMDITab, generateKeyById} from "./mdi"
 import {getAppProperties, getProperty} from "src/config/util"
-import {AppConfig, PropertyKey} from "src/config"
-import {MenuConfig} from "src/config/menu"
+import type {AppConfig} from "src/config"
+import {PropertyKey} from "src/config"
+import type {MenuConfig} from "src/config/menu"
 
 export const useAppDispatch: () => AppDispatch = useDispatch
 

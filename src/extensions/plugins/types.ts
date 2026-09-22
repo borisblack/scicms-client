@@ -1,10 +1,10 @@
-import {ReactNode} from "react"
-import {FormInstance} from "antd"
+import type {ReactNode} from "react"
+import type {FormInstance} from "antd"
 
-import {AttributeFieldProps} from "src/pages/app/attributeFields"
-import {ItemMap} from "src/services/item"
-import {UserInfo} from "src/types"
-import {Item, ItemData, ItemTab} from "src/types/schema"
+import type {AttributeFieldProps} from "src/pages/app/attributeFields"
+import type {ItemMap} from "src/services/item"
+import type {UserInfo} from "src/types"
+import type {Item, ItemData, ItemTab} from "src/types/schema"
 
 /**
  * Render mount points:

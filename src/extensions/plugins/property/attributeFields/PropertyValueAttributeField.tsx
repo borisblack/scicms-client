@@ -3,7 +3,7 @@ import {Form, Input} from "antd"
 import {useTranslation} from "react-i18next"
 
 import {PropertyValue} from "../components"
-import {CustomAttributeFieldContext} from "../../types"
+import type {CustomAttributeFieldContext} from "../../types"
 import {useItemAcl} from "src/util/hooks"
 import "./PropertyValueAttributeField.css"
 import styles from "src/pages/app/attributeFields/AttributeField.module.css"

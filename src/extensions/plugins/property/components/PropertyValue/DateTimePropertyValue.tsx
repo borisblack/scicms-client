@@ -7,7 +7,7 @@ import timezone from "dayjs/plugin/timezone"
 
 import {FieldType} from "src/types"
 import {UTC} from "src/config/constants"
-import {PropertyValueProps} from "./types"
+import type {PropertyValueProps} from "./types"
 import {useAppProperties} from "src/util/hooks"
 
 dayjs.extend(timezone)

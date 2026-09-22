@@ -1,6 +1,6 @@
 import {lazy, Suspense} from "react"
 
-import {IconProps} from "./Icon"
+import type {IconProps} from "./Icon"
 
 const Icon = lazy(() => import("./Icon"))
 

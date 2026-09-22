@@ -1,8 +1,9 @@
-import axios, {AxiosError, AxiosRequestConfig} from "axios"
+import type {AxiosError, AxiosRequestConfig} from "axios"
+import axios from "axios"
 import {codeMessage} from "../i18n"
 import {ApolloClient, ApolloLink, from, InMemoryCache} from "@apollo/client"
 import {createUploadLink} from "apollo-upload-client"
-import {GraphQLError, GraphQLFormattedError} from "graphql/error"
+import type {GraphQLError, GraphQLFormattedError} from "graphql/error"
 import {DateTime} from "luxon"
 import {clientConfig} from "src/config"
 

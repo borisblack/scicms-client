@@ -1,4 +1,5 @@
-import {FC, useMemo, useState} from "react"
+import type {FC} from "react"
+import {useMemo, useState} from "react"
 import {useTranslation} from "react-i18next"
 import {Button, Form, Input, Modal, Tooltip} from "antd"
 import {CloseCircleOutlined} from "@ant-design/icons"
@@ -7,7 +8,7 @@ import {ICON_ATTR_NAME} from "src/config/constants"
 import IconSuspense from "src/uiKit/icons/IconSuspense"
 import IconsSuspense from "src/uiKit/icons/IconsSuspense"
 import {generateKey} from "src/util/mdi"
-import {CustomAttributeFieldContext} from "../../types"
+import type {CustomAttributeFieldContext} from "../../types"
 import styles from "src/pages/app/attributeFields/AttributeField.module.css"
 
 const FormItem = Form.Item

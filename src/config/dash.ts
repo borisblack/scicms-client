@@ -1,4 +1,4 @@
-import {Dash} from "../extensions/dashes"
+import type {Dash} from "../extensions/dashes"
 import {area} from "../extensions/dashes/area"
 import {bar} from "../extensions/dashes/bar"
 import {bubble} from "../extensions/dashes/bubble"

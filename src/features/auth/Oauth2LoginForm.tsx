@@ -3,7 +3,7 @@ import {useCallback, useEffect} from "react"
 import {useTranslation} from "react-i18next"
 import {Button, Form, Select} from "antd"
 
-import {Oauth2ProviderConfig} from "src/types"
+import type {Oauth2ProviderConfig} from "src/types"
 import {usePrevious} from "src/util/hooks"
 import {requiredFieldRule} from "src/util/form"
 

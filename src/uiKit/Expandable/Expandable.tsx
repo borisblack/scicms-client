@@ -1,4 +1,5 @@
-import {KeyboardEvent, PropsWithChildren, useState} from "react"
+import type {KeyboardEvent, PropsWithChildren} from "react"
+import {useState} from "react"
 import {useTranslation} from "react-i18next"
 import {Button} from "antd"
 import {FullscreenExitOutlined, FullscreenOutlined} from "@ant-design/icons"

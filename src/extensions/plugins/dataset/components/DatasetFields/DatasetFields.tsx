@@ -1,22 +1,22 @@
 import _ from "lodash"
 import {useEffect, useMemo, useState} from "react"
-import {Row} from "@tanstack/react-table"
+import type {Row} from "@tanstack/react-table"
 import {useTranslation} from "react-i18next"
 import {Button, Space, Typography} from "antd"
-import {ItemType} from "antd/es/menu/hooks/useItems"
+import type {ItemType} from "antd/es/menu/hooks/useItems"
 import {DeleteTwoTone, PlusCircleOutlined} from "@ant-design/icons"
 
 import {Split} from "src/uiKit/Split"
 import {DATASET_ITEM_NAME} from "src/config/constants"
 import {type DataWithPagination, type RequestParams, DataGrid} from "src/uiKit/DataGrid/DataGrid"
 import {getInitialData, processLocal} from "src/util/datagrid"
-import {Column, Dataset} from "src/types/bi"
-import {NamedColumn} from "src/types/bi"
+import type {Column, Dataset} from "src/types/bi"
+import type {NamedColumn} from "src/types/bi"
 import {getColumns} from "./fieldsDatagrid"
 import {useAcl, useAppProperties} from "src/util/hooks"
 import DataPreview from "./DataPreview"
 import DatasetFieldModal from "./DatasetFieldModal"
-import {CustomComponentContext} from "src/extensions/plugins/types"
+import type {CustomComponentContext} from "src/extensions/plugins/types"
 
 const MIN_TOP_PANE_SIZE = 400
 const MIN_BOTTOM_PANE_SIZE = 400

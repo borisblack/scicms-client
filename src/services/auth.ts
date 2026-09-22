@@ -1,7 +1,7 @@
 import axios from "axios"
 import {gql} from "@apollo/client"
 import {apolloClient, extractAxiosErrorMessage, throwAxiosResponseError} from "."
-import {SecurityConfig, UserInfo} from "../types"
+import type {SecurityConfig, UserInfo} from "../types"
 
 export interface JwtTokenResponse {
   jwt: string

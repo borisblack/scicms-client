@@ -1,5 +1,5 @@
-import {Task as GanttTask} from "gantt-task-react"
-import {Project, Task} from "./types"
+import type {Task as GanttTask} from "gantt-task-react"
+import type {Project, Task} from "./types"
 
 export function mapToProjectTask(project: Project): GanttTask {
   return {

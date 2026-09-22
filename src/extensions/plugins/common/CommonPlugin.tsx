@@ -1,5 +1,5 @@
 import {ICON_ATTR_NAME, LOCALE_ATTR_NAME} from "src/config/constants"
-import {ItemData} from "src/types/schema"
+import type {ItemData} from "src/types/schema"
 import {Plugin} from "../Plugin"
 import {IconAttributeField, LocaleAttributeField} from "./attributeFields"
 

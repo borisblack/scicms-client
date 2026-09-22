@@ -1,4 +1,5 @@
-import CodeMirror, {EditorView, Extension} from "@uiw/react-codemirror"
+import type {Extension} from "@uiw/react-codemirror"
+import CodeMirror, {EditorView} from "@uiw/react-codemirror"
 import {sql, StandardSQL} from "@codemirror/lang-sql"
 import {javascript} from "@codemirror/lang-javascript"
 

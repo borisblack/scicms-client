@@ -1,4 +1,4 @@
-import {Dash} from "../index"
+import type {Dash} from "../index"
 import LineDashSuspense from "./LineDashSuspense"
 import LineDashOptionsForm from "./LineDashOptionsForm"
 

@@ -1,28 +1,25 @@
 import _ from "lodash"
-import {memo, ReactNode, useCallback, useEffect, useMemo, useRef, useState} from "react"
+import type {ReactNode} from "react"
+import {memo, useCallback, useEffect, useMemo, useRef, useState} from "react"
 import {useTranslation} from "react-i18next"
-import {Row} from "@tanstack/react-table"
+import type {Row} from "@tanstack/react-table"
 import {Button, Checkbox, Modal, notification} from "antd"
-import {CheckboxChangeEvent} from "antd/es/checkbox"
-import {ItemType} from "antd/es/menu/hooks/useItems"
+import type {CheckboxChangeEvent} from "antd/es/checkbox"
+import type {ItemType} from "antd/es/menu/hooks/useItems"
 import {DeleteTwoTone, FolderOpenOutlined, PlusCircleOutlined} from "@ant-design/icons"
 import {PageHeader} from "@ant-design/pro-layout"
-import {ItemData, ItemTab} from "src/types/schema"
+import type {ItemData, ItemTab} from "src/types/schema"
 import {type RequestParams, DataGrid} from "../../uiKit/DataGrid/DataGrid"
 import * as ACL from "src/util/acl"
 import {findAll, getColumns, getHiddenColumns, getInitialData} from "src/util/datagrid"
-import {ExtRequestParams} from "src/services/query"
+import type {ExtRequestParams} from "src/services/query"
 import {DEBUG, ITEM_ITEM_NAME, ITEM_TEMPLATE_ITEM_NAME, MEDIA_ITEM_NAME} from "src/config/constants"
 import {useAppProperties, useAuth, useItemOperations, useMutationManager, useRegistry} from "src/util/hooks"
 import {getTitle} from "src/util/mdi"
 import IconSuspense from "src/uiKit/icons/IconSuspense"
 import {useMDIContext} from "src/uiKit/MDITabs/hooks"
-import {
-  ApiMiddlewareContext,
-  ApiOperation,
-  CustomComponentContext,
-  CustomRendererContext
-} from "src/extensions/plugins/types"
+import type {ApiMiddlewareContext, CustomComponentContext, CustomRendererContext} from "src/extensions/plugins/types"
+import {ApiOperation} from "src/extensions/plugins/types"
 import {pluginEngine} from "src/extensions/plugins"
 import styles from "./NavTab.module.css"
 import {

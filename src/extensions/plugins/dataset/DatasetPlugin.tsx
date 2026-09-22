@@ -1,4 +1,4 @@
-import {Dataset} from "src/types/bi"
+import type {Dataset} from "src/types/bi"
 import {Plugin} from "../Plugin"
 import {DatasetFields, Sources} from "./components"
 

@@ -1,5 +1,5 @@
-import {MDITabObservable} from "./MDITabs"
-import {Draft} from "@reduxjs/toolkit"
+import type {Draft} from "@reduxjs/toolkit"
+import type {MDITabObservable} from "./MDITabs"
 
 export interface MDITabsState<T> {
   items: MDITabObservable<T>[]

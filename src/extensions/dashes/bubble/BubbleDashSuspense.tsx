@@ -1,6 +1,6 @@
 import {lazy, Suspense} from "react"
 
-import {DashRenderContext} from ".."
+import type {DashRenderContext} from ".."
 
 const BubbleDash = lazy(() => import("./BubbleDash"))
 

@@ -2,8 +2,9 @@ import _ from "lodash"
 import {useTranslation} from "react-i18next"
 import {Button, Drawer, Form, Space} from "antd"
 
-import {IText} from "../types/bi"
-import TextForm, {TextFormValues} from "./TextForm/TextForm"
+import type {IText} from "../types/bi"
+import type {TextFormValues} from "./TextForm/TextForm"
+import TextForm from "./TextForm/TextForm"
 
 interface TextFormModalProps {
   text: IText

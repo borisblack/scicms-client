@@ -1,6 +1,6 @@
 import {HiPlugin} from "../extensions/plugins/hi/HiPlugin"
 import {HelloPlugin} from "../extensions/plugins/hello/HelloPlugin"
-import {Plugin} from "../extensions/plugins/Plugin"
+import type {Plugin} from "../extensions/plugins/Plugin"
 import {AccessPlugin} from "src/extensions/plugins/access/AccessPlugin"
 import {CommonPlugin} from "src/extensions/plugins/common/CommonPlugin"
 import {DashboardPlugin} from "src/extensions/plugins/dashboard/DashboardPlugin"

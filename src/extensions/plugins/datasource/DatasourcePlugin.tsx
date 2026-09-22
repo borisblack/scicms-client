@@ -1,5 +1,5 @@
 import {DATASOURCE_ITEM_NAME} from "src/config/constants"
-import {Datasource} from "src/types/schema"
+import type {Datasource} from "src/types/schema"
 import {Plugin} from "../Plugin"
 import {
   ConnectionStringAttributeField,

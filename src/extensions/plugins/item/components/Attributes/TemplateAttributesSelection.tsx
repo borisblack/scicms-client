@@ -1,5 +1,5 @@
 import {Select} from "antd"
-import {NamedAttribute} from "./types"
+import type {NamedAttribute} from "./types"
 import TransferInput from "src/uiKit/TransferInput"
 import {useRegistry} from "src/util/hooks"
 import {useTranslation} from "react-i18next"

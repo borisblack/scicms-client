@@ -2,8 +2,9 @@ import _ from "lodash"
 import {useTranslation} from "react-i18next"
 import {Button, Drawer, Form, Space} from "antd"
 
-import {Dataset, IDash, ISelector} from "../types/bi"
-import SelectorForm, {SelectorFormValues} from "./SelectorForm/SelectorForm"
+import type {Dataset, IDash, ISelector} from "../types/bi"
+import type {SelectorFormValues} from "./SelectorForm/SelectorForm"
+import SelectorForm from "./SelectorForm/SelectorForm"
 
 interface SelectorFormModalProps {
   selector: ISelector

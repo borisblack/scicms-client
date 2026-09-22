@@ -1,5 +1,5 @@
 import {FieldType} from "src/types"
-import {ColumnType} from "src/types/bi"
+import type {ColumnType} from "src/types/bi"
 import {clientConfig} from "."
 
 export interface BiConfig {

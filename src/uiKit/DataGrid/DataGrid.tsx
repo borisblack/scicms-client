@@ -1,30 +1,15 @@
 import _ from "lodash"
-import {MouseEvent, ReactNode, useCallback, useEffect, useMemo, useState} from "react"
+import type {MouseEvent, ReactNode} from "react"
+import {useCallback, useEffect, useMemo, useState} from "react"
 import {useTranslation} from "react-i18next"
-import {
-  ColumnDef,
-  ColumnFiltersState,
-  ColumnResizeMode,
-  flexRender,
-  getCoreRowModel,
-  Row,
-  SortingState,
-  useReactTable
-} from "@tanstack/react-table"
+import type {ColumnDef, ColumnFiltersState, ColumnResizeMode, Row, SortingState} from "@tanstack/react-table"
+import {flexRender, getCoreRowModel, useReactTable} from "@tanstack/react-table"
 import {SortableContext, verticalListSortingStrategy} from "@dnd-kit/sortable"
-import {
-  closestCenter,
-  DndContext,
-  DragEndEvent,
-  KeyboardSensor,
-  MouseSensor,
-  TouchSensor,
-  UniqueIdentifier,
-  useSensor,
-  useSensors
-} from "@dnd-kit/core"
+import type {DragEndEvent, UniqueIdentifier} from "@dnd-kit/core"
+import {closestCenter, DndContext, KeyboardSensor, MouseSensor, TouchSensor, useSensor, useSensors} from "@dnd-kit/core"
 import {restrictToVerticalAxis} from "@dnd-kit/modifiers"
-import {Col, MenuProps, Pagination, Row as AntdRow, Spin} from "antd"
+import type {MenuProps} from "antd"
+import {Col, Pagination, Row as AntdRow, Spin} from "antd"
 import {CaretDownFilled, CaretUpFilled} from "@ant-design/icons"
 
 import ColumnFilter from "./ColumnFilter"

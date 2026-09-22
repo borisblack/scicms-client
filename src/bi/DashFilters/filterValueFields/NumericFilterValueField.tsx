@@ -1,5 +1,6 @@
-import React, {FC} from "react"
-import {FilterValueFieldProps} from "./index"
+import type {FC} from "react"
+import React from "react"
+import type {FilterValueFieldProps} from "./index"
 import {useTranslation} from "react-i18next"
 import {Form, Input, InputNumber, Space} from "antd"
 import styles from "../DashFilters.module.css"

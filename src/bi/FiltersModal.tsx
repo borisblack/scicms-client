@@ -4,7 +4,7 @@ import {QuestionCircleOutlined} from "@ant-design/icons"
 
 import {fromFormQueryBlock, getCustomFunctionsInfo, saveSessionFilters, toFormQueryBlock} from "./util/util"
 import DashFilters from "./DashFilters/DashFilters"
-import {Dataset, IDash, QueryBlock} from "../types/bi"
+import type {Dataset, IDash, QueryBlock} from "../types/bi"
 import {useAppProperties} from "src/util/hooks"
 
 interface FiltersModalProps {

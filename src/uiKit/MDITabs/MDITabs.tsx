@@ -1,7 +1,8 @@
-import React, {ReactNode} from "react"
+import type {ReactNode} from "react"
+import React from "react"
 import {Tabs} from "antd"
-import {TabsType} from "antd/es/tabs"
-import {Tab} from "rc-tabs/lib/interface"
+import type {TabsType} from "antd/es/tabs"
+import type {Tab} from "rc-tabs/lib/interface"
 
 import {ReactMDIContext} from "./ReactMDIContext"
 import styles from "./MDITabs.module.css"

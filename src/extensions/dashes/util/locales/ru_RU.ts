@@ -1,4 +1,4 @@
-import {Locale} from "@antv/g2plot"
+import type {Locale} from "@antv/g2plot"
 
 export const RU_RU_LOCALE: Locale = {
   locale: "ru-RU",

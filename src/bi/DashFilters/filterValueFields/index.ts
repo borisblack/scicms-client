@@ -1,5 +1,5 @@
-import {FormInstance} from "antd"
-import {Column, QueryOp} from "src/types/bi"
+import type {FormInstance} from "antd"
+import type {Column, QueryOp} from "src/types/bi"
 
 export interface FilterValueFieldProps {
   form: FormInstance

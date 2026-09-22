@@ -1,5 +1,5 @@
 import {useState} from "react"
-import {VerticalPanelProps} from "."
+import type {VerticalPanelProps} from "."
 import styles from "./RightPanel.module.css"
 
 export default function RightPanel({title, width, initialExpanded, style, stickerStyle, children}: VerticalPanelProps) {

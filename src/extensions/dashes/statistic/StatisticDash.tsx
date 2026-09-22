@@ -1,7 +1,7 @@
 import {useMemo} from "react"
 import {Alert, Statistic} from "antd"
 
-import {DashRenderContext} from ".."
+import type {DashRenderContext} from ".."
 import * as RulesService from "src/services/rules"
 import {useBiProperties} from "src/bi/util/hooks"
 

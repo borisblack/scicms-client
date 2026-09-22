@@ -3,10 +3,10 @@ import md5 from "crypto-js/md5"
 import {ExclamationCircleOutlined, SearchOutlined} from "@ant-design/icons"
 
 import {ViewType} from "../types"
-import {Item, ItemData, ItemTab} from "../types/schema"
+import type {Item, ItemData, ItemTab} from "../types/schema"
 import {ID_ATTR_NAME} from "../config/constants"
 import i18n from "../i18n"
-import {MDITabObservable} from "../uiKit/MDITabs/MDITabs"
+import type {MDITabObservable} from "../uiKit/MDITabs"
 import IconSuspense from "../uiKit/icons/IconSuspense"
 
 const tempIds: Record<string, number> = {}

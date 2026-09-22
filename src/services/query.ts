@@ -1,12 +1,13 @@
 import _ from "lodash"
 import {DateTime} from "luxon"
 import {gql} from "@apollo/client"
-import {ColumnFiltersState, SortingState} from "@tanstack/react-table"
+import type {ColumnFiltersState, SortingState} from "@tanstack/react-table"
 
 import i18n from "../i18n"
 import {apolloClient, extractGraphQLErrorMessages} from "./index"
 import {FieldType} from "../types"
-import {Attribute, Item, ItemData, RelType, Response, ResponseCollection} from "../types/schema"
+import type {Attribute, Item, ItemData, Response, ResponseCollection} from "../types/schema"
+import {RelType} from "../types/schema"
 
 import {
   LUXON_DATE_FORMAT_STRING,
@@ -22,8 +23,9 @@ import {
   LUXON_YEAR_MONTH_FORMAT_STRING,
   MEDIA_ITEM_NAME
 } from "../config/constants"
-import {RequestParams} from "../uiKit/DataGrid/DataGrid"
-import ItemManager, {ItemMap} from "./item"
+import type {RequestParams} from "../uiKit/DataGrid/DataGrid"
+import type {ItemMap} from "./item"
+import ItemManager from "./item"
 
 export interface ExtRequestParams extends RequestParams {
   majorRev?: string | null

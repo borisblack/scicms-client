@@ -1,5 +1,5 @@
 import {useState} from "react"
-import {HorizontalPanelProps} from "."
+import type {HorizontalPanelProps} from "."
 import styles from "./TopPanel.module.css"
 
 export default function TopPanel({

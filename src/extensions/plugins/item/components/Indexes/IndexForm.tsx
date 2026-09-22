@@ -1,9 +1,10 @@
 import {useEffect} from "react"
-import {Checkbox, Form, FormInstance, Input} from "antd"
+import type {FormInstance} from "antd"
+import {Checkbox, Form, Input} from "antd"
 
 import {useTranslation} from "react-i18next"
 import styles from "./Indexes.module.css"
-import {NamedIndex} from "./types"
+import type {NamedIndex} from "./types"
 import {useAppProperties} from "src/util/hooks"
 
 interface Props {

@@ -1,5 +1,5 @@
-import {Task} from "gantt-task-react"
-import {Project} from "./types"
+import type {Task} from "gantt-task-react"
+import type {Project} from "./types"
 import {mapToProjectTask} from "./taskMapper"
 
 export function singletonTaskList(project: Project) {

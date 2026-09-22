@@ -1,5 +1,7 @@
-import {Input, InputRef} from "antd"
-import {ChangeEvent, FocusEvent, KeyboardEvent, useEffect, useRef, useState} from "react"
+import type {InputRef} from "antd"
+import {Input} from "antd"
+import type {ChangeEvent, FocusEvent, KeyboardEvent} from "react"
+import {useEffect, useRef, useState} from "react"
 
 interface Props {
   value: any

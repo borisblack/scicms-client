@@ -1,5 +1,5 @@
-import {FC} from "react"
-import {Task as GanttTask} from "gantt-task-react"
+import type {FC} from "react"
+import type {Task as GanttTask} from "gantt-task-react"
 import {DateTime} from "luxon"
 
 import styles from "./TooltipContent.module.css"

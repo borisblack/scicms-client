@@ -1,5 +1,5 @@
 import {ACCESS_ITEM_NAME, MASK_ATTR_NAME} from "src/config/constants"
-import {Access} from "src/types/schema"
+import type {Access} from "src/types/schema"
 import {Plugin} from "../Plugin"
 import {AccessMaskAttributeField} from "./attributeFields"
 

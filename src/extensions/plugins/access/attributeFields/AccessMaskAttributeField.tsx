@@ -1,11 +1,12 @@
-import {FC, useCallback, useMemo} from "react"
+import type {FC} from "react"
+import {useCallback, useMemo} from "react"
 import {Checkbox, Form, InputNumber} from "antd"
 import {useTranslation} from "react-i18next"
 
 import {ACCESS_ITEM_NAME, MASK_ATTR_NAME} from "src/config/constants"
 import {clearBit, getBit, setBit} from "src/util"
 import {generateKey} from "src/util/mdi"
-import {CustomAttributeFieldContext} from "../../types"
+import type {CustomAttributeFieldContext} from "../../types"
 import styles from "src/pages/app/attributeFields/AttributeField.module.css"
 
 const FormItem = Form.Item

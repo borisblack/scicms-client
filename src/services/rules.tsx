@@ -1,7 +1,7 @@
 import {getParser} from "../extensions/functions"
 import {notifyErrorThrottled} from "../util"
 import i18n from "../i18n"
-import {CSSProperties, ReactNode} from "react"
+import type {CSSProperties, ReactNode} from "react"
 import IconSuspense from "../uiKit/icons/IconSuspense"
 
 export interface FieldRule {

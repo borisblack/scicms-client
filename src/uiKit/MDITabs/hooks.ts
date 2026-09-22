@@ -1,9 +1,8 @@
 import {useCallback, useContext, useState} from "react"
 import {useImmerReducer} from "use-immer"
-import {MDIContext, MDITabObservable} from "./MDITabs"
+import type {MDIContext, MDITabObservable} from "./MDITabs"
+import type {MDITabsAction, MDITabsState} from "./mdiTabsReducer"
 import mdiTabsReducer, {
-  MDITabsAction,
-  MDITabsState,
   CLOSE_ACTION,
   CLOSE_ACTIVE_ACTION,
   OPEN_ACTION,
@@ -15,7 +14,9 @@ import mdiTabsReducer, {
 import {ReactMDIContext} from "./ReactMDIContext"
 
 export function useNewMDIContextReducer<T>(initialItems: MDITabObservable<T>[]): MDIContext<T> {
-  const [state, dispatch] = useImmerReducer<MDITabsState<T>, MDITabsAction<T>>(mdiTabsReducer, {items: initialItems})
+  const [state, dispatch] = useImmerReducer<MDITabsState<T>, MDITabsAction<T>>(mdiTabsReducer, {
+    items: initialItems
+  })
   const {activeKey, items} = state
 
   const setActiveKey = useCallback(

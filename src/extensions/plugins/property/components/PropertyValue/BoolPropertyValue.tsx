@@ -3,7 +3,7 @@ import {useCallback, useMemo} from "react"
 import {Switch} from "antd"
 
 import {FieldType} from "src/types"
-import {PropertyValueProps} from "./types"
+import type {PropertyValueProps} from "./types"
 
 export const BoolPropertyValue: FC<PropertyValueProps> = ({type, value, canEdit, onChange}) => {
   if (type !== FieldType.bool) throw new Error("Illegal type.")

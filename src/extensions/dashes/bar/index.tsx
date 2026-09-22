@@ -1,4 +1,4 @@
-import {Dash} from "../index"
+import type {Dash} from "../index"
 import BarDashSuspense from "./BarDashSuspense"
 import BarDashOptionsForm from "./BarDashOptionsForm"
 

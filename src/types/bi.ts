@@ -1,5 +1,5 @@
-import {FieldType, PrimitiveFilterInput} from "."
-import {Datasource, DefaultItemTemplate} from "./schema"
+import type {FieldType, PrimitiveFilterInput} from "."
+import type {Datasource, DefaultItemTemplate} from "./schema"
 
 export interface Dataset extends DefaultItemTemplate {
   name: string

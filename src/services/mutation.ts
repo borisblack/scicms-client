@@ -2,9 +2,10 @@ import _ from "lodash"
 import {gql} from "@apollo/client"
 import {apolloClient, extractGraphQLErrorMessages} from "./index"
 import i18n from "../i18n"
-import {DeletingStrategy} from "../types"
-import {FlaggedResponse, Item, ItemData, ResponseCollection} from "../types/schema"
-import ItemManager, {ItemMap} from "./item"
+import type {DeletingStrategy} from "../types"
+import type {FlaggedResponse, Item, ItemData, ResponseCollection} from "../types/schema"
+import type {ItemMap} from "./item"
+import ItemManager from "./item"
 
 type ItemInput = Record<string, any>
 

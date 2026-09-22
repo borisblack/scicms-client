@@ -4,7 +4,7 @@ import {useCallback, useMemo} from "react"
 import {useTranslation} from "react-i18next"
 import {Form, Input} from "antd"
 
-import {AttributeFieldProps} from "."
+import type {AttributeFieldProps} from "."
 import {FieldType} from "src/types"
 import {generateKey} from "src/util/mdi"
 import {Expandable} from "src/uiKit/Expandable/Expandable"

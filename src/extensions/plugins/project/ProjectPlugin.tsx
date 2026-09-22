@@ -1,6 +1,6 @@
 import {Plugin} from "../Plugin"
 import {ProjectGantt} from "./components"
-import {Project} from "./components/ProjectGantt/types"
+import type {Project} from "./components/ProjectGantt/types"
 
 const PROJECT_GANTT_COMPONENT_ID = "projectGantt"
 
