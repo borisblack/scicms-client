@@ -127,6 +127,12 @@ export class PluginEngine {
       return fieldAttrName === attrName && (fieldItemName === itemName || fieldItemName === "*")
     })
 
+  /**
+   * Renders attribute field.
+   *
+   * @param context Field context
+   * @param defaultRender Default renderer
+   */
   renderAttributeField(
     context: CustomAttributeFieldContext,
     defaultRender: FC<CustomAttributeFieldContext>
