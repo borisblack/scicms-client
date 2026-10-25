@@ -5,17 +5,20 @@
       "prettier",
       "plugin:prettier/recommended"
     ],
-    "plugins": ["prettier"],
-    "parser": "@typescript-eslint/parser",
     "ignorePatterns": ["src/lib/*"],
+    "parser": "@typescript-eslint/parser",
+    "plugins": ["prettier"],
     "rules": {
-      "prettier/prettier": ["warn"],
       "comma-dangle": "off",
-      "no-useless-escape": "off",
       "no-unused-expressions": "off",
+      "no-useless-escape": "off",
+      "prettier/prettier": ["warn"],
       "semi": "off",
       "@typescript-eslint/comma-dangle": "error",
-      "@typescript-eslint/consistent-type-imports":"error",
+      "@typescript-eslint/consistent-type-imports": [
+        "error",
+        {"prefer": "type-imports"}
+      ],
       "@typescript-eslint/member-delimiter-style": [
         "error",
         {
